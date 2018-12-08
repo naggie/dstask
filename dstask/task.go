@@ -8,6 +8,7 @@ const (
 	PENDING = "pending"
 	ACTIVE = "active"
 	RESOLVED = "resolved"
+	BLOCKED = "blocked"
 	DELEGATED = "delegated"
 	DEFERRED = "deferred"
 	SOMEDAY = "someday"
@@ -29,6 +30,8 @@ type Task struct {
 	delegatedTo string
 	subtasks []SubTask
 	comments []string
+	// uuids of tasks that this task depends on
+	dependencies []string
 
 	created time.Time
 	modified time.Time
@@ -43,10 +46,15 @@ type TaskSet struct {
 type TaskFilter struct {
 	text string
 	tags []string
+	antitags []string
 	project string
 	priority int
 }
 
-func (t *TaskSet) filter(filter *TaskFilter) TaskSet {
+func (ts *TaskSet) filter(filter *TaskFilter) TaskSet {
+
+}
+
+func (t *Task) Save() error {
 
 }
