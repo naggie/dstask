@@ -8,7 +8,6 @@ const (
 	PENDING = "pending"
 	ACTIVE = "active"
 	RESOLVED = "resolved"
-	BLOCKED = "blocked"
 	DELEGATED = "delegated"
 	DEFERRED = "deferred"
 	SOMEDAY = "someday"
@@ -31,6 +30,8 @@ type Task struct {
 	subtasks []SubTask
 	comments []string
 	// uuids of tasks that this task depends on
+	// blocked status can be derived.
+	// TODO possible filter: :blocked. Also, :overdue
 	dependencies []string
 
 	created time.Time
