@@ -26,7 +26,7 @@ type Task struct {
 	tags []string
 	project string
 	priority int
-	assignedTo string
+	delegatedTo string
 	subtasks []SubTask
 	comments []string
 
