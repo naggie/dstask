@@ -4,15 +4,6 @@ import (
 	time
 )
 
-const (
-	PENDING = "pending"
-	ACTIVE = "active"
-	RESOLVED = "resolved"
-	DELEGATED = "delegated"
-	DEFERRED = "deferred"
-	SOMEDAY = "someday"
-)
-
 type SubTask struct {
 	summary string
 	resolved bool
