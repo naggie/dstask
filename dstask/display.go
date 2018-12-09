@@ -4,7 +4,6 @@ package dstask
 
 /// display list of filtered tasks with context and filter
 func (ts *TaskSet) Display() {
-	for 
 }
 
 // display a single task in detail, with numbered subtasks

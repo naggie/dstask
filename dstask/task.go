@@ -10,29 +10,33 @@ type SubTask struct {
 }
 
 type Task struct {
-	uuid        string
-	status      string
-	summary     string
-	description string
-	tags        []string
-	project     string
-	priority    int
-	delegatedTo string
-	subtasks    []SubTask
-	comments    []string
+	// not stored in file -- rather filename and directory
+	uuid   string
+	status string
+	// used to determine if an unlink should happen if status changes
+	originalFilepath string
+
+	Summary     string
+	Description string
+	Tags        []string
+	Project     string
+	Priority    int
+	DelegatedTo string
+	Subtasks    []SubTask
+	Comments    []string
 	// uuids of tasks that this task depends on
 	// blocked status can be derived.
 	// TODO possible filter: :blocked. Also, :overdue
-	dependencies []string
+	Dependencies []string
 
-	created  time.Time
-	modified time.Time
-	resolved time.Time
-	due      time.Time
+	Created  time.Time
+	Modified time.Time
+	Resolved time.Time
+	Due      time.Time
 }
 
 type TaskSet struct {
-	tasks []Task
+	tasks          []Task
 	currentContext string
 }
 
