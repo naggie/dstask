@@ -51,12 +51,12 @@ var priorityMap = map[string]string{
 }
 
 // convert a tw status into a dstask status
-func convertStatus(twStatus string, start string) string {
-	if start != "" {
+func (t *TwTask) ConvertStatus() string {
+	if t.Start != "" {
 		return STATUS_ACTIVE
 	}
 
-	switch twStatus {
+	switch t.Status {
 		case "completed":
 			return STATUS_RESOLVED
 		case "deleted":
@@ -68,15 +68,14 @@ func convertStatus(twStatus string, start string) string {
 			//return STATUS_RECURRING
 			return STATUS_RESOLVED
 		default:
-			return twStatus
+			return t.Status
 	}
 }
 
-// TODO conversions should be methods on TwTask!
-func convertAnnotations(twAnnotations []TwAnnotation) []string {
+func (t *TwTask) ConvertAnnotations() []string {
 	var comments []string
 
-	for _, ann := range twAnnotations {
+	for _, ann := range t.Annotations {
 		comments = append(comments, ann.Description)
 	}
 
@@ -97,12 +96,12 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 		fmt.Println(twTask)
 		ts.tasks = append(ts.tasks, Task{
 			uuid: twTask.Uuid,
-			status: convertStatus(twTask.Status, twTask.Start),
+			status: twTask.ConvertStatus(),
 			Summary: twTask.Description,
 			Tags: twTask.Tags,
 			Project: twTask.Project,
 			Priority: priorityMap[twTask.Priority],
-			Comments: convertAnnotations(twTask.Annotations),
+			Comments: twTask.ConvertAnnotations(),
 			Dependencies: strings.Split(twTask.Depends, ","),
 			//Created
 			//Modified
