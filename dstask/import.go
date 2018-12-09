@@ -4,7 +4,6 @@ package dstask
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -122,8 +121,7 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 	}
 
 	for _, twTask := range twTasks {
-		fmt.Println(twTask.Status, twTask.Description)
-		ts.tasks = append(ts.tasks, Task{
+		ts.Tasks = append(ts.Tasks, Task{
 			uuid:         twTask.Uuid,
 			status:       twTask.ConvertStatus(),
 			Summary:      twTask.Description,

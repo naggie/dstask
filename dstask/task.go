@@ -5,8 +5,8 @@ import (
 )
 
 type SubTask struct {
-	summary  string
-	resolved bool
+	Summary  string
+	Resolved bool
 }
 
 type Task struct {
@@ -39,16 +39,16 @@ type Task struct {
 }
 
 type TaskSet struct {
-	tasks          []Task
-	currentContext string
+	Tasks          []Task
+	CurrentContext string
 }
 
 type TaskFilter struct {
-	text     string
-	tags     []string
-	antitags []string
-	project  string
-	priority int
+	Text     string
+	Tags     []string
+	Antitags []string
+	Project  string
+	Priority int
 }
 
 //func (ts *TaskSet) filter(filter *TaskFilter) TaskSet {
