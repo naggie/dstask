@@ -17,7 +17,7 @@ type Task struct {
 	originalFilepath string
 
 	// concise representation of task
-	Summary     string
+	Summary string
 	// task in more detail, only if necessary
 	Description string
 	Tags        []string
