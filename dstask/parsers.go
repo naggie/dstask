@@ -15,3 +15,7 @@ func LoadTasks() *TaskSet {
 func parseFile(filepath string) {
 
 }
+
+func (ts *TaskSet) ImportFromTaskwarrior() {
+	// from stdin
+}
