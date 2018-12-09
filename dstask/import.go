@@ -68,6 +68,7 @@ var priorityMap = map[string]string{
 	"H": PRIORITY_HIGH,
 	"M": PRIORITY_NORMAL,
 	"L": PRIORITY_LOW,
+	"" : PRIORITY_NORMAL,
 }
 
 // convert a tw status into a dstask status
