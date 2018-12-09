@@ -27,10 +27,12 @@ type TWAnnotation struct {
 	Entry string `json: entry`
 }
 
-type TWTask struct {
+// see https://taskwarrior.org/docs/design/task.html
+type TwTask struct {
 	Description string `json:"description"`
 	End string `json:"end"`
 	Entry string `json: entry`
+	Start string `json: start`
 	Modified string `json: modified`
 	Status string `json: status`
 	Tags []string `json: tags`
@@ -38,17 +40,43 @@ type TWTask struct {
 	Annotations []TWAnnotation `json:annotations`
 }
 
+// convert a tw status into a dstask status
+func convertStatus(twStatus string, start string) string {
+	if start != "" {
+		return STATUS_ACTIVE
+	}
+
+	switch twStatus {
+		case "completed":
+			return STATUS_RESOLVED
+		case "deleted":
+			return STATUS_RESOLVED
+		case "waiting":
+			return STATUS_PENDING
+		case "recurring":
+			// TODO -- implement reccurence
+			//return STATUS_RECURRING
+			return STATUS_RESOLVED
+		default:
+			return twStatus
+	}
+}
+
 func (ts *TaskSet) ImportFromTaskwarrior() error {
-	var tWTasks []TWTask
+	var twTasks []TwTask
 	// from stdin
-	err := json.NewDecoder(os.Stdin).Decode(&tWTasks)
+	err := json.NewDecoder(os.Stdin).Decode(&twTasks)
 
 	if (err != nil) {
 		return err
 	}
 
-	for _, tWTask := range tWTasks {
-		fmt.Println(tWTask)
+	for _, twTask := range twTasks {
+		fmt.Println(twTask)
+		ts.tasks = append(ts.tasks, Task{
+			uuid: twTask.Uuid,
+			status: convertStatus(twTask.Status, twTask.Start),
+		})
 	}
 
 	return nil
