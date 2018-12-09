@@ -16,7 +16,9 @@ type Task struct {
 	// used to determine if an unlink should happen if status changes
 	originalFilepath string
 
+	// concise representation of task
 	Summary     string
+	// task in more detail, only if necessary
 	Description string
 	Tags        []string
 	Project     string

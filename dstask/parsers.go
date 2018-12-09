@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"fmt"
+	"strings"
 )
 
 func parseTaskLine(args []string) {
@@ -35,6 +36,8 @@ type TwTask struct {
 	Start string `json: start`
 	Modified string `json: modified`
 	Status string `json: status`
+	Project string `json: project`
+	Depends string `json: depends`
 	Tags []string `json: tags`
 	Uuid string `json: uuid`
 	Annotations []TWAnnotation `json:annotations`
@@ -76,6 +79,16 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 		ts.tasks = append(ts.tasks, Task{
 			uuid: twTask.Uuid,
 			status: convertStatus(twTask.Status, twTask.Start),
+			Summary: twTask.Description,
+			Tags: twTask.Tags,
+			Project: twTask.Project,
+			//Priority
+			//Comments: twTask.Annotations,
+			Dependencies: strings.Split(twTask.Depends, ","),
+			//Created
+			//Modified
+			//Resolved
+			//Due
 		})
 	}
 
