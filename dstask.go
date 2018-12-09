@@ -1,6 +1,5 @@
 package main
 
-
 func main() {
 	// check git repository
 	// do action
