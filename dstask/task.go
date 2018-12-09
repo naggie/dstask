@@ -33,6 +33,7 @@ type Task struct {
 
 type TaskSet struct {
 	tasks []Task
+	currentContext string
 }
 
 type TaskFilter struct {

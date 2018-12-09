@@ -8,6 +8,10 @@ func parseFilterLine(args []string) {
 
 }
 
+func LoadTasks() *TaskSet {
+
+}
+
 func parseFile(filepath string) {
 
 }
