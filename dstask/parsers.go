@@ -22,15 +22,20 @@ func parseFile(filepath string) {
 
 }
 
+type TaskWarriorAnnotation struct {
+	Description string `json:"description"`
+	Entry string `json: entry`
+}
+
 type TaskWarriorTask struct {
 	Description string `json:"description"`
 	End string `json:"end"`
 	Entry string `json: entry`
-	Id int `json: id`
 	Modified string `json: modified`
 	Status string `json: status`
 	Tags []string `json: tags`
 	Uuid string `json: uuid`
+	Annotations []TaskWarriorAnnotation `json:annotations`
 }
 
 func (ts *TaskSet) ImportFromTaskwarrior() error {
