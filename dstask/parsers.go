@@ -23,7 +23,7 @@ func parseFile(filepath string) {
 
 }
 
-type TWAnnotation struct {
+type TwAnnotation struct {
 	Description string `json:"description"`
 	Entry string `json: entry`
 }
@@ -41,7 +41,7 @@ type TwTask struct {
 	Depends string `json: depends`
 	Tags []string `json: tags`
 	Uuid string `json: uuid`
-	Annotations []TWAnnotation `json:annotations`
+	Annotations []TwAnnotation `json:annotations`
 }
 
 var priorityMap = map[string]string{
@@ -72,6 +72,18 @@ func convertStatus(twStatus string, start string) string {
 	}
 }
 
+// TODO conversions should be methods on TwTask!
+func convertAnnotations(twAnnotations []TwAnnotation) []string {
+	var comments []string
+
+	for _, ann := range twAnnotations {
+		comments = append(comments, ann.Description)
+	}
+
+	return comments
+}
+
+// TODO this should probably be in its own module
 func (ts *TaskSet) ImportFromTaskwarrior() error {
 	var twTasks []TwTask
 	// from stdin
@@ -90,7 +102,7 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 			Tags: twTask.Tags,
 			Project: twTask.Project,
 			Priority: priorityMap[twTask.Priority],
-			//Comments: twTask.Annotations,
+			Comments: convertAnnotations(twTask.Annotations),
 			Dependencies: strings.Split(twTask.Depends, ","),
 			//Created
 			//Modified
