@@ -3,6 +3,7 @@ package dstask
 import (
 	"encoding/json"
 	"os"
+	"fmt"
 )
 
 func parseTaskLine(args []string) {
@@ -14,7 +15,7 @@ func parseFilterLine(args []string) {
 }
 
 func LoadTasks() *TaskSet {
-
+	return &TaskSet{}
 }
 
 func parseFile(filepath string) {
@@ -32,7 +33,7 @@ type TaskWarriorTask struct {
 	Uuid string `json: uuid`
 }
 
-func (ts *TaskSet) ImportFromTaskwarrior() {
+func (ts *TaskSet) ImportFromTaskwarrior() error {
 	var taskWarriorTasks []TaskWarriorTask
 	// from stdin
 	err := json.NewDecoder(os.Stdin).Decode(&taskWarriorTasks)
@@ -40,4 +41,8 @@ func (ts *TaskSet) ImportFromTaskwarrior() {
 	if (err != nil) {
 		return err
 	}
+
+	fmt.Println(taskWarriorTasks)
+
+	return nil
 }

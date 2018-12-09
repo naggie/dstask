@@ -48,10 +48,10 @@ type TaskFilter struct {
 	priority int
 }
 
-func (ts *TaskSet) filter(filter *TaskFilter) TaskSet {
-
-}
-
-func (t *Task) Save() error {
-
-}
+//func (ts *TaskSet) filter(filter *TaskFilter) TaskSet {
+//
+//}
+//
+//func (t *Task) Save() error {
+//
+//}
