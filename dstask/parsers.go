@@ -44,10 +44,10 @@ type TwTask struct {
 	Annotations []TWAnnotation `json:annotations`
 }
 
-var priorityMap = map[string]int{
-	"H": 1,
-	"M": 2,
-	"L": 3,
+var priorityMap = map[string]string{
+	"H": PRIORITY_HIGH,
+	"M": PRIORITY_NORMAL,
+	"L": PRIORITY_LOW,
 }
 
 // convert a tw status into a dstask status

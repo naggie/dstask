@@ -22,7 +22,8 @@ type Task struct {
 	Description string
 	Tags        []string
 	Project     string
-	Priority    int
+	// see const.go for PRIORITY_ strings
+	Priority    string
 	DelegatedTo string
 	Subtasks    []SubTask
 	Comments    []string
