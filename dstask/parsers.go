@@ -37,10 +37,17 @@ type TwTask struct {
 	Modified string `json: modified`
 	Status string `json: status`
 	Project string `json: project`
+	Priority string `json: priority`
 	Depends string `json: depends`
 	Tags []string `json: tags`
 	Uuid string `json: uuid`
 	Annotations []TWAnnotation `json:annotations`
+}
+
+var priorityMap = map[string]int{
+	"H": 1,
+	"M": 2,
+	"L": 3,
 }
 
 // convert a tw status into a dstask status
@@ -82,7 +89,7 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 			Summary: twTask.Description,
 			Tags: twTask.Tags,
 			Project: twTask.Project,
-			//Priority
+			Priority: priorityMap[twTask.Priority],
 			//Comments: twTask.Annotations,
 			Dependencies: strings.Split(twTask.Depends, ","),
 			//Created
