@@ -1,24 +1,60 @@
 package dstask
 
+// see https://taskwarrior.org/docs/design/task.html
+
 import (
 	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
+
+type TwTime struct {
+	time.Time
+}
+
+// TW time is stored in ISO 8601 basic format, which the default parser does
+// not understand.
+func (tt *TwTime) UnmarshalJSON(b []byte) error {
+	s := string(b)
+
+	if s == "null" {
+		return nil
+	}
+
+	// drop quotes
+	if len(s) > 2 {
+		s = s[1:len(s)-1]
+	}
+
+	if len(s) == 16 {
+		// convert from basic format to normal format which is RFC3339 compatible
+		s = s[0:4]+"-"+s[4:6]+"-"+s[6:11]+":"+s[11:13]+":"+s[13:len(s)]
+	}
+
+	t, err := time.Parse(time.RFC3339, s)
+	tt.Time = t
+
+	if (err != nil) {
+		return err
+	}
+
+	return nil
+}
 
 type TwAnnotation struct {
 	Description string `json:"description"`
 	Entry       string `json: entry`
 }
 
-// see https://taskwarrior.org/docs/design/task.html
 type TwTask struct {
 	Description string         `json:"description"`
-	End         string         `json:"end"`
-	Entry       string         `json: entry`
-	Start       string         `json: start`
-	Modified    string         `json: modified`
+	End         TwTime         `json:"end"`
+	Entry       TwTime         `json: entry`
+	Start       TwTime         `json: start`
+	Modified    TwTime         `json: modified`
+	Due         TwTime         `json: due`
 	Status      string         `json: status`
 	Project     string         `json: project`
 	Priority    string         `json: priority`
@@ -36,7 +72,7 @@ var priorityMap = map[string]string{
 
 // convert a tw status into a dstask status
 func (t *TwTask) ConvertStatus() string {
-	if t.Start != "" {
+	if t.Start.Time.IsZero() {
 		return STATUS_ACTIVE
 	}
 
@@ -76,7 +112,7 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 	}
 
 	for _, twTask := range twTasks {
-		fmt.Println(twTask)
+		fmt.Println(twTask.Status, twTask.Description)
 		ts.tasks = append(ts.tasks, Task{
 			uuid:         twTask.Uuid,
 			status:       twTask.ConvertStatus(),
@@ -86,10 +122,10 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 			Priority:     priorityMap[twTask.Priority],
 			Comments:     twTask.ConvertAnnotations(),
 			Dependencies: strings.Split(twTask.Depends, ","),
-			//Created
-			//Modified
-			//Resolved
-			//Due
+			Created:      twTask.Entry.Time,
+			Modified:     twTask.Modified.Time,
+			//Resolved:     twTask.
+			Due:          twTask.Due.Time,
 		})
 	}
 
