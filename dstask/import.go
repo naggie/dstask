@@ -102,6 +102,15 @@ func (t *TwTask) ConvertAnnotations() []string {
 	return comments
 }
 
+// resolved time is not tracked. Give best guess.
+func (t *TwTask) GetResolvedTime() time.Time {
+	if t.Status == "completed" {
+		return t.Modified.Time
+	} else {
+		return time.Time{}
+	}
+}
+
 func (ts *TaskSet) ImportFromTaskwarrior() error {
 	var twTasks []TwTask
 	// from stdin
@@ -124,7 +133,7 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 			Dependencies: strings.Split(twTask.Depends, ","),
 			Created:      twTask.Entry.Time,
 			Modified:     twTask.Modified.Time,
-			//Resolved:     twTask.
+			Resolved:     twTask.GetResolvedTime(),
 			Due:          twTask.Due.Time,
 		})
 	}
