@@ -22,12 +22,12 @@ func parseFile(filepath string) {
 
 }
 
-type TaskWarriorAnnotation struct {
+type TWAnnotation struct {
 	Description string `json:"description"`
 	Entry string `json: entry`
 }
 
-type TaskWarriorTask struct {
+type TWTask struct {
 	Description string `json:"description"`
 	End string `json:"end"`
 	Entry string `json: entry`
@@ -35,19 +35,21 @@ type TaskWarriorTask struct {
 	Status string `json: status`
 	Tags []string `json: tags`
 	Uuid string `json: uuid`
-	Annotations []TaskWarriorAnnotation `json:annotations`
+	Annotations []TWAnnotation `json:annotations`
 }
 
 func (ts *TaskSet) ImportFromTaskwarrior() error {
-	var taskWarriorTasks []TaskWarriorTask
+	var tWTasks []TWTask
 	// from stdin
-	err := json.NewDecoder(os.Stdin).Decode(&taskWarriorTasks)
+	err := json.NewDecoder(os.Stdin).Decode(&tWTasks)
 
 	if (err != nil) {
 		return err
 	}
 
-	fmt.Println(taskWarriorTasks)
+	for _, tWTask := range tWTasks {
+		fmt.Println(tWTask)
+	}
 
 	return nil
 }
