@@ -7,6 +7,7 @@ const (
 	STATUS_DELEGATED = "delegated"
 	STATUS_DEFERRED  = "deferred"
 	STATUS_SOMEDAY   = "someday"
+	STATUS_RECURRING = "recurring"  // tentative
 
 	GIT_REPO   = "~/.dstask/"
 	CACHE_FILE = "~/.cache/dstask/completion_cache.gob"

@@ -10,7 +10,7 @@ func parseFilterLine(args []string) {
 
 }
 
-func (ts *TaskSet) LoadTasksFromDisk() {
+func (ts *TaskSet) LoadTasksFromDisk(statuses []string) {
 
 }
 

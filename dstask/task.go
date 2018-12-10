@@ -88,7 +88,6 @@ type TaskFilter struct {
 	Antitags []string
 	Project  string
 	Priority int
-	Statuses []string
 }
 
 //func (ts *TaskSet) filter(filter *TaskFilter) TaskSet {
