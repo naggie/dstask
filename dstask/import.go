@@ -111,6 +111,7 @@ func (t *TwTask) GetResolvedTime() time.Time {
 	}
 }
 
+// TODO import only if task does not exist (by uuid)
 func (ts *TaskSet) ImportFromTaskwarrior() error {
 	var twTasks []TwTask
 	// from stdin

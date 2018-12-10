@@ -43,12 +43,17 @@ type TaskSet struct {
 	CurrentContext string
 }
 
+// filter should be set before loading any data. The filter can be used to
+// optimise a bit -- eg when listing, completed tasks should not be shown so we
+// can avoid loading them. However when importing, it is important to load all
+// tasks for full context.
 type TaskFilter struct {
 	Text     string
 	Tags     []string
 	Antitags []string
 	Project  string
 	Priority int
+	Statuses []string
 }
 
 //func (ts *TaskSet) filter(filter *TaskFilter) TaskSet {
