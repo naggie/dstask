@@ -27,7 +27,7 @@ const (
 )
 
 // for import (etc) it's necessary to have full context
-var FULL_CONTEXT = [...]string{
+var ALL_STATUSES = [...]string{
 	dstask.STATUS_PENDING,
 	dstask.STATUS_ACTIVE,
 	dstask.STATUS_RESOLVED,
@@ -38,7 +38,7 @@ var FULL_CONTEXT = [...]string{
 }
 
 // for most operations, it's not necessary or desirable to load the expensive resolved tasks
-var NORMAL_CONTEXT = [...]string{
+var NORMAL_STATUSES = [...]string{
 	dstask.STATUS_PENDING,
 	dstask.STATUS_ACTIVE,
 	dstask.STATUS_DELEGATED,

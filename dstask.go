@@ -6,7 +6,7 @@ import (
 
 func main() {
 	// importing requires full context
-	ts := dstask.LoadTaskSetFromDisk(FULL_CONTEXT)
+	ts := dstask.LoadTaskSetFromDisk(ALL_STATUSES)
 
 	err := ts.ImportFromTaskwarrior()
 
