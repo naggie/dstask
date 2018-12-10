@@ -1,5 +1,7 @@
 package dstask
 
+// import tasks from taskwarrior
+
 // see https://taskwarrior.org/docs/design/task.html
 
 // usage: task export | dstask import

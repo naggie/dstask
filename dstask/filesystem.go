@@ -1,9 +1,18 @@
 package dstask
 
+// an interface to the filesystem/git based database -- loading, saving, committing
+
 import (
 	"os/user"
 	"strings"
 )
+
+func LoadTaskSetFromDisk() *TaskSet {
+	return &TaskSet{
+		knownUuids: make(map[string]bool),
+	}
+}
+
 
 func ExpandHome(path string) (string, err) {
 	if strings.HasPrefix(path, "~/") {
@@ -17,9 +26,6 @@ func ExpandHome(path string) (string, err) {
 	}
 }
 
-func (t *Task) InitDirectories() error {
-
-}
 
 func (t *Task) Save() error {
 	return
