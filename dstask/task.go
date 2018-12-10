@@ -2,6 +2,7 @@ package dstask
 
 import (
 	"time"
+	"sort"
 )
 
 type SubTask struct {
@@ -50,9 +51,19 @@ func NewTaskSet() *TaskSet {
 	}
 }
 
-// used for indexing and display. Sorts by status then UUID.
-func GetSortedTaskList() []Task {
+// Call before addressing and display. Sorts by status then UUID.
+func (ts *TaskSet) SortTaskList() {
+	sort.Slice(ts.Tasks, func(i, j int) bool {
+		ti := ts.Tasks[i]
+		tj := ts.Tasks[j]
 
+		// TODO define precedent of statuses
+		if ti.status == tj.status {
+			return ti.uuid < tj.uuid
+		} else {
+			return ti.status < tj.status
+		}
+	})
 }
 
 // add a task, but only if it has a new uuid. Return true if task was added.

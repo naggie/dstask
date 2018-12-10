@@ -13,6 +13,7 @@ func main() {
 	if (err != nil) {
 		panic(err)
 	}
+	ts.SortTaskList()
 	ts.Display()
 	// commit to git repository
 	// write bash completion cache
