@@ -2,6 +2,9 @@ package dstask
 
 // see https://taskwarrior.org/docs/design/task.html
 
+// usage: task export | dstask import
+// Filters can be used in taskwarrior to specify a subset.
+
 import (
 	"encoding/json"
 	"os"
