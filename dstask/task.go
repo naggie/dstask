@@ -41,6 +41,7 @@ type Task struct {
 type TaskSet struct {
 	Tasks          []Task
 	CurrentContext string
+	KnownUuids     map[string]bool
 }
 
 // filter should be set before loading any data. The filter can be used to
