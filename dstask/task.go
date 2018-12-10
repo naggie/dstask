@@ -41,7 +41,25 @@ type Task struct {
 type TaskSet struct {
 	Tasks          []Task
 	CurrentContext string
-	KnownUuids     map[string]bool
+	knownUuids     map[string]bool
+}
+
+func NewTaskSet() *TaskSet {
+	return &TaskSet{
+		knownUuids: make(map[string]bool),
+	}
+}
+
+// add a task, but only if it has a new uuid. Return true if task was added.
+func (ts *TaskSet) MaybeAddTask(task Task) bool {
+	if ts.knownUuids[task.uuid] {
+		// load tasks, do not overwrite
+		return false
+	}
+
+	ts.knownUuids[task.uuid] = true
+	ts.Tasks = append(ts.Tasks, task)
+	return true
 }
 
 // filter should be set before loading any data. The filter can be used to

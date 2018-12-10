@@ -122,15 +122,7 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 	}
 
 	for _, twTask := range twTasks {
-		if ts.KnownUuids[twTask.Uuid] {
-			// load tasks, do not overwrite
-			continue
-		}
-
-		// this mechanism should be a method
-		ts.KnownUuids[twTask] = true
-
-		ts.Tasks = append(ts.Tasks, Task{
+		ts.MaybeAddTask(Task{
 			uuid:         twTask.Uuid,
 			status:       twTask.ConvertStatus(),
 			Summary:      twTask.Description,

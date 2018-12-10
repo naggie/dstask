@@ -7,7 +7,7 @@ import (
 func main() {
 	// check git repository
 	// do action
-	ts := dstask.LoadTasks()
+	ts := dstask.NewTaskSet()
 	err := ts.ImportFromTaskwarrior()
 
 	if (err != nil) {
