@@ -7,12 +7,11 @@ import (
 	"strings"
 )
 
-func LoadTaskSetFromDisk() *TaskSet {
+func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 	return &TaskSet{
 		knownUuids: make(map[string]bool),
 	}
 }
-
 
 func ExpandHome(path string) (string, err) {
 	if strings.HasPrefix(path, "~/") {
@@ -25,7 +24,6 @@ func ExpandHome(path string) (string, err) {
 		return path
 	}
 }
-
 
 func (t *Task) Save() error {
 	return

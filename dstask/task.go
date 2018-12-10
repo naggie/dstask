@@ -3,8 +3,8 @@ package dstask
 // main task data structures
 
 import (
-	"time"
 	"sort"
+	"time"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 	STATUS_DELEGATED = "delegated"
 	STATUS_DEFERRED  = "deferred"
 	STATUS_SOMEDAY   = "someday"
-	STATUS_RECURRING = "recurring"  // tentative
+	STATUS_RECURRING = "recurring" // tentative
 
 	GIT_REPO   = "~/.dstask/"
 	CACHE_FILE = "~/.cache/dstask/completion_cache.gob"
@@ -25,6 +25,27 @@ const (
 	PRIORITY_NORMAL   = "P3"
 	PRIORITY_LOW      = "P4"
 )
+
+// for import (etc) it's necessary to have full context
+var FULL_CONTEXT = [...]string{
+	dstask.STATUS_PENDING,
+	dstask.STATUS_ACTIVE,
+	dstask.STATUS_RESOLVED,
+	dstask.STATUS_DELEGATED,
+	dstask.STATUS_DEFERRED,
+	dstask.STATUS_SOMEDAY,
+	dstask.STATUS_RECURRING,
+}
+
+// for most operations, it's not necessary or desirable to load the expensive resolved tasks
+var NORMAL_CONTEXT = [...]string{
+	dstask.STATUS_PENDING,
+	dstask.STATUS_ACTIVE,
+	dstask.STATUS_DELEGATED,
+	dstask.STATUS_DEFERRED,
+	dstask.STATUS_SOMEDAY,
+	dstask.STATUS_RECURRING,
+}
 
 type SubTask struct {
 	Summary  string

@@ -29,18 +29,18 @@ func (tt *TwTime) UnmarshalJSON(b []byte) error {
 
 	// drop quotes
 	if len(s) > 2 {
-		s = s[1:len(s)-1]
+		s = s[1 : len(s)-1]
 	}
 
 	if len(s) == 16 {
 		// convert from basic format to normal format which is RFC3339 compatible
-		s = s[0:4]+"-"+s[4:6]+"-"+s[6:11]+":"+s[11:13]+":"+s[13:len(s)]
+		s = s[0:4] + "-" + s[4:6] + "-" + s[6:11] + ":" + s[11:13] + ":" + s[13:len(s)]
 	}
 
 	t, err := time.Parse(time.RFC3339, s)
 	tt.Time = t
 
-	if (err != nil) {
+	if err != nil {
 		return err
 	}
 
@@ -72,7 +72,7 @@ var priorityMap = map[string]string{
 	"H": PRIORITY_HIGH,
 	"M": PRIORITY_NORMAL,
 	"L": PRIORITY_LOW,
-	"" : PRIORITY_NORMAL,
+	"":  PRIORITY_NORMAL,
 }
 
 // convert a tw status into a dstask status

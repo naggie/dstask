@@ -5,9 +5,9 @@ import (
 )
 
 func main() {
-	// check git repository
-	// do action
-	ts := dstask.LoadTaskSetFromDisk()
+	// importing requires full context
+	ts := dstask.LoadTaskSetFromDisk(FULL_CONTEXT)
+
 	err := ts.ImportFromTaskwarrior()
 
 	if (err != nil) {
@@ -15,6 +15,4 @@ func main() {
 	}
 	ts.SortTaskList()
 	ts.Display()
-	// commit to git repository
-	// write bash completion cache
 }

@@ -8,7 +8,7 @@ import (
 
 /// display list of filtered tasks with context and filter
 func (ts *TaskSet) Display() {
-	for n, t := range(ts.Tasks) {
+	for n, t := range ts.Tasks {
 		fmt.Println(n, t)
 	}
 }
