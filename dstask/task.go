@@ -50,6 +50,11 @@ func NewTaskSet() *TaskSet {
 	}
 }
 
+// used for indexing and display. Sorts by status then UUID.
+func GetSortedTaskList() []Task {
+
+}
+
 // add a task, but only if it has a new uuid. Return true if task was added.
 func (ts *TaskSet) MaybeAddTask(task Task) bool {
 	if ts.knownUuids[task.uuid] {
