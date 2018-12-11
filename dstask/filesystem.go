@@ -6,6 +6,8 @@ import (
 	"path"
 	"os"
 	"fmt"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 )
 
 func MustGetRepoDirectory(directory ...string) string {
@@ -23,7 +25,7 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 	for _, status := range ALL_STATUSES {
 		dir := MustGetRepoDirectory(status)
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
-			err = os.Mkdir(dir, 0755)
+			err = os.Mkdir(dir, 0700)
 			if err != nil {
 				ExitFail("Failed to create directory in git repository")
 			}
@@ -39,5 +41,12 @@ func (ts *TaskSet) SaveToDisk() {
 	for _, task := range(ts.Tasks) {
 		filepath := MustGetRepoDirectory(task.status, task.uuid+".yml")
 		fmt.Println(filepath)
+		d, err := yaml.Marshal(&task)
+		fmt.Println(string(d), err)
+
+		err = ioutil.WriteFile(filepath, d, 0600)
+		if (err != nil) {
+			ExitFail("Failed to write task")
+		}
 	}
 }
