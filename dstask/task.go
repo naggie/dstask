@@ -85,7 +85,6 @@ type TaskSet struct {
 	Tasks           []Task
 	CurrentContext  string
 	knownUuids      map[string]bool
-	GitRepoLocation string
 }
 
 // Call before addressing and display. Sorts by status then UUID.

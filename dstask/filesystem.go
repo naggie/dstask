@@ -7,16 +7,20 @@ import (
 	"os"
 )
 
+func MustGetRepoDirectory(directory ...string) string {
+	root := MustExpandHome(GIT_REPO)
+	return path.Join(append([]string{root}, directory...)...)
+}
+
 func LoadTaskSetFromDisk(statuses []string) *TaskSet {
-	gitRepoLocation := MustExpandHome(GIT_REPO)
-	gitDotGitLocation := path.Join(gitRepoLocation, ".git")
+	gitDotGitLocation := MustGetRepoDirectory(".git")
 
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
-		ExitFail("Could not find git repository at "+gitRepoLocation+", please clone or create")
+		ExitFail("Could not find git repository at "+GIT_REPO+", please clone or create")
 	}
 
 	for _, status := range ALL_STATUSES {
-		dir := path.Join(gitRepoLocation, status)
+		dir := MustGetRepoDirectory(status)
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
 			err = os.Mkdir(dir, 0755)
 			if err != nil {
@@ -26,8 +30,7 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 	}
 
 	return &TaskSet{
-		knownUuids:      make(map[string]bool),
-		GitRepoLocation: MustExpandHome(GIT_REPO),
+		knownUuids: make(map[string]bool),
 	}
 }
 
