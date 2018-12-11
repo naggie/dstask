@@ -5,6 +5,7 @@ package dstask
 import (
 	"path"
 	"os"
+	"fmt"
 )
 
 func MustGetRepoDirectory(directory ...string) string {
@@ -34,7 +35,9 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 	}
 }
 
-
-func (t *Task) Save() error {
-	return nil
+func (ts *TaskSet) SaveToDisk() {
+	for _, task := range(ts.Tasks) {
+		filepath := MustGetRepoDirectory(task.status, task.uuid+".yml")
+		fmt.Println(filepath)
+	}
 }

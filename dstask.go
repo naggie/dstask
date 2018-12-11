@@ -15,4 +15,5 @@ func main() {
 	}
 	ts.SortTaskList()
 	ts.Display()
+	ts.SaveToDisk()
 }
