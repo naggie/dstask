@@ -37,16 +37,21 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 	}
 }
 
+func (t *Task) SaveToDisk() {
+	filepath := MustGetRepoDirectory(t.status, t.uuid+".yml")
+	fmt.Println(filepath)
+	d, err := yaml.Marshal(&t)
+	fmt.Println(string(d), err)
+
+	err = ioutil.WriteFile(filepath, d, 0600)
+	if (err != nil) {
+		ExitFail("Failed to write task")
+	}
+}
+
+// may be removed
 func (ts *TaskSet) SaveToDisk() {
 	for _, task := range(ts.Tasks) {
-		filepath := MustGetRepoDirectory(task.status, task.uuid+".yml")
-		fmt.Println(filepath)
-		d, err := yaml.Marshal(&task)
-		fmt.Println(string(d), err)
-
-		err = ioutil.WriteFile(filepath, d, 0600)
-		if (err != nil) {
-			ExitFail("Failed to write task")
-		}
+		task.SaveToDisk()
 	}
 }
