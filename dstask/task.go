@@ -28,23 +28,36 @@ const (
 
 // for import (etc) it's necessary to have full context
 var ALL_STATUSES = []string{
-	STATUS_PENDING,
 	STATUS_ACTIVE,
+	STATUS_PENDING,
+	STATUS_DELEGATED,
+	STATUS_DEFERRED,
+	STATUS_SOMEDAY,
+	STATUS_RECURRING,
 	STATUS_RESOLVED,
+}
+
+// for most operations, it's not necessary or desirable to load the expensive resolved tasks
+var NORMAL_STATUSES = []string{
+	STATUS_ACTIVE,
+	STATUS_PENDING,
 	STATUS_DELEGATED,
 	STATUS_DEFERRED,
 	STATUS_SOMEDAY,
 	STATUS_RECURRING,
 }
 
-// for most operations, it's not necessary or desirable to load the expensive resolved tasks
-var NORMAL_STATUSES = []string{
-	STATUS_PENDING,
-	STATUS_ACTIVE,
-	STATUS_DELEGATED,
-	STATUS_DEFERRED,
-	STATUS_SOMEDAY,
-	STATUS_RECURRING,
+// TODO consider using iota enum for statuses, with custom marshaller
+// https://gist.github.com/lummie/7f5c237a17853c031a57277371528e87
+// though this seems simpler
+var STATUS_ORDER = map[string]int{
+	STATUS_ACTIVE: 1,
+	STATUS_PENDING: 2,
+	STATUS_DELEGATED: 3,
+	STATUS_DEFERRED: 4,
+	STATUS_SOMEDAY: 5,
+	STATUS_RECURRING: 6,
+	STATUS_RESOLVED: 7,
 }
 
 type SubTask struct {
@@ -97,7 +110,7 @@ func (ts *TaskSet) SortTaskList() {
 		if ti.status == tj.status {
 			return ti.uuid < tj.uuid
 		} else {
-			return ti.status < tj.status
+			return STATUS_ORDER[ti.status] < STATUS_ORDER[tj.status]
 		}
 	})
 }
@@ -114,10 +127,8 @@ func (ts *TaskSet) MaybeAddTask(task Task) bool {
 	return true
 }
 
-// filter should be set before loading any data. The filter can be used to
-// optimise a bit -- eg when listing, completed tasks should not be shown so we
-// can avoid loading them. However when importing, it is important to load all
-// tasks for full context.
+// when refering to tasks by ID, NORMAL_STATUSES must be loaded exclusively --
+// even if the filter is set to show issues that have only some statuses.
 type TaskFilter struct {
 	Text     string
 	Tags     []string

@@ -22,7 +22,7 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 		ExitFail("Could not find git repository at "+GIT_REPO+", please clone or create")
 	}
 
-	for _, status := range ALL_STATUSES {
+	for _, status := range statuses {
 		dir := MustGetRepoDirectory(status)
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
 			err = os.Mkdir(dir, 0700)
