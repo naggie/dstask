@@ -16,6 +16,10 @@ func MustGetRepoDirectory(directory ...string) string {
 }
 
 func LoadTaskSetFromDisk(statuses []string) *TaskSet {
+	ts := &TaskSet{
+		knownUuids: make(map[string]bool),
+	}
+
 	gitDotGitLocation := MustGetRepoDirectory(".git")
 
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
@@ -39,12 +43,24 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 		for _, file := range files {
 			filepath := path.Join(dir, file.Name())
 			fmt.Println(filepath)
+
+			t := Task{}
+			data, err := ioutil.ReadFile(filepath)
+			if err != nil {
+				ExitFail("Failed to read " + filepath)
+			}
+			err = yaml.Unmarshal(data, &t)
+			if err != nil {
+				// TODO present error to user, specific error message is important
+				ExitFail("Failed to parse " + filepath)
+			}
+
+			ts.Tasks = append(ts.Tasks, t)
+			fmt.Println(t)
 		}
 	}
 
-	return &TaskSet{
-		knownUuids: make(map[string]bool),
-	}
+	return ts
 }
 
 func (t *Task) SaveToDisk() {
