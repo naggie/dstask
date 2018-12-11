@@ -14,6 +14,6 @@ func main() {
 		panic(err)
 	}
 	ts.SortTaskList()
-	ts.Display()
+	//ts.Display()
 	ts.SaveToDisk()
 }

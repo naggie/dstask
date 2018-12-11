@@ -30,6 +30,16 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 				ExitFail("Failed to create directory in git repository")
 			}
 		}
+
+		files, err := ioutil.ReadDir(dir)
+		if err != nil {
+			ExitFail("Failed to read "+dir)
+		}
+
+		for _, file := range files {
+			filepath := path.Join(dir, file.Name())
+			fmt.Println(filepath)
+		}
 	}
 
 	return &TaskSet{
@@ -39,9 +49,9 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 
 func (t *Task) SaveToDisk() {
 	filepath := MustGetRepoDirectory(t.status, t.uuid+".yml")
-	fmt.Println(filepath)
+	//fmt.Println(filepath)
 	d, err := yaml.Marshal(&t)
-	fmt.Println(string(d), err)
+	//fmt.Println(string(d), err)
 
 	err = ioutil.WriteFile(filepath, d, 0600)
 	if (err != nil) {
