@@ -77,7 +77,7 @@ var priorityMap = map[string]string{
 
 // convert a tw status into a dstask status
 func (t *TwTask) ConvertStatus() string {
-	if t.Start.Time.IsZero() {
+	if !t.Start.Time.IsZero() {
 		return STATUS_ACTIVE
 	}
 
