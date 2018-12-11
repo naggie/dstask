@@ -10,10 +10,15 @@ import (
 )
 
 func LoadTaskSetFromDisk(statuses []string) *TaskSet {
-	GitRepoLocation := MustExpandHome(GIT_REPO)
+	gitRepoLocation := MustExpandHome(GIT_REPO)
+	gitDotGitLocation := path.Join(gitRepoLocation, ".git")
+
+	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
+		ExitFail("Could not find git repository at "+gitRepoLocation+", please clone or create")
+	}
 
 	for _, status := range ALL_STATUSES {
-		dir := path.Join(GitRepoLocation, status)
+		dir := path.Join(gitRepoLocation, status)
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
 			err = os.Mkdir(dir, 0755)
 			if err != nil {
@@ -28,15 +33,15 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 	}
 }
 
-func MustExpandHome(path string) string {
-	if strings.HasPrefix(path, "~/") {
+func MustExpandHome(filepath string) string {
+	if strings.HasPrefix(filepath, "~/") {
 		usr, err := user.Current()
 		if err != nil {
 			panic(err)
 		}
-		return usr.HomeDir + path[2:len(path)]
+		return path.Join(usr.HomeDir, filepath[2:len(filepath)])
 	} else {
-		return path
+		return filepath
 	}
 }
 
