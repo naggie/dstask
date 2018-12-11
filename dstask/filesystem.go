@@ -3,8 +3,6 @@ package dstask
 // an interface to the filesystem/git based database -- loading, saving, committing
 
 import (
-	"os/user"
-	"strings"
 	"path"
 	"os"
 )
@@ -33,17 +31,6 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 	}
 }
 
-func MustExpandHome(filepath string) string {
-	if strings.HasPrefix(filepath, "~/") {
-		usr, err := user.Current()
-		if err != nil {
-			panic(err)
-		}
-		return path.Join(usr.HomeDir, filepath[2:len(filepath)])
-	} else {
-		return filepath
-	}
-}
 
 func (t *Task) Save() error {
 	return nil
