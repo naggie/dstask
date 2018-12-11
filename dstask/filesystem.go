@@ -9,15 +9,16 @@ import (
 
 func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 	return &TaskSet{
-		knownUuids: make(map[string]bool),
+		knownUuids:      make(map[string]bool),
+		GitRepoLocation: MustExpandHome(GIT_REPO),
 	}
 }
 
-func ExpandHome(path string) (string, err) {
+func MustExpandHome(path string) string {
 	if strings.HasPrefix(path, "~/") {
 		usr, err := user.Current()
 		if err != nil {
-			return err
+			panic(err)
 		}
 		return usr.HomeDir + path[2:len(path)]
 	} else {
@@ -26,5 +27,5 @@ func ExpandHome(path string) (string, err) {
 }
 
 func (t *Task) Save() error {
-	return
+	return nil
 }

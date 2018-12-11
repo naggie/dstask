@@ -6,11 +6,11 @@ import (
 
 func main() {
 	// importing requires full context
-	ts := dstask.LoadTaskSetFromDisk(ALL_STATUSES)
+	ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
 
 	err := ts.ImportFromTaskwarrior()
 
-	if (err != nil) {
+	if err != nil {
 		panic(err)
 	}
 	ts.SortTaskList()

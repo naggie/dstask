@@ -27,24 +27,24 @@ const (
 )
 
 // for import (etc) it's necessary to have full context
-var ALL_STATUSES = [...]string{
-	dstask.STATUS_PENDING,
-	dstask.STATUS_ACTIVE,
-	dstask.STATUS_RESOLVED,
-	dstask.STATUS_DELEGATED,
-	dstask.STATUS_DEFERRED,
-	dstask.STATUS_SOMEDAY,
-	dstask.STATUS_RECURRING,
+var ALL_STATUSES = []string{
+	STATUS_PENDING,
+	STATUS_ACTIVE,
+	STATUS_RESOLVED,
+	STATUS_DELEGATED,
+	STATUS_DEFERRED,
+	STATUS_SOMEDAY,
+	STATUS_RECURRING,
 }
 
 // for most operations, it's not necessary or desirable to load the expensive resolved tasks
-var NORMAL_STATUSES = [...]string{
-	dstask.STATUS_PENDING,
-	dstask.STATUS_ACTIVE,
-	dstask.STATUS_DELEGATED,
-	dstask.STATUS_DEFERRED,
-	dstask.STATUS_SOMEDAY,
-	dstask.STATUS_RECURRING,
+var NORMAL_STATUSES = []string{
+	STATUS_PENDING,
+	STATUS_ACTIVE,
+	STATUS_DELEGATED,
+	STATUS_DEFERRED,
+	STATUS_SOMEDAY,
+	STATUS_RECURRING,
 }
 
 type SubTask struct {
@@ -82,9 +82,10 @@ type Task struct {
 }
 
 type TaskSet struct {
-	Tasks          []Task
-	CurrentContext string
-	knownUuids     map[string]bool
+	Tasks           []Task
+	CurrentContext  string
+	knownUuids      map[string]bool
+	GitRepoLocation string
 }
 
 // Call before addressing and display. Sorts by status then UUID.
