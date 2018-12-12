@@ -42,29 +42,39 @@ func IsValidUuid4String(str string) bool {
 }
 
 func Help() {
-	fmt.Fprintf(os.Stderr, `Usage: task add <context> <summary>
+	fmt.Fprintf(os.Stderr, `
+Usage: task add <filter> <summary>
 
-			Add a task with a summary and context. Current global context is
-			added.
-
-
-		Usage: task
-		Usage: task next
-
-		    List available tasks.
+	Add a task with a summary and context. Current global context is
+	added.
 
 
-		Usage: task context <context>
-		Usage: task context none
+Usage: task
+Usage: task <filter>
+Usage: task next
+Usage: task next <filter>
 
-			Set a global context for all queries and inserts.
+	List available tasks.
 
 
-		Usage: taskwarrior export | task import-from-taskwarrior
+Usage: task context <context>
+Usage: task context none
+
+	Set a global context for all queries and inserts.
 
 
-		Usage: task help
+Usage: taskwarrior export | task import-from-taskwarrior
 
-			Show this help dialog
+
+Usage: task help
+
+	Show this help dialog
+
+
+Usage: task modify <id> <attributes...>
+
+Usage: task edit <id>
+
+Usage: task describe <id>
 `)
 }

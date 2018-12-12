@@ -130,11 +130,11 @@ func (ts *TaskSet) MaybeAddTask(task Task) bool {
 // when refering to tasks by ID, NORMAL_STATUSES must be loaded exclusively --
 // even if the filter is set to show issues that have only some statuses.
 type TaskFilter struct {
-	Text     string
 	Tags     []string
-	Antitags []string
+	AntiTags []string
 	Project  string
-	Priority int
+	Priority string
+	Text     string
 }
 
 //func (ts *TaskSet) filter(filter *TaskFilter) TaskSet {
