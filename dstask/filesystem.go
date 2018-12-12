@@ -3,11 +3,10 @@ package dstask
 // an interface to the filesystem/git based database -- loading, saving, committing
 
 import (
-	"path"
-	"os"
-	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"os"
+	"path"
 )
 
 func MustGetRepoDirectory(directory ...string) string {
@@ -23,7 +22,7 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 	gitDotGitLocation := MustGetRepoDirectory(".git")
 
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
-		ExitFail("Could not find git repository at "+GIT_REPO+", please clone or create")
+		ExitFail("Could not find git repository at " + GIT_REPO + ", please clone or create")
 	}
 
 	for _, status := range statuses {
@@ -37,12 +36,11 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 
 		files, err := ioutil.ReadDir(dir)
 		if err != nil {
-			ExitFail("Failed to read "+dir)
+			ExitFail("Failed to read " + dir)
 		}
 
 		for _, file := range files {
 			filepath := path.Join(dir, file.Name())
-			fmt.Println(filepath)
 
 			if len(file.Name()) != 40 {
 				// not <uuid4>.yml
@@ -71,7 +69,6 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 			}
 
 			ts.Tasks = append(ts.Tasks, t)
-			fmt.Println(t)
 		}
 	}
 
@@ -85,14 +82,14 @@ func (t *Task) SaveToDisk() {
 	//fmt.Println(string(d), err)
 
 	err = ioutil.WriteFile(filepath, d, 0600)
-	if (err != nil) {
+	if err != nil {
 		ExitFail("Failed to write task")
 	}
 }
 
 // may be removed
 func (ts *TaskSet) SaveToDisk() {
-	for _, task := range(ts.Tasks) {
+	for _, task := range ts.Tasks {
 		task.SaveToDisk()
 	}
 }

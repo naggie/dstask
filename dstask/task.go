@@ -51,13 +51,13 @@ var NORMAL_STATUSES = []string{
 // https://gist.github.com/lummie/7f5c237a17853c031a57277371528e87
 // though this seems simpler
 var STATUS_ORDER = map[string]int{
-	STATUS_ACTIVE: 1,
-	STATUS_PENDING: 2,
+	STATUS_ACTIVE:    1,
+	STATUS_PENDING:   2,
 	STATUS_DELEGATED: 3,
-	STATUS_DEFERRED: 4,
-	STATUS_SOMEDAY: 5,
+	STATUS_DEFERRED:  4,
+	STATUS_SOMEDAY:   5,
 	STATUS_RECURRING: 6,
-	STATUS_RESOLVED: 7,
+	STATUS_RESOLVED:  7,
 }
 
 type SubTask struct {
@@ -95,9 +95,9 @@ type Task struct {
 }
 
 type TaskSet struct {
-	Tasks           []Task
-	CurrentContext  string
-	knownUuids      map[string]bool
+	Tasks          []Task
+	CurrentContext string
+	knownUuids     map[string]bool
 }
 
 // Call before addressing and display. Sorts by status then UUID.

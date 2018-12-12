@@ -2,11 +2,11 @@ package dstask
 
 import (
 	"fmt"
+	"github.com/gofrs/uuid"
 	"os"
+	"os/user"
 	"path"
 	"strings"
-	"os/user"
-	"github.com/gofrs/uuid"
 )
 
 func ExitFail(msg string) {

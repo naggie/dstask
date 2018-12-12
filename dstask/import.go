@@ -128,13 +128,13 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 
 	for _, twTask := range twTasks {
 		ts.MaybeAddTask(Task{
-			uuid:         twTask.Uuid,
-			status:       twTask.ConvertStatus(),
-			Summary:      twTask.Description,
-			Tags:         twTask.Tags,
-			Project:      twTask.Project,
-			Priority:     priorityMap[twTask.Priority],
-			Comments:     twTask.ConvertAnnotations(),
+			uuid:     twTask.Uuid,
+			status:   twTask.ConvertStatus(),
+			Summary:  twTask.Description,
+			Tags:     twTask.Tags,
+			Project:  twTask.Project,
+			Priority: priorityMap[twTask.Priority],
+			Comments: twTask.ConvertAnnotations(),
 			// FieldsFunc required instead of split as split returns a slice of len(1) when empty...
 			Dependencies: strings.FieldsFunc(twTask.Depends, func(c rune) bool { return c == ',' }),
 			Created:      twTask.Entry.Time,
