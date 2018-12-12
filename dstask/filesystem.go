@@ -44,6 +44,11 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 			filepath := path.Join(dir, file.Name())
 			fmt.Println(filepath)
 
+			if name := file.Name(); len(name) != 40 || IsValidUuid4String(name[0:36]) {
+				// not <uuid4>.yml
+				continue
+			}
+
 			t := Task{}
 			data, err := ioutil.ReadFile(filepath)
 			if err != nil {

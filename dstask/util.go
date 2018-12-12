@@ -27,8 +27,8 @@ func MustExpandHome(filepath string) string {
 }
 
 func MustGetUuid4String() string {
-	u := uuid.Must(uuid.NewV4())
-	return u.String()
+	// does not match docs...
+	return uuid.NewV4().String()
 }
 
 func IsValidUuid4String(str string) bool {
