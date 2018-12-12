@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"github.com/satori/go.uuid"
 )
 
 func MustGetRepoDirectory(directory ...string) string {
