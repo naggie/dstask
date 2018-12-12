@@ -44,12 +44,22 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 			filepath := path.Join(dir, file.Name())
 			fmt.Println(filepath)
 
-			if name := file.Name(); len(name) != 40 || IsValidUuid4String(name[0:36]) {
+			if len(file.Name()) != 40 {
+				// not <uuid4>.yml
+				continue
+			}
+
+			uuid := file.Name()[0:36]
+
+			if !IsValidUuid4String(uuid) {
 				// not <uuid4>.yml
 				continue
 			}
 
 			t := Task{}
+			t.uuid = uuid
+			t.status = status
+
 			data, err := ioutil.ReadFile(filepath)
 			if err != nil {
 				ExitFail("Failed to read " + filepath)
