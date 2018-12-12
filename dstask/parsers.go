@@ -15,11 +15,10 @@ func parseTaskLine(args []string) *TaskFilter {
 	for _, item := range args {
 		if strings.HasPrefix(item, "project:") {
 			project = item[9:len(item)]
-		} else if len(item) > 2 && item[0] == "+" {
+		} else if len(item) > 2 && item[0:1] == "+" {
 			tags = append(tags, item[1:len(item)])
-		} else if len(item) > 2 && item[0] == "-" {
+		} else if len(item) > 2 && item[0:1] == "-" {
 			antiTags = append(tags, item[1:len(item)])
-		}
 		} else if IsValidPriority(item) {
 			antiTags = append(tags, item[1:len(item)])
 		} else {

@@ -41,6 +41,15 @@ func IsValidUuid4String(str string) bool {
 	return err == nil
 }
 
+func IsValidPriority(priority string) bool {
+	return map[string]bool{
+		PRIORITY_CRITICAL: true,
+		PRIORITY_HIGH: true,
+		PRIORITY_NORMAL: true,
+		PRIORITY_LOW: true,
+	}[priority]
+}
+
 func Help() {
 	fmt.Fprintf(os.Stderr, `
 Usage: task add <filter> <summary>
