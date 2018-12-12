@@ -6,6 +6,7 @@ import (
 	"path"
 	"strings"
 	"os/user"
+	"github.com/satori/go.uuid"
 )
 
 func ExitFail(msg string) {
@@ -23,4 +24,14 @@ func MustExpandHome(filepath string) string {
 	} else {
 		return filepath
 	}
+}
+
+func MustGetUuid4String() string {
+	u := uuid.Must(uuid.NewV4())
+	return u.String()
+}
+
+func IsValidUuid4String(str string) bool {
+	_, err := uuid.FromString(str)
+	return err == nil
 }
