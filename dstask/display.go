@@ -21,6 +21,7 @@ func (ts *TaskSet) Display() {
 		"id",
 		"priority",
 		"tags",
+		"project",
 		"summary",
 	)
 
@@ -29,6 +30,7 @@ func (ts *TaskSet) Display() {
 			strconv.Itoa(t.id),
 			t.Priority,
 			strings.Join(t.Tags," "),
+			t.Project,
 			t.Summary,
 		)
 	}
@@ -80,7 +82,7 @@ func (t *Table) AddRow(row ...string) {
 // get widths appropriate to the terminal size and TABLE_MAX_WIDTH
 // cells may require padding or truncation. Cell padding of 1char between
 // fields recommended -- not included.
-func (t *Table) calcColWidths() []int {
+func (t *Table) calcColWidths(gap int) []int {
 	target := TABLE_MAX_WIDTH
 
 	if t.TermWidth < target {
@@ -88,6 +90,9 @@ func (t *Table) calcColWidths() []int {
 	}
 
 	colWidths := t.MaxColWidths[:]
+
+	// account for gaps
+	target -= gap * len(colWidths) - 1
 
 	for SumInts(colWidths...) > target {
 		// find max col width index
@@ -115,15 +120,14 @@ func (t *Table) Render() {
 	// TODO max height based on terminal (like taskwarrior)
 	// TODO headers
 	// TODO alternate colours (tw)
-	// TODO gaps (via join with space, narrower available width)
 
-	widths := t.calcColWidths()
+	widths := t.calcColWidths(2)
 	for _, row := range(t.Rows) {
 		cells := row[:]
 		for i, w := range(widths) {
 			cells[i] = FixStr(cells[i], w)
 		}
-		fmt.Println(strings.Join(cells, ""))
+		fmt.Println(strings.Join(cells, "  "))
 	}
 
 }
