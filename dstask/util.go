@@ -44,9 +44,9 @@ func IsValidUuid4String(str string) bool {
 func IsValidPriority(priority string) bool {
 	return map[string]bool{
 		PRIORITY_CRITICAL: true,
-		PRIORITY_HIGH: true,
-		PRIORITY_NORMAL: true,
-		PRIORITY_LOW: true,
+		PRIORITY_HIGH:     true,
+		PRIORITY_NORMAL:   true,
+		PRIORITY_LOW:      true,
 	}[priority]
 }
 
