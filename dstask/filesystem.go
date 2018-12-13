@@ -58,7 +58,11 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 			t := Task{}
 			t.uuid = uuid
 			t.status = status
-			t.id = ts.IDRoster.GetId(uuid)
+
+			// TODO move this to MaybeAddTask
+			if t.status != STATUS_RESOLVED {
+				t.id = ts.IDRoster.GetId(uuid)
+			}
 
 			data, err := ioutil.ReadFile(filepath)
 			if err != nil {
