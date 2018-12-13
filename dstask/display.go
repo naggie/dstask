@@ -65,8 +65,11 @@ func (t *Table) AddRow(row []string) {
 // cells may require padding or truncation. Cell padding of 1char between
 // fields recommended -- not included.
 func (t *Table) calcColWidths() []int {
-	// TODO min(TABLE_MAX_WIDTH, term width)
 	target := TABLE_MAX_WIDTH
+
+	if t.TermWidth < target {
+		target = t.TermWidth
+	}
 
 	colWidths := t.MaxColWidths[:]
 
