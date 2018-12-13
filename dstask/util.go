@@ -128,7 +128,7 @@ func SumInts(vals ...int) int {
 	return total
 }
 
-func FixStr(text string, width int) {
+func FixStr(text string, width int) string {
 	if len(text) <= width {
 		return fmt.Sprintf("%-"+strconv.Itoa(width)+"v", text)
 	} else {

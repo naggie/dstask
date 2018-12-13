@@ -5,6 +5,7 @@ import (
 	"golang.org/x/sys/unix"
 	"os"
 	"strings"
+	"strconv"
 )
 
 const (
@@ -16,9 +17,23 @@ const (
 
 /// display list of filtered tasks with context and filter
 func (ts *TaskSet) Display() {
+	table := NewTable(
+		"id",
+		"priority",
+		"tags",
+		"summary",
+	)
+
 	for _, t := range ts.Tasks {
-		fmt.Printf("%+v\n", t)
+		table.AddRow(
+			strconv.Itoa(t.id),
+			t.Priority,
+			strings.Join(t.Tags," "),
+			t.Summary,
+		)
 	}
+
+	table.Render()
 }
 
 // display a single task in detail, with numbered subtasks
@@ -34,7 +49,7 @@ type Table struct {
 	TermHeight int
 }
 
-func NewTable(header []string) *Table {
+func NewTable(header ...string) *Table {
 	ws, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
 	if err != nil {
 		ExitFail("Not a TTY")
@@ -48,7 +63,7 @@ func NewTable(header []string) *Table {
 	}
 }
 
-func (t *Table) AddRow(row []string) {
+func (t *Table) AddRow(row ...string) {
 	if len(row) != len(t.Header) {
 		panic("Row is incorrect length")
 	}
