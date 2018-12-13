@@ -5,7 +5,6 @@ import (
 	"golang.org/x/sys/unix"
 	"os"
 	"strings"
-	"strconv"
 )
 
 const (
@@ -27,7 +26,9 @@ func (ts *TaskSet) Display() {
 
 	for _, t := range ts.Tasks {
 		table.AddRow(
-			strconv.Itoa(t.id),
+			// id should be at least 2 chars wide to match column header
+			// (headers can be truncated)
+			fmt.Sprintf("%-2d", t.id),
 			t.Priority,
 			strings.Join(t.Tags," "),
 			t.Project,
