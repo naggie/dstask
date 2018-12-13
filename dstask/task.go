@@ -17,7 +17,10 @@ const (
 	STATUS_RECURRING = "recurring" // tentative
 
 	GIT_REPO   = "~/.dstask/"
-	CACHE_FILE = "~/.cache/dstask/completion_cache.gob"
+	// space delimited keyword file for compgen
+	COMPLETION_FILE = "~/.cache/dstask/completions"
+	// database to persist IDs when tasks are unresolved
+	ID_ROSTER_FILE = "~/.cache/dstask/IDRoster.gob"
 
 	// filter: P1 P2 etc
 	PRIORITY_CRITICAL = "P1"
