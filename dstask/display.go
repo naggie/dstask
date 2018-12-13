@@ -35,7 +35,13 @@ func (ts *TaskSet) Display() {
 		)
 	}
 
-	table.Render()
+	rowsRendered := table.Render(10)
+
+	if rowsRendered == len(ts.Tasks) {
+		fmt.Printf("\n%v tasks.\n", len(ts.Tasks))
+	} else {
+		fmt.Printf("\n%v tasks, truncated to fit terminal.\n", len(ts.Tasks))
+	}
 }
 
 // display a single task in detail, with numbered subtasks
@@ -115,19 +121,28 @@ func (t *Table) calcColWidths(gap int) []int {
 	return colWidths
 }
 
-func (t *Table) Render() {
+// render table, returning count of rows rendered
+func (t *Table) Render(gap int) int {
 	// TODO: ansi colours
 	// TODO max height based on terminal (like taskwarrior)
 	// TODO headers
 	// TODO alternate colours (tw)
 
 	widths := t.calcColWidths(2)
-	for _, row := range(t.Rows) {
+
+	maxRows := t.TermHeight - gap
+
+	for i, row := range(t.Rows) {
 		cells := row[:]
 		for i, w := range(widths) {
 			cells[i] = FixStr(cells[i], w)
 		}
 		fmt.Println(strings.Join(cells, "  "))
+
+		if i > maxRows {
+			return i
+		}
 	}
 
+	return len(t.Rows)
 }

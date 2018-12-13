@@ -4,6 +4,7 @@ package dstask
 
 import (
 	"sort"
+	"fmt"
 	"time"
 )
 
@@ -107,6 +108,12 @@ type TaskSet struct {
 	IDRoster       *IDRoster
 }
 
+
+func (t *Task) setID(id int) {
+	fmt.Println(id)
+	t.id = id
+}
+
 // Call before addressing and display. Sorts by status then UUID.
 func (ts *TaskSet) SortTaskList() {
 	sort.Slice(ts.Tasks, func(i, j int) bool {
@@ -122,10 +129,12 @@ func (ts *TaskSet) SortTaskList() {
 	})
 }
 
+// separated, so IDs can be assigned in-order
 func (ts *TaskSet) AssignIDs() {
 	for _, t := range(ts.Tasks) {
 		if t.status != STATUS_RESOLVED {
-			t.id = ts.IDRoster.GetId(t.uuid)
+			id := ts.IDRoster.GetId(t.uuid)
+			t.setID(id)
 		}
 	}
 }
