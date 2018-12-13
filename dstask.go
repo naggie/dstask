@@ -2,9 +2,18 @@ package main
 
 import (
 	"github.com/naggie/dstask/dstask"
+	"os"
+	"fmt"
 )
 
 func main() {
+
+	fmt.Printf("%+v\n", dstask.ParseTaskLine(os.Args[1:len(os.Args)]))
+
+	if true {
+		return
+	}
+
 	dstask.Help()
 
 	// importing requires full context
