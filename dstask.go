@@ -18,6 +18,7 @@ func main() {
 	//	panic(err)
 	//}
 	ts.SortTaskList()
+	ts.AssignIDs()
 	ts.Display()
 	ts.SaveToDisk()
 

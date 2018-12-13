@@ -69,7 +69,7 @@ func (r *IDRoster) RecycleId(uuid string) {
 		delete(r.IDs, uuid)
 		r.recycledIDs = append(r.recycledIDs, id)
 		// make sure lower IDs will be harvested first
-		sort.Sort(r.recycledIDs)
+		sort.Ints(r.recycledIDs)
 	}
 }
 

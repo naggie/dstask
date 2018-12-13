@@ -122,6 +122,14 @@ func (ts *TaskSet) SortTaskList() {
 	})
 }
 
+func (ts *TaskSet) AssignIDs() {
+	for _, t := range(ts.Tasks) {
+		if t.status != STATUS_RESOLVED {
+			t.id = ts.IDRoster.GetId(t.uuid)
+		}
+	}
+}
+
 // add a task, but only if it has a new uuid. Return true if task was added.
 func (ts *TaskSet) MaybeAddTask(task Task) bool {
 	if ts.knownUuids[task.uuid] {
