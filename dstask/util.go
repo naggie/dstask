@@ -116,3 +116,13 @@ Usage: task edit <id>
 Usage: task describe <id>
 `)
 }
+
+func SumInts(vals ...int) int {
+	var total int
+
+	for _, v := range(vals) {
+		total += v
+	}
+
+	return total
+}

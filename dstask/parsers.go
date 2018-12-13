@@ -38,11 +38,3 @@ func ParseTaskLine(args []string) *TaskLine {
 		Text:     strings.Join(words, " "),
 	}
 }
-
-func (ts *TaskSet) LoadTasksFromDisk(statuses []string) {
-
-}
-
-func parseFile(filepath string) {
-
-}
