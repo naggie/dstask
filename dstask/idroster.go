@@ -22,10 +22,14 @@ type IDRoster struct {
 	lastId uint64
 }
 
+
+// TODO make directories for ID_ROSTER_FILE
 func LoadIDRoster() *IDRoster {
 	filePath := MustExpandHome(ID_ROSTER_FILE)
 
-	roster := &IDRoster{}
+	roster := &IDRoster{
+		IDs: make(map[string]uint64),
+	}
 
 	if _, err := os.Stat(filePath); !os.IsNotExist(err) {
 		MustReadGob(filePath, roster)

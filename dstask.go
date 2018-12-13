@@ -7,24 +7,19 @@ import (
 )
 
 func main() {
-
-	fmt.Printf("%+v\n", dstask.ParseTaskLine(os.Args[1:len(os.Args)]))
-
-	if true {
-		return
-	}
-
 	dstask.Help()
 
 	// importing requires full context
 	ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
 
-	err := ts.ImportFromTaskwarrior()
+	//err := ts.ImportFromTaskwarrior()
 
-	if err != nil {
-		panic(err)
-	}
+	//if err != nil {
+	//	panic(err)
+	//}
 	ts.SortTaskList()
-	//ts.Display()
+	ts.Display()
 	ts.SaveToDisk()
+
+	fmt.Printf("%+v\n", dstask.ParseTaskLine(os.Args[1:len(os.Args)]))
 }
