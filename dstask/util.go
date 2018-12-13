@@ -8,6 +8,7 @@ import (
 	"path"
 	"encoding/gob"
 	"strings"
+	"strconv"
 )
 
 func ExitFail(msg string) {
@@ -125,4 +126,12 @@ func SumInts(vals ...int) int {
 	}
 
 	return total
+}
+
+func FixStr(text string, width int) {
+	if len(text) <= width {
+		return fmt.Sprintf("%-"+strconv.Itoa(width)+"v", text)
+	} else {
+		return text[:width]
+	}
 }

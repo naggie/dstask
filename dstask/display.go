@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"golang.org/x/sys/unix"
 	"os"
+	"strings"
 )
 
 const (
@@ -96,5 +97,18 @@ func (t *Table) calcColWidths() []int {
 
 func (t *Table) Render() {
 	// TODO: ansi colours
+	// TODO max height based on terminal (like taskwarrior)
+	// TODO headers
+	// TODO alternate colours (tw)
+	// TODO gaps (via join with space, narrower available width)
+
+	widths := t.calcColWidths()
+	for _, row := range(t.Rows) {
+		cells := row[:]
+		for i, w := range(widths) {
+			cells[i] = FixStr(cells[i], w)
+		}
+		fmt.Println(strings.Join(cells, ""))
+	}
 
 }
