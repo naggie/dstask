@@ -16,11 +16,11 @@ import (
 )
 
 type IDRoster struct {
-	IDs map[string]uint64
+	IDs map[string]int
 	// IDs that can be re-used after task resolution
-	recycledIDs []uint64
+	recycledIDs []int
 	// incremented for new ID when required
-	lastId uint64
+	lastId int
 }
 
 
@@ -29,7 +29,7 @@ func LoadIDRoster() *IDRoster {
 	filePath := MustExpandHome(ID_ROSTER_FILE)
 
 	roster := &IDRoster{
-		IDs: make(map[string]uint64),
+		IDs: make(map[string]int),
 	}
 
 	if _, err := os.Stat(filePath); !os.IsNotExist(err) {
@@ -39,7 +39,7 @@ func LoadIDRoster() *IDRoster {
 	return roster
 }
 
-func (r *IDRoster) GetId(uuid string) uint64 {
+func (r *IDRoster) GetId(uuid string) int {
 	if r.IDs[uuid] == 0 {
 		if len(r.recycledIDs) > 0 {
 			id := r.recycledIDs[0]
@@ -54,7 +54,7 @@ func (r *IDRoster) GetId(uuid string) uint64 {
 	return r.IDs[uuid]
 }
 
-func (r *IDRoster) GetUuid(id uint64) string {
+func (r *IDRoster) GetUuid(id int) string {
 	for k, v := range(r.IDs) {
 		if v == id {
 			return k
