@@ -18,11 +18,11 @@ const (
 /// display list of filtered tasks with context and filter
 func (ts *TaskSet) Display() {
 	table := NewTable(
-		"id",
-		"priority",
-		"tags",
-		"project",
-		"summary",
+		"ID",
+		"Priority",
+		"Tags",
+		"Project",
+		"Summary",
 	)
 
 	for _, t := range ts.Tasks {
@@ -57,6 +57,7 @@ type Table struct {
 	TermHeight int
 }
 
+// header may  havetruncated words
 func NewTable(header ...string) *Table {
 	ws, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
 	if err != nil {
@@ -124,15 +125,13 @@ func (t *Table) calcColWidths(gap int) []int {
 // render table, returning count of rows rendered
 func (t *Table) Render(gap int) int {
 	// TODO: ansi colours
-	// TODO max height based on terminal (like taskwarrior)
-	// TODO headers
-	// TODO alternate colours (tw)
+	// TODO alternate row colours (tw)
 
 	widths := t.calcColWidths(2)
-
 	maxRows := t.TermHeight - gap
+	rows := append([][]string{t.Header}, t.Rows...)
 
-	for i, row := range(t.Rows) {
+	for i, row := range(rows) {
 		cells := row[:]
 		for i, w := range(widths) {
 			cells[i] = FixStr(cells[i], w)
