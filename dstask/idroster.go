@@ -12,6 +12,7 @@ package dstask
 
 import (
 	"os"
+	"sort"
 )
 
 type IDRoster struct {
@@ -67,6 +68,8 @@ func (r *IDRoster) RecycleId(uuid string) {
 	if id := r.IDs[uuid]; id != 0 {
 		delete(r.IDs, uuid)
 		r.recycledIDs = append(r.recycledIDs, id)
+		// make sure lower IDs will be harvested first
+		sort.Sort(r.recycledIDs)
 	}
 }
 

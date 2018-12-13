@@ -51,7 +51,6 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 			uuid := file.Name()[0:36]
 
 			if !IsValidUuid4String(uuid) {
-				// not <uuid4>.yml
 				continue
 			}
 
