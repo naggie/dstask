@@ -125,9 +125,9 @@ func (t *Table) calcColWidths(gap int) []int {
 
 // render table, returning count of rows rendered
 func (t *Table) Render(gap int) int {
-	// TODO: ansi colours
+	// TODO highlight overdue, high priority, in progress
 	// TODO alternate row colours (tw)
-
+	var style string
 	widths := t.calcColWidths(2)
 	maxRows := t.TermHeight - gap
 	rows := append([][]string{t.Header}, t.Rows...)
@@ -137,7 +137,24 @@ func (t *Table) Render(gap int) int {
 		for i, w := range(widths) {
 			cells[i] = FixStr(cells[i], w)
 		}
-		fmt.Println(strings.Join(cells, "  "))
+
+		line := strings.Join(cells, "  ")
+
+		if i==0 {
+			// header -- underline
+			style = "\033[4m"
+
+		} else if i%2!=0 {
+			// odd -- green on grey
+			style = "\033[32;m"
+
+		} else {
+			// even -- green on blank
+			style = "\033[32m"
+		}
+
+		// print style, line then reset
+		fmt.Printf("%s%s\033[0m\n", style, line)
 
 		if i > maxRows {
 			return i
