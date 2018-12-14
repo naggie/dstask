@@ -8,7 +8,7 @@ func main() {
 	//dstask.Help()
 
 	// importing requires full context
-	ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
+	ts := dstask.LoadTaskSetFromDisk(dstask.NORMAL_STATUSES)
 
 	//err := ts.ImportFromTaskwarrior()
 

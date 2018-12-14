@@ -4,7 +4,6 @@ package dstask
 
 import (
 	"sort"
-	"fmt"
 	"time"
 )
 
@@ -110,7 +109,6 @@ type TaskSet struct {
 
 
 func (t *Task) setID(id int) {
-	fmt.Println(id)
 	t.id = id
 }
 
