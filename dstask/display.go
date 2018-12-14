@@ -10,6 +10,13 @@ import (
 const (
 	// keep it readable
 	TABLE_MAX_WIDTH = 160
+
+	// styles for rows
+	STYLE_NORMAL = iota   // alternates background
+	STYLE_HEADER
+	STYLE_ACTIVE
+	STYLE_IMPORTANT
+	STYLE_UNIMPORTANT
 )
 
 // should use a better console library after first POC
@@ -25,14 +32,28 @@ func (ts *TaskSet) Display() {
 	)
 
 	for _, t := range ts.Tasks {
+		style := STYLE_NORMAL
+
+		// TODO important if overdue
+		if t.status == STATUS_ACTIVE {
+			style = STYLE_ACTIVE
+		} else if t.Priority == PRIORITY_CRITICAL || t.Priority == PRIORITY_HIGH {
+			style = STYLE_IMPORTANT
+		} else if t.Priority == PRIORITY_LOW {
+			style = STYLE_UNIMPORTANT
+		}
+
 		table.AddRow(
-			// id should be at least 2 chars wide to match column header
-			// (headers can be truncated)
-			fmt.Sprintf("%-2d", t.id),
-			t.Priority,
-			strings.Join(t.Tags," "),
-			t.Project,
-			t.Summary,
+			[]string{
+				// id should be at least 2 chars wide to match column header
+				// (headers can be truncated)
+				fmt.Sprintf("%-2d", t.id),
+				t.Priority,
+				strings.Join(t.Tags," "),
+				t.Project,
+				t.Summary,
+			},
+			style,
 		)
 	}
 
@@ -56,6 +77,7 @@ type Table struct {
 	MaxColWidths []int
 	TermWidth int
 	TermHeight int
+	RowStyles []int
 }
 
 // header may  havetruncated words
@@ -70,10 +92,11 @@ func NewTable(header ...string) *Table {
 		MaxColWidths: make([]int, len(header)),
 		TermWidth: int(ws.Col),
 		TermHeight: int(ws.Row),
+		RowStyles: []int{STYLE_HEADER},
 	}
 }
 
-func (t *Table) AddRow(row ...string) {
+func (t *Table) AddRow(row []string, style int) {
 	if len(row) != len(t.Header) {
 		panic("Row is incorrect length")
 	}
@@ -84,7 +107,8 @@ func (t *Table) AddRow(row ...string) {
 		}
 	}
 
-	t.Rows = append(t.Rows,row)
+	t.Rows = append(t.Rows, row)
+	t.RowStyles = append(t.RowStyles, style)
 }
 
 // get widths appropriate to the terminal size and TABLE_MAX_WIDTH
@@ -123,11 +147,16 @@ func (t *Table) calcColWidths(gap int) []int {
 	return colWidths
 }
 
+
+// theme loosely based on https://github.com/GothenburgBitFactory/taskwarrior/blob/2.6.0/doc/rc/dark-256.theme
 // render table, returning count of rows rendered
 func (t *Table) Render(gap int) int {
-	// TODO highlight overdue, high priority, in progress
+	// TODO highlight overdue, high priority, low priority in progress
 	// TODO alternate row colours (tw)
-	var style string
+	// TODO see screenshot for reference https://taskwarrior.org/docs/themes.html#default
+
+	var fg, bg, mode int
+
 	widths := t.calcColWidths(2)
 	maxRows := t.TermHeight - gap
 	rows := append([][]string{t.Header}, t.Rows...)
@@ -140,21 +169,35 @@ func (t *Table) Render(gap int) int {
 
 		line := strings.Join(cells, "  ")
 
-		if i==0 {
-			// header -- underline
-			style = "\033[4m"
+		// default
+		fg = 250
+		bg = 232
+		mode = 0
 
-		} else if i%2!=0 {
-			// odd -- green on grey
-			style = "\033[32;m"
-
+		// default row style alternates. FG and BG can be overridden
+		// independently.
+		if i%2!=0 {
+			bg = 233
 		} else {
-			// even -- green on blank
-			style = "\033[32m"
+			bg = 232
+		}
+
+		switch t.RowStyles[i] {
+			case STYLE_HEADER:
+				// header -- underline
+				mode = 4
+			case STYLE_ACTIVE:
+				fg = 255
+				bg = 166
+			case STYLE_IMPORTANT:
+				fg = 160
+			case STYLE_UNIMPORTANT:
+				fg = 245
 		}
 
 		// print style, line then reset
-		fmt.Printf("%s%s\033[0m\n", style, line)
+		//fmt.Printf("\033[%dm\033[38;5;%dm\033[48;5;%dm%s\033[0m\n", mode, fg, bg, line)
+		fmt.Printf("\033[%d;38;5;%d;48;5;%dm%s\033[0m\n", mode, fg, bg, line)
 
 		if i > maxRows {
 			return i

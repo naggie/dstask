@@ -5,7 +5,8 @@ A personal task tracker designed to help you focus.
 Features:
 
  * Powerful context system
- * Git powered sync (passwordstore.org style)
+ * Git powered sync/undo/resolve (passwordstore.org style)
+ * Task listing won't break with long task text
 
 Non-features:
 

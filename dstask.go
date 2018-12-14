@@ -2,12 +2,10 @@ package main
 
 import (
 	"github.com/naggie/dstask/dstask"
-	"os"
-	"fmt"
 )
 
 func main() {
-	dstask.Help()
+	//dstask.Help()
 
 	// importing requires full context
 	ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
@@ -22,5 +20,5 @@ func main() {
 	ts.Display()
 	ts.SaveToDisk()
 
-	fmt.Printf("%+v\n", dstask.ParseTaskLine(os.Args[1:len(os.Args)]))
+	//fmt.Printf("%+v\n", dstask.ParseTaskLine(os.Args[1:len(os.Args)]))
 }
