@@ -60,6 +60,11 @@ func (ts *TaskSet) Display() {
 		)
 	}
 
+	// TODO print current context
+
+	// push off prompt
+	fmt.Printf("\n\n")
+
 	rowsRendered := table.Render(10)
 
 	if rowsRendered == len(ts.Tasks) {
