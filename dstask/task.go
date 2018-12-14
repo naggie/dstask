@@ -101,14 +101,10 @@ type Task struct {
 }
 
 type TaskSet struct {
-	Tasks          []Task
+	Tasks          []*Task
 	CurrentContext string
 	knownUuids     map[string]bool
 	IDRoster       *IDRoster
-}
-
-func (t *Task) setID(id int) {
-	t.id = id
 }
 
 // Call before addressing and display. Sorts by status then UUID.
@@ -131,7 +127,7 @@ func (ts *TaskSet) AssignIDs() {
 	for _, t := range ts.Tasks {
 		if t.status != STATUS_RESOLVED {
 			id := ts.IDRoster.GetId(t.uuid)
-			t.setID(id)
+			t.id = id
 		}
 	}
 }
@@ -144,7 +140,7 @@ func (ts *TaskSet) MaybeAddTask(task Task) bool {
 	}
 
 	ts.knownUuids[task.uuid] = true
-	ts.Tasks = append(ts.Tasks, task)
+	ts.Tasks = append(ts.Tasks, &task)
 	return true
 }
 

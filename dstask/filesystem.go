@@ -68,7 +68,7 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 				ExitFail("Failed to parse " + filepath)
 			}
 
-			ts.Tasks = append(ts.Tasks, t)
+			ts.Tasks = append(ts.Tasks, &t)
 		}
 	}
 
