@@ -70,7 +70,7 @@ func (ts *TaskSet) Display() {
 	if rowsRendered == len(ts.Tasks) {
 		fmt.Printf("\n%v tasks.\n", len(ts.Tasks))
 	} else {
-		fmt.Printf("\n%v tasks, truncated to fit terminal.\n", len(ts.Tasks))
+		fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(ts.Tasks), rowsRendered)
 	}
 }
 
