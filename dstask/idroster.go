@@ -23,7 +23,6 @@ type IDRoster struct {
 	lastId int
 }
 
-
 // TODO make directories for ID_ROSTER_FILE
 func LoadIDRoster() *IDRoster {
 	filePath := MustExpandHome(ID_ROSTER_FILE)
@@ -55,7 +54,7 @@ func (r *IDRoster) GetId(uuid string) int {
 }
 
 func (r *IDRoster) GetUuid(id int) string {
-	for k, v := range(r.IDs) {
+	for k, v := range r.IDs {
 		if v == id {
 			return k
 		}

@@ -52,7 +52,7 @@ func (ts *TaskSet) Display() {
 				// (headers can be truncated)
 				fmt.Sprintf("%-2d", t.id),
 				t.Priority,
-				strings.Join(t.Tags," "),
+				strings.Join(t.Tags, " "),
 				t.Project,
 				t.Summary,
 			},
@@ -60,10 +60,10 @@ func (ts *TaskSet) Display() {
 		)
 	}
 
-	// TODO print current context
-
 	// push off prompt
 	fmt.Printf("\n\n")
+
+	// TODO print current context here
 
 	rowsRendered := table.Render(10)
 
@@ -80,12 +80,12 @@ func (t *Task) Display() {
 }
 
 type Table struct {
-	Header []string
-	Rows [][]string
+	Header       []string
+	Rows         [][]string
 	MaxColWidths []int
-	TermWidth int
-	TermHeight int
-	RowStyles []int
+	TermWidth    int
+	TermHeight   int
+	RowStyles    []int
 }
 
 // header may  havetruncated words
@@ -96,11 +96,11 @@ func NewTable(header ...string) *Table {
 	}
 
 	return &Table{
-		Header: header,
+		Header:       header,
 		MaxColWidths: make([]int, len(header)),
-		TermWidth: int(ws.Col),
-		TermHeight: int(ws.Row),
-		RowStyles: []int{STYLE_HEADER},
+		TermWidth:    int(ws.Col),
+		TermHeight:   int(ws.Row),
+		RowStyles:    []int{STYLE_HEADER},
 	}
 }
 
@@ -109,7 +109,7 @@ func (t *Table) AddRow(row []string, style int) {
 		panic("Row is incorrect length")
 	}
 
-	for i, cell := range(row) {
+	for i, cell := range row {
 		if t.MaxColWidths[i] < len(cell) {
 			t.MaxColWidths[i] = len(cell)
 		}
@@ -132,13 +132,13 @@ func (t *Table) calcColWidths(gap int) []int {
 	colWidths := t.MaxColWidths[:]
 
 	// account for gaps
-	target -= gap * len(colWidths) - 1
+	target -= gap*len(colWidths) - 1
 
 	for SumInts(colWidths...) > target {
 		// find max col width index
 		var max, maxi int
 
-		for i,w := range(colWidths) {
+		for i, w := range colWidths {
 			if w > max {
 				max = w
 				maxi = i
@@ -155,7 +155,6 @@ func (t *Table) calcColWidths(gap int) []int {
 	return colWidths
 }
 
-
 // theme loosely based on https://github.com/GothenburgBitFactory/taskwarrior/blob/2.6.0/doc/rc/dark-256.theme
 // render table, returning count of rows rendered
 func (t *Table) Render(gap int) int {
@@ -169,9 +168,9 @@ func (t *Table) Render(gap int) int {
 	maxRows := t.TermHeight - gap
 	rows := append([][]string{t.Header}, t.Rows...)
 
-	for i, row := range(rows) {
+	for i, row := range rows {
 		cells := row[:]
-		for i, w := range(widths) {
+		for i, w := range widths {
 			cells[i] = FixStr(cells[i], w)
 		}
 
@@ -184,25 +183,25 @@ func (t *Table) Render(gap int) int {
 
 		// default row style alternates. FG and BG can be overridden
 		// independently.
-		if i%2!=0 {
+		if i%2 != 0 {
 			bg = 233
 		} else {
 			bg = 232
 		}
 
 		switch t.RowStyles[i] {
-			case STYLE_HEADER:
-				// header -- underline
-				mode = 4
-			case STYLE_ACTIVE:
-				fg = 255
-				bg = 166
-			case STYLE_PRIORITY_CRITICAL:
-				fg = 160
-			case STYLE_PRIORITY_HIGH:
-				fg = 166
-			case STYLE_PRIORITY_LOW:
-				fg = 245
+		case STYLE_HEADER:
+			// header -- underline
+			mode = 4
+		case STYLE_ACTIVE:
+			fg = 255
+			bg = 166
+		case STYLE_PRIORITY_CRITICAL:
+			fg = 160
+		case STYLE_PRIORITY_HIGH:
+			fg = 166
+		case STYLE_PRIORITY_LOW:
+			fg = 245
 		}
 
 		// print style, line then reset

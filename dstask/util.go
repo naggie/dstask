@@ -1,14 +1,14 @@
 package dstask
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/gofrs/uuid"
 	"os"
 	"os/user"
 	"path"
-	"encoding/gob"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 func ExitFail(msg string) {
@@ -52,31 +52,31 @@ func IsValidPriority(priority string) bool {
 	}[priority]
 }
 
-func MustWriteGob(filePath string,object interface{}) {
+func MustWriteGob(filePath string, object interface{}) {
 	file, err := os.Create(filePath)
 	defer file.Close()
 
 	if err != nil {
-		ExitFail("Failed to open file for writing: "+filePath)
+		ExitFail("Failed to open file for writing: " + filePath)
 	}
 
 	encoder := gob.NewEncoder(file)
 	encoder.Encode(object)
 }
 
-func MustReadGob(filePath string,object interface{}) {
+func MustReadGob(filePath string, object interface{}) {
 	file, err := os.Open(filePath)
 	defer file.Close()
 
 	if err != nil {
-		ExitFail("Failed to open file for reading: "+filePath)
+		ExitFail("Failed to open file for reading: " + filePath)
 	}
 
 	decoder := gob.NewDecoder(file)
 	err = decoder.Decode(object)
 
 	if err != nil {
-		ExitFail("Failed to parse gob: "+filePath)
+		ExitFail("Failed to parse gob: " + filePath)
 	}
 }
 
@@ -146,7 +146,7 @@ Usage: task projects
 func SumInts(vals ...int) int {
 	var total int
 
-	for _, v := range(vals) {
+	for _, v := range vals {
 		total += v
 	}
 
