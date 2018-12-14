@@ -12,11 +12,12 @@ const (
 	TABLE_MAX_WIDTH = 160
 
 	// styles for rows
-	STYLE_NORMAL = iota   // alternates background
-	STYLE_HEADER
+	STYLE_HEADER = iota
 	STYLE_ACTIVE
-	STYLE_IMPORTANT
-	STYLE_UNIMPORTANT
+	STYLE_PRIORITY_CRITICAL
+	STYLE_PRIORITY_HIGH
+	STYLE_PRIORITY_NORMAL
+	STYLE_PRIORITY_LOW
 )
 
 // should use a better console library after first POC
@@ -32,15 +33,17 @@ func (ts *TaskSet) Display() {
 	)
 
 	for _, t := range ts.Tasks {
-		style := STYLE_NORMAL
+		style := STYLE_PRIORITY_NORMAL
 
 		// TODO important if overdue
 		if t.status == STATUS_ACTIVE {
 			style = STYLE_ACTIVE
-		} else if t.Priority == PRIORITY_CRITICAL || t.Priority == PRIORITY_HIGH {
-			style = STYLE_IMPORTANT
+		} else if t.Priority == PRIORITY_CRITICAL {
+			style = STYLE_PRIORITY_CRITICAL
+		} else if t.Priority == PRIORITY_HIGH {
+			style = STYLE_PRIORITY_HIGH
 		} else if t.Priority == PRIORITY_LOW {
-			style = STYLE_UNIMPORTANT
+			style = STYLE_PRIORITY_LOW
 		}
 
 		table.AddRow(
@@ -189,9 +192,11 @@ func (t *Table) Render(gap int) int {
 			case STYLE_ACTIVE:
 				fg = 255
 				bg = 166
-			case STYLE_IMPORTANT:
+			case STYLE_PRIORITY_CRITICAL:
 				fg = 160
-			case STYLE_UNIMPORTANT:
+			case STYLE_PRIORITY_HIGH:
+				fg = 166
+			case STYLE_PRIORITY_LOW:
 				fg = 245
 		}
 
