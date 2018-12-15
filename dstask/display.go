@@ -5,6 +5,7 @@ import (
 	"golang.org/x/sys/unix"
 	"os"
 	"strings"
+	"time"
 )
 
 const (
@@ -32,12 +33,15 @@ func (ts *TaskSet) Display() {
 		"Summary",
 	)
 
+	now := time.Now()
+
 	for _, t := range ts.tasks {
 		style := STYLE_PRIORITY_NORMAL
 
-		// TODO important if overdue
 		if t.status == STATUS_ACTIVE {
 			style = STYLE_ACTIVE
+		} else if !t.Due.IsZero() && t.Due.Before(now) {
+			style = STYLE_PRIORITY_HIGH
 		} else if t.Priority == PRIORITY_CRITICAL {
 			style = STYLE_PRIORITY_CRITICAL
 		} else if t.Priority == PRIORITY_HIGH {
