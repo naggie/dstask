@@ -134,8 +134,9 @@ func (ts *TaskSet) AssignIDs() {
 	}
 }
 
-// add a task, but only if it has a new uuid. Return true if task was added.
-func (ts *TaskSet) MaybeAddTask(task Task) bool {
+// add a task, but only if it has a new uuid or no uuid. Return true if task
+// was added.
+func (ts *TaskSet) AddTask(task Task) bool {
 	if ts.knownUuids[task.uuid] {
 		// load tasks, do not overwrite
 		return false
@@ -159,14 +160,6 @@ type TaskLine struct {
 	Priority string
 	Text     string
 }
-
-//func (ts *TaskSet) filter(filter *TaskFilter) TaskSet {
-//
-//}
-//
-//func (t *Task) Save() error {
-//
-//}
 
 func ParseTaskLine(args []string) *TaskLine {
 	var id int
