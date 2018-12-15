@@ -103,7 +103,7 @@ type Task struct {
 }
 
 type TaskSet struct {
-	Tasks          []*Task
+	tasks          []*Task
 	CurrentContext string
 	knownUuids     map[string]bool
 	IDRoster       *IDRoster
@@ -111,9 +111,9 @@ type TaskSet struct {
 
 // Call before addressing and display. Sorts by status then UUID.
 func (ts *TaskSet) SortTaskList() {
-	sort.Slice(ts.Tasks, func(i, j int) bool {
-		ti := ts.Tasks[i]
-		tj := ts.Tasks[j]
+	sort.Slice(ts.tasks, func(i, j int) bool {
+		ti := ts.tasks[i]
+		tj := ts.tasks[j]
 
 		// TODO define precedent of statuses
 		if ti.status == tj.status {
@@ -126,7 +126,7 @@ func (ts *TaskSet) SortTaskList() {
 
 // separated, so IDs can be assigned in-order
 func (ts *TaskSet) AssignIDs() {
-	for _, t := range ts.Tasks {
+	for _, t := range ts.tasks {
 		if t.status != STATUS_RESOLVED {
 			id := ts.IDRoster.GetId(t.uuid)
 			t.id = id
@@ -143,7 +143,7 @@ func (ts *TaskSet) AddTask(task Task) bool {
 	}
 
 	ts.knownUuids[task.uuid] = true
-	ts.Tasks = append(ts.Tasks, &task)
+	ts.tasks = append(ts.tasks, &task)
 	return true
 }
 
@@ -198,7 +198,7 @@ func ParseTaskLine(args []string) *TaskLine {
 func (ts *TaskSet) Filter(tl *TaskLine) {
 	var tasks []*Task
 
-	for _, t := range(ts.Tasks) {
+	for _, t := range(ts.tasks) {
 		if t.Project != tl.Project {
 			return
 		}
@@ -206,5 +206,5 @@ func (ts *TaskSet) Filter(tl *TaskLine) {
 		tasks = append(tasks, t)
 	}
 
-	ts.Tasks = tasks
+	ts.tasks = tasks
 }

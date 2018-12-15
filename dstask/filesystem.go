@@ -70,7 +70,7 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 				ExitFail("Failed to parse " + filepath)
 			}
 
-			ts.Tasks = append(ts.Tasks, &t)
+			ts.tasks = append(ts.tasks, &t)
 		}
 	}
 
@@ -91,7 +91,7 @@ func (t *Task) SaveToDisk() {
 
 // may be removed
 func (ts *TaskSet) SaveToDisk() {
-	for _, task := range ts.Tasks {
+	for _, task := range ts.tasks {
 		task.SaveToDisk()
 	}
 

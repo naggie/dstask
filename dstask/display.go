@@ -32,7 +32,7 @@ func (ts *TaskSet) Display() {
 		"Summary",
 	)
 
-	for _, t := range ts.Tasks {
+	for _, t := range ts.tasks {
 		style := STYLE_PRIORITY_NORMAL
 
 		// TODO important if overdue
@@ -67,10 +67,10 @@ func (ts *TaskSet) Display() {
 
 	rowsRendered := table.Render(10)
 
-	if rowsRendered == len(ts.Tasks) {
-		fmt.Printf("\n%v tasks.\n", len(ts.Tasks))
+	if rowsRendered == len(ts.tasks) {
+		fmt.Printf("\n%v tasks.\n", len(ts.tasks))
 	} else {
-		fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(ts.Tasks), rowsRendered)
+		fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(ts.tasks), rowsRendered)
 	}
 }
 

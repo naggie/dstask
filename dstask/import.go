@@ -117,15 +117,15 @@ func (t *TwTask) GetResolvedTime() time.Time {
 }
 
 func (ts *TaskSet) ImportFromTaskwarrior() error {
-	var twTasks []TwTask
+	var twtasks []TwTask
 	// from stdin
-	err := json.NewDecoder(os.Stdin).Decode(&twTasks)
+	err := json.NewDecoder(os.Stdin).Decode(&twtasks)
 
 	if err != nil {
 		return err
 	}
 
-	for _, twTask := range twTasks {
+	for _, twTask := range twtasks {
 		ts.AddTask(Task{
 			uuid:     twTask.Uuid,
 			status:   twTask.ConvertStatus(),
