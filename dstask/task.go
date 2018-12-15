@@ -136,14 +136,14 @@ func (ts *TaskSet) AssignIDs() {
 
 // add a task, but only if it has a new uuid or no uuid. Return true if task
 // was added.
-func (ts *TaskSet) AddTask(task Task) bool {
+func (ts *TaskSet) AddTask(task *Task) bool {
 	if ts.knownUuids[task.uuid] {
 		// load tasks, do not overwrite
 		return false
 	}
 
 	ts.knownUuids[task.uuid] = true
-	ts.tasks = append(ts.tasks, &task)
+	ts.tasks = append(ts.tasks, task)
 	return true
 }
 

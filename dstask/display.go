@@ -122,6 +122,8 @@ func (t *Table) AddRow(row []string, style int) {
 // get widths appropriate to the terminal size and TABLE_MAX_WIDTH
 // cells may require padding or truncation. Cell padding of 1char between
 // fields recommended -- not included.
+// A nice characteristic of this, is that if there are no populated cells the
+// column will disappear.
 func (t *Table) calcColWidths(gap int) []int {
 	target := TABLE_MAX_WIDTH
 
@@ -158,10 +160,6 @@ func (t *Table) calcColWidths(gap int) []int {
 // theme loosely based on https://github.com/GothenburgBitFactory/taskwarrior/blob/2.6.0/doc/rc/dark-256.theme
 // render table, returning count of rows rendered
 func (t *Table) Render(gap int) int {
-	// TODO highlight overdue, high priority, low priority in progress
-	// TODO alternate row colours (tw)
-	// TODO see screenshot for reference https://taskwarrior.org/docs/themes.html#default
-
 	var fg, bg, mode int
 
 	widths := t.calcColWidths(2)
