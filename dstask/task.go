@@ -201,3 +201,17 @@ func ParseTaskLine(args []string) *TaskLine {
 		Text:     strings.Join(words, " "),
 	}
 }
+
+func (ts *TaskSet) Filter(tl *TaskLine) {
+	var tasks []*Task
+
+	for _, t := range(ts.Tasks) {
+		if t.Project != tl.Project {
+			return
+		}
+
+		tasks = append(tasks, t)
+	}
+
+	ts.Tasks = tasks
+}
