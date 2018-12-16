@@ -111,16 +111,9 @@ type TaskSet struct {
 
 // Call before addressing and display. Sorts by status then UUID.
 func (ts *TaskSet) SortTaskList() {
-	sort.Slice(ts.tasks, func(i, j int) bool {
-		ti := ts.tasks[i]
-		tj := ts.tasks[j]
-
-		if ti.status == tj.status {
-			return ti.uuid < tj.uuid
-		} else {
-			return STATUS_ORDER[ti.status] < STATUS_ORDER[tj.status]
-		}
-	})
+	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.Before(ts.tasks[j].Created) })
+	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority < ts.tasks[j].Priority })
+	sort.SliceStable(ts.tasks, func(i, j int) bool { return STATUS_ORDER[ts.tasks[i].status] < STATUS_ORDER[ts.tasks[j].status] })
 }
 
 // separated, so IDs can be assigned in-order
