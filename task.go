@@ -80,9 +80,6 @@ type Task struct {
 	// ephemeral, used to address tasks quickly. Non-resolved only.
 	ID int
 
-	// used to determine if an unlink should happen if status changes
-	originalFilepath string
-
 	// concise representation of task
 	Summary string
 	// task in more detail, only if necessary
