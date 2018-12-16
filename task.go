@@ -109,21 +109,10 @@ type TaskSet struct {
 	IDRoster       *IDRoster
 }
 
-// Call before addressing and display. Sorts by status then UUID.
 func (ts *TaskSet) SortTaskList() {
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.Before(ts.tasks[j].Created) })
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority < ts.tasks[j].Priority })
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return STATUS_ORDER[ts.tasks[i].status] < STATUS_ORDER[ts.tasks[j].status] })
-}
-
-// separated, so IDs can be assigned in-order
-func (ts *TaskSet) AssignIDs() {
-	for _, t := range ts.tasks {
-		if t.status != STATUS_RESOLVED {
-			id := ts.IDRoster.GetId(t.uuid)
-			t.id = id
-		}
-	}
 }
 
 // add a task, but only if it has a new uuid or no uuid. Return true if task
@@ -132,6 +121,11 @@ func (ts *TaskSet) AddTask(task *Task) bool {
 	if ts.knownUuids[task.uuid] {
 		// load tasks, do not overwrite
 		return false
+	}
+
+	if task.status != STATUS_RESOLVED {
+		id := ts.IDRoster.GetId(task.uuid)
+		task.id = id
 	}
 
 	ts.knownUuids[task.uuid] = true
