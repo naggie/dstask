@@ -129,6 +129,7 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 		ts.AddTask(&Task{
 			uuid:     twTask.Uuid,
 			status:   twTask.ConvertStatus(),
+			writePending: true,
 			Summary:  twTask.Description,
 			Tags:     twTask.Tags,
 			Project:  twTask.Project,

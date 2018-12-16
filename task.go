@@ -74,6 +74,9 @@ type Task struct {
 	// not stored in file -- rather filename and directory
 	uuid   string
 	status string
+	// is new or has changed. Need to write to disk.
+	writePending bool
+
 	// ephemeral, used to address tasks quickly. Non-resolved only.
 	ID int
 
