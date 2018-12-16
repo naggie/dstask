@@ -77,6 +77,10 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 }
 
 func (t *Task) SaveToDisk() {
+	if !t.writePending {
+		return
+	}
+
 	filepath := MustGetRepoDirectory(t.status, t.uuid+".yml")
 	d, err := yaml.Marshal(&t)
 
