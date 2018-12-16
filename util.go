@@ -1,7 +1,6 @@
 package dstask
 
 import (
-	"encoding/gob"
 	"fmt"
 	"github.com/gofrs/uuid"
 	"os"
@@ -50,34 +49,6 @@ func IsValidPriority(priority string) bool {
 		PRIORITY_NORMAL:   true,
 		PRIORITY_LOW:      true,
 	}[priority]
-}
-
-func MustWriteGob(filePath string, object interface{}) {
-	file, err := os.Create(filePath)
-	defer file.Close()
-
-	if err != nil {
-		ExitFail("Failed to open file for writing: " + filePath)
-	}
-
-	encoder := gob.NewEncoder(file)
-	encoder.Encode(object)
-}
-
-func MustReadGob(filePath string, object interface{}) {
-	file, err := os.Open(filePath)
-	defer file.Close()
-
-	if err != nil {
-		ExitFail("Failed to open file for reading: " + filePath)
-	}
-
-	decoder := gob.NewDecoder(file)
-	err = decoder.Decode(object)
-
-	if err != nil {
-		ExitFail("Failed to parse gob: " + filePath)
-	}
 }
 
 func Help() {

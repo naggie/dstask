@@ -16,8 +16,8 @@ func MustGetRepoDirectory(directory ...string) string {
 
 func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 	ts := &TaskSet{
-		knownUuids: make(map[string]bool),
-		IDRoster:   LoadIDRoster(),
+		tasksByID: make(map[int]*Task),
+		tasksByUuid: make(map[string]*Task),
 	}
 
 	gitDotGitLocation := MustGetRepoDirectory(".git")
@@ -94,6 +94,4 @@ func (ts *TaskSet) SaveToDisk() {
 	for _, task := range ts.tasks {
 		task.SaveToDisk()
 	}
-
-	ts.IDRoster.SaveToDisk()
 }
