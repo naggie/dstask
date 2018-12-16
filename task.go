@@ -115,7 +115,6 @@ func (ts *TaskSet) SortTaskList() {
 		ti := ts.tasks[i]
 		tj := ts.tasks[j]
 
-		// TODO define precedent of statuses
 		if ti.status == tj.status {
 			return ti.uuid < tj.uuid
 		} else {
