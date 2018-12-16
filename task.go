@@ -75,7 +75,7 @@ type Task struct {
 	uuid   string
 	status string
 	// ephemeral, used to address tasks quickly. Non-resolved only.
-	id int
+	ID int
 
 	// used to determine if an unlink should happen if status changes
 	originalFilepath string
@@ -128,19 +128,19 @@ func (ts *TaskSet) AddTask(task *Task) bool {
 
 	// resolved task should not have ID
 	if task.status != STATUS_RESOLVED {
-		task.id = 0
+		task.ID = 0
 	}
 
 	// check ID is unique if there is one
-	if task.id > 0 && ts.tasksByID[task.id] != nil {
-		task.id = 0
+	if task.ID > 0 && ts.tasksByID[task.ID] != nil {
+		task.ID = 0
 	}
 
 	// pick one if task isn't resolved and ID isn't there
 	if task.status != STATUS_RESOLVED {
 		for id:=1; id <= MAX_TASKS_OPEN; id++ {
 			if ts.tasksByID[id] == nil {
-				task.id = id
+				task.ID = id
 				break
 			}
 		}
@@ -148,7 +148,7 @@ func (ts *TaskSet) AddTask(task *Task) bool {
 
 	ts.tasks = append(ts.tasks, task)
 	ts.tasksByUuid[task.uuid] = task
-	ts.tasksByID[task.id] = task
+	ts.tasksByID[task.ID] = task
 	return true
 }
 

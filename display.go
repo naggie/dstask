@@ -54,7 +54,7 @@ func (ts *TaskSet) Display() {
 			[]string{
 				// id should be at least 2 chars wide to match column header
 				// (headers can be truncated)
-				fmt.Sprintf("%-2d", t.id),
+				fmt.Sprintf("%-2d", t.ID),
 				t.Priority,
 				strings.Join(t.Tags, " "),
 				t.Project,
