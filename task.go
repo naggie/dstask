@@ -172,11 +172,11 @@ func ParseTaskLine(args []string) *TaskLine {
 		if s, err := strconv.ParseInt(item, 10, 64); i == 0 && err == nil {
 			id = int(s)
 		} else if strings.HasPrefix(item, "project:") {
-			project = item[8:len(item)]
+			project = item[8:]
 		} else if len(item) > 2 && item[0:1] == "+" {
-			tags = append(tags, item[1:len(item)])
+			tags = append(tags, item[1:])
 		} else if len(item) > 2 && item[0:1] == "-" {
-			antiTags = append(antiTags, item[1:len(item)])
+			antiTags = append(antiTags, item[1:])
 		} else if IsValidPriority(item) {
 			priority = item
 		} else {

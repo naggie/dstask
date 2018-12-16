@@ -34,7 +34,7 @@ func (tt *TwTime) UnmarshalJSON(b []byte) error {
 
 	if len(s) == 16 {
 		// convert from basic format to normal format which is RFC3339 compatible
-		s = s[0:4] + "-" + s[4:6] + "-" + s[6:11] + ":" + s[11:13] + ":" + s[13:len(s)]
+		s = s[0:4] + "-" + s[4:6] + "-" + s[6:11] + ":" + s[11:13] + ":" + s[13:]
 	}
 
 	t, err := time.Parse(time.RFC3339, s)

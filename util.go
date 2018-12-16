@@ -22,7 +22,7 @@ func MustExpandHome(filepath string) string {
 		if err != nil {
 			panic(err)
 		}
-		return path.Join(usr.HomeDir, filepath[2:len(filepath)])
+		return path.Join(usr.HomeDir, filepath[2:])
 	} else {
 		return filepath
 	}
