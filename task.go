@@ -120,9 +120,13 @@ func (ts *TaskSet) SortTaskList() {
 
 // add a task, but only if it has a new uuid or no uuid. Return true if task
 // was added.
-func (ts *TaskSet) AddTask(task *Task) bool {
+func (ts *TaskSet) AddTask(task Task) bool {
 	if task.Uuid == "" {
 		task.Uuid = MustGetUuid4String()
+	}
+
+	if task.Created.IsZero() {
+		task.Created = time.Now()
 	}
 
 	if ts.tasksByUuid[task.Uuid] != nil {
@@ -150,9 +154,9 @@ func (ts *TaskSet) AddTask(task *Task) bool {
 		}
 	}
 
-	ts.tasks = append(ts.tasks, task)
-	ts.tasksByUuid[task.Uuid] = task
-	ts.tasksByID[task.ID] = task
+	ts.tasks = append(ts.tasks, &task)
+	ts.tasksByUuid[task.Uuid] = &task
+	ts.tasksByID[task.ID] = &task
 	return true
 }
 

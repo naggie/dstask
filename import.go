@@ -126,7 +126,7 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 	}
 
 	for _, twTask := range twtasks {
-		ts.AddTask(&Task{
+		ts.AddTask(Task{
 			Uuid:     twTask.Uuid,
 			Status:   twTask.ConvertStatus(),
 			WritePending: true,
