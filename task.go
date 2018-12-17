@@ -72,10 +72,10 @@ type SubTask struct {
 
 type Task struct {
 	// not stored in file -- rather filename and directory
-	uuid   string
-	status string
+	Uuid   string `yaml:"-"`
+	Status string `yaml:"-"`
 	// is new or has changed. Need to write to disk.
-	writePending bool
+	WritePending bool `yaml:"-"`
 
 	// ephemeral, used to address tasks quickly. Non-resolved only.
 	ID int
@@ -115,19 +115,19 @@ type TaskSet struct {
 func (ts *TaskSet) SortTaskList() {
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.Before(ts.tasks[j].Created) })
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority < ts.tasks[j].Priority })
-	sort.SliceStable(ts.tasks, func(i, j int) bool { return STATUS_ORDER[ts.tasks[i].status] < STATUS_ORDER[ts.tasks[j].status] })
+	sort.SliceStable(ts.tasks, func(i, j int) bool { return STATUS_ORDER[ts.tasks[i].Status] < STATUS_ORDER[ts.tasks[j].Status] })
 }
 
 // add a task, but only if it has a new uuid or no uuid. Return true if task
 // was added.
 func (ts *TaskSet) AddTask(task *Task) bool {
-	if ts.tasksByUuid[task.uuid] != nil {
+	if ts.tasksByUuid[task.Uuid] != nil {
 		// load tasks, do not overwrite
 		return false
 	}
 
 	// resolved task should not have ID
-	if task.status != STATUS_RESOLVED {
+	if task.Status != STATUS_RESOLVED {
 		task.ID = 0
 	}
 
@@ -137,7 +137,7 @@ func (ts *TaskSet) AddTask(task *Task) bool {
 	}
 
 	// pick one if task isn't resolved and ID isn't there
-	if task.status != STATUS_RESOLVED {
+	if task.Status != STATUS_RESOLVED {
 		for id:=1; id <= MAX_TASKS_OPEN; id++ {
 			if ts.tasksByID[id] == nil {
 				task.ID = id
@@ -147,7 +147,7 @@ func (ts *TaskSet) AddTask(task *Task) bool {
 	}
 
 	ts.tasks = append(ts.tasks, task)
-	ts.tasksByUuid[task.uuid] = task
+	ts.tasksByUuid[task.Uuid] = task
 	ts.tasksByID[task.ID] = task
 	return true
 }

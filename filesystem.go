@@ -55,8 +55,8 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 			}
 
 			t := Task{
-				uuid: uuid,
-				status: status,
+				Uuid: uuid,
+				Status: status,
 			}
 
 			data, err := ioutil.ReadFile(filepath)
@@ -77,11 +77,11 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 }
 
 func (t *Task) SaveToDisk() {
-	if !t.writePending {
+	if !t.WritePending {
 		return
 	}
 
-	filepath := MustGetRepoDirectory(t.status, t.uuid+".yml")
+	filepath := MustGetRepoDirectory(t.Status, t.Uuid+".yml")
 	d, err := yaml.Marshal(&t)
 
 	err = ioutil.WriteFile(filepath, d, 0600)
@@ -92,11 +92,11 @@ func (t *Task) SaveToDisk() {
 	// delete from all other locations to make sure there is only one copy
 	// that exists
 	for _, st := range(ALL_STATUSES) {
-		if st == t.status {
+		if st == t.Status {
 			continue
 		}
 
-		filepath := MustGetRepoDirectory(st, t.uuid+".yml")
+		filepath := MustGetRepoDirectory(st, t.Uuid+".yml")
 
 		if _, err := os.Stat(filepath); !os.IsNotExist(err) {
 			err := os.Remove(filepath)

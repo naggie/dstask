@@ -38,7 +38,7 @@ func (ts *TaskSet) Display() {
 	for _, t := range ts.tasks {
 		style := STYLE_PRIORITY_NORMAL
 
-		if t.status == STATUS_ACTIVE {
+		if t.Status == STATUS_ACTIVE {
 			style = STYLE_ACTIVE
 		} else if !t.Due.IsZero() && t.Due.Before(now) {
 			style = STYLE_PRIORITY_HIGH
