@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"time"
 )
 
 func MustGetRepoDirectory(directory ...string) string {
@@ -80,6 +81,8 @@ func (t *Task) SaveToDisk() {
 	if !t.WritePending {
 		return
 	}
+
+	t.Modified = time.Now()
 
 	filepath := MustGetRepoDirectory(t.Status, t.Uuid+".yml")
 	d, err := yaml.Marshal(&t)
