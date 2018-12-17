@@ -121,6 +121,10 @@ func (ts *TaskSet) SortTaskList() {
 // add a task, but only if it has a new uuid or no uuid. Return true if task
 // was added.
 func (ts *TaskSet) AddTask(task *Task) bool {
+	if task.Uuid == "" {
+		task.Uuid = MustGetUuid4String()
+	}
+
 	if ts.tasksByUuid[task.Uuid] != nil {
 		// load tasks, do not overwrite
 		return false
