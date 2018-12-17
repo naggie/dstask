@@ -122,7 +122,7 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 	err := json.NewDecoder(os.Stdin).Decode(&twtasks)
 
 	if err != nil {
-		return err
+		ExitFail("Failed to decode JSON from stdin")
 	}
 
 	for _, twTask := range twtasks {
