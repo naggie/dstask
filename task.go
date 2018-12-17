@@ -5,6 +5,7 @@ package dstask
 import (
 	"sort"
 	"time"
+	"github.com/gofrs/uuid"
 	"strconv"
 	"strings"
 )
@@ -72,7 +73,7 @@ type SubTask struct {
 
 type Task struct {
 	// not stored in file -- rather filename and directory
-	uuid   string
+	uuid   uuid.UUID
 	status string
 	// is new or has changed. Need to write to disk.
 	writePending bool

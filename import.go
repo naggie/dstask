@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"os"
 	"strings"
+	"github.com/gofrs/uuid"
 	"time"
 )
 
@@ -64,7 +65,7 @@ type TwTask struct {
 	Priority    string         `json: priority`
 	Depends     string         `json: depends`
 	Tags        []string       `json: tags`
-	Uuid        string         `json: uuid`
+	Uuid        uuid.UUID      `json: uuid`
 	Annotations []TwAnnotation `json:annotations`
 }
 
