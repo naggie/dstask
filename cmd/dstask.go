@@ -37,7 +37,7 @@ func main() {
 		case "projects":
 		case "day":
 		case "week":
-		case "import":
+		case "import-tw":
 			ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
 			ts.ImportFromTaskwarrior()
 			ts.SaveToDisk()
