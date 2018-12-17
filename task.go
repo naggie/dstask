@@ -155,9 +155,6 @@ func (ts *TaskSet) AddTask(task *Task) bool {
 // when refering to tasks by ID, NORMAL_STATUSES must be loaded exclusively --
 // even if the filter is set to show issues that have only some statuses.
 type TaskLine struct {
-	// operation, taken from first occurance. Mapped to a method to operate on
-	// tasks.
-	Action string
 	Id       int
 	Tags     []string
 	AntiTags []string
