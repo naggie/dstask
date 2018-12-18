@@ -65,7 +65,7 @@ func main() {
 		ts.MustUpdateTask(task)
 		ts.SaveToDisk("Stopped: " + task.Summary)
 
-	case "done":
+	case "resolve":
 		if len(os.Args) != 3 {
 			dstask.Help()
 		}
