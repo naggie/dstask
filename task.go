@@ -131,7 +131,7 @@ func (ts *TaskSet) AddTask(task Task) bool {
 	}
 
 	// resolved task should not have ID
-	if task.Status != STATUS_RESOLVED {
+	if task.Status == STATUS_RESOLVED {
 		task.ID = 0
 	}
 
@@ -171,6 +171,10 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 	}
 
 	task.WritePending = true
+
+	if task.Status == STATUS_RESOLVED {
+		task.ID = 0
+	}
 
 	// existing pointer must point to address of new task copied
 	*ts.tasksByUuid[task.Uuid] = task
