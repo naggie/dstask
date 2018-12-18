@@ -191,7 +191,7 @@ type TaskLine struct {
 	Text     string
 }
 
-func ParseTaskLine(args []string) *TaskLine {
+func ParseTaskLine(args ...string) *TaskLine {
 	var id int
 	var tags []string
 	var antiTags []string

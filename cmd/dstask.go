@@ -12,18 +12,13 @@ func main() {
 	}
 
 	switch os.Args[1] {
-	case "next":
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.SortTaskList()
-		ts.Display()
-
 	case "add":
 		if len(os.Args) < 3 {
 			dstask.Help()
 		}
 
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		tl := dstask.ParseTaskLine(os.Args[2:])
+		tl := dstask.ParseTaskLine(os.Args[2:]...)
 		ts.AddTask(dstask.Task{
 			WritePending: true,
 			Status:       dstask.STATUS_PENDING,
@@ -92,6 +87,18 @@ func main() {
 		dstask.Help()
 
 	default:
-		dstask.Help()
+		var args []string
+		// next, or just a filter which is effectively an alias for next
+		if os.Args[1] == "next" {
+			args = os.Args[2:]
+		} else {
+			args = os.Args[1:]
+		}
+
+		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		tl := dstask.ParseTaskLine(args...)
+		ts.Filter(tl)
+		ts.SortTaskList()
+		ts.Display()
 	}
 }
