@@ -1,5 +1,9 @@
 package dstask
-import "os"
+
+import (
+	"os"
+	"fmt"
+)
 
 func Help() {
 	fmt.Fprintf(os.Stderr, `

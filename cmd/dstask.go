@@ -4,6 +4,7 @@ import (
 	"github.com/naggie/dstask"
 	"os"
 	"strconv"
+	"time"
 )
 
 func main() {
@@ -65,6 +66,24 @@ func main() {
 		ts.SaveToDisk("Stopped: " + task.Summary)
 
 	case "done":
+		if len(os.Args) != 3 {
+			dstask.Help()
+		}
+
+		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		idStr, _ := strconv.Atoi(os.Args[2])
+		task := ts.MustGetByID(idStr)
+
+		// TODO could move to MustUpdateTask
+		if task.Status == dstask.STATUS_RESOLVED {
+			dstask.ExitFail("That task is already resolved")
+		}
+
+		task.Status = dstask.STATUS_RESOLVED
+		task.Resolved = time.Now() // could move to MustUpdateTask
+		ts.MustUpdateTask(task)
+		ts.SaveToDisk("Resolved: " + task.Summary)
+
 	case "context":
 	case "modify":
 	case "edit":
