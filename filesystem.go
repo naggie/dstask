@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path"
 	"time"
+	"fmt"
 )
 
 func MustGetRepoDirectory(directory ...string) string {
@@ -122,5 +123,10 @@ func (ts *TaskSet) SaveToDisk(commitMsg string) {
 	// added/modified/deleted files -- only if slow.
 	root := MustExpandHome(GIT_REPO)
 	exec.Command("git", "-C", root, "add", ".").Run()
-	exec.Command("git", "-C", root, "commit", "--no-gpg-sign", "-m", commitMsg).Run()
+	out, err := exec.Command("git", "-C", root, "commit", "--no-gpg-sign", "-m", commitMsg).CombinedOutput()
+	if err != nil {
+		ExitFail("Failed to run git. Please check git is installed")
+	}
+
+	fmt.Println(string(out))
 }
