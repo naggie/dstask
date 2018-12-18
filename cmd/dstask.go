@@ -48,6 +48,10 @@ func main() {
 				dstask.ExitFail("That task is not yet started")
 			}
 
+			task.Status = dstask.STATUS_PENDING
+			ts.MustUpdateTask(task)
+			ts.SaveToDisk()
+
 		case "done":
 		case "context":
 		case "modify":

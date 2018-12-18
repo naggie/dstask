@@ -160,8 +160,22 @@ func (ts *TaskSet) AddTask(task Task) bool {
 	return true
 }
 
+// TODO maybe this is the place to check for invalid state transitions instead
+// of the main switch statement. Though, a future 3rdparty sync system could
+// need this to work regardless.
+func (ts *TaskSet) MustUpdateTask(task Task) {
+	if ts.tasksByUuid[task.Uuid] == nil {
+		ExitFail("Could not find given task to update by UUID")
+	}
+
+	task.WritePending = true
+
+	// existing pointer must point to address of new task copied
+	*ts.tasksByUuid[task.Uuid] = task
+}
+
 // when refering to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
-// even if the filter is set to show issues that have only some statuses.
+// even if the filter is set to show issues that have only some statuses. 
 type TaskLine struct {
 	Id       int
 	Tags     []string
@@ -219,10 +233,10 @@ func (ts *TaskSet) Filter(tl *TaskLine) {
 	ts.tasks = tasks
 }
 
-func (ts *TaskSet) MustGetByID(id int) *Task {
+func (ts *TaskSet) MustGetByID(id int) Task {
 	if ts.tasksByID[id] == nil {
 		ExitFail("No open task with that ID exists.")
 	}
 
-	return ts.tasksByID[id]
+	return *ts.tasksByID[id]
 }
