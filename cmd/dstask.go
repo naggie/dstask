@@ -4,7 +4,6 @@ import (
 	"github.com/naggie/dstask"
 	"os"
 	"strconv"
-	"fmt"
 )
 
 func main() {
@@ -36,6 +35,7 @@ func main() {
 			ts.SaveToDisk()
 
 		case "start":
+		case "stop":
 			if len(os.Args) != 3 {
 				dstask.Help()
 			}
@@ -43,9 +43,11 @@ func main() {
 			ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 			idStr, _ := strconv.Atoi(os.Args[2])
 			task := ts.MustGetByID(idStr)
-			fmt.Println(task)
 
-		case "stop":
+			if task.Status != dstask.STATUS_ACTIVE {
+				dstask.ExitFail("That task is not yet started")
+			}
+
 		case "done":
 		case "context":
 		case "modify":
