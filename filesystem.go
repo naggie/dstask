@@ -6,10 +6,8 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path"
 	"time"
-	"fmt"
 )
 
 func MustGetRepoDirectory(directory ...string) string {
@@ -121,12 +119,6 @@ func (ts *TaskSet) SaveToDisk(commitMsg string) {
 	// git add all changed/created files
 	// could optimise this to be given an explicit list of
 	// added/modified/deleted files -- only if slow.
-	root := MustExpandHome(GIT_REPO)
-	exec.Command("git", "-C", root, "add", ".").Run()
-	out, err := exec.Command("git", "-C", root, "commit", "--no-gpg-sign", "-m", commitMsg).CombinedOutput()
-	if err != nil {
-		ExitFail("Failed to run git. Please check git is installed")
-	}
-
-	fmt.Println(string(out))
+	MustRunGitCmd("add", ".")
+	MustRunGitCmd("commit", "--no-gpg-sign", "-m", commitMsg)
 }
