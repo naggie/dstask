@@ -112,6 +112,7 @@ Usage: task projects
 
 	List project status (percentage done, estimated completion time)
 `)
+	os.Exit(1)
 }
 
 func SumInts(vals ...int) int {

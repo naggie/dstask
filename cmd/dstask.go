@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/naggie/dstask"
 	"os"
+	"strconv"
+	"fmt"
 )
 
 func main() {
@@ -15,7 +17,12 @@ func main() {
 			ts := dstask.LoadTaskSetFromDisk(dstask.NORMAL_STATUSES)
 			ts.SortTaskList()
 			ts.Display()
+
 		case "add":
+			if len(os.Args) < 3 {
+				dstask.Help()
+			}
+
 			ts := dstask.LoadTaskSetFromDisk(dstask.NORMAL_STATUSES)
 			tl := dstask.ParseTaskLine(os.Args[2:])
 			ts.AddTask(dstask.Task{
@@ -27,7 +34,17 @@ func main() {
 				Priority: tl.Priority,
 			})
 			ts.SaveToDisk()
+
 		case "start":
+			if len(os.Args) != 3 {
+				dstask.Help()
+			}
+
+			ts := dstask.LoadTaskSetFromDisk(dstask.NORMAL_STATUSES)
+			idStr, _ := strconv.Atoi(os.Args[2])
+			task := ts.MustGetByID(idStr)
+			fmt.Println(task)
+
 		case "stop":
 		case "done":
 		case "context":
@@ -41,11 +58,11 @@ func main() {
 			ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
 			ts.ImportFromTaskwarrior()
 			ts.SaveToDisk()
+
 		case "help":
 			dstask.Help()
-			os.Exit(1)
+
 		default:
 			dstask.Help()
-			os.Exit(1)
 	}
 }

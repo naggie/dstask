@@ -218,3 +218,11 @@ func (ts *TaskSet) Filter(tl *TaskLine) {
 
 	ts.tasks = tasks
 }
+
+func (ts *TaskSet) MustGetByID(id int) *Task {
+	if ts.tasksByID[id] == nil {
+		ExitFail("No open task with that ID exists.")
+	}
+
+	return ts.tasksByID[id]
+}
