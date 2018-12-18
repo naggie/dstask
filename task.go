@@ -228,12 +228,32 @@ func ParseTaskLine(args ...string) *TaskLine {
 func (ts *TaskSet) Filter(tl *TaskLine) {
 	var tasks []*Task
 
-	for _, t := range ts.tasks {
-		if t.Project != tl.Project {
-			return
+	for _, task := range ts.tasks {
+		if tl.Id &&{
+			return []*Task{task}
 		}
 
-		tasks = append(tasks, t)
+		for _, tag := range(tl.Tags) {
+			
+		}
+
+		for _, tag := range(tl.AntiTags) {
+			
+		}
+
+		if tl.Project != "" && task.Project != tl.Project {
+			continue
+		}
+
+		if tl.Priority != "" && task.Priority != tl.Priority {
+			continue
+		}
+
+		if tl.Text != "" && !strings.Contains(strings.ToLower(task.Summary + task.Description), strings.ToLower(tl.Text)) {
+			continue
+		}
+
+		tasks = append(tasks, task)
 	}
 
 	ts.tasks = tasks
