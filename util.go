@@ -138,9 +138,10 @@ func MustRunGitCmd(args ...string) {
 	root := MustExpandHome(GIT_REPO)
 	args = append([]string{"-C", root}, args...)
 	out, err := exec.Command("git", args...).CombinedOutput()
-	if err != nil {
-		ExitFail("Failed to run git. Please check git is installed")
-	}
 
 	fmt.Printf(string(out))
+	if err != nil {
+		ExitFail("Git command failed")
+	}
+
 }
