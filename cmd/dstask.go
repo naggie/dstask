@@ -82,6 +82,8 @@ func main() {
 			ts.ImportFromTaskwarrior()
 			ts.SaveToDisk("Import from taskwarrior")
 
+		case "git":
+		case "undo":
 		case "help":
 			dstask.Help()
 
