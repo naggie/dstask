@@ -14,7 +14,7 @@ func main() {
 
 	switch(os.Args[1]) {
 		case "next":
-			ts := dstask.LoadTaskSetFromDisk(dstask.NORMAL_STATUSES)
+			ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 			ts.SortTaskList()
 			ts.Display()
 
@@ -23,7 +23,7 @@ func main() {
 				dstask.Help()
 			}
 
-			ts := dstask.LoadTaskSetFromDisk(dstask.NORMAL_STATUSES)
+			ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 			tl := dstask.ParseTaskLine(os.Args[2:])
 			ts.AddTask(dstask.Task{
 				WritePending: true,
@@ -40,7 +40,7 @@ func main() {
 				dstask.Help()
 			}
 
-			ts := dstask.LoadTaskSetFromDisk(dstask.NORMAL_STATUSES)
+			ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 			idStr, _ := strconv.Atoi(os.Args[2])
 			task := ts.MustGetByID(idStr)
 			fmt.Println(task)

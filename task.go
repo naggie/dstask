@@ -43,7 +43,7 @@ var ALL_STATUSES = []string{
 }
 
 // for most operations, it's not necessary or desirable to load the expensive resolved tasks
-var NORMAL_STATUSES = []string{
+var NON_RESOLVED_STATUSES = []string{
 	STATUS_ACTIVE,
 	STATUS_PENDING,
 	STATUS_DELEGATED,
@@ -160,7 +160,7 @@ func (ts *TaskSet) AddTask(task Task) bool {
 	return true
 }
 
-// when refering to tasks by ID, NORMAL_STATUSES must be loaded exclusively --
+// when refering to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
 // even if the filter is set to show issues that have only some statuses.
 type TaskLine struct {
 	Id       int
