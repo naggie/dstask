@@ -11,7 +11,7 @@ import (
 )
 
 func ExitFail(msg string) {
-	fmt.Fprintln(os.Stderr, msg)
+	fmt.Fprintf(os.Stderr, "\033[31m%s\033[0m\n", msg)
 	os.Exit(1)
 }
 
