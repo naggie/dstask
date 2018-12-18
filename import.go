@@ -127,14 +127,14 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 
 	for _, twTask := range twtasks {
 		ts.AddTask(Task{
-			Uuid:     twTask.Uuid,
-			Status:   twTask.ConvertStatus(),
+			Uuid:         twTask.Uuid,
+			Status:       twTask.ConvertStatus(),
 			WritePending: true,
-			Summary:  twTask.Description,
-			Tags:     twTask.Tags,
-			Project:  twTask.Project,
-			Priority: priorityMap[twTask.Priority],
-			Comments: twTask.ConvertAnnotations(),
+			Summary:      twTask.Description,
+			Tags:         twTask.Tags,
+			Project:      twTask.Project,
+			Priority:     priorityMap[twTask.Priority],
+			Comments:     twTask.ConvertAnnotations(),
 			// FieldsFunc required instead of split as split returns a slice of len(1) when empty...
 			Dependencies: strings.FieldsFunc(twTask.Depends, func(c rune) bool { return c == ',' }),
 			Created:      twTask.Entry.Time,

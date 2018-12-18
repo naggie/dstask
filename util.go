@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"github.com/gofrs/uuid"
 	"os"
+	"os/exec"
 	"os/user"
 	"path"
 	"strconv"
 	"strings"
-	"os/exec"
 )
 
 func ExitFail(msg string) {

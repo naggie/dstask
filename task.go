@@ -4,9 +4,9 @@ package dstask
 
 import (
 	"sort"
-	"time"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -28,7 +28,7 @@ const (
 	PRIORITY_NORMAL   = "P3"
 	PRIORITY_LOW      = "P4"
 
-	MAX_TASKS_OPEN    = 10000
+	MAX_TASKS_OPEN = 10000
 )
 
 // for import (etc) it's necessary to have full context
@@ -103,11 +103,11 @@ type Task struct {
 }
 
 type TaskSet struct {
-	tasks          []*Task
+	tasks []*Task
 
 	// indices
-	tasksByID      map[int]*Task
-	tasksByUuid    map[string]*Task
+	tasksByID   map[int]*Task
+	tasksByUuid map[string]*Task
 
 	CurrentContext string
 }
@@ -142,7 +142,7 @@ func (ts *TaskSet) AddTask(task Task) bool {
 
 	// pick one if task isn't resolved and ID isn't there
 	if task.ID == 0 && task.Status != STATUS_RESOLVED {
-		for id:=1; id <= MAX_TASKS_OPEN; id++ {
+		for id := 1; id <= MAX_TASKS_OPEN; id++ {
 			if ts.tasksByID[id] == nil {
 				task.ID = id
 				task.WritePending = true
@@ -181,7 +181,7 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 }
 
 // when refering to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
-// even if the filter is set to show issues that have only some statuses. 
+// even if the filter is set to show issues that have only some statuses.
 type TaskLine struct {
 	Id       int
 	Tags     []string
@@ -228,7 +228,7 @@ func ParseTaskLine(args []string) *TaskLine {
 func (ts *TaskSet) Filter(tl *TaskLine) {
 	var tasks []*Task
 
-	for _, t := range(ts.tasks) {
+	for _, t := range ts.tasks {
 		if t.Project != tl.Project {
 			return
 		}

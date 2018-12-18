@@ -17,7 +17,7 @@ func MustGetRepoDirectory(directory ...string) string {
 
 func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 	ts := &TaskSet{
-		tasksByID: make(map[int]*Task),
+		tasksByID:   make(map[int]*Task),
 		tasksByUuid: make(map[string]*Task),
 	}
 
@@ -56,7 +56,7 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 			}
 
 			t := Task{
-				Uuid: uuid,
+				Uuid:   uuid,
 				Status: status,
 			}
 
@@ -94,7 +94,7 @@ func (t *Task) SaveToDisk() {
 
 	// delete from all other locations to make sure there is only one copy
 	// that exists
-	for _, st := range(ALL_STATUSES) {
+	for _, st := range ALL_STATUSES {
 		if st == t.Status {
 			continue
 		}
