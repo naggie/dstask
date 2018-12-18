@@ -122,5 +122,5 @@ func (ts *TaskSet) SaveToDisk(commitMsg string) {
 	// added/modified/deleted files -- only if slow.
 	root := MustExpandHome(GIT_REPO)
 	exec.Command("git", "-C", root, "add", ".").Run()
-	exec.Command("git", "-C", root, "commit", "-m", commitMsg).Run()
+	exec.Command("git", "-C", root, "commit", "--no-gpg-sign", "-m", commitMsg).Run()
 }
