@@ -183,7 +183,7 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 // when refering to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
 // even if the filter is set to show issues that have only some statuses.
 type TaskLine struct {
-	Id       int
+	ID       int
 	Tags     []string
 	AntiTags []string
 	Project  string
@@ -216,7 +216,7 @@ func ParseTaskLine(args ...string) *TaskLine {
 	}
 
 	return &TaskLine{
-		Id:       id,
+		ID:       id,
 		Tags:     tags,
 		AntiTags: antiTags,
 		Project:  project,
@@ -228,33 +228,39 @@ func ParseTaskLine(args ...string) *TaskLine {
 func (ts *TaskSet) Filter(tl *TaskLine) {
 	var tasks []*Task
 
-	for _, task := range ts.tasks {
-		if tl.Id &&{
-			return []*Task{task}
-		}
+	OUTER:
+		for _, task := range ts.tasks {
+			if tl.ID != 0  && tl.ID == task.ID {
+				ts.tasks = []*Task{task}
+				return
+			}
 
-		for _, tag := range(tl.Tags) {
-			
-		}
+			for _, tag := range(tl.Tags) {
+				if !StrSliceContains(task.Tags, tag) {
+					continue OUTER
+				}
+			}
 
-		for _, tag := range(tl.AntiTags) {
-			
-		}
+			for _, tag := range(tl.AntiTags) {
+				if StrSliceContains(task.Tags, tag) {
+					continue OUTER
+				}
+			}
 
-		if tl.Project != "" && task.Project != tl.Project {
-			continue
-		}
+			if tl.Project != "" && task.Project != tl.Project {
+				continue
+			}
 
-		if tl.Priority != "" && task.Priority != tl.Priority {
-			continue
-		}
+			if tl.Priority != "" && task.Priority != tl.Priority {
+				continue
+			}
 
-		if tl.Text != "" && !strings.Contains(strings.ToLower(task.Summary + task.Description), strings.ToLower(tl.Text)) {
-			continue
-		}
+			if tl.Text != "" && !strings.Contains(strings.ToLower(task.Summary + task.Description), strings.ToLower(tl.Text)) {
+				continue
+			}
 
-		tasks = append(tasks, task)
-	}
+			tasks = append(tasks, task)
+		}
 
 	ts.tasks = tasks
 }
