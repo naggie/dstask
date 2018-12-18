@@ -141,7 +141,7 @@ func (ts *TaskSet) AddTask(task Task) bool {
 	}
 
 	// pick one if task isn't resolved and ID isn't there
-	if task.Status != STATUS_RESOLVED {
+	if task.ID == 0 && task.Status != STATUS_RESOLVED {
 		for id:=1; id <= MAX_TASKS_OPEN; id++ {
 			if ts.tasksByID[id] == nil {
 				task.ID = id
