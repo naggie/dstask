@@ -6,6 +6,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path"
 	"time"
 )
@@ -111,8 +112,15 @@ func (t *Task) SaveToDisk() {
 }
 
 // may be removed
-func (ts *TaskSet) SaveToDisk() {
+func (ts *TaskSet) SaveToDisk(commitMsg string) {
 	for _, task := range ts.tasks {
 		task.SaveToDisk()
 	}
+
+	// git add all changed/created files
+	// could optimise this to be given an explicit list of
+	// added/modified/deleted files -- only if slow.
+	root := MustExpandHome(GIT_REPO)
+	exec.Command("git", "-C", root, "add", ".").Run()
+	exec.Command("git", "-C", root, "commit", "-m", commitMsg).Run()
 }

@@ -32,9 +32,26 @@ func main() {
 				Project: tl.Project,
 				Priority: tl.Priority,
 			})
-			ts.SaveToDisk()
+			ts.SaveToDisk("Added: "+ tl.Text)
 
 		case "start":
+			if len(os.Args) != 3 {
+				dstask.Help()
+			}
+
+			ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+			idStr, _ := strconv.Atoi(os.Args[2])
+			task := ts.MustGetByID(idStr)
+
+			// TODO probably allow more here
+			if task.Status != dstask.STATUS_PENDING {
+				dstask.ExitFail("That task is not pending")
+			}
+
+			task.Status = dstask.STATUS_ACTIVE
+			ts.MustUpdateTask(task)
+			ts.SaveToDisk("Started: "+ task.Summary)
+
 		case "stop":
 			if len(os.Args) != 3 {
 				dstask.Help()
@@ -50,7 +67,7 @@ func main() {
 
 			task.Status = dstask.STATUS_PENDING
 			ts.MustUpdateTask(task)
-			ts.SaveToDisk()
+			ts.SaveToDisk("Stopped: "+ task.Summary)
 
 		case "done":
 		case "context":
@@ -63,7 +80,7 @@ func main() {
 		case "import-tw":
 			ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
 			ts.ImportFromTaskwarrior()
-			ts.SaveToDisk()
+			ts.SaveToDisk("Import from taskwarrior")
 
 		case "help":
 			dstask.Help()

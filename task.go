@@ -125,10 +125,6 @@ func (ts *TaskSet) AddTask(task Task) bool {
 		task.Uuid = MustGetUuid4String()
 	}
 
-	if task.Created.IsZero() {
-		task.Created = time.Now()
-	}
-
 	if ts.tasksByUuid[task.Uuid] != nil {
 		// load tasks, do not overwrite
 		return false
@@ -149,9 +145,15 @@ func (ts *TaskSet) AddTask(task Task) bool {
 		for id:=1; id <= MAX_TASKS_OPEN; id++ {
 			if ts.tasksByID[id] == nil {
 				task.ID = id
+				task.WritePending = true
 				break
 			}
 		}
+	}
+
+	if task.Created.IsZero() {
+		task.Created = time.Now()
+		task.WritePending = true
 	}
 
 	ts.tasks = append(ts.tasks, &task)
