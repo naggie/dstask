@@ -31,7 +31,7 @@ func main() {
 				Project:      tl.Project,
 				Priority:     tl.Priority,
 			})
-			ts.SaveToDisk("Added: " + tl.Text)
+			ts.SaveToDisk("Added: " + tl.Text + " " + context.String())
 
 		case "start":
 			if len(os.Args) != 3 {
