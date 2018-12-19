@@ -228,41 +228,45 @@ func ParseTaskLine(args ...string) *TaskLine {
 func (ts *TaskSet) Filter(tl *TaskLine) {
 	var tasks []*Task
 
-	OUTER:
-		for _, task := range ts.tasks {
-			if tl.ID != 0  && tl.ID == task.ID {
-				ts.tasks = []*Task{task}
-				return
-			}
-
-			for _, tag := range(tl.Tags) {
-				if !StrSliceContains(task.Tags, tag) {
-					continue OUTER
-				}
-			}
-
-			for _, tag := range(tl.AntiTags) {
-				if StrSliceContains(task.Tags, tag) {
-					continue OUTER
-				}
-			}
-
-			if tl.Project != "" && task.Project != tl.Project {
-				continue
-			}
-
-			if tl.Priority != "" && task.Priority != tl.Priority {
-				continue
-			}
-
-			if tl.Text != "" && !strings.Contains(strings.ToLower(task.Summary + task.Description), strings.ToLower(tl.Text)) {
-				continue
-			}
-
+	for _, task := range ts.tasks {
+		if task.MatchesFilter(tl) {
 			tasks = append(tasks, task)
 		}
+	}
 
 	ts.tasks = tasks
+}
+
+func (t *Task) MatchesFilter(tl *TaskLine) bool {
+	if tl.ID != 0  && tl.ID == t.ID {
+		return false
+	}
+
+	for _, tag := range(tl.Tags) {
+		if !StrSliceContains(t.Tags, tag) {
+			return false
+		}
+	}
+
+	for _, tag := range(tl.AntiTags) {
+		if StrSliceContains(t.Tags, tag) {
+			return false
+		}
+	}
+
+	if tl.Project != "" && t.Project != tl.Project {
+		return false
+	}
+
+	if tl.Priority != "" && t.Priority != tl.Priority {
+		return false
+	}
+
+	if tl.Text != "" && !strings.Contains(strings.ToLower(t.Summary + t.Description), strings.ToLower(tl.Text)) {
+		return false
+	}
+
+	return true
 }
 
 func (ts *TaskSet) MustGetByID(id int) Task {
