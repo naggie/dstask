@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"fmt"
 )
 
 func main() {
@@ -131,6 +132,11 @@ func main() {
 			ts.Filter(context)
 			ts.Filter(tl)
 			ts.SortTaskList()
+			if context.String() != "" {
+				fmt.Printf("\n\n\033[33mActive context: %s\033[0m\n", context)
+			} else {
+				fmt.Printf("\n\n\n")
+			}
 			ts.Display()
 	}
 }

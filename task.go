@@ -187,6 +187,38 @@ type TaskLine struct {
 	Text     string
 }
 
+// reconstruct args string
+func (tl TaskLine) String() string {
+	var args []string
+	var annotatedTags []string
+
+	if tl.ID > 0 {
+		args = append(args, strconv.Itoa(tl.ID))
+	}
+
+	for _, tag := range(tl.Tags) {
+		annotatedTags = append(annotatedTags, "+"+tag)
+	}
+	for _, tag := range(tl.AntiTags) {
+		annotatedTags = append(annotatedTags, "-"+tag)
+	}
+	args = append(args, annotatedTags...)
+
+	if tl.Project != "" {
+		args = append(args, "project:"+tl.Project)
+	}
+
+	if tl.Priority != "" {
+		args = append(args, tl.Priority)
+	}
+
+	if tl.Text != "" {
+		args = append(args, "\""+tl.Text+"\"")
+	}
+
+	return strings.Join(args, " ")
+}
+
 func ParseTaskLine(args ...string) TaskLine {
 	var id int
 	var tags []string
