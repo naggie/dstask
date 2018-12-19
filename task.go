@@ -18,10 +18,6 @@ const (
 	STATUS_SOMEDAY   = "someday"
 	STATUS_RECURRING = "recurring" // tentative
 
-	GIT_REPO = "~/.dstask/"
-	// space delimited keyword file for compgen
-	COMPLETION_FILE = "~/.cache/dstask/completions"
-
 	// filter: P1 P2 etc
 	PRIORITY_CRITICAL = "P1"
 	PRIORITY_HIGH     = "P2"
@@ -191,7 +187,7 @@ type TaskLine struct {
 	Text     string
 }
 
-func ParseTaskLine(args ...string) *TaskLine {
+func ParseTaskLine(args ...string) TaskLine {
 	var id int
 	var tags []string
 	var antiTags []string
@@ -215,7 +211,7 @@ func ParseTaskLine(args ...string) *TaskLine {
 		}
 	}
 
-	return &TaskLine{
+	return TaskLine{
 		ID:       id,
 		Tags:     tags,
 		AntiTags: antiTags,
@@ -225,7 +221,7 @@ func ParseTaskLine(args ...string) *TaskLine {
 	}
 }
 
-func (ts *TaskSet) Filter(tl *TaskLine) {
+func (ts *TaskSet) Filter(tl TaskLine) {
 	var tasks []*Task
 
 	for _, task := range ts.tasks {
@@ -237,7 +233,7 @@ func (ts *TaskSet) Filter(tl *TaskLine) {
 	ts.tasks = tasks
 }
 
-func (t *Task) MatchesFilter(tl *TaskLine) bool {
+func (t *Task) MatchesFilter(tl TaskLine) bool {
 	if tl.ID != 0  && t.ID == tl.ID {
 		return true
 	}

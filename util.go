@@ -9,6 +9,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"encoding/gob"
 )
 
 func ExitFail(msg string) {
@@ -90,4 +91,32 @@ func StrSliceContains(haystack []string, needle string) bool {
 	}
 
 	return false
+}
+
+func MustWriteGob(filePath string,object interface{}) {
+	file, err := os.Create(filePath)
+	defer file.Close()
+
+	if err != nil {
+		ExitFail("Failed to open file for writing: "+filePath)
+	}
+
+	encoder := gob.NewEncoder(file)
+	encoder.Encode(object)
+}
+
+func MustReadGob(filePath string,object interface{}) {
+	file, err := os.Open(filePath)
+	defer file.Close()
+
+	if err != nil {
+		ExitFail("Failed to open file for reading: "+filePath)
+	}
+
+	decoder := gob.NewDecoder(file)
+	err = decoder.Decode(object)
+
+	if err != nil {
+		ExitFail("Failed to parse gob: "+filePath)
+	}
 }

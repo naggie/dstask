@@ -7,7 +7,15 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"time"
+)
+
+const (
+	GIT_REPO = "~/.dstask/"
+	// space delimited keyword file for compgen
+	COMPLETION_FILE = "~/.cache/dstask/completions"
+	CONTEXT_FILE = "~/.cache/dstask/context"
 )
 
 func MustGetRepoDirectory(directory ...string) string {
@@ -121,4 +129,22 @@ func (ts *TaskSet) SaveToDisk(commitMsg string) {
 	// added/modified/deleted files -- only if slow.
 	MustRunGitCmd("add", ".")
 	MustRunGitCmd("commit", "--no-gpg-sign", "-m", commitMsg)
+}
+
+func SaveContext(args ...string) {
+	fp := MustExpandHome(COMPLETION_FILE)
+	os.MkdirAll(filepath.Dir(fp), os.ModePerm)
+	context := ParseTaskLine(args...)
+	MustWriteGob(fp, &context)
+}
+
+func LoadContext() TaskLine {
+	fp := MustExpandHome(COMPLETION_FILE)
+	if _, err := os.Stat(fp); os.IsNotExist(err) {
+		return TaskLine{}
+	}
+
+	context := TaskLine{}
+	MustReadGob(fp, &context)
+	return context
 }
