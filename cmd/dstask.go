@@ -4,6 +4,7 @@ import (
 	"github.com/naggie/dstask"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 	"fmt"
 )
@@ -86,6 +87,18 @@ func main() {
 			task.Resolved = time.Now() // could move to MustUpdateTask
 			ts.MustUpdateTask(task)
 			ts.SaveToDisk("Resolved: " + task.Summary)
+
+		case "comment":
+			if len(os.Args) < 3 {
+				dstask.Help()
+			}
+
+			ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+			idStr, _ := strconv.Atoi(os.Args[2])
+			task := ts.MustGetByID(idStr)
+			task.Comments = append(task.Comments, strings.Join(os.Args[2:], " "))
+			ts.MustUpdateTask(task)
+			ts.SaveToDisk("Commented: " + task.Summary)
 
 		case "context":
 			if len(os.Args) < 3 {

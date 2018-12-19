@@ -179,6 +179,7 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 // when refering to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
 // even if the filter is set to show issues that have only some statuses.
 type TaskLine struct {
+	// TODO remove ID -- not used!
 	ID       int
 	Tags     []string
 	AntiTags []string
