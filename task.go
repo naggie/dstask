@@ -238,8 +238,8 @@ func (ts *TaskSet) Filter(tl *TaskLine) {
 }
 
 func (t *Task) MatchesFilter(tl *TaskLine) bool {
-	if tl.ID != 0  && tl.ID == t.ID {
-		return false
+	if tl.ID != 0  && t.ID == tl.ID {
+		return true
 	}
 
 	for _, tag := range(tl.Tags) {
