@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/naggie/dstask"
+	"gopkg.in/yaml.v2"
 	"os"
 	"strconv"
 	"strings"

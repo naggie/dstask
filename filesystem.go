@@ -70,12 +70,12 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 
 			data, err := ioutil.ReadFile(filepath)
 			if err != nil {
-				ExitFail("Failed to read " + filepath)
+				ExitFail("Failed to read %s", filepath)
 			}
 			err = yaml.Unmarshal(data, &t)
 			if err != nil {
 				// TODO present error to user, specific error message is important
-				ExitFail("Failed to parse " + filepath)
+				ExitFail("Failed to unmarshal %s", filepath)
 			}
 
 			ts.AddTask(t)
@@ -94,10 +94,13 @@ func (t *Task) SaveToDisk() {
 
 	filepath := MustGetRepoDirectory(t.Status, t.Uuid+".yml")
 	d, err := yaml.Marshal(&t)
+	if err != nil {
+		ExitFail("Failed to marshal task %s", t)
+	}
 
 	err = ioutil.WriteFile(filepath, d, 0600)
 	if err != nil {
-		ExitFail("Failed to write task")
+		ExitFail("Failed to write task %s", t)
 	}
 
 	// delete from all other locations to make sure there is only one copy
