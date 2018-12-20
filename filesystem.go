@@ -95,6 +95,7 @@ func (t *Task) SaveToDisk() {
 	filepath := MustGetRepoDirectory(t.Status, t.Uuid+".yml")
 	d, err := yaml.Marshal(&t)
 	if err != nil {
+		// TODO present error to user, specific error message is important
 		ExitFail("Failed to marshal task %s", t)
 	}
 

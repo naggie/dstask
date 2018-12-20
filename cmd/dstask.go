@@ -79,7 +79,7 @@ func main() {
 			idStr, _ := strconv.Atoi(os.Args[2])
 			task := ts.MustGetByID(idStr)
 
-			// TODO could move to MustUpdateTask
+			// TODO definitely move to MustUpdateTask
 			if task.Status == dstask.STATUS_RESOLVED {
 				dstask.ExitFail("That task is already resolved")
 			}
@@ -114,6 +114,32 @@ func main() {
 
 		case "modify":
 		case "edit":
+			if len(os.Args) != 3 {
+				dstask.Help()
+			}
+
+			ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+			idStr, _ := strconv.Atoi(os.Args[2])
+			task := ts.MustGetByID(idStr)
+
+			data, err := yaml.Marshal(&task)
+			if err != nil {
+				// TODO present error to user, specific error message is important
+				dstask.ExitFail("Failed to marshal task %s", task)
+			}
+
+			data = dstask.MustEditBytes(data, "yml")
+
+			err = yaml.Unmarshal(data, &task)
+			if err != nil {
+				// TODO present error to user, specific error message is important
+				// TODO reattempt mechansim
+				dstask.ExitFail("Failed to unmarshal yml")
+			}
+
+			ts.MustUpdateTask(task)
+			ts.SaveToDisk("Edited: " + task.Summary)
+
 		case "describe":
 		case "projects":
 		case "day":
