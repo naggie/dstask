@@ -12,8 +12,8 @@ import (
 	"encoding/gob"
 )
 
-func ExitFail(msg string) {
-	fmt.Fprintf(os.Stderr, "\033[31m%s\033[0m\n", msg)
+func ExitFail(format string, a ...interface{}) {
+	fmt.Fprintf(os.Stderr, "\033[31m"+format+"\033[0m\n", a...)
 	os.Exit(1)
 }
 
@@ -71,16 +71,21 @@ func FixStr(text string, width int) string {
 	}
 }
 
+func MustRunCmd(name string, args ...string) {
+	cmd := exec.Command(name, args...)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	err := cmd.Run()
+
+	if err != nil {
+		ExitFail("%s cmd failed", cmd)
+	}
+}
+
 func MustRunGitCmd(args ...string) {
 	root := MustExpandHome(GIT_REPO)
 	args = append([]string{"-C", root}, args...)
-	out, err := exec.Command("git", args...).CombinedOutput()
-
-	fmt.Printf(string(out))
-	if err != nil {
-		ExitFail("Git command failed")
-	}
-
+	MustRunCmd("git", args...)
 }
 
 func StrSliceContains(haystack []string, needle string) bool {
@@ -98,7 +103,7 @@ func MustWriteGob(filePath string,object interface{}) {
 	defer file.Close()
 
 	if err != nil {
-		ExitFail("Failed to open file for writing: "+filePath)
+		ExitFail("Failed to open %s for writing: ", filePath)
 	}
 
 	encoder := gob.NewEncoder(file)
@@ -110,13 +115,14 @@ func MustReadGob(filePath string,object interface{}) {
 	defer file.Close()
 
 	if err != nil {
-		ExitFail("Failed to open file for reading: "+filePath)
+		ExitFail("Failed to open %s for reading: ", filePath)
 	}
 
 	decoder := gob.NewDecoder(file)
 	err = decoder.Decode(object)
 
 	if err != nil {
-		ExitFail("Failed to parse gob: "+filePath)
+		ExitFail("Failed to parse gob: %s", filePath)
 	}
 }
+
