@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gofrs/uuid"
 	"os"
+	"io/ioutil"
 	"os/exec"
 	"os/user"
 	"path"
@@ -86,6 +87,32 @@ func MustRunGitCmd(args ...string) {
 	root := MustExpandHome(GIT_REPO)
 	args = append([]string{"-C", root}, args...)
 	MustRunCmd("git", args...)
+}
+
+func MustEditBytes(data []byte, ext string) []byte {
+	editor := os.Getenv("EDITOR")
+
+	if editor == "" {
+		editor = "vim"
+	}
+
+	tmpfile, err := ioutil.TempFile("", "dstask.*."+ext)
+	if err != nil {
+		ExitFail("Could not create temporary file to edit")
+	}
+	defer os.Remove(tmpfile.Name())
+
+	 _, err = tmpfile.Write(data)
+	tmpfile.Close()
+
+	if err != nil {
+		ExitFail("Could not write to temporary file to edit")
+	}
+
+	MustRunCmd(editor, tmpfile.Name())
+	data, err = ioutil.ReadFile(tmpfile.Name())
+
+	return data
 }
 
 func StrSliceContains(haystack []string, needle string) bool {
