@@ -147,6 +147,10 @@ func (ts *TaskSet) AddTask(task Task) bool {
 		}
 	}
 
+	if task.Priority == "" {
+		task.Priority = PRIORITY_NORMAL
+	}
+
 	if task.Created.IsZero() {
 		task.Created = time.Now()
 		task.WritePending = true
