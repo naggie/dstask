@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"fmt"
 )
 
 const (
@@ -106,6 +107,10 @@ type TaskSet struct {
 	tasksByUuid map[string]*Task
 
 	CurrentContext string
+}
+
+func (task Task) String() string {
+	return fmt.Sprintf("%s %s", task.ID, task.Summary)
 }
 
 func (ts *TaskSet) SortTaskList() {

@@ -9,6 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"time"
+	"fmt"
 )
 
 const (
@@ -123,10 +124,12 @@ func (t *Task) SaveToDisk() {
 }
 
 // may be removed
-func (ts *TaskSet) SaveToDisk(commitMsg string) {
+func (ts *TaskSet) SaveToDisk(format string, a ...interface{}) {
 	for _, task := range ts.tasks {
 		task.SaveToDisk()
 	}
+
+	commitMsg := fmt.Sprintf(format, a...)
 
 	// git add all changed/created files
 	// could optimise this to be given an explicit list of

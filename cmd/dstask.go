@@ -25,15 +25,16 @@ func main() {
 
 			ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 			tl := dstask.ParseTaskLine(os.Args[2:]...)
-			ts.AddTask(dstask.Task{
+			task := dstask.Task{
 				WritePending: true,
 				Status:       dstask.STATUS_PENDING,
 				Summary:      tl.Text,
 				Tags:         tl.Tags,
 				Project:      tl.Project,
 				Priority:     tl.Priority,
-			})
-			ts.SaveToDisk("Added: " + tl.Text + " " + context.String())
+			}
+			ts.AddTask(task)
+			ts.SaveToDisk("Added %s", task)
 
 		case "start":
 			if len(os.Args) != 3 {
@@ -51,7 +52,7 @@ func main() {
 
 			task.Status = dstask.STATUS_ACTIVE
 			ts.MustUpdateTask(task)
-			ts.SaveToDisk("Started: " + task.Summary)
+			ts.SaveToDisk("Started: %s", task)
 
 		case "stop":
 			if len(os.Args) != 3 {
@@ -68,7 +69,7 @@ func main() {
 
 			task.Status = dstask.STATUS_PENDING
 			ts.MustUpdateTask(task)
-			ts.SaveToDisk("Stopped: " + task.Summary)
+			ts.SaveToDisk("Stopped %s", task)
 
 		case "resolve":
 			if len(os.Args) != 3 {
@@ -87,7 +88,7 @@ func main() {
 			task.Status = dstask.STATUS_RESOLVED
 			task.Resolved = time.Now() // could move to MustUpdateTask
 			ts.MustUpdateTask(task)
-			ts.SaveToDisk("Resolved: " + task.Summary)
+			ts.SaveToDisk("Resolved %s", task)
 
 		case "comment":
 			if len(os.Args) < 3 {
@@ -99,7 +100,7 @@ func main() {
 			task := ts.MustGetByID(idStr)
 			task.Comments = append(task.Comments, strings.Join(os.Args[2:], " "))
 			ts.MustUpdateTask(task)
-			ts.SaveToDisk("Commented: " + task.Summary)
+			ts.SaveToDisk("Commented %s", task)
 
 		case "context":
 			if len(os.Args) < 3 {
@@ -138,7 +139,7 @@ func main() {
 			}
 
 			ts.MustUpdateTask(task)
-			ts.SaveToDisk("Edited: " + task.Summary)
+			ts.SaveToDisk("Edited %s", task)
 
 		case "describe":
 		case "projects":
