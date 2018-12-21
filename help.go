@@ -7,6 +7,8 @@ import (
 
 func Help() {
 	fmt.Fprintf(os.Stderr, `
+Usage: task <cmd> [args...]
+
 run "task help <cmd>" for command specific help.
 
 Available commands:
