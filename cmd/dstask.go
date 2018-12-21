@@ -160,7 +160,7 @@ func main() {
 			dstask.MustRunGitCmd(os.Args[2:]...)
 
 		case "undo":
-			dstask.MustRunGitCmd("revert", "HEAD")
+			dstask.MustRunGitCmd("revert", "--no-edit", "HEAD")
 
 		case "help":
 			dstask.Help()
