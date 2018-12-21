@@ -1,8 +1,8 @@
 package dstask
 
 import (
-	"os"
 	"fmt"
+	"os"
 )
 
 func Help() {

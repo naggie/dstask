@@ -3,20 +3,20 @@ package dstask
 // an interface to the filesystem/git based database -- loading, saving, committing
 
 import (
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"time"
-	"fmt"
 )
 
 const (
 	GIT_REPO = "~/.dstask/"
 	// space delimited keyword file for compgen
 	COMPLETION_FILE = "~/.cache/dstask/completions"
-	CONTEXT_FILE = "~/.cache/dstask/context"
+	CONTEXT_FILE    = "~/.cache/dstask/context"
 )
 
 func MustGetRepoDirectory(directory ...string) string {
@@ -33,7 +33,7 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 	gitDotGitLocation := MustGetRepoDirectory(".git")
 
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
-		ExitFail("Could not find git repository at " + GIT_REPO + ", please clone or create. Try `task help` for more information.")
+		ExitFail("Could not find git repository at " + GIT_REPO + ", please clone or create. Try `dstask help` for more information.")
 	}
 
 	for _, status := range statuses {

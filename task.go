@@ -3,11 +3,11 @@ package dstask
 // main task data structures
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
-	"fmt"
 )
 
 const (
@@ -199,13 +199,13 @@ type TaskLine struct {
 
 // used for applying a context to a new task
 func (tl *TaskLine) MergeContext(_tl TaskLine) {
-	for _, tag := range(_tl.Tags) {
+	for _, tag := range _tl.Tags {
 		if !StrSliceContains(tl.Tags, tag) {
 			tl.Tags = append(tl.Tags, tag)
 		}
 	}
 
-	for _, tag := range(_tl.AntiTags) {
+	for _, tag := range _tl.AntiTags {
 		if !StrSliceContains(tl.AntiTags, tag) {
 			tl.AntiTags = append(tl.AntiTags, tag)
 		}
@@ -238,10 +238,10 @@ func (tl TaskLine) String() string {
 		args = append(args, strconv.Itoa(tl.ID))
 	}
 
-	for _, tag := range(tl.Tags) {
+	for _, tag := range tl.Tags {
 		annotatedTags = append(annotatedTags, "+"+tag)
 	}
-	for _, tag := range(tl.AntiTags) {
+	for _, tag := range tl.AntiTags {
 		annotatedTags = append(annotatedTags, "-"+tag)
 	}
 	args = append(args, annotatedTags...)
@@ -308,17 +308,17 @@ func (ts *TaskSet) Filter(tl TaskLine) {
 }
 
 func (t *Task) MatchesFilter(tl TaskLine) bool {
-	if tl.ID != 0  && t.ID == tl.ID {
+	if tl.ID != 0 && t.ID == tl.ID {
 		return true
 	}
 
-	for _, tag := range(tl.Tags) {
+	for _, tag := range tl.Tags {
 		if !StrSliceContains(t.Tags, tag) {
 			return false
 		}
 	}
 
-	for _, tag := range(tl.AntiTags) {
+	for _, tag := range tl.AntiTags {
 		if StrSliceContains(t.Tags, tag) {
 			return false
 		}
@@ -332,7 +332,7 @@ func (t *Task) MatchesFilter(tl TaskLine) bool {
 		return false
 	}
 
-	if tl.Text != "" && !strings.Contains(strings.ToLower(t.Summary + t.Description), strings.ToLower(tl.Text)) {
+	if tl.Text != "" && !strings.Contains(strings.ToLower(t.Summary+t.Description), strings.ToLower(tl.Text)) {
 		return false
 	}
 

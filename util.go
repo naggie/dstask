@@ -1,16 +1,16 @@
 package dstask
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/gofrs/uuid"
-	"os"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"os/user"
 	"path"
 	"strconv"
 	"strings"
-	"encoding/gob"
 )
 
 func ExitFail(format string, a ...interface{}) {
@@ -106,7 +106,7 @@ func MustEditBytes(data []byte, ext string) []byte {
 	}
 	defer os.Remove(tmpfile.Name())
 
-	 _, err = tmpfile.Write(data)
+	_, err = tmpfile.Write(data)
 	tmpfile.Close()
 
 	if err != nil {
@@ -120,7 +120,7 @@ func MustEditBytes(data []byte, ext string) []byte {
 }
 
 func StrSliceContains(haystack []string, needle string) bool {
-	for _, item := range(haystack) {
+	for _, item := range haystack {
 		if item == needle {
 			return true
 		}
@@ -129,7 +129,7 @@ func StrSliceContains(haystack []string, needle string) bool {
 	return false
 }
 
-func MustWriteGob(filePath string,object interface{}) {
+func MustWriteGob(filePath string, object interface{}) {
 	file, err := os.Create(filePath)
 	defer file.Close()
 
@@ -141,7 +141,7 @@ func MustWriteGob(filePath string,object interface{}) {
 	encoder.Encode(object)
 }
 
-func MustReadGob(filePath string,object interface{}) {
+func MustReadGob(filePath string, object interface{}) {
 	file, err := os.Open(filePath)
 	defer file.Close()
 
@@ -156,4 +156,3 @@ func MustReadGob(filePath string,object interface{}) {
 		ExitFail("Failed to parse gob: %s", filePath)
 	}
 }
-
