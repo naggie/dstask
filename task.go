@@ -110,7 +110,7 @@ type TaskSet struct {
 }
 
 func (task Task) String() string {
-	return fmt.Sprintf("%s %s", task.ID, task.Summary)
+	return fmt.Sprintf("%v: %s", task.ID, task.Summary)
 }
 
 func (ts *TaskSet) SortTaskList() {
@@ -119,16 +119,15 @@ func (ts *TaskSet) SortTaskList() {
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return STATUS_ORDER[ts.tasks[i].Status] < STATUS_ORDER[ts.tasks[j].Status] })
 }
 
-// add a task, but only if it has a new uuid or no uuid. Return true if task
-// was added.
-func (ts *TaskSet) AddTask(task Task) bool {
+// add a task, but only if it has a new uuid or no uuid. Return annotated task.
+func (ts *TaskSet) AddTask(task Task) Task {
 	if task.Uuid == "" {
 		task.Uuid = MustGetUuid4String()
 	}
 
 	if ts.tasksByUuid[task.Uuid] != nil {
 		// load tasks, do not overwrite
-		return false
+		return Task{}
 	}
 
 	// resolved task should not have ID
@@ -164,7 +163,7 @@ func (ts *TaskSet) AddTask(task Task) bool {
 	ts.tasks = append(ts.tasks, &task)
 	ts.tasksByUuid[task.Uuid] = &task
 	ts.tasksByID[task.ID] = &task
-	return true
+	return task
 }
 
 // TODO maybe this is the place to check for invalid state transitions instead

@@ -34,7 +34,7 @@ func main() {
 			Project:      tl.Project,
 			Priority:     tl.Priority,
 		}
-		ts.AddTask(task)
+		task = ts.AddTask(task)
 		ts.SaveToDisk("Added %s", task)
 
 	case "start":
