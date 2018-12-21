@@ -139,14 +139,14 @@ func (ts *TaskSet) SaveToDisk(format string, a ...interface{}) {
 }
 
 func SaveContext(args ...string) {
-	fp := MustExpandHome(COMPLETION_FILE)
+	fp := MustExpandHome(CONTEXT_FILE)
 	os.MkdirAll(filepath.Dir(fp), os.ModePerm)
 	context := ParseTaskLine(args...)
 	MustWriteGob(fp, &context)
 }
 
 func LoadContext() TaskLine {
-	fp := MustExpandHome(COMPLETION_FILE)
+	fp := MustExpandHome(CONTEXT_FILE)
 	if _, err := os.Stat(fp); os.IsNotExist(err) {
 		return TaskLine{}
 	}
