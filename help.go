@@ -7,64 +7,31 @@ import (
 
 func Help() {
 	fmt.Fprintf(os.Stderr, `
-Usage: task add <filter> <summary>
-Example: task add +work Fix CI building P2
+run "task help <cmd>" for command specific help.
 
-	Add a task with a summary and context. Current global context is
-	added.
+Available commands:
 
+add          : Add a task
+start        : Change task status to active
+stop         : Change task status to pending
+resolve      : Resolve a task
+comment      : Add a comment to a task
+context      : Set global context for task list and new tasks
+modify       : set attributes for a task
+edit         : Edit task with text editor
+describe     : Add a detailed description in text editor
+undo         : Undo last action with git revert
+git          : Pass a command to git in the repository. Used for push/pull.
 
-Usage: task <id>
+day          : Show tasks completed since midnight in current context
+week         : Show tasks completed within the last week
+projects     : List projects with completion status
 
-	Show detailed information about a task
+import-tw    : Import tasks from taskwarrior
 
-
-Usage: task
-Usage: task <filter>
-Example: task P1
-
-	List available tasks.
-
-
-Usage: task context <context>
-Usage: task context none
-Example: task context project:dstask
-Example: task context +work +bug
-
-	Set (or clear) a global context for all queries and inserts.
+help         : Get help on any command or show this message
 
 
-
-Usage: taskwarrior export | task import-from-taskwarrior
-	Import tasks from taskwarrior. Note that existing tasks will not be
-	updated. This is to avoid dealing with conflicts.
-
-
-Usage: task help
-
-	Show this help dialog
-
-
-Usage: task modify <id> <attributes...>
-
-Usage: task edit <id>
-
-Usage: task describe <id>
-
-
-Usage: task week
-
-	Show tasks completed in the last week, rolling
-
-
-Usage: task day
-
-	Show tasks completed since midnight
-
-
-Usage: task projects
-
-	List project status (percentage done, estimated completion time)
 `)
 	os.Exit(1)
 }

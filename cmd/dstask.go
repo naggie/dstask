@@ -154,19 +154,22 @@ func main() {
 		ts.SaveToDisk("Edited %s", task)
 
 	case "describe":
-	case "projects":
+
+	case "undo":
+		dstask.MustRunGitCmd("revert", "--no-edit", "HEAD")
+
+	case "git":
+		dstask.MustRunGitCmd(os.Args[2:]...)
+
 	case "day":
 	case "week":
+
 	case "import-tw":
 		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
 		ts.ImportFromTaskwarrior()
 		ts.SaveToDisk("Import from taskwarrior")
 
-	case "git":
-		dstask.MustRunGitCmd(os.Args[2:]...)
-
-	case "undo":
-		dstask.MustRunGitCmd("revert", "--no-edit", "HEAD")
+	case "projects":
 
 	case "help":
 		dstask.Help()
