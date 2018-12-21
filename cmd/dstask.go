@@ -126,8 +126,11 @@ func main() {
 		}
 
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		idStr, _ := strconv.Atoi(os.Args[2])
-		task := ts.MustGetByID(idStr)
+		id, _ := strconv.Atoi(os.Args[2])
+		task := ts.MustGetByID(id)
+
+		// hide ID
+		task.ID = 0
 
 		data, err := yaml.Marshal(&task)
 		if err != nil {
@@ -143,6 +146,9 @@ func main() {
 			// TODO reattempt mechansim
 			dstask.ExitFail("Failed to unmarshal yml")
 		}
+
+		// re-add ID
+		task.ID = id
 
 		ts.MustUpdateTask(task)
 		ts.SaveToDisk("Edited %s", task)

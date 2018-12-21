@@ -75,7 +75,7 @@ type Task struct {
 	WritePending bool `yaml:"-"`
 
 	// ephemeral, used to address tasks quickly. Non-resolved only.
-	ID int
+	ID int `yaml:",omitempty"`
 
 	// concise representation of task
 	Summary string
