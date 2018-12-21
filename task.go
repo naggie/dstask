@@ -20,10 +20,10 @@ const (
 	STATUS_RECURRING = "recurring" // tentative
 
 	// filter: P1 P2 etc
-	PRIORITY_CRITICAL = "P1"
-	PRIORITY_HIGH     = "P2"
-	PRIORITY_NORMAL   = "P3"
-	PRIORITY_LOW      = "P4"
+	PRIORITY_CRITICAL = "P0"
+	PRIORITY_HIGH     = "P1"
+	PRIORITY_NORMAL   = "P2"
+	PRIORITY_LOW      = "P3"
 
 	MAX_TASKS_OPEN = 10000
 )
