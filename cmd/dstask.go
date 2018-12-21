@@ -25,6 +25,7 @@ func main() {
 
 			ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 			tl := dstask.ParseTaskLine(os.Args[2:]...)
+			tl.MergeContext(context)
 			task := dstask.Task{
 				WritePending: true,
 				Status:       dstask.STATUS_PENDING,

@@ -197,6 +197,38 @@ type TaskLine struct {
 	Text     string
 }
 
+// used for applying a context to a new task
+func (tl *TaskLine) MergeContext(_tl TaskLine) {
+	for _, tag := range(_tl.Tags) {
+		if !StrSliceContains(tl.Tags, tag) {
+			tl.Tags = append(tl.Tags, tag)
+		}
+	}
+
+	for _, tag := range(_tl.AntiTags) {
+		if !StrSliceContains(tl.AntiTags, tag) {
+			tl.AntiTags = append(tl.AntiTags, tag)
+		}
+	}
+
+	// TODO same for antitags
+	if _tl.Project != "" {
+		if tl.Project != "" {
+			ExitFail("Could not apply context, project conflict")
+		} else {
+			tl.Project = _tl.Project
+		}
+	}
+
+	if _tl.Priority != "" {
+		if tl.Priority != "" {
+			ExitFail("Could not apply context, priority conflict")
+		} else {
+			tl.Priority = _tl.Priority
+		}
+	}
+}
+
 // reconstruct args string
 func (tl TaskLine) String() string {
 	var args []string
