@@ -73,7 +73,7 @@ func main() {
 			ts.SaveToDisk("Stopped %s", task)
 
 		case "resolve":
-			if len(os.Args) != 3 {
+			if len(os.Args) < 3 {
 				dstask.Help()
 			}
 
@@ -87,6 +87,11 @@ func main() {
 			}
 
 			task.Status = dstask.STATUS_RESOLVED
+
+			if len(os.Args) > 3 {
+				task.Comments = append(task.Comments, strings.Join(os.Args[3:], " "))
+			}
+
 			task.Resolved = time.Now() // could move to MustUpdateTask
 			ts.MustUpdateTask(task)
 			ts.SaveToDisk("Resolved %s", task)
