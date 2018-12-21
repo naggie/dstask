@@ -9,7 +9,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"time"
 )
 
 const (
@@ -90,8 +89,6 @@ func (t *Task) SaveToDisk() {
 	if !t.WritePending {
 		return
 	}
-
-	t.Modified = time.Now()
 
 	filepath := MustGetRepoDirectory(t.Status, t.Uuid+".yml")
 	d, err := yaml.Marshal(&t)

@@ -138,7 +138,6 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 			// FieldsFunc required instead of split as split returns a slice of len(1) when empty...
 			Dependencies: strings.FieldsFunc(twTask.Depends, func(c rune) bool { return c == ',' }),
 			Created:      twTask.Entry.Time,
-			Modified:     twTask.Modified.Time,
 			Resolved:     twTask.GetResolvedTime(),
 			Due:          twTask.Due.Time,
 		})

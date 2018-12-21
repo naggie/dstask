@@ -94,7 +94,6 @@ type Task struct {
 	Dependencies []string
 
 	Created  time.Time
-	Modified time.Time
 	Resolved time.Time
 	Due      time.Time
 }
