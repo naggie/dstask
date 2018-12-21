@@ -15,6 +15,9 @@ Non-features:
    to use dstask to track what you are working on in the context of a
    multi-person project tracked elsewhere.
 
+<p align="center">
+  <img width="460" height="300" src="https://github.com/naggie/dstask/raw/master/dstask.png">
+</p>
 
 # Moving from Taskwarrior
 
