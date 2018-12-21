@@ -154,6 +154,16 @@ func main() {
 		ts.SaveToDisk("Edited %s", task)
 
 	case "describe":
+		if len(os.Args) != 3 {
+			dstask.Help()
+		}
+
+		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		id, _ := strconv.Atoi(os.Args[2])
+		task := ts.MustGetByID(id)
+		task.Description = string(dstask.MustEditBytes([]byte(task.Description), "md"))
+		ts.MustUpdateTask(task)
+		ts.SaveToDisk("Describe %s", task)
 
 	case "undo":
 		dstask.MustRunGitCmd("revert", "--no-edit", "HEAD")
