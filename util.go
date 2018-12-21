@@ -65,6 +65,8 @@ func SumInts(vals ...int) int {
 }
 
 func FixStr(text string, width int) string {
+	// remove after newline
+	text = strings.Split(text, "\n")[0]
 	if len(text) <= width {
 		return fmt.Sprintf("%-"+strconv.Itoa(width)+"v", text)
 	} else {
