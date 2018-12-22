@@ -139,6 +139,14 @@ func (ts *TaskSet) SaveToDisk(format string, a ...interface{}) {
 }
 
 func SaveContext(context CmdLine) {
+	if len(context.IDs) != 0 {
+		ExitFail("Context cannot contain IDs")
+	}
+
+	if context.Text != "" {
+		ExitFail("Context cannot contain text")
+	}
+
 	fp := MustExpandHome(CONTEXT_FILE)
 	os.MkdirAll(filepath.Dir(fp), os.ModePerm)
 	MustWriteGob(fp, &context)
