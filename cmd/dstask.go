@@ -89,7 +89,7 @@ func main() {
 		task.Status = dstask.STATUS_RESOLVED
 
 		if len(os.Args) > 3 {
-			task.Comments = append(task.Comments, strings.Join(os.Args[3:], " "))
+			task.Notes += "\n" + strings.Join(os.Args[3:], " ")
 		}
 
 		task.Resolved = time.Now() // could move to MustUpdateTask
@@ -147,9 +147,9 @@ func main() {
 		task := ts.MustGetByID(id)
 
 		if len(os.Args) == 3 {
-			task.Description = string(dstask.MustEditBytes([]byte(task.Description), "md"))
+			task.Notes = string(dstask.MustEditBytes([]byte(task.Notes), "md"))
 		} else {
-			task.Description += "\n" + strings.Join(os.Args[3:], " ")
+			task.Notes += "\n" + strings.Join(os.Args[3:], " ")
 		}
 
 		ts.MustUpdateTask(task)

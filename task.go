@@ -79,15 +79,14 @@ type Task struct {
 
 	// concise representation of task
 	Summary string
-	// task in more detail, only if necessary
-	Description string
+	// more detail, or information to remember to complete the task
+	Notes       string
 	Tags        []string
 	Project     string
 	// see const.go for PRIORITY_ strings
 	Priority    string
 	DelegatedTo string
 	Subtasks    []SubTask
-	Comments    []string
 	// uuids of tasks that this task depends on
 	// blocked status can be derived.
 	// TODO possible filter: :blocked. Also, :overdue
@@ -330,7 +329,7 @@ func (t *Task) MatchesFilter(tl TaskLine) bool {
 		return false
 	}
 
-	if tl.Text != "" && !strings.Contains(strings.ToLower(t.Summary+t.Description), strings.ToLower(tl.Text)) {
+	if tl.Text != "" && !strings.Contains(strings.ToLower(t.Summary+t.Notes), strings.ToLower(tl.Text)) {
 		return false
 	}
 

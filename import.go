@@ -75,6 +75,16 @@ var priorityMap = map[string]string{
 	"":  PRIORITY_NORMAL,
 }
 
+func (t *TwTask) ConvertAnnotations() string {
+	var comments []string
+
+	for _, ann := range t.Annotations {
+		comments = append(comments, ann.Description)
+	}
+
+	return strings.Join(comments, "\n")
+}
+
 // convert a tw status into a dstask status
 func (t *TwTask) ConvertStatus() string {
 	if !t.Start.Time.IsZero() {
@@ -95,16 +105,6 @@ func (t *TwTask) ConvertStatus() string {
 	default:
 		return t.Status
 	}
-}
-
-func (t *TwTask) ConvertAnnotations() []string {
-	var comments []string
-
-	for _, ann := range t.Annotations {
-		comments = append(comments, ann.Description)
-	}
-
-	return comments
 }
 
 // resolved time is not tracked. Give best guess.
@@ -134,7 +134,7 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 			Tags:         twTask.Tags,
 			Project:      twTask.Project,
 			Priority:     priorityMap[twTask.Priority],
-			Comments:     twTask.ConvertAnnotations(),
+			Notes:        twTask.ConvertAnnotations(),
 			// FieldsFunc required instead of split as split returns a slice of len(1) when empty...
 			Dependencies: strings.FieldsFunc(twTask.Depends, func(c rune) bool { return c == ',' }),
 			Created:      twTask.Entry.Time,
