@@ -37,7 +37,7 @@ func main() {
 		task = ts.AddTask(task)
 		ts.SaveToDisk("Added %s", task)
 
-	case "start":
+	case CMD_START:
 		if len(os.Args) != 3 {
 			dstask.Help()
 		}
@@ -55,7 +55,7 @@ func main() {
 		ts.MustUpdateTask(task)
 		ts.SaveToDisk("Started: %s", task)
 
-	case "stop":
+	case CMD_STOP:
 		if len(os.Args) != 3 {
 			dstask.Help()
 		}
@@ -72,7 +72,7 @@ func main() {
 		ts.MustUpdateTask(task)
 		ts.SaveToDisk("Stopped %s", task)
 
-	case "resolve":
+	case CMD_RESOLVE:
 		if len(os.Args) < 3 {
 			dstask.Help()
 		}
@@ -96,7 +96,7 @@ func main() {
 		ts.MustUpdateTask(task)
 		ts.SaveToDisk("Resolved %s", task)
 
-	case "context":
+	case CMD_CONTEXT:
 		if len(os.Args) < 3 {
 			dstask.Help()
 		}
@@ -107,8 +107,8 @@ func main() {
 			dstask.SaveContext(os.Args[2:]...)
 		}
 
-	case "modify":
-	case "edit":
+	case CMD_MODIFY
+	case CMD_EDIT:
 		if len(os.Args) != 3 {
 			dstask.Help()
 		}
@@ -141,7 +141,7 @@ func main() {
 		ts.MustUpdateTask(task)
 		ts.SaveToDisk("Edited %s", task)
 
-	case "annotate":
+	case CMD_ANNOTATE:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		id, _ := strconv.Atoi(os.Args[2])
 		task := ts.MustGetByID(id)
@@ -155,23 +155,23 @@ func main() {
 		ts.MustUpdateTask(task)
 		ts.SaveToDisk("Describe %s", task)
 
-	case "undo":
+	case CMD_UNDO:
 		dstask.MustRunGitCmd("revert", "--no-edit", "HEAD")
 
-	case "git":
+	case GMD_GIT:
 		dstask.MustRunGitCmd(os.Args[2:]...)
 
-	case "day":
-	case "week":
+	case CMD_DAY:
+	case CMD_WEEK:
 
-	case "import-tw":
+	case CMD_IMPORT_TW:
 		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
 		ts.ImportFromTaskwarrior()
 		ts.SaveToDisk("Import from taskwarrior")
 
-	case "projects":
+	case CMD_PROJECTS:
 
-	case "help":
+	case CMD_HELP:
 		dstask.Help()
 
 	default:
