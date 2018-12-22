@@ -215,10 +215,23 @@ func ParseCmdLine(args ...string) CmdLine {
 	var priority string
 	var words []string
 
+	// something other than an ID has been parsed -- accept no more IDs
+	var idsExhausted bool
+
 	for i, item := range args {
-		if s, err := strconv.ParseInt(item, 10, 64); i == 0 && err == nil {
-			id = int(s)
-		} else if strings.HasPrefix(item, "project:") {
+		if i == 0 && StrSliceContains(ALL_CMDS, item) {
+			cmd = item
+			continue
+		}
+
+		if s, err := strconv.ParseInt(item, 10, 64); !idsExhausted && err == nil {
+			ids = append(ids, int(s))
+			continue
+		}
+
+		idsExhausted = true
+
+		if strings.HasPrefix(item, "project:") {
 			project = item[8:]
 		} else if len(item) > 2 && item[0:1] == "+" {
 			tags = append(tags, item[1:])
@@ -232,7 +245,8 @@ func ParseCmdLine(args ...string) CmdLine {
 	}
 
 	return CmdLine{
-		ID:       id,
+		Cmd:      cmd,
+		IDs:      ids,
 		Tags:     tags,
 		AntiTags: antiTags,
 		Project:  project,
