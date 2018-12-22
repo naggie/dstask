@@ -96,18 +96,6 @@ func main() {
 		ts.MustUpdateTask(task)
 		ts.SaveToDisk("Resolved %s", task)
 
-	case "comment":
-		if len(os.Args) < 3 {
-			dstask.Help()
-		}
-
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		idStr, _ := strconv.Atoi(os.Args[2])
-		task := ts.MustGetByID(idStr)
-		task.Comments = append(task.Comments, strings.Join(os.Args[2:], " "))
-		ts.MustUpdateTask(task)
-		ts.SaveToDisk("Commented %s", task)
-
 	case "context":
 		if len(os.Args) < 3 {
 			dstask.Help()
@@ -153,15 +141,17 @@ func main() {
 		ts.MustUpdateTask(task)
 		ts.SaveToDisk("Edited %s", task)
 
-	case "describe":
-		if len(os.Args) != 3 {
-			dstask.Help()
-		}
-
+	case "annotate":
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		id, _ := strconv.Atoi(os.Args[2])
 		task := ts.MustGetByID(id)
-		task.Description = string(dstask.MustEditBytes([]byte(task.Description), "md"))
+
+		if len(os.Args) == 3 {
+			task.Description = string(dstask.MustEditBytes([]byte(task.Description), "md"))
+		} else {
+			task.Description += "\n" + strings.Join(os.Args[3:], " ")
+		}
+
 		ts.MustUpdateTask(task)
 		ts.SaveToDisk("Describe %s", task)
 
