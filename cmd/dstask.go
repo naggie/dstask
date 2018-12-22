@@ -26,10 +26,6 @@ func main() {
 		ts.Display()
 
 	case dstask.CMD_ADD:
-		if len(os.Args) < 3 {
-			dstask.Help()
-		}
-
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		cmdLine.MergeContext(context)
 		task := dstask.Task{
@@ -44,10 +40,6 @@ func main() {
 		ts.SaveToDisk("Added %s", task)
 
 	case dstask.CMD_START:
-		if len(os.Args) != 3 {
-			dstask.Help()
-		}
-
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range(cmdLine.IDs) {
 			task := ts.MustGetByID(id)
@@ -63,10 +55,6 @@ func main() {
 		}
 
 	case dstask.CMD_STOP:
-		if len(os.Args) != 3 {
-			dstask.Help()
-		}
-
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range(cmdLine.IDs) {
 			task := ts.MustGetByID(id)
@@ -81,10 +69,6 @@ func main() {
 		}
 
 	case dstask.CMD_RESOLVE:
-		if len(os.Args) < 3 {
-			dstask.Help()
-		}
-
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range(cmdLine.IDs) {
 			task := ts.MustGetByID(id)
@@ -106,10 +90,6 @@ func main() {
 		}
 
 	case dstask.CMD_CONTEXT:
-		if len(os.Args) < 3 {
-			dstask.Help()
-		}
-
 		if os.Args[2] == "none" {
 			dstask.SaveContext(dstask.CmdLine{})
 		} else {
@@ -118,10 +98,6 @@ func main() {
 
 	case dstask.CMD_MODIFY:
 	case dstask.CMD_EDIT:
-		if len(os.Args) != 3 {
-			dstask.Help()
-		}
-
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range(cmdLine.IDs) {
 			task := ts.MustGetByID(id)
