@@ -12,27 +12,35 @@ import (
 
 func main() {
 	context := dstask.LoadContext()
-
-	if len(os.Args) == 1 {
-		os.Args = append(os.Args, "next")
-	}
+	cmdLine := dstask.ParseCmdLine(os.Args[1:])
 
 	switch os.Args[1] {
-	case "add":
+	case CMD_NEXT:
+		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts.Filter(context)
+		ts.Filter(cmdLine)
+		ts.SortTaskList()
+		if context.String() != "" {
+			fmt.Printf("\n\n\033[33mActive context: %s\033[0m\n", context)
+		} else {
+			fmt.Printf("\n\n\n")
+		}
+		ts.Display()
+
+	case AMD_ADD:
 		if len(os.Args) < 3 {
 			dstask.Help()
 		}
 
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		tl := dstask.ParseCmdLine(os.Args[2:]...)
-		tl.MergeContext(context)
+		cmdLine.MergeContext(context)
 		task := dstask.Task{
 			WritePending: true,
 			Status:       dstask.STATUS_PENDING,
-			Summary:      tl.Text,
-			Tags:         tl.Tags,
-			Project:      tl.Project,
-			Priority:     tl.Priority,
+			Summary:      cmdLine.Text,
+			Tags:         cmdLine.Tags,
+			Project:      cmdLine.Project,
+			Priority:     cmdLine.Priority,
 		}
 		task = ts.AddTask(task)
 		ts.SaveToDisk("Added %s", task)
@@ -107,7 +115,7 @@ func main() {
 			dstask.SaveContext(os.Args[2:]...)
 		}
 
-	case CMD_MODIFY
+	case CMD_MODIFY:
 	case CMD_EDIT:
 		if len(os.Args) != 3 {
 			dstask.Help()
@@ -174,25 +182,5 @@ func main() {
 	case CMD_HELP:
 		dstask.Help()
 
-	default:
-		var args []string
-		// next, or just a filter which is effectively an alias for next
-		if os.Args[1] == "next" {
-			args = os.Args[2:]
-		} else {
-			args = os.Args[1:]
-		}
-
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		tl := dstask.ParseCmdLine(args...)
-		ts.Filter(context)
-		ts.Filter(tl)
-		ts.SortTaskList()
-		if context.String() != "" {
-			fmt.Printf("\n\n\033[33mActive context: %s\033[0m\n", context)
-		} else {
-			fmt.Printf("\n\n\n")
-		}
-		ts.Display()
 	}
 }

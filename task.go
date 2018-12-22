@@ -28,9 +28,9 @@ type Task struct {
 	// concise representation of task
 	Summary string
 	// more detail, or information to remember to complete the task
-	Notes       string
-	Tags        []string
-	Project     string
+	Notes   string
+	Tags    []string
+	Project string
 	// see const.go for PRIORITY_ strings
 	Priority    string
 	DelegatedTo string
@@ -242,6 +242,10 @@ func ParseCmdLine(args ...string) CmdLine {
 		} else {
 			words = append(words, item)
 		}
+	}
+
+	if cmd == "" {
+		cmd = CMD_NEXT
 	}
 
 	return CmdLine{

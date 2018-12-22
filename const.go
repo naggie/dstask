@@ -9,22 +9,22 @@ const (
 	STATUS_SOMEDAY   = "someday"
 	STATUS_RECURRING = "recurring" // tentative
 
-	CMD_ADD          = "add"
-	CMD_START        = "start"
-	CMD_ANNOTATE     = "annotate"
-	CMD_STOP         = "stop"
-	CMD_RESOLVE      = "resolve"
-	CMD_CONTEXT      = "context"
-	CMD_MODIFY       = "modify"
-	CMD_EDIT         = "edit"
-	CMD_UNDO         = "undo"
-	CMD_GIT          = "git"
-	CMD_DAY          = "day"
-	CMD_WEEK         = "week"
-	CMD_PROJECTS     = "projects"
-	CMD_IMPORT_TW    = "import-tw"
-	CMD_HELP         = "help"
-
+	CMD_NEXT      = "next"
+	CMD_ADD       = "add"
+	CMD_START     = "start"
+	CMD_ANNOTATE  = "annotate"
+	CMD_STOP      = "stop"
+	CMD_RESOLVE   = "resolve"
+	CMD_CONTEXT   = "context"
+	CMD_MODIFY    = "modify"
+	CMD_EDIT      = "edit"
+	CMD_UNDO      = "undo"
+	CMD_GIT       = "git"
+	CMD_DAY       = "day"
+	CMD_WEEK      = "week"
+	CMD_PROJECTS  = "projects"
+	CMD_IMPORT_TW = "import-tw"
+	CMD_HELP      = "help"
 
 	// filter: P1 P2 etc
 	PRIORITY_CRITICAL = "P0"
@@ -67,6 +67,7 @@ var STATUS_ORDER = map[string]int{
 }
 
 var ALL_CMDS = []string{
+	CMD_NEXT,
 	CMD_ADD,
 	CMD_START,
 	CMD_ANNOTATE,
