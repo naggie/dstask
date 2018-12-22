@@ -10,58 +10,6 @@ import (
 	"time"
 )
 
-const (
-	STATUS_PENDING   = "pending"
-	STATUS_ACTIVE    = "active"
-	STATUS_RESOLVED  = "resolved"
-	STATUS_DELEGATED = "delegated"
-	STATUS_DEFERRED  = "deferred"
-	STATUS_SOMEDAY   = "someday"
-	STATUS_RECURRING = "recurring" // tentative
-
-	// filter: P1 P2 etc
-	PRIORITY_CRITICAL = "P0"
-	PRIORITY_HIGH     = "P1"
-	PRIORITY_NORMAL   = "P2"
-	PRIORITY_LOW      = "P3"
-
-	MAX_TASKS_OPEN = 10000
-)
-
-// for import (etc) it's necessary to have full context
-var ALL_STATUSES = []string{
-	STATUS_ACTIVE,
-	STATUS_PENDING,
-	STATUS_DELEGATED,
-	STATUS_DEFERRED,
-	STATUS_SOMEDAY,
-	STATUS_RECURRING,
-	STATUS_RESOLVED,
-}
-
-// for most operations, it's not necessary or desirable to load the expensive resolved tasks
-var NON_RESOLVED_STATUSES = []string{
-	STATUS_ACTIVE,
-	STATUS_PENDING,
-	STATUS_DELEGATED,
-	STATUS_DEFERRED,
-	STATUS_SOMEDAY,
-	STATUS_RECURRING,
-}
-
-// TODO consider using iota enum for statuses, with custom marshaller
-// https://gist.github.com/lummie/7f5c237a17853c031a57277371528e87
-// though this seems simpler
-var STATUS_ORDER = map[string]int{
-	STATUS_ACTIVE:    1,
-	STATUS_PENDING:   2,
-	STATUS_DELEGATED: 3,
-	STATUS_DEFERRED:  4,
-	STATUS_SOMEDAY:   5,
-	STATUS_RECURRING: 6,
-	STATUS_RESOLVED:  7,
-}
-
 type SubTask struct {
 	Summary  string
 	Resolved bool
@@ -185,8 +133,8 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 // when refering to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
 // even if the filter is set to show issues that have only some statuses.
 type CmdLine struct {
-	// TODO remove ID -- not used!
-	ID       int
+	Cmd      string
+	IDs      []int
 	Tags     []string
 	AntiTags []string
 	Project  string
@@ -259,7 +207,8 @@ func (tl CmdLine) String() string {
 }
 
 func ParseCmdLine(args ...string) CmdLine {
-	var id int
+	var cmd string
+	var ids []int
 	var tags []string
 	var antiTags []string
 	var project string
