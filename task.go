@@ -307,7 +307,7 @@ func (task *Task) MatchesFilter(cmdLine CmdLine) bool {
 
 func (ts *TaskSet) MustGetByID(id int) Task {
 	if ts.tasksByID[id] == nil {
-		ExitFail("No open task with that ID exists.")
+		ExitFail("No open task with ID %v exists.", id)
 	}
 
 	return *ts.tasksByID[id]
