@@ -19,6 +19,8 @@ const (
 	CMD_MODIFY    = "modify"
 	CMD_EDIT      = "edit"
 	CMD_UNDO      = "undo"
+	CMD_PUSH      = "push"
+	CMD_PULL      = "pull"
 	CMD_GIT       = "git"
 	CMD_DAY       = "day"
 	CMD_WEEK      = "week"
@@ -77,6 +79,8 @@ var ALL_CMDS = []string{
 	CMD_MODIFY,
 	CMD_EDIT,
 	CMD_UNDO,
+	CMD_PUSH,
+	CMD_PULL,
 	CMD_GIT,
 	CMD_DAY,
 	CMD_WEEK,

@@ -144,6 +144,12 @@ func main() {
 	case dstask.CMD_UNDO:
 		dstask.MustRunGitCmd("revert", "--no-edit", "HEAD")
 
+	case dstask.CMD_PUSH:
+		dstask.MustRunGitCmd("push", "origin", "master")
+
+	case dstask.CMD_PULL:
+		dstask.MustRunGitCmd("pull", "--commit", "origin", "master")
+
 	case dstask.CMD_GIT:
 		dstask.MustRunGitCmd(os.Args[2:]...)
 
