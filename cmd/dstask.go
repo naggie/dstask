@@ -24,7 +24,7 @@ func main() {
 		}
 
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		tl := dstask.ParseTaskLine(os.Args[2:]...)
+		tl := dstask.ParseCmdLine(os.Args[2:]...)
 		tl.MergeContext(context)
 		task := dstask.Task{
 			WritePending: true,
@@ -184,7 +184,7 @@ func main() {
 		}
 
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		tl := dstask.ParseTaskLine(args...)
+		tl := dstask.ParseCmdLine(args...)
 		ts.Filter(context)
 		ts.Filter(tl)
 		ts.SortTaskList()

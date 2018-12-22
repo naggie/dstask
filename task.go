@@ -184,7 +184,7 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 
 // when refering to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
 // even if the filter is set to show issues that have only some statuses.
-type TaskLine struct {
+type CmdLine struct {
 	// TODO remove ID -- not used!
 	ID       int
 	Tags     []string
@@ -195,7 +195,7 @@ type TaskLine struct {
 }
 
 // used for applying a context to a new task
-func (tl *TaskLine) MergeContext(_tl TaskLine) {
+func (tl *CmdLine) MergeContext(_tl CmdLine) {
 	for _, tag := range _tl.Tags {
 		if !StrSliceContains(tl.Tags, tag) {
 			tl.Tags = append(tl.Tags, tag)
@@ -227,7 +227,7 @@ func (tl *TaskLine) MergeContext(_tl TaskLine) {
 }
 
 // reconstruct args string
-func (tl TaskLine) String() string {
+func (tl CmdLine) String() string {
 	var args []string
 	var annotatedTags []string
 
@@ -258,7 +258,7 @@ func (tl TaskLine) String() string {
 	return strings.Join(args, " ")
 }
 
-func ParseTaskLine(args ...string) TaskLine {
+func ParseCmdLine(args ...string) CmdLine {
 	var id int
 	var tags []string
 	var antiTags []string
@@ -282,7 +282,7 @@ func ParseTaskLine(args ...string) TaskLine {
 		}
 	}
 
-	return TaskLine{
+	return CmdLine{
 		ID:       id,
 		Tags:     tags,
 		AntiTags: antiTags,
@@ -292,7 +292,7 @@ func ParseTaskLine(args ...string) TaskLine {
 	}
 }
 
-func (ts *TaskSet) Filter(tl TaskLine) {
+func (ts *TaskSet) Filter(tl CmdLine) {
 	var tasks []*Task
 
 	for _, task := range ts.tasks {
@@ -304,7 +304,7 @@ func (ts *TaskSet) Filter(tl TaskLine) {
 	ts.tasks = tasks
 }
 
-func (t *Task) MatchesFilter(tl TaskLine) bool {
+func (t *Task) MatchesFilter(tl CmdLine) bool {
 	if tl.ID != 0 && t.ID == tl.ID {
 		return true
 	}
