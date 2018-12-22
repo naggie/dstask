@@ -97,6 +97,34 @@ func main() {
 		}
 
 	case dstask.CMD_MODIFY:
+		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		for _, id := range cmdLine.IDs {
+			task := ts.MustGetByID(id)
+
+			for _, tag := range(cmdLine.Tags) {
+				if !dstask.StrSliceContains(task.Tags, tag) {
+					task.Tags = append(task.Tags, tag)
+				}
+			}
+
+			for i, tag := range(cmdLine.AntiTags) {
+				if dstask.StrSliceContains(task.Tags, tag) {
+					task.Tags = append(task.Tags[:1], task.Tags[i+1:]...)
+				}
+			}
+
+			if cmdLine.Project != "" {
+				task.Project = cmdLine.Project
+			}
+
+			if cmdLine.Priority != "" {
+				task.Priority = cmdLine.Priority
+			}
+
+			ts.MustUpdateTask(task)
+			ts.SaveToDisk("Modified %s", task)
+		}
+
 	case dstask.CMD_EDIT:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
