@@ -41,7 +41,7 @@ func main() {
 
 	case dstask.CMD_START:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range(cmdLine.IDs) {
+		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
 
 			// TODO probably allow more here
@@ -56,7 +56,7 @@ func main() {
 
 	case dstask.CMD_STOP:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range(cmdLine.IDs) {
+		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
 
 			if task.Status != dstask.STATUS_ACTIVE {
@@ -70,7 +70,7 @@ func main() {
 
 	case dstask.CMD_RESOLVE:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range(cmdLine.IDs) {
+		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
 
 			// TODO definitely move to MustUpdateTask
@@ -99,7 +99,7 @@ func main() {
 	case dstask.CMD_MODIFY:
 	case dstask.CMD_EDIT:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range(cmdLine.IDs) {
+		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
 
 			// hide ID
@@ -129,7 +129,7 @@ func main() {
 
 	case dstask.CMD_ANNOTATE:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range(cmdLine.IDs) {
+		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
 			if cmdLine.Text == "" {
 				task.Notes = string(dstask.MustEditBytes([]byte(task.Notes), "md"))
@@ -140,7 +140,6 @@ func main() {
 			ts.MustUpdateTask(task)
 			ts.SaveToDisk("Describe %s", task)
 		}
-
 
 	case dstask.CMD_UNDO:
 		dstask.MustRunGitCmd("revert", "--no-edit", "HEAD")

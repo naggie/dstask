@@ -179,7 +179,7 @@ func (cmdLine CmdLine) String() string {
 	var args []string
 	var annotatedTags []string
 
-	for _, id := range(cmdLine.IDs) {
+	for _, id := range cmdLine.IDs {
 		args = append(args, strconv.Itoa(id))
 	}
 
@@ -272,8 +272,8 @@ func (ts *TaskSet) Filter(cmdLine CmdLine) {
 }
 
 func (task *Task) MatchesFilter(cmdLine CmdLine) bool {
-	for _, id := range(cmdLine.IDs) {
-		if (id == task.ID) {
+	for _, id := range cmdLine.IDs {
+		if id == task.ID {
 			return true
 		}
 	}
