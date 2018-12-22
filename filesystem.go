@@ -90,6 +90,9 @@ func (t *Task) SaveToDisk() {
 		return
 	}
 
+	// save should be idempotent
+	t.WritePending = false
+
 	filepath := MustGetRepoDirectory(t.Status, t.Uuid+".yml")
 	d, err := yaml.Marshal(&t)
 	if err != nil {
@@ -135,10 +138,9 @@ func (ts *TaskSet) SaveToDisk(format string, a ...interface{}) {
 	MustRunGitCmd("commit", "--no-gpg-sign", "-m", commitMsg)
 }
 
-func SaveContext(args ...string) {
+func SaveContext(context CmdLine) {
 	fp := MustExpandHome(CONTEXT_FILE)
 	os.MkdirAll(filepath.Dir(fp), os.ModePerm)
-	context := ParseCmdLine(args...)
 	MustWriteGob(fp, &context)
 }
 

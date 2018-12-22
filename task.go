@@ -143,64 +143,64 @@ type CmdLine struct {
 }
 
 // used for applying a context to a new task
-func (tl *CmdLine) MergeContext(_tl CmdLine) {
+func (cmdLine CmdLine) MergeContext(_tl CmdLine) {
 	for _, tag := range _tl.Tags {
-		if !StrSliceContains(tl.Tags, tag) {
-			tl.Tags = append(tl.Tags, tag)
+		if !StrSliceContains(cmdLine.Tags, tag) {
+			cmdLine.Tags = append(cmdLine.Tags, tag)
 		}
 	}
 
 	for _, tag := range _tl.AntiTags {
-		if !StrSliceContains(tl.AntiTags, tag) {
-			tl.AntiTags = append(tl.AntiTags, tag)
+		if !StrSliceContains(cmdLine.AntiTags, tag) {
+			cmdLine.AntiTags = append(cmdLine.AntiTags, tag)
 		}
 	}
 
 	// TODO same for antitags
 	if _tl.Project != "" {
-		if tl.Project != "" {
+		if cmdLine.Project != "" {
 			ExitFail("Could not apply context, project conflict")
 		} else {
-			tl.Project = _tl.Project
+			cmdLine.Project = _tl.Project
 		}
 	}
 
 	if _tl.Priority != "" {
-		if tl.Priority != "" {
+		if cmdLine.Priority != "" {
 			ExitFail("Could not apply context, priority conflict")
 		} else {
-			tl.Priority = _tl.Priority
+			cmdLine.Priority = _tl.Priority
 		}
 	}
 }
 
 // reconstruct args string
-func (tl CmdLine) String() string {
+func (cmdLine CmdLine) String() string {
 	var args []string
 	var annotatedTags []string
 
-	if tl.ID > 0 {
-		args = append(args, strconv.Itoa(tl.ID))
+	for _, id := range(cmdLine.IDs) {
+		args = append(args, strconv.Itoa(id))
 	}
 
-	for _, tag := range tl.Tags {
+	for _, tag := range cmdLine.Tags {
 		annotatedTags = append(annotatedTags, "+"+tag)
 	}
-	for _, tag := range tl.AntiTags {
+	for _, tag := range cmdLine.AntiTags {
 		annotatedTags = append(annotatedTags, "-"+tag)
 	}
 	args = append(args, annotatedTags...)
 
-	if tl.Project != "" {
-		args = append(args, "project:"+tl.Project)
+	if cmdLine.Project != "" {
+		args = append(args, "project:"+cmdLine.Project)
 	}
 
-	if tl.Priority != "" {
-		args = append(args, tl.Priority)
+	if cmdLine.Priority != "" {
+		args = append(args, cmdLine.Priority)
 	}
 
-	if tl.Text != "" {
-		args = append(args, "\""+tl.Text+"\"")
+	if cmdLine.Text != "" {
+		args = append(args, "\""+cmdLine.Text+"\"")
 	}
 
 	return strings.Join(args, " ")
@@ -259,11 +259,11 @@ func ParseCmdLine(args ...string) CmdLine {
 	}
 }
 
-func (ts *TaskSet) Filter(tl CmdLine) {
+func (ts *TaskSet) Filter(cmdLine CmdLine) {
 	var tasks []*Task
 
 	for _, task := range ts.tasks {
-		if task.MatchesFilter(tl) {
+		if task.MatchesFilter(cmdLine) {
 			tasks = append(tasks, task)
 		}
 	}
@@ -271,32 +271,34 @@ func (ts *TaskSet) Filter(tl CmdLine) {
 	ts.tasks = tasks
 }
 
-func (t *Task) MatchesFilter(tl CmdLine) bool {
-	if tl.ID != 0 && t.ID == tl.ID {
-		return true
+func (task *Task) MatchesFilter(cmdLine CmdLine) bool {
+	for _, id := range(cmdLine.IDs) {
+		if (id == task.ID) {
+			return true
+		}
 	}
 
-	for _, tag := range tl.Tags {
-		if !StrSliceContains(t.Tags, tag) {
+	for _, tag := range cmdLine.Tags {
+		if !StrSliceContains(task.Tags, tag) {
 			return false
 		}
 	}
 
-	for _, tag := range tl.AntiTags {
-		if StrSliceContains(t.Tags, tag) {
+	for _, tag := range cmdLine.AntiTags {
+		if StrSliceContains(task.Tags, tag) {
 			return false
 		}
 	}
 
-	if tl.Project != "" && t.Project != tl.Project {
+	if cmdLine.Project != "" && task.Project != cmdLine.Project {
 		return false
 	}
 
-	if tl.Priority != "" && t.Priority != tl.Priority {
+	if cmdLine.Priority != "" && task.Priority != cmdLine.Priority {
 		return false
 	}
 
-	if tl.Text != "" && !strings.Contains(strings.ToLower(t.Summary+t.Notes), strings.ToLower(tl.Text)) {
+	if cmdLine.Text != "" && !strings.Contains(strings.ToLower(task.Summary+task.Notes), strings.ToLower(cmdLine.Text)) {
 		return false
 	}
 
