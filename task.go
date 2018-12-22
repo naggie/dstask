@@ -62,7 +62,6 @@ func (task Task) String() string {
 func (ts *TaskSet) SortTaskList() {
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.Before(ts.tasks[j].Created) })
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority < ts.tasks[j].Priority })
-	sort.SliceStable(ts.tasks, func(i, j int) bool { return STATUS_ORDER[ts.tasks[i].Status] < STATUS_ORDER[ts.tasks[j].Status] })
 }
 
 // add a task, but only if it has a new uuid or no uuid. Return annotated task.
