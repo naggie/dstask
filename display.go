@@ -26,6 +26,10 @@ const (
 /// display list of filtered tasks with context and filter
 // TODO display single task in full view here
 func (ts *TaskSet) Display() {
+	if len(ts.tasks) == 0 {
+		Help()
+	}
+
 	table := NewTable(
 		"ID",
 		"Priority",

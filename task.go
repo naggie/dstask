@@ -325,3 +325,8 @@ func (ts *TaskSet) MustGetByID(id int) Task {
 
 	return *ts.tasksByID[id]
 }
+
+// TODO should probably return copies.
+func (ts *TaskSet) Tasks() []*Task {
+	return ts.tasks
+}
