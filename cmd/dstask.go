@@ -151,7 +151,7 @@ func main() {
 			}
 
 			ts.MustUpdateTask(task)
-			ts.SaveToDisk("Describe %s", task)
+			ts.SaveToDisk("Annotate %s", task)
 		}
 
 	case dstask.CMD_UNDO:
