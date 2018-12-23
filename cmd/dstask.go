@@ -56,6 +56,8 @@ func main() {
 			ts.SaveToDisk("Stopped %s", task)
 		}
 
+	case dstask.CMD_DONE:
+		fallthrough
 	case dstask.CMD_RESOLVE:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {

@@ -14,6 +14,8 @@ const (
 	CMD_START     = "start"
 	CMD_ANNOTATE  = "annotate"
 	CMD_STOP      = "stop"
+	// done === resolve, for compatibility with taskwarriro
+	CMD_DONE      = "done"
 	CMD_RESOLVE   = "resolve"
 	CMD_CONTEXT   = "context"
 	CMD_MODIFY    = "modify"
@@ -72,6 +74,7 @@ var ALL_CMDS = []string{
 	CMD_START,
 	CMD_ANNOTATE,
 	CMD_STOP,
+	CMD_DONE,
 	CMD_RESOLVE,
 	CMD_CONTEXT,
 	CMD_MODIFY,
