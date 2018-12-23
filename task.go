@@ -119,6 +119,10 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 		ExitFail("Could not find given task to update by UUID")
 	}
 
+	if !IsValidPriority(task.Priority) {
+		ExitFail("Invalid priority specified")
+	}
+
 	old := ts.tasksByUuid[task.Uuid]
 
 	if old.Status != task.Status && !IsValidStateTransition(old.Status, task.Status) {
