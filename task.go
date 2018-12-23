@@ -228,8 +228,8 @@ func ParseCmdLine(args ...string) CmdLine {
 	// something other than an ID has been parsed -- accept no more IDs
 	var idsExhausted bool
 
-	for i, item := range args {
-		if i == 0 && StrSliceContains(ALL_CMDS, item) {
+	for _, item := range args {
+		if cmd == "" && StrSliceContains(ALL_CMDS, item) {
 			cmd = item
 			continue
 		}
