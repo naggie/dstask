@@ -48,24 +48,24 @@ func (tt *TwTime) UnmarshalJSON(b []byte) error {
 }
 
 type TwAnnotation struct {
-	Description string `json:"description"`
-	Entry       string `json: entry`
+	Description string
+	Entry       string
 }
 
 type TwTask struct {
-	Description string         `json:"description"`
-	End         TwTime         `json:"end"`
-	Entry       TwTime         `json: entry`
-	Start       TwTime         `json: start`
-	Modified    TwTime         `json: modified`
-	Due         TwTime         `json: due`
-	Status      string         `json: status`
-	Project     string         `json: project`
-	Priority    string         `json: priority`
-	Depends     string         `json: depends`
-	Tags        []string       `json: tags`
-	Uuid        string         `json: uuid`
-	Annotations []TwAnnotation `json:annotations`
+	Description string
+	End         TwTime
+	Entry       TwTime
+	Start       TwTime
+	Modified    TwTime
+	Due         TwTime
+	Status      string
+	Project     string
+	Priority    string
+	Depends     string
+	Tags        []string
+	Uuid        string
+	Annotations []TwAnnotation
 }
 
 var priorityMap = map[string]string{
