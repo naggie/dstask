@@ -5,6 +5,7 @@ import (
 	"golang.org/x/sys/unix"
 	"os"
 	"strings"
+	"strconv"
 	"time"
 )
 
@@ -24,57 +25,14 @@ const (
 // should use a better console library after first POC
 
 /// display list of filtered tasks with context and filter
-// TODO display single task in full view here
 func (ts *TaskSet) Display() {
 	if len(ts.tasks) == 0 {
 		Help()
-	}
-
-	table := NewTable(
-		"ID",
-		"Priority",
-		"Tags",
-		"Project",
-		"Summary",
-	)
-
-	now := time.Now()
-
-	for _, t := range ts.tasks {
-		style := STYLE_PRIORITY_NORMAL
-
-		if t.Status == STATUS_ACTIVE {
-			style = STYLE_ACTIVE
-		} else if !t.Due.IsZero() && t.Due.Before(now) {
-			style = STYLE_PRIORITY_HIGH
-		} else if t.Priority == PRIORITY_CRITICAL {
-			style = STYLE_PRIORITY_CRITICAL
-		} else if t.Priority == PRIORITY_HIGH {
-			style = STYLE_PRIORITY_HIGH
-		} else if t.Priority == PRIORITY_LOW {
-			style = STYLE_PRIORITY_LOW
-		}
-
-		table.AddRow(
-			[]string{
-				// id should be at least 2 chars wide to match column header
-				// (headers can be truncated)
-				fmt.Sprintf("%-2d", t.ID),
-				t.Priority,
-				strings.Join(t.Tags, " "),
-				t.Project,
-				t.Summary,
-			},
-			style,
-		)
-	}
-
-	rowsRendered := table.Render(11)
-
-	if rowsRendered == len(ts.tasks) {
-		fmt.Printf("\n%v tasks.\n", len(ts.tasks))
+	} else if len(ts.tasks) == 1 {
+		DisplayTask(ts.tasks[0])
+		return
 	} else {
-		fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(ts.tasks), rowsRendered)
+		DisplayTasks(ts.tasks)
 	}
 }
 
@@ -216,4 +174,76 @@ func (t *Table) Render(gap int) int {
 	}
 
 	return len(t.Rows)
+}
+
+func DisplayTasks(tasks []*Task) {
+	table := NewTable(
+		"ID",
+		"Priority",
+		"Tags",
+		"Project",
+		"Summary",
+	)
+
+	now := time.Now()
+
+	for _, t := range tasks {
+		style := STYLE_PRIORITY_NORMAL
+
+		if t.Status == STATUS_ACTIVE {
+			style = STYLE_ACTIVE
+		} else if !t.Due.IsZero() && t.Due.Before(now) {
+			style = STYLE_PRIORITY_HIGH
+		} else if t.Priority == PRIORITY_CRITICAL {
+			style = STYLE_PRIORITY_CRITICAL
+		} else if t.Priority == PRIORITY_HIGH {
+			style = STYLE_PRIORITY_HIGH
+		} else if t.Priority == PRIORITY_LOW {
+			style = STYLE_PRIORITY_LOW
+		}
+
+		table.AddRow(
+			[]string{
+				// id should be at least 2 chars wide to match column header
+				// (headers can be truncated)
+				fmt.Sprintf("%-2d", t.ID),
+				t.Priority,
+				strings.Join(t.Tags, " "),
+				t.Project,
+				t.Summary,
+			},
+			style,
+		)
+	}
+
+	rowsRendered := table.Render(11)
+
+	if rowsRendered == len(tasks) {
+		fmt.Printf("\n%v tasks.\n", len(tasks))
+	} else {
+		fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(tasks), rowsRendered)
+	}
+}
+
+func DisplayTask(task *Task) {
+	table := NewTable(
+		"Name",
+		"Value",
+	)
+
+	table.AddRow([]string{"ID", strconv.Itoa(task.ID)}, STYLE_PRIORITY_NORMAL)
+	table.AddRow([]string{"Summary", task.Summary}, STYLE_PRIORITY_NORMAL)
+	table.AddRow([]string{"Notes", task.Notes}, STYLE_PRIORITY_NORMAL)
+	table.AddRow([]string{"Status", task.Status}, STYLE_PRIORITY_NORMAL)
+	table.AddRow([]string{"Project", task.Project}, STYLE_PRIORITY_NORMAL)
+	table.AddRow([]string{"Tags", strings.Join(task.Tags, ", ")}, STYLE_PRIORITY_NORMAL)
+	table.AddRow([]string{"UUID", task.Uuid}, STYLE_PRIORITY_NORMAL)
+	table.AddRow([]string{"Created", task.Created.String()}, STYLE_PRIORITY_NORMAL)
+	if !task.Resolved.IsZero() {
+		table.AddRow([]string{"Resolved", task.Resolved.String()}, STYLE_PRIORITY_NORMAL)
+	}
+	if !task.Due.IsZero() {
+		table.AddRow([]string{"Due", task.Due.String()}, STYLE_PRIORITY_NORMAL)
+	}
+	table.Render(0)
 }

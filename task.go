@@ -295,6 +295,11 @@ func (task *Task) MatchesFilter(cmdLine CmdLine) bool {
 		}
 	}
 
+	// IDs were specified but no match
+	if len(cmdLine.IDs) > 0 {
+		return false
+	}
+
 	for _, tag := range cmdLine.Tags {
 		if !StrSliceContains(task.Tags, tag) {
 			return false
