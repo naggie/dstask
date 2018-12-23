@@ -142,7 +142,7 @@ type CmdLine struct {
 }
 
 // used for applying a context to a new task
-func (cmdLine CmdLine) MergeContext(_tl CmdLine) {
+func (cmdLine *CmdLine) MergeContext(_tl CmdLine) {
 	for _, tag := range _tl.Tags {
 		if !StrSliceContains(cmdLine.Tags, tag) {
 			cmdLine.Tags = append(cmdLine.Tags, tag)
