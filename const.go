@@ -48,6 +48,14 @@ var ALL_STATUSES = []string{
 	STATUS_RESOLVED,
 }
 
+// incomplete until all statuses are implemented
+var VALID_STATUS_TRANSITIONS = [][]string{
+	[]string{STATUS_PENDING, STATUS_ACTIVE},
+	[]string{STATUS_ACTIVE, STATUS_PENDING},
+	[]string{STATUS_ACTIVE, STATUS_RESOLVED},
+	[]string{STATUS_PENDING, STATUS_RESOLVED},
+}
+
 // for most operations, it's not necessary or desirable to load the expensive resolved tasks
 var NON_RESOLVED_STATUSES = []string{
 	STATUS_ACTIVE,

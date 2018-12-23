@@ -119,12 +119,21 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 		ExitFail("Could not find given task to update by UUID")
 	}
 
-	task.WritePending = true
+	old := ts.tasksByUuid[task.Uuid]
+
+	if !IsValidStateTransition(old.Status, task.Status) {
+		ExitFail("Invalid state transition: %s -> %s", old.Status, task.Status)
+	}
 
 	if task.Status == STATUS_RESOLVED {
 		task.ID = 0
 	}
 
+	if task.Status == STATUS_RESOLVED && task.Resolved.IsZero() {
+		task.Resolved = time.Now()
+	}
+
+	task.WritePending = true
 	// existing pointer must point to address of new task copied
 	*ts.tasksByUuid[task.Uuid] = task
 }

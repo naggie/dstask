@@ -156,3 +156,13 @@ func MustReadGob(filePath string, object interface{}) {
 		ExitFail("Failed to parse gob: %s", filePath)
 	}
 }
+
+func IsValidStateTransition(from string, to string) bool {
+	for _, transition := range VALID_STATUS_TRANSITIONS {
+		if from == transition[0] && to == transition[1] {
+			return true
+		}
+	}
+
+	return false
+}
