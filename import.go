@@ -64,7 +64,7 @@ type TwTask struct {
 	Priority    string
 	Depends     string
 	Tags        []string
-	Uuid        string
+	UUID        string
 	Annotations []TwAnnotation
 }
 
@@ -127,7 +127,7 @@ func (ts *TaskSet) ImportFromTaskwarrior() error {
 
 	for _, twTask := range twtasks {
 		ts.AddTask(Task{
-			Uuid:         twTask.Uuid,
+			UUID:         twTask.UUID,
 			Status:       twTask.ConvertStatus(),
 			WritePending: true,
 			Summary:      twTask.Description,

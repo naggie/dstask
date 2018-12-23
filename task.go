@@ -17,7 +17,7 @@ type SubTask struct {
 
 type Task struct {
 	// not stored in file -- rather filename and directory
-	Uuid   string `yaml:"-"`
+	UUID   string `yaml:"-"`
 	Status string `yaml:"-"`
 	// is new or has changed. Need to write to disk.
 	WritePending bool `yaml:"-"`
@@ -50,7 +50,7 @@ type TaskSet struct {
 
 	// indices
 	tasksByID   map[int]*Task
-	tasksByUuid map[string]*Task
+	tasksByUUID map[string]*Task
 
 	CurrentContext string
 }
@@ -66,11 +66,11 @@ func (ts *TaskSet) SortTaskList() {
 
 // add a task, but only if it has a new uuid or no uuid. Return annotated task.
 func (ts *TaskSet) AddTask(task Task) Task {
-	if task.Uuid == "" {
-		task.Uuid = MustGetUuid4String()
+	if task.UUID == "" {
+		task.UUID = MustGetUUID4String()
 	}
 
-	if ts.tasksByUuid[task.Uuid] != nil {
+	if ts.tasksByUUID[task.UUID] != nil {
 		// load tasks, do not overwrite
 		return Task{}
 	}
@@ -106,7 +106,7 @@ func (ts *TaskSet) AddTask(task Task) Task {
 	}
 
 	ts.tasks = append(ts.tasks, &task)
-	ts.tasksByUuid[task.Uuid] = &task
+	ts.tasksByUUID[task.UUID] = &task
 	ts.tasksByID[task.ID] = &task
 	return task
 }
@@ -115,7 +115,7 @@ func (ts *TaskSet) AddTask(task Task) Task {
 // of the main switch statement. Though, a future 3rdparty sync system could
 // need this to work regardless.
 func (ts *TaskSet) MustUpdateTask(task Task) {
-	if ts.tasksByUuid[task.Uuid] == nil {
+	if ts.tasksByUUID[task.UUID] == nil {
 		ExitFail("Could not find given task to update by UUID")
 	}
 
@@ -123,7 +123,7 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 		ExitFail("Invalid priority specified")
 	}
 
-	old := ts.tasksByUuid[task.Uuid]
+	old := ts.tasksByUUID[task.UUID]
 
 	if old.Status != task.Status && !IsValidStateTransition(old.Status, task.Status) {
 		ExitFail("Invalid state transition: %s -> %s", old.Status, task.Status)
@@ -139,7 +139,7 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 
 	task.WritePending = true
 	// existing pointer must point to address of new task copied
-	*ts.tasksByUuid[task.Uuid] = task
+	*ts.tasksByUUID[task.UUID] = task
 }
 
 // when refering to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --

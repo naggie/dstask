@@ -26,7 +26,7 @@ func MustGetRepoDirectory(directory ...string) string {
 func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 	ts := &TaskSet{
 		tasksByID:   make(map[int]*Task),
-		tasksByUuid: make(map[string]*Task),
+		tasksByUUID: make(map[string]*Task),
 	}
 
 	gitDotGitLocation := MustGetRepoDirectory(".git")
@@ -59,12 +59,12 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 
 			uuid := file.Name()[0:36]
 
-			if !IsValidUuid4String(uuid) {
+			if !IsValidUUID4String(uuid) {
 				continue
 			}
 
 			t := Task{
-				Uuid:   uuid,
+				UUID:   uuid,
 				Status: status,
 			}
 
@@ -93,7 +93,7 @@ func (t *Task) SaveToDisk() {
 	// save should be idempotent
 	t.WritePending = false
 
-	filepath := MustGetRepoDirectory(t.Status, t.Uuid+".yml")
+	filepath := MustGetRepoDirectory(t.Status, t.UUID+".yml")
 	d, err := yaml.Marshal(&t)
 	if err != nil {
 		// TODO present error to user, specific error message is important
@@ -112,7 +112,7 @@ func (t *Task) SaveToDisk() {
 			continue
 		}
 
-		filepath := MustGetRepoDirectory(st, t.Uuid+".yml")
+		filepath := MustGetRepoDirectory(st, t.UUID+".yml")
 
 		if _, err := os.Stat(filepath); !os.IsNotExist(err) {
 			err := os.Remove(filepath)

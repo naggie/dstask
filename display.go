@@ -237,7 +237,7 @@ func DisplayTask(task *Task) {
 	table.AddRow([]string{"Status", task.Status}, STYLE_PRIORITY_NORMAL)
 	table.AddRow([]string{"Project", task.Project}, STYLE_PRIORITY_NORMAL)
 	table.AddRow([]string{"Tags", strings.Join(task.Tags, ", ")}, STYLE_PRIORITY_NORMAL)
-	table.AddRow([]string{"UUID", task.Uuid}, STYLE_PRIORITY_NORMAL)
+	table.AddRow([]string{"UUID", task.UUID}, STYLE_PRIORITY_NORMAL)
 	table.AddRow([]string{"Created", task.Created.String()}, STYLE_PRIORITY_NORMAL)
 	if !task.Resolved.IsZero() {
 		table.AddRow([]string{"Resolved", task.Resolved.String()}, STYLE_PRIORITY_NORMAL)

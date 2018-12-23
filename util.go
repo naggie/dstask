@@ -30,7 +30,7 @@ func MustExpandHome(filepath string) string {
 	}
 }
 
-func MustGetUuid4String() string {
+func MustGetUUID4String() string {
 	// does not match docs...
 	u, err := uuid.NewV4()
 	if err != nil {
@@ -40,7 +40,7 @@ func MustGetUuid4String() string {
 	return u.String()
 }
 
-func IsValidUuid4String(str string) bool {
+func IsValidUUID4String(str string) bool {
 	_, err := uuid.FromString(str)
 	return err == nil
 }
