@@ -121,7 +121,7 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 
 	old := ts.tasksByUuid[task.Uuid]
 
-	if !IsValidStateTransition(old.Status, task.Status) {
+	if old.Status != task.Status && !IsValidStateTransition(old.Status, task.Status) {
 		ExitFail("Invalid state transition: %s -> %s", old.Status, task.Status)
 	}
 
