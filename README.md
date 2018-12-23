@@ -19,6 +19,12 @@ Non-features:
   <img width="460" height="300" src="https://github.com/naggie/dstask/raw/master/dstask.png">
 </p>
 
+# Installation
+
+1. Copy the executable to somewhere in your path
+1. Enable bash completions
+1. Set up an alias in your bashrc: `alias task=dstask`
+
 # Moving from Taskwarrior
 
 Before installing dstask, you may want to export your taskwarrior database:
