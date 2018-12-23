@@ -229,7 +229,7 @@ func ParseCmdLine(args ...string) CmdLine {
 	var idsExhausted bool
 
 	for _, item := range args {
-		if cmd == "" && StrSliceContains(ALL_CMDS, item) {
+		if !idsExhausted && StrSliceContains(ALL_CMDS, item) {
 			cmd = item
 			continue
 		}
