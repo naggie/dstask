@@ -132,13 +132,14 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 // when refering to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
 // even if the filter is set to show issues that have only some statuses.
 type CmdLine struct {
-	Cmd      string
-	IDs      []int
-	Tags     []string
-	AntiTags []string
-	Project  string
-	Priority string
-	Text     string
+	Cmd          string
+	IDs          []int
+	Tags         []string
+	AntiTags     []string
+	Project      string
+	AntiProjects []string
+	Priority     string
+	Text         string
 }
 
 // used for applying a context to a new task
@@ -211,6 +212,7 @@ func ParseCmdLine(args ...string) CmdLine {
 	var tags []string
 	var antiTags []string
 	var project string
+	var antiProjects []string
 	var priority string
 	var words []string
 
@@ -232,6 +234,8 @@ func ParseCmdLine(args ...string) CmdLine {
 
 		if strings.HasPrefix(item, "project:") {
 			project = item[8:]
+		} else if strings.HasPrefix(item, "-project:") {
+			antiProjects = append(antiProjects, item[9:])
 		} else if len(item) > 2 && item[0:1] == "+" {
 			tags = append(tags, item[1:])
 		} else if len(item) > 2 && item[0:1] == "-" {
@@ -248,13 +252,14 @@ func ParseCmdLine(args ...string) CmdLine {
 	}
 
 	return CmdLine{
-		Cmd:      cmd,
-		IDs:      ids,
-		Tags:     tags,
-		AntiTags: antiTags,
-		Project:  project,
-		Priority: priority,
-		Text:     strings.Join(words, " "),
+		Cmd:         cmd,
+		IDs:         ids,
+		Tags:        tags,
+		AntiTags:    antiTags,
+		Project:     project,
+		AntiProjects: antiProjects,
+		Priority:    priority,
+		Text:        strings.Join(words, " "),
 	}
 }
 

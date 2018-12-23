@@ -101,13 +101,13 @@ func main() {
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
 
-			for _, tag := range(cmdLine.Tags) {
+			for _, tag := range cmdLine.Tags {
 				if !dstask.StrSliceContains(task.Tags, tag) {
 					task.Tags = append(task.Tags, tag)
 				}
 			}
 
-			for i, tag := range(task.Tags) {
+			for i, tag := range task.Tags {
 				if dstask.StrSliceContains(cmdLine.AntiTags, tag) {
 					// delete item
 					task.Tags = append(task.Tags[:1], task.Tags[i+1:]...)
@@ -116,6 +116,10 @@ func main() {
 
 			if cmdLine.Project != "" {
 				task.Project = cmdLine.Project
+			}
+
+			if dstask.StrSliceContains(cmdLine.AntiProjects, task.Project) {
+				task.Project = ""
 			}
 
 			if cmdLine.Priority != "" {
