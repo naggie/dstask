@@ -21,7 +21,7 @@ Non-features:
 
 # Installation
 
-1. Copy the executable to somewhere in your path
+1. Copy the executable (from the [releases page][1]) to somewhere in your path, named `dstask` and mark it executable. `/usr/local/bin/` is suggested.
 1. Enable bash completions
 1. Set up an alias in your bashrc: `alias task=dstask`
 
@@ -42,3 +42,5 @@ Commands and syntax are deliberately very similar to taskwarrior. Here are the e
   * Priorities are added by the keywords `P1` `P2` `P3` `P4`. Lower number is more urgent. Default is `P3`. For example `task add eat some bananas P2`
   * Contexts are defined on-the-fly, and are added to all new tasks if set.
 
+
+[1]: https://github.com/naggie/dstask/releases/latest
