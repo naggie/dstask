@@ -24,6 +24,7 @@ const (
 // should use a better console library after first POC
 
 /// display list of filtered tasks with context and filter
+// TODO display single task in full view here
 func (ts *TaskSet) Display() {
 	table := NewTable(
 		"ID",
