@@ -139,8 +139,9 @@ func ParseCmdLine(args ...string) CmdLine {
 	var idsExhausted bool
 
 	for _, item := range args {
-		if !idsExhausted && StrSliceContains(ALL_CMDS, item) {
-			cmd = item
+		lcItem := strings.ToLower(item)
+		if !idsExhausted && StrSliceContains(ALL_CMDS, lcItem) {
+			cmd = lcItem
 			continue
 		}
 
@@ -151,14 +152,14 @@ func ParseCmdLine(args ...string) CmdLine {
 
 		idsExhausted = true
 
-		if strings.HasPrefix(item, "project:") {
-			project = item[8:]
-		} else if strings.HasPrefix(item, "-project:") {
-			antiProjects = append(antiProjects, item[9:])
-		} else if len(item) > 2 && item[0:1] == "+" {
-			tags = append(tags, item[1:])
-		} else if len(item) > 2 && item[0:1] == "-" {
-			antiTags = append(antiTags, item[1:])
+		if strings.HasPrefix(lcItem, "project:") {
+			project = lcItem[8:]
+		} else if strings.HasPrefix(lcItem, "-project:") {
+			antiProjects = append(antiProjects, lcItem[9:])
+		} else if len(item) > 2 && lcItem[0:1] == "+" {
+			tags = append(tags, lcItem[1:])
+		} else if len(item) > 2 && lcItem[0:1] == "-" {
+			antiTags = append(antiTags, lcItem[1:])
 		} else if IsValidPriority(item) {
 			priority = item
 		} else {
