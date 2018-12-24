@@ -9,11 +9,11 @@ const (
 	STATUS_SOMEDAY   = "someday"
 	STATUS_RECURRING = "recurring" // tentative
 
-	CMD_NEXT      = "next"
-	CMD_ADD       = "add"
-	CMD_START     = "start"
-	CMD_ANNOTATE  = "annotate"
-	CMD_STOP      = "stop"
+	CMD_NEXT     = "next"
+	CMD_ADD      = "add"
+	CMD_START    = "start"
+	CMD_ANNOTATE = "annotate"
+	CMD_STOP     = "stop"
 	// done === resolve, for compatibility with taskwarriro
 	CMD_DONE      = "done"
 	CMD_RESOLVE   = "resolve"
