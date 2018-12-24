@@ -221,3 +221,12 @@ func (task *Task) MatchesFilter(cmdLine CmdLine) bool {
 
 	return true
 }
+
+// make tags + projects are lowercase
+func (task *Task) Normalise() {
+	task.Project = strings.ToLower(task.Project)
+
+	for i, tag := range task.Tags {
+		task.Tags[i] = strings.ToLower(tag)
+	}
+}

@@ -24,6 +24,8 @@ func (ts *TaskSet) SortTaskList() {
 
 // add a task, but only if it has a new uuid or no uuid. Return annotated task.
 func (ts *TaskSet) AddTask(task Task) Task {
+	task.Normalise()
+
 	if task.UUID == "" {
 		task.UUID = MustGetUUID4String()
 	}
@@ -73,6 +75,8 @@ func (ts *TaskSet) AddTask(task Task) Task {
 // of the main switch statement. Though, a future 3rdparty sync system could
 // need this to work regardless.
 func (ts *TaskSet) MustUpdateTask(task Task) {
+	task.Normalise()
+
 	if ts.tasksByUUID[task.UUID] == nil {
 		ExitFail("Could not find given task to update by UUID")
 	}
