@@ -26,6 +26,7 @@ const (
 	CMD_GIT       = "git"
 	CMD_DAY       = "day"
 	CMD_WEEK      = "week"
+	CMD_OPEN      = "open"
 	CMD_PROJECTS  = "projects"
 	CMD_IMPORT_TW = "import-tw"
 	CMD_HELP      = "help"
@@ -86,6 +87,7 @@ var ALL_CMDS = []string{
 	CMD_DAY,
 	CMD_WEEK,
 	CMD_PROJECTS,
+	CMD_OPEN,
 	CMD_IMPORT_TW,
 	CMD_HELP,
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/mvdan/xurls"
 	"github.com/naggie/dstask"
 	"gopkg.in/yaml.v2"
 	"os"
@@ -170,6 +171,19 @@ func main() {
 
 	case dstask.CMD_DAY:
 	case dstask.CMD_WEEK:
+
+	case dstask.CMD_OPEN:
+		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		for _, id := range cmdLine.IDs {
+			task := ts.MustGetByID(id)
+			url := xurls.Relaxed().FindString(task.Summary + " " + task.Notes)
+
+			if url == "" {
+				dstask.ExitFail("No URL found in task %v", task.ID)
+			}
+
+			dstask.MustOpenBrowser(url)
+		}
 
 	case dstask.CMD_IMPORT_TW:
 		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
