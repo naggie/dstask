@@ -207,6 +207,10 @@ func (task *Task) MatchesFilter(cmdLine CmdLine) bool {
 		}
 	}
 
+	if StrSliceContains(cmdLine.AntiProjects, task.Project) {
+		return false
+	}
+
 	if cmdLine.Project != "" && task.Project != cmdLine.Project {
 		return false
 	}
