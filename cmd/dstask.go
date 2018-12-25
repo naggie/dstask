@@ -92,7 +92,7 @@ func main() {
 			for i, tag := range task.Tags {
 				if dstask.StrSliceContains(cmdLine.AntiTags, tag) {
 					// delete item
-					task.Tags = append(task.Tags[:1], task.Tags[i+1:]...)
+					task.Tags = append(task.Tags[:i], task.Tags[i+1:]...)
 				}
 			}
 
