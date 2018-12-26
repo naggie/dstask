@@ -161,7 +161,7 @@ func main() {
 		dstask.MustRunGitCmd("revert", "--no-edit", "HEAD")
 
 	case dstask.CMD_SYNC:
-		dstask.MustRunGitCmd("pull", "--commit", "origin", "master")
+		dstask.MustRunGitCmd("pull", "--no-edit", "--commit", "origin", "master")
 		dstask.MustRunGitCmd("push", "origin", "master")
 
 	case dstask.CMD_GIT:
