@@ -16,7 +16,7 @@ Non-features:
    multi-person project tracked elsewhere.
 
 <p align="center">
-  <img width="460" height="300" src="https://github.com/naggie/dstask/raw/master/dstask.png">
+  <img src="https://github.com/naggie/dstask/raw/master/dstask.png">
 </p>
 
 # Installation
