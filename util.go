@@ -84,7 +84,7 @@ func MustRunCmd(name string, args ...string) {
 	err := cmd.Run()
 
 	if err != nil {
-		ExitFail("%s cmd failed", name)
+		ExitFail("%s cmd failed. If there was a merge conflict, manual resolution required in ~/.dstask/", name)
 	}
 }
 

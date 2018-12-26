@@ -27,8 +27,7 @@ context      : Set global context for task list and new tasks
 modify       : Set attributes for a task
 edit         : Edit task with text editor
 undo         : Undo last action with git revert
-push         : Push to remote git repository
-pull         : Pull from remove git repository
+pull         : Pull then push to git repository, automatic merge commit.
 git          : Pass a command to git in the repository. Used for push/pull.
 day          : Show tasks completed since midnight in current context
 week         : Show tasks completed within the last week
