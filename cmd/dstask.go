@@ -6,6 +6,7 @@ import (
 	"github.com/naggie/dstask"
 	"gopkg.in/yaml.v2"
 	"os"
+	"time"
 )
 
 func main() {
@@ -167,8 +168,20 @@ func main() {
 	case dstask.CMD_GIT:
 		dstask.MustRunGitCmd(os.Args[2:]...)
 
-	case dstask.CMD_DAY:
-	case dstask.CMD_WEEK:
+	case dstask.CMD_RESOLVED_TODAY:
+		t := time.Now()
+		year, month, day := t.Date()
+		bod := time.Date(year, month, day, 0, 0, 0, 0, t.Location())
+		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
+		ts.Filter(context)
+		ts.FilterResolvedSince(bod)
+		ts.Display()
+
+	case dstask.CMD_RESOLVED_WEEK:
+		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
+		ts.Filter(context)
+		ts.FilterResolvedSince(time.Now().AddDate(0,0,-7))
+		ts.Display()
 
 	case dstask.CMD_OPEN:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
@@ -192,6 +205,5 @@ func main() {
 
 	case dstask.CMD_HELP:
 		dstask.Help()
-
 	}
 }

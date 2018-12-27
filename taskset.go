@@ -116,6 +116,18 @@ func (ts *TaskSet) Filter(cmdLine CmdLine) {
 	ts.tasks = tasks
 }
 
+func (ts *TaskSet) FilterResolvedSince(t time.Time) {
+	var tasks []*Task
+
+	for _, task := range ts.tasks {
+		if task.Resolved.After(t) {
+			tasks = append(tasks, task)
+		}
+	}
+
+	ts.tasks = tasks
+}
+
 func (ts *TaskSet) MustGetByID(id int) Task {
 	if ts.tasksByID[id] == nil {
 		ExitFail("No open task with ID %v exists.", id)
