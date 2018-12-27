@@ -14,7 +14,8 @@ type TaskSet struct {
 	tasksByID   map[int]*Task
 	tasksByUUID map[string]*Task
 
-	CurrentContext string
+	// task count before filters
+	numTasksLoaded int
 }
 
 func (ts *TaskSet) SortTaskList() {
@@ -68,6 +69,7 @@ func (ts *TaskSet) AddTask(task Task) Task {
 	ts.tasks = append(ts.tasks, &task)
 	ts.tasksByUUID[task.UUID] = &task
 	ts.tasksByID[task.ID] = &task
+	ts.numTasksLoaded += 1
 	return task
 }
 
