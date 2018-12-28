@@ -14,21 +14,21 @@ const (
 	CMD_START    = "start"
 	CMD_ANNOTATE = "annotate"
 	CMD_STOP     = "stop"
-	// done === resolve, for compatibility with taskwarriro
-	CMD_DONE      = "done"
-	CMD_RESOLVE   = "resolve"
-	CMD_CONTEXT   = "context"
-	CMD_MODIFY    = "modify"
-	CMD_EDIT      = "edit"
-	CMD_UNDO      = "undo"
-	CMD_SYNC      = "sync"
-	CMD_GIT       = "git"
-	CMD_DAY       = "day"
-	CMD_WEEK      = "week"
-	CMD_OPEN      = "open"
-	CMD_PROJECTS  = "projects"
-	CMD_IMPORT_TW = "import-tw"
-	CMD_HELP      = "help"
+	// done === resolved, for compatibility with taskwarrior
+	CMD_DONE           = "done"
+	CMD_RESOLVE        = "resolve"
+	CMD_CONTEXT        = "context"
+	CMD_MODIFY         = "modify"
+	CMD_EDIT           = "edit"
+	CMD_UNDO           = "undo"
+	CMD_SYNC           = "sync"
+	CMD_GIT            = "git"
+	CMD_RESOLVED_TODAY = "resolved-today"
+	CMD_RESOLVED_WEEK  = "resolved-week"
+	CMD_OPEN           = "open"
+	CMD_PROJECTS       = "projects"
+	CMD_IMPORT_TW      = "import-tw"
+	CMD_HELP           = "help"
 
 	// filter: P1 P2 etc
 	PRIORITY_CRITICAL = "P0"
@@ -82,8 +82,8 @@ var ALL_CMDS = []string{
 	CMD_UNDO,
 	CMD_SYNC,
 	CMD_GIT,
-	CMD_DAY,
-	CMD_WEEK,
+	CMD_RESOLVED_TODAY,
+	CMD_RESOLVED_WEEK,
 	CMD_PROJECTS,
 	CMD_OPEN,
 	CMD_IMPORT_TW,

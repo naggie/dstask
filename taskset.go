@@ -14,7 +14,8 @@ type TaskSet struct {
 	tasksByID   map[int]*Task
 	tasksByUUID map[string]*Task
 
-	CurrentContext string
+	// task count before filters
+	numTasksLoaded int
 }
 
 func (ts *TaskSet) SortTaskList() {
@@ -68,6 +69,7 @@ func (ts *TaskSet) AddTask(task Task) Task {
 	ts.tasks = append(ts.tasks, &task)
 	ts.tasksByUUID[task.UUID] = &task
 	ts.tasksByID[task.ID] = &task
+	ts.numTasksLoaded += 1
 	return task
 }
 
@@ -109,6 +111,18 @@ func (ts *TaskSet) Filter(cmdLine CmdLine) {
 
 	for _, task := range ts.tasks {
 		if task.MatchesFilter(cmdLine) {
+			tasks = append(tasks, task)
+		}
+	}
+
+	ts.tasks = tasks
+}
+
+func (ts *TaskSet) FilterResolvedSince(t time.Time) {
+	var tasks []*Task
+
+	for _, task := range ts.tasks {
+		if task.Resolved.After(t) {
 			tasks = append(tasks, task)
 		}
 	}

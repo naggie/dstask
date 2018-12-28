@@ -26,8 +26,11 @@ const (
 
 /// display list of filtered tasks with context and filter
 func (ts *TaskSet) Display() {
-	if len(ts.tasks) == 0 {
+	if ts.numTasksLoaded == 0 {
+		fmt.Println("\033[31mNo tasks found. Showing help.\033[0m")
 		Help()
+	} else if len(ts.tasks) == 0 {
+		ExitFail("No matching tasks in given context or filter.")
 	} else if len(ts.tasks) == 1 {
 		DisplayTask(ts.tasks[0])
 		return
