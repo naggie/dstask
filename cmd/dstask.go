@@ -151,7 +151,11 @@ func main() {
 			if cmdLine.Text == "" {
 				task.Notes = string(dstask.MustEditBytes([]byte(task.Notes), "md"))
 			} else {
-				task.Notes += "\n" + cmdLine.Text
+				if task.Notes == "" {
+					task.Notes = cmdLine.Text
+				} else {
+					task.Notes += "\n" + cmdLine.Text
+				}
 			}
 
 			ts.MustUpdateTask(task)
