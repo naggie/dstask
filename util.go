@@ -7,9 +7,9 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"runtime"
 	"os/user"
 	"path"
+	"runtime"
 	"strconv"
 	"strings"
 )

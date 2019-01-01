@@ -51,14 +51,15 @@ func (task Task) String() string {
 // when refering to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
 // even if the filter is set to show issues that have only some statuses.
 type CmdLine struct {
-	Cmd          string
-	IDs          []int
-	Tags         []string
-	AntiTags     []string
-	Project      string
-	AntiProjects []string
-	Priority     string
-	Text         string
+	Cmd           string
+	IDs           []int
+	Tags          []string
+	AntiTags      []string
+	Project       string
+	AntiProjects  []string
+	Priority      string
+	Text          string
+	IgnoreContext bool
 }
 
 // used for applying a context to a new task
@@ -134,6 +135,7 @@ func ParseCmdLine(args ...string) CmdLine {
 	var antiProjects []string
 	var priority string
 	var words []string
+	var ignoreContext bool
 
 	// something other than an ID has been parsed -- accept no more IDs
 	var idsExhausted bool
@@ -162,6 +164,8 @@ func ParseCmdLine(args ...string) CmdLine {
 			antiTags = append(antiTags, lcItem[1:])
 		} else if IsValidPriority(item) {
 			priority = item
+		} else if item == IGNORE_CONTEXT_KEYWORD {
+			ignoreContext = true
 		} else {
 			words = append(words, item)
 		}
@@ -172,14 +176,15 @@ func ParseCmdLine(args ...string) CmdLine {
 	}
 
 	return CmdLine{
-		Cmd:          cmd,
-		IDs:          ids,
-		Tags:         tags,
-		AntiTags:     antiTags,
-		Project:      project,
-		AntiProjects: antiProjects,
-		Priority:     priority,
-		Text:         strings.Join(words, " "),
+		Cmd:           cmd,
+		IDs:           ids,
+		Tags:          tags,
+		AntiTags:      antiTags,
+		Project:       project,
+		AntiProjects:  antiProjects,
+		Priority:      priority,
+		Text:          strings.Join(words, " "),
+		IgnoreContext: ignoreContext,
 	}
 }
 

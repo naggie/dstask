@@ -37,6 +37,8 @@ const (
 	PRIORITY_LOW      = "P3"
 
 	MAX_TASKS_OPEN = 10000
+
+	IGNORE_CONTEXT_KEYWORD = "--"
 )
 
 // for import (etc) it's necessary to have full context

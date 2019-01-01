@@ -13,6 +13,10 @@ func main() {
 	context := dstask.LoadContext()
 	cmdLine := dstask.ParseCmdLine(os.Args[1:]...)
 
+	if cmdLine.IgnoreContext {
+		context = dstask.CmdLine{}
+	}
+
 	switch cmdLine.Cmd {
 	case dstask.CMD_NEXT:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
@@ -184,7 +188,7 @@ func main() {
 	case dstask.CMD_RESOLVED_WEEK:
 		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
 		ts.Filter(context)
-		ts.FilterResolvedSince(time.Now().AddDate(0,0,-7))
+		ts.FilterResolvedSince(time.Now().AddDate(0, 0, -7))
 		ts.Display()
 
 	case dstask.CMD_OPEN:
