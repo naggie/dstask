@@ -21,7 +21,7 @@ Available commands:
 add             : Add a task
 log             : Log a task (alredy resolved)
 start           : Change task status to active
-annotate        : Append or edit notes for a task
+note            : Append to or edit note for a task
 stop            : Change task status to pending
 resolve         : Resolve a task
 context         : Set global context for task list and new tasks

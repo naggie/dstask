@@ -13,7 +13,7 @@ const (
 	CMD_ADD      = "add"
 	CMD_LOG      = "log"
 	CMD_START    = "start"
-	CMD_ANNOTATE = "annotate"
+	CMD_NOTE     = "note"
 	CMD_STOP     = "stop"
 	// done === resolved, for compatibility with taskwarrior
 	CMD_DONE           = "done"
@@ -76,7 +76,7 @@ var ALL_CMDS = []string{
 	CMD_ADD,
 	CMD_LOG,
 	CMD_START,
-	CMD_ANNOTATE,
+	CMD_NOTE,
 	CMD_STOP,
 	CMD_DONE,
 	CMD_RESOLVE,

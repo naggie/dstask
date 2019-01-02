@@ -162,7 +162,7 @@ func main() {
 			ts.SaveToDisk("Edited %s", task)
 		}
 
-	case dstask.CMD_ANNOTATE:
+	case dstask.CMD_NOTE:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
@@ -177,7 +177,7 @@ func main() {
 			}
 
 			ts.MustUpdateTask(task)
-			ts.SaveToDisk("Annotate %s", task)
+			ts.SaveToDisk("Edit note %s", task)
 		}
 
 	case dstask.CMD_UNDO:
