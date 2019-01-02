@@ -209,13 +209,13 @@ func main() {
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
-			url := xurls.Relaxed().FindString(task.Summary + " " + task.Notes)
+			urls := xurls.Relaxed().FindAllString(task.Summary + " " + task.Notes, -1)
 
-			if url == "" {
+			if len(urls) == 0 {
 				dstask.ExitFail("No URL found in task %v", task.ID)
 			}
 
-			dstask.MustOpenBrowser(url)
+			dstask.MustOpenBrowser(urls[len(urls)-1])
 		}
 
 	case dstask.CMD_IMPORT_TW:
