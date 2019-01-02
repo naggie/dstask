@@ -19,7 +19,7 @@ run "task help <cmd>" for command specific help.
 Available commands:
 
 add             : Add a task
-log             : Log a task (alredy resolved)
+log             : Log a task (already resolved)
 start           : Change task status to active
 note            : Append to or edit note for a task
 stop            : Change task status to pending
