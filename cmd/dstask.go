@@ -44,13 +44,27 @@ func main() {
 		task = ts.AddTask(task)
 		ts.SaveToDisk("Added %s", task)
 
+	case dstask.CMD_LOG:
+		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		cmdLine.MergeContext(context)
+		task := dstask.Task{
+			WritePending: true,
+			Status:       dstask.STATUS_RESOLVED,
+			Summary:      cmdLine.Text,
+			Tags:         cmdLine.Tags,
+			Project:      cmdLine.Project,
+			Priority:     cmdLine.Priority,
+		}
+		task = ts.AddTask(task)
+		ts.SaveToDisk("Logged %s", task)
+
 	case dstask.CMD_START:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
 			task.Status = dstask.STATUS_ACTIVE
 			ts.MustUpdateTask(task)
-			ts.SaveToDisk("Started: %s", task)
+			ts.SaveToDisk("Started %s", task)
 		}
 
 	case dstask.CMD_STOP:
