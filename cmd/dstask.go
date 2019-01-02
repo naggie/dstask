@@ -212,10 +212,12 @@ func main() {
 			urls := xurls.Relaxed().FindAllString(task.Summary + " " + task.Notes, -1)
 
 			if len(urls) == 0 {
-				dstask.ExitFail("No URL found in task %v", task.ID)
+				dstask.ExitFail("No URLs found in task %v", task.ID)
 			}
 
-			dstask.MustOpenBrowser(urls[len(urls)-1])
+			for _, url := range urls {
+				dstask.MustOpenBrowser(url)
+			}
 		}
 
 	case dstask.CMD_IMPORT_TW:

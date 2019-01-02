@@ -7,7 +7,7 @@ Features:
  * Powerful context system
  * Git powered sync/undo/resolve (passwordstore.org style)
  * Task listing won't break with long task text
- * `open` command -- open the first URL in specified task in the browser
+ * `open` command -- open URLs found in specified task in the browser
 
 Non-features:
 
