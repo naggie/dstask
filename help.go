@@ -16,7 +16,7 @@ P1 (high) and P0 (critical). Cmd and IDs can be swapped.
 
 run "task help <cmd>" for command specific help.
 
-Add `--` to ignore the current context.
+Add -- to ignore the current context.
 
 Available commands:
 
