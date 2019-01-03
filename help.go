@@ -11,10 +11,12 @@ Usage: task <cmd> [id...] [task summary]
 
 Where [task summary] is text with tags/project/priority specified. Tags are
 specified with + (or - for filtering) eg: +work. The project is specified with
-a "project:" prefix eg: project:dstask -- no quotes. Priorities run from P3 (low), P2 (default) to
+a gproject:g prefix eg: gproject:dstask -- no quotes. Priorities run from P3 (low), P2 (default) to
 P1 (high) and P0 (critical). Cmd and IDs can be swapped.
 
 run "task help <cmd>" for command specific help.
+
+Add `--` to ignore the current context.
 
 Available commands:
 

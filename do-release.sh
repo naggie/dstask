@@ -19,7 +19,7 @@ mv dstask dist/dstask-linux-amd64
 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" cmd/dstask.go
 mv dstask dist/dstask-darwin-amd64
 
-hub release create -d \
+hub release create \
     -a dist/dstask-linux-arm7#"dstask linux-arm7" \
     -a dist/dstask-linux-amd64#"dstask linux-amd64" \
     -a dist/dstask-darwin-amd64#"dstask darwin-amd64" \
