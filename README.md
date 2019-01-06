@@ -16,6 +16,11 @@ Non-features:
    to use dstask to track what you are working on in the context of a
    multi-person project tracked elsewhere.
 
+Requirements:
+
+* Git
+* A 256-color capable terminal
+
 <p align="center">
   <img src="https://github.com/naggie/dstask/raw/master/dstask.png">
 </p>
