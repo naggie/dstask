@@ -8,6 +8,7 @@ Features:
  * Git powered sync/undo/resolve (passwordstore.org style)
  * Task listing won't break with long task text
  * `open` command -- open URLs found in specified task in the browser
+ * `note` command -- edit a full markdown note for a task
 
 Non-features:
 
