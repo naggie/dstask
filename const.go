@@ -14,6 +14,7 @@ const (
 	CMD_LOG      = "log"
 	CMD_START    = "start"
 	CMD_NOTE     = "note"
+	CMD_NOTES    = "notes"
 	CMD_STOP     = "stop"
 	// done === resolved, for compatibility with taskwarrior
 	CMD_DONE           = "done"
@@ -77,6 +78,7 @@ var ALL_CMDS = []string{
 	CMD_LOG,
 	CMD_START,
 	CMD_NOTE,
+	CMD_NOTES,
 	CMD_STOP,
 	CMD_DONE,
 	CMD_RESOLVE,

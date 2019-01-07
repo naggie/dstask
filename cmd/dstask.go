@@ -162,6 +162,8 @@ func main() {
 			ts.SaveToDisk("Edited %s", task)
 		}
 
+	case dstask.CMD_NOTES:
+		fallthrough
 	case dstask.CMD_NOTE:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
