@@ -80,12 +80,7 @@ func MustRunCmd(name string, args ...string) {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-
-	err := cmd.Run()
-
-	if err != nil {
-		ExitFail("%s cmd failed. If there was a merge conflict, manual resolution required in ~/.dstask/", name)
-	}
+	cmd.Run()
 }
 
 func MustRunGitCmd(args ...string) {
