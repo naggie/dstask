@@ -68,7 +68,7 @@ func main() {
 				ts.MustUpdateTask(task)
 				ts.SaveToDisk("Started %s", task)
 			}
-		} else {
+		} else if len(cmdLine.Text) != 0 {
 			// create a new task that is already active (started)
 			cmdLine.MergeContext(context)
 			task := dstask.Task{
