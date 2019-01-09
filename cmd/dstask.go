@@ -60,11 +60,27 @@ func main() {
 
 	case dstask.CMD_START:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
-			task.Status = dstask.STATUS_ACTIVE
-			ts.MustUpdateTask(task)
-			ts.SaveToDisk("Started %s", task)
+		if len(cmdLine.IDs) > 0 {
+			// start given tasks by IDs
+			for _, id := range cmdLine.IDs {
+				task := ts.MustGetByID(id)
+				task.Status = dstask.STATUS_ACTIVE
+				ts.MustUpdateTask(task)
+				ts.SaveToDisk("Started %s", task)
+			}
+		} else {
+			// create a new task that is already active (started)
+			cmdLine.MergeContext(context)
+			task := dstask.Task{
+				WritePending: true,
+				Status:       dstask.STATUS_ACTIVE,
+				Summary:      cmdLine.Text,
+				Tags:         cmdLine.Tags,
+				Project:      cmdLine.Project,
+				Priority:     cmdLine.Priority,
+			}
+			task = ts.AddTask(task)
+			ts.SaveToDisk("Added and started %s", task)
 		}
 
 	case dstask.CMD_STOP:
