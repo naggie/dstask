@@ -280,6 +280,7 @@ func main() {
 		}
 
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts.Filter(context)
 		// args are dstask _completions <user command line>
 		// parse command line as normal to set rules
 		cmdLine := dstask.ParseCmdLine(originalArgs...)
