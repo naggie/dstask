@@ -250,6 +250,11 @@ func main() {
 		ts.SaveToDisk("Import from taskwarrior")
 
 	case dstask.CMD_PROJECTS:
+		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
+		projects := ts.GetProjects()
+		for name := range projects {
+			fmt.Printf("%+v\n",projects[name])
+		}
 
 	case dstask.CMD_HELP:
 		dstask.Help()
