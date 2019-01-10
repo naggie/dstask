@@ -7,6 +7,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"os"
 	"time"
+	"strings"
 )
 
 func main() {
@@ -268,21 +269,34 @@ func main() {
 		//	fmt.Println(cmd)
 		//}
 
+		var completions []string
+		var prefix string
+
 		// priorities
-		fmt.Println(dstask.PRIORITY_CRITICAL)
-		fmt.Println(dstask.PRIORITY_HIGH)
-		fmt.Println(dstask.PRIORITY_NORMAL)
-		fmt.Println(dstask.PRIORITY_LOW)
+		completions = append(completions, dstask.PRIORITY_CRITICAL)
+		completions = append(completions, dstask.PRIORITY_HIGH)
+		completions = append(completions, dstask.PRIORITY_NORMAL)
+		completions = append(completions, dstask.PRIORITY_LOW)
 
 		// projects
 		for project := range ts.GetProjects() {
-			fmt.Println("project:"+project)
+			completions = append(completions, "project:"+project)
 		}
 
 		// tags
 		for tag := range ts.GetTags() {
-			fmt.Println("+"+tag)
-			fmt.Println("-"+tag)
+			completions = append(completions, "+"+tag)
+			completions = append(completions, "-"+tag)
+		}
+
+		if len(os.Args) > 2 {
+			prefix = os.Args[2]
+		}
+
+		for _, completion := range completions {
+			if strings.HasPrefix(completion, prefix) {
+				fmt.Println(completion)
+			}
 		}
 	}
 }
