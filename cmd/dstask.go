@@ -266,6 +266,11 @@ func main() {
 		dstask.Help()
 
 	case dstask.CMD_COMPLETIONS:
+		// given the entire user's command line arguments as the arguments for
+		// this cmd, suggest possible candidates for the last arg.
+		// see the relevant shell completion bindings in this repository for
+		// integration. Note there are various idiosyncrasies with bash
+		// involving arg separation.
 		var completions []string
 		var originalArgs []string
 		var prefix string
@@ -283,7 +288,9 @@ func main() {
 		if cmdLine.Cmd == "" {
 			// commands
 			for _, cmd := range dstask.ALL_CMDS {
-				completions = append(completions, cmd)
+				if !strings.HasPrefix(cmd, "_") {
+					completions = append(completions, cmd)
+				}
 			}
 		}
 
@@ -295,9 +302,7 @@ func main() {
 
 		// projects
 		for project := range ts.GetProjects() {
-			if cmdLine.Project == "" {
-				completions = append(completions, "project:"+project)
-			}
+			completions = append(completions, "project:"+project)
 			completions = append(completions, "-project:"+project)
 		}
 
