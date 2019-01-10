@@ -280,10 +280,16 @@ func main() {
 		}
 
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
+
 		// args are dstask _completions <user command line>
 		// parse command line as normal to set rules
 		cmdLine := dstask.ParseCmdLine(originalArgs...)
+
+		// limit completions to available context, but not if the user is
+		// trying to change context or context ignore is on
+		if !cmdLine.IgnoreContext && cmdLine.Cmd != dstask.CMD_CONTEXT {
+			ts.Filter(context)
+		}
 
 		// no command specified, default given
 		if cmdLine.Cmd == "" {
