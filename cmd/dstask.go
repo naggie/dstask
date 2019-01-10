@@ -251,6 +251,8 @@ func main() {
 
 	case dstask.CMD_PROJECTS:
 		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
+		cmdLine.MergeContext(context)
+		ts.Filter(context)
 		projects := ts.GetProjects()
 		for name := range projects {
 			fmt.Printf("%+v\n",projects[name])
