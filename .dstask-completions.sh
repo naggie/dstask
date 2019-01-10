@@ -9,17 +9,14 @@ _dstask() {
 
     # hand to dstask as canonical args
     COMPREPLY=( $(dstask _completions "${original_args[@]}") )
-    # convert dstask's suggestions to remove prefix before colon so complete can understand it
-    echo orig ${COMPREPLY[@]} >> words
 
+    # convert dstask's suggestions to remove prefix before colon so complete can understand it
     local last_arg="${original_args[-1]}"
     local colon_word=${last_arg%"${last_arg##*:}"}
     local i=${#COMPREPLY[*]}
     while [[ $((--i)) -ge 0 ]]; do
         COMPREPLY[$i]=${COMPREPLY[$i]#"$colon_word"}
     done
-
-    echo new ${COMPREPLY[@]} >> words
 }
 
 complete -F _dstask dstask
