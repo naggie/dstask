@@ -266,14 +266,26 @@ func main() {
 		dstask.Help()
 
 	case dstask.CMD_COMPLETIONS:
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		// commands (first arg or arg after numbers only)
-		//for _, cmd := range dstask.ALL_CMDS {
-		//	fmt.Println(cmd)
-		//}
-
 		var completions []string
+		var originalArgs []string
 		var prefix string
+
+		if len(os.Args) > 3 {
+			originalArgs = os.Args[3:]
+		}
+
+		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		// args are dstask _completions <user command line>
+		// parse command line as normal to set rules
+		cmdLine := dstask.ParseCmdLine(originalArgs...)
+
+		// no command specified, default given
+		if cmdLine.Cmd == "" {
+			// commands
+			for _, cmd := range dstask.ALL_CMDS {
+				completions = append(completions, cmd)
+			}
+		}
 
 		// priorities
 		completions = append(completions, dstask.PRIORITY_CRITICAL)
@@ -283,7 +295,10 @@ func main() {
 
 		// projects
 		for project := range ts.GetProjects() {
-			completions = append(completions, "project:"+project)
+			if cmdLine.Project == "" {
+				completions = append(completions, "project:"+project)
+			}
+			completions = append(completions, "-project:"+project)
 		}
 
 		// tags
@@ -292,12 +307,12 @@ func main() {
 			completions = append(completions, "-"+tag)
 		}
 
-		if len(os.Args) > 2 {
-			prefix = os.Args[2]
+		if len(originalArgs) > 0 {
+			prefix = originalArgs[len(originalArgs)-1]
 		}
 
 		for _, completion := range completions {
-			if strings.HasPrefix(completion, prefix) {
+			if strings.HasPrefix(completion, prefix) && !dstask.StrSliceContains(originalArgs, completion) {
 				fmt.Println(completion)
 			}
 		}
