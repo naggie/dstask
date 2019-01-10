@@ -253,7 +253,7 @@ func main() {
 		ts.ImportFromTaskwarrior()
 		ts.SaveToDisk("Import from taskwarrior")
 
-	case dstask.CMD_PROJECTS:
+	case dstask.CMD_SHOW_PROJECTS:
 		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
 		cmdLine.MergeContext(context)
 		ts.Filter(context)

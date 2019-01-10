@@ -28,7 +28,7 @@ const (
 	CMD_RESOLVED_TODAY = "resolved-today"
 	CMD_RESOLVED_WEEK  = "resolved-week"
 	CMD_OPEN           = "open"
-	CMD_PROJECTS       = "projects"
+	CMD_SHOW_PROJECTS       = "show-projects"
 	CMD_IMPORT_TW      = "import-tw"
 	CMD_HELP           = "help"
 	CMD_COMPLETIONS    = "_completions"
@@ -91,7 +91,7 @@ var ALL_CMDS = []string{
 	CMD_GIT,
 	CMD_RESOLVED_TODAY,
 	CMD_RESOLVED_WEEK,
-	CMD_PROJECTS,
+	CMD_SHOW_PROJECTS,
 	CMD_OPEN,
 	CMD_IMPORT_TW,
 	CMD_HELP,

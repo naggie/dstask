@@ -34,7 +34,7 @@ pull            : Pull then push to git repository, automatic merge commit.
 git             : Pass a command to git in the repository. Used for push/pull.
 resolved-today  : Show tasks completed since midnight in current context
 resolved-week   : Show tasks completed within the last week
-projects        : List projects with completion status
+show-projects   : List projects with completion status
 open            : Open all URLs found in summary/annotations
 import-tw       : Import tasks from taskwarrior via stdin
 help            : Get help on any command or show this message
