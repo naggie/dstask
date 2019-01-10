@@ -19,6 +19,9 @@ func main() {
 	}
 
 	switch cmdLine.Cmd {
+	case "":
+		// default command is CMD_NEXT if not specified
+		fallthrough
 	case dstask.CMD_NEXT:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)

@@ -171,10 +171,6 @@ func ParseCmdLine(args ...string) CmdLine {
 		}
 	}
 
-	if cmd == "" {
-		cmd = CMD_NEXT
-	}
-
 	return CmdLine{
 		Cmd:           cmd,
 		IDs:           ids,
