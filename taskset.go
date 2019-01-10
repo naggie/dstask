@@ -18,6 +18,16 @@ type TaskSet struct {
 	numTasksLoaded int
 }
 
+type Project struct {
+	Name string
+	TasksNotResolved int
+	TasksResolved int
+	// first task created
+	Created time.Time
+	// last task resolved
+	Resolved time.Time
+}
+
 func (ts *TaskSet) SortTaskList() {
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.Before(ts.tasks[j].Created) })
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority < ts.tasks[j].Priority })
@@ -141,4 +151,52 @@ func (ts *TaskSet) MustGetByID(id int) Task {
 // TODO should probably return copies.
 func (ts *TaskSet) Tasks() []*Task {
 	return ts.tasks
+}
+
+func (ts *TaskSet) GetTags() map[string]bool {
+	tagset := make(map[string]bool)
+
+	for _, task := range ts.tasks {
+		for _, tag := range task.Tags {
+			tagset[tag] = true
+		}
+	}
+
+	return tagset
+}
+
+func (ts *TaskSet) GetProjects() map[string]*Project {
+	projects := make(map[string]*Project)
+
+	for _, task := range ts.tasks {
+		name := task.Project
+
+		if name == "" {
+			continue
+		}
+
+		if projects[name] == nil {
+			projects[name] = &Project{
+				Name: name,
+			}
+		}
+
+		project := projects[name]
+
+		if project.Created.IsZero() || task.Created.Before(project.Created) {
+			project.Created = task.Created
+		}
+
+		if task.Resolved.After(project.Resolved)  {
+			project.Resolved = task.Resolved
+		}
+
+		if task.Status == STATUS_RESOLVED {
+			project.TasksResolved += 1
+		} else {
+			project.TasksNotResolved += 1
+		}
+	}
+
+	return projects
 }

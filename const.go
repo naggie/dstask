@@ -31,6 +31,7 @@ const (
 	CMD_PROJECTS       = "projects"
 	CMD_IMPORT_TW      = "import-tw"
 	CMD_HELP           = "help"
+	CMD_COMPLETIONS    = "_completions"
 
 	// filter: P1 P2 etc
 	PRIORITY_CRITICAL = "P0"
@@ -94,4 +95,5 @@ var ALL_CMDS = []string{
 	CMD_OPEN,
 	CMD_IMPORT_TW,
 	CMD_HELP,
+	CMD_COMPLETIONS,
 }

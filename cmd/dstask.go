@@ -253,5 +253,29 @@ func main() {
 
 	case dstask.CMD_HELP:
 		dstask.Help()
+
+	case dstask.CMD_COMPLETIONS:
+		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		// commands (first arg or arg after numbers only)
+		//for _, cmd := range dstask.ALL_CMDS {
+		//	fmt.Println(cmd)
+		//}
+
+		// priorities
+		fmt.Println(dstask.PRIORITY_CRITICAL)
+		fmt.Println(dstask.PRIORITY_HIGH)
+		fmt.Println(dstask.PRIORITY_NORMAL)
+		fmt.Println(dstask.PRIORITY_LOW)
+
+		// projects
+		for project := range ts.GetProjects() {
+			fmt.Println("project:"+project)
+		}
+
+		// tags
+		for tag := range ts.GetTags() {
+			fmt.Println("+"+tag)
+			fmt.Println("-"+tag)
+		}
 	}
 }
