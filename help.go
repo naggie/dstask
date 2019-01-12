@@ -5,8 +5,6 @@ import (
 	"os"
 )
 
-// TODO help completion
-
 func Help(cmd string) {
 	var helpStr string
 
@@ -34,6 +32,26 @@ Add -- to ignore the current context.
 
 `
 
+	case CMD_LOG:
+	case CMD_START:
+	case CMD_NOTE:
+		fallthrough
+	case CMD_NOTES:
+	case CMD_STOP:
+	case CMD_DONE:
+	case CMD_DONE:
+	case CMD_RESOLVE:
+	case CMD_CONTEXT:
+	case CMD_MODIFY:
+	case CMD_EDIT:
+	case CMD_UNDO:
+	case CMD_SYNC:
+	case CMD_GIT:
+	case CMD_RESOLVED_TODAY:
+	case CMD_RESOLVED_WEEK:
+	case CMD_OPEN:
+	case CMD_SHOW_PROJECTS:
+	case CMD_IMPORT_TW:
 	default:
 		helpStr = `Usage: task <cmd> [id...] [task summary/filter]
 
