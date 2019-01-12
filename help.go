@@ -33,12 +33,21 @@ Add -- to ignore the current context.
 `
 
 	case CMD_LOG:
+		helpStr = `Usage: task log [task summary] [--]
+Example: task log Fix main web page 500 error +bug P1 project:website
+
+Add an immediately resolved task. Interface identical to add command.
+
+Tags, project and priority can be added anywhere within the task summary.
+
+Add -- to ignore the current context.
+
+`
 	case CMD_START:
 	case CMD_NOTE:
 		fallthrough
 	case CMD_NOTES:
 	case CMD_STOP:
-	case CMD_DONE:
 	case CMD_DONE:
 	case CMD_RESOLVE:
 	case CMD_CONTEXT:

@@ -305,6 +305,7 @@ func main() {
 			dstask.CMD_STOP,
 			dstask.CMD_DONE,
 			dstask.CMD_RESOLVE,
+			dstask.CMD_CONTEXT,
 			dstask.CMD_MODIFY,
 		}, cmdLine.Cmd) {
 			ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
