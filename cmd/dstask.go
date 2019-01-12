@@ -283,20 +283,12 @@ func main() {
 			originalArgs = os.Args[3:]
 		}
 
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-
 		// args are dstask _completions <user command line>
 		// parse command line as normal to set rules
 		cmdLine := dstask.ParseCmdLine(originalArgs...)
 
-		// limit completions to available context, but not if the user is
-		// trying to change context or context ignore is on
-		if !cmdLine.IgnoreContext && cmdLine.Cmd != dstask.CMD_CONTEXT {
-			ts.Filter(context)
-		}
-
 		// no command specified, default given
-		if !cmdLine.IDsExhausted {
+		if !cmdLine.IDsExhausted || cmdLine.Cmd == dstask.CMD_HELP || cmdLine.Cmd == "" {
 			for _, cmd := range dstask.ALL_CMDS {
 				if !strings.HasPrefix(cmd, "_") {
 					completions = append(completions, cmd)
@@ -304,22 +296,41 @@ func main() {
 			}
 		}
 
-		// priorities
-		completions = append(completions, dstask.PRIORITY_CRITICAL)
-		completions = append(completions, dstask.PRIORITY_HIGH)
-		completions = append(completions, dstask.PRIORITY_NORMAL)
-		completions = append(completions, dstask.PRIORITY_LOW)
+		if dstask.StrSliceContains([]string{
+			"",
+			dstask.CMD_NEXT,
+			dstask.CMD_ADD,
+			dstask.CMD_LOG,
+			dstask.CMD_START,
+			dstask.CMD_STOP,
+			dstask.CMD_DONE,
+			dstask.CMD_RESOLVE,
+			dstask.CMD_MODIFY,
+		}, cmdLine.Cmd) {
+			ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+			// limit completions to available context, but not if the user is
+			// trying to change context or context ignore is on
+			if !cmdLine.IgnoreContext && cmdLine.Cmd != dstask.CMD_CONTEXT {
+				ts.Filter(context)
+			}
 
-		// projects
-		for project := range ts.GetProjects() {
-			completions = append(completions, "project:"+project)
-			completions = append(completions, "-project:"+project)
-		}
+			// priorities
+			completions = append(completions, dstask.PRIORITY_CRITICAL)
+			completions = append(completions, dstask.PRIORITY_HIGH)
+			completions = append(completions, dstask.PRIORITY_NORMAL)
+			completions = append(completions, dstask.PRIORITY_LOW)
 
-		// tags
-		for tag := range ts.GetTags() {
-			completions = append(completions, "+"+tag)
-			completions = append(completions, "-"+tag)
+			// projects
+			for project := range ts.GetProjects() {
+				completions = append(completions, "project:"+project)
+				completions = append(completions, "-project:"+project)
+			}
+
+			// tags
+			for tag := range ts.GetTags() {
+				completions = append(completions, "+"+tag)
+				completions = append(completions, "-"+tag)
+			}
 		}
 
 		if len(originalArgs) > 0 {

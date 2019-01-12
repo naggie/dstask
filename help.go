@@ -30,7 +30,7 @@ later to reference the task.
 
 Tags, project and priority can be added anywhere within the task summary.
 
--- Bypasses the current context.
+Add -- to ignore the current context.
 
 `
 
