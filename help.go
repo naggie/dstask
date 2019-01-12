@@ -36,7 +36,7 @@ Add -- to ignore the current context.
 		helpStr = `Usage: task log [task summary] [--]
 Example: task log Fix main web page 500 error +bug P1 project:website
 
-Add an immediately resolved task. Interface identical to add command.
+Add an immediately resolved task. Syntax identical to add command.
 
 Tags, project and priority can be added anywhere within the task summary.
 
@@ -44,30 +44,97 @@ Add -- to ignore the current context.
 
 `
 	case CMD_START:
+		helpStr = `Usage: task <id...> start
+Usage: task start [task summary] [--]
+Example: task 15 start
+Example: task start Fix main web page 500 error +bug P1 project:website
+
+Mark a task as active, meaning you're currently at work on the task.
+
+Alternatively, "start" can add a task and start it immediately with the same
+syntax is the "add" command.  Tags, project and priority can be added anywhere
+within the task summary.
+
+Add -- to ignore the current context.
+`
 	case CMD_NOTE:
 		fallthrough
 	case CMD_NOTES:
+		helpStr = `Usage: task note <id>
+Usage: task note <id> <text>
+Example task 13 note problem is faulty hardware
+
+Edit or append text to the markdown notes attached to a particular task.
+`
 	case CMD_STOP:
-	case CMD_DONE:
+		helpStr = `Usage: task <id...> stop [text]
+Example: task 15 stop
+Example: task 15 stop replaced some hardware
+
+Set a task as inactive, meaning you've stopped work on the task. Optional text
+may be added, which will be appended to the note.
+`
 	case CMD_RESOLVE:
+		fallthrough
+	case CMD_DONE:
+		helpStr = `Usage: task <id...> done [text]
+Example: task 15 done
+Example: task 15 done replaced some hardware
+
+Resolve a task. Optional text may be added, which will be appended to the note.
+`
 	case CMD_CONTEXT:
 	case CMD_MODIFY:
 	case CMD_EDIT:
 	case CMD_UNDO:
+		helpStr = `Usage: task undo
+
+Undo the last command that changed the repository. This uses git revert on one
+or more commits.
+`
 	case CMD_SYNC:
+		helpStr = `Usage: task sync
+
+Synchronise with the remote git server. Runs git pull then git push. If there
+are conflicts that cannot be automatically resolved, it is necessary to
+manually resolve them in  ~/.dstask or with the "task git" command.
+`
 	case CMD_GIT:
+		helpStr = `Usage: task git <args...>
+Example: task git status
+
+Run the given git command inside ~/.dstask
+`
 	case CMD_RESOLVED_TODAY:
 	case CMD_RESOLVED_WEEK:
 	case CMD_OPEN:
+		helpStr = `Usage: task <id...> open
+
+Open all URLs found withing the task summary and notes. If you commonly have
+dozens of tabs open to later action, convert them into tasks to open later with
+this command.
+`
 	case CMD_SHOW_PROJECTS:
+		helpStr = `Usage: task show-projects
+
+Show a breakdown of projects with progress information
+`
 	case CMD_IMPORT_TW:
+		helpStr = `Usage: cat export.json | task import-tw
+
+Import tasks from a taskwarrior json dump. The "task export" taskwarrior
+command can be used for this.
+`
 	default:
-		helpStr = `Usage: task <cmd> [id...] [task summary/filter]
+		helpStr = `Usage: task [id...] <cmd> [task summary/filter]
 
 Where [task summary] is text with tags/project/priority specified. Tags are
 specified with + (or - for filtering) eg: +work. The project is specified with
 a project:g prefix eg: project:dstask -- no quotes. Priorities run from P3
-(low), P2 (default) to P1 (high) and P0 (critical). Cmd and IDs can be swapped.
+(low), P2 (default) to P1 (high) and P0 (critical).
+
+Cmd and IDs can be swapped, multiple IDs can be specified for batch
+operations.
 
 run "task help <cmd>" for command specific help.
 
