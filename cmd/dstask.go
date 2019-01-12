@@ -263,7 +263,11 @@ func main() {
 		}
 
 	case dstask.CMD_HELP:
-		dstask.Help()
+		if len(os.Args) > 2 {
+			dstask.Help(os.Args[2])
+		} else {
+			dstask.Help("")
+		}
 
 	case dstask.CMD_COMPLETIONS:
 		// given the entire user's command line arguments as the arguments for

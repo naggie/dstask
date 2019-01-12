@@ -5,9 +5,37 @@ import (
 	"os"
 )
 
-func Help() {
-	fmt.Fprintf(os.Stderr, `
-Usage: task <cmd> [id...] [task summary]
+// TODO help completion
+
+func Help(cmd string) {
+	var helpStr string
+
+	switch cmd {
+	case CMD_NEXT:
+		helpStr = `Usage: task next [filter] [--]
+Usage: task [filter] [--]
+Example: task +work +bug --
+
+Display list of non-resolved tasks in the current context, most recent last,
+optional filter. It is the default command, so "next" is unnecessary.
+
+Bypass the current context with --.
+`
+	case CMD_ADD:
+		helpStr = `Usage: task add [task summary] [--]
+Example: task add Fix main web page 500 error +bug P1 project:website
+
+Add a task, returning the git commit output which contains the task ID, used
+later to reference the task.
+
+Tags, project and priority can be added anywhere within the task summary.
+
+-- Bypasses the current context.
+
+`
+
+	default:
+		helpStr = `Usage: task <cmd> [id...] [task summary/filter]
 
 Where [task summary] is text with tags/project/priority specified. Tags are
 specified with + (or - for filtering) eg: +work. The project is specified with
@@ -39,6 +67,8 @@ open            : Open all URLs found in summary/annotations
 import-tw       : Import tasks from taskwarrior via stdin
 help            : Get help on any command or show this message
 
-`)
+`
+	}
+	fmt.Fprintf(os.Stderr, helpStr)
 	os.Exit(1)
 }

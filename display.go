@@ -28,7 +28,7 @@ const (
 func (ts *TaskSet) Display() {
 	if ts.numTasksLoaded == 0 {
 		fmt.Println("\033[31mNo tasks found. Showing help.\033[0m")
-		Help()
+		Help("")
 	} else if len(ts.tasks) == 0 {
 		ExitFail("No matching tasks in given context or filter.")
 	} else if len(ts.tasks) == 1 {

@@ -143,7 +143,7 @@ func ParseCmdLine(args ...string) CmdLine {
 
 	for _, item := range args {
 		lcItem := strings.ToLower(item)
-		if !IDsExhausted && StrSliceContains(ALL_CMDS, lcItem) {
+		if !IDsExhausted && cmd == "" && StrSliceContains(ALL_CMDS, lcItem) {
 			cmd = lcItem
 			continue
 		}
