@@ -292,8 +292,7 @@ func main() {
 		}
 
 		// no command specified, default given
-		if cmdLine.Cmd == "" {
-			// commands
+		if !cmdLine.IDsExhausted {
 			for _, cmd := range dstask.ALL_CMDS {
 				if !strings.HasPrefix(cmd, "_") {
 					completions = append(completions, cmd)

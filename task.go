@@ -60,6 +60,7 @@ type CmdLine struct {
 	Priority      string
 	Text          string
 	IgnoreContext bool
+	IDsExhausted  bool
 }
 
 // used for applying a context to a new task
@@ -138,21 +139,21 @@ func ParseCmdLine(args ...string) CmdLine {
 	var ignoreContext bool
 
 	// something other than an ID has been parsed -- accept no more IDs
-	var idsExhausted bool
+	var IDsExhausted bool
 
 	for _, item := range args {
 		lcItem := strings.ToLower(item)
-		if !idsExhausted && StrSliceContains(ALL_CMDS, lcItem) {
+		if !IDsExhausted && StrSliceContains(ALL_CMDS, lcItem) {
 			cmd = lcItem
 			continue
 		}
 
-		if s, err := strconv.ParseInt(item, 10, 64); !idsExhausted && err == nil {
+		if s, err := strconv.ParseInt(item, 10, 64); !IDsExhausted && err == nil {
 			ids = append(ids, int(s))
 			continue
 		}
 
-		idsExhausted = true
+		IDsExhausted = true
 
 		if strings.HasPrefix(lcItem, "project:") {
 			project = lcItem[8:]
@@ -181,6 +182,7 @@ func ParseCmdLine(args ...string) CmdLine {
 		Priority:      priority,
 		Text:          strings.Join(words, " "),
 		IgnoreContext: ignoreContext,
+		IDsExhausted:  IDsExhausted,
 	}
 }
 
