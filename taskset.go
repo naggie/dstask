@@ -19,9 +19,9 @@ type TaskSet struct {
 }
 
 type Project struct {
-	Name string
+	Name             string
 	TasksNotResolved int
-	TasksResolved int
+	TasksResolved    int
 	// first task created
 	Created time.Time
 	// last task resolved
@@ -187,7 +187,7 @@ func (ts *TaskSet) GetProjects() map[string]*Project {
 			project.Created = task.Created
 		}
 
-		if task.Resolved.After(project.Resolved)  {
+		if task.Resolved.After(project.Resolved) {
 			project.Resolved = task.Resolved
 		}
 

@@ -6,8 +6,8 @@ import (
 	"github.com/naggie/dstask"
 	"gopkg.in/yaml.v2"
 	"os"
-	"time"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -237,7 +237,7 @@ func main() {
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
-			urls := xurls.Relaxed().FindAllString(task.Summary + " " + task.Notes, -1)
+			urls := xurls.Relaxed().FindAllString(task.Summary+" "+task.Notes, -1)
 
 			if len(urls) == 0 {
 				dstask.ExitFail("No URLs found in task %v", task.ID)
@@ -259,7 +259,7 @@ func main() {
 		ts.Filter(context)
 		projects := ts.GetProjects()
 		for name := range projects {
-			fmt.Printf("%+v\n",projects[name])
+			fmt.Printf("%+v\n", projects[name])
 		}
 
 	case dstask.CMD_HELP:
