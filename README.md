@@ -68,14 +68,16 @@ There are a few things missing at the moment. That said I use dstask day to day 
 
 ```
 
-Usage: task <cmd> [id...] [task summary]
+Usage: task <cmd> [id...] [task summary/filter]
 
 Where [task summary] is text with tags/project/priority specified. Tags are
 specified with + (or - for filtering) eg: +work. The project is specified with
-a "project:" prefix eg: project:dstask -- no quotes. Priorities run from P3
+a project:g prefix eg: project:dstask -- no quotes. Priorities run from P3
 (low), P2 (default) to P1 (high) and P0 (critical). Cmd and IDs can be swapped.
 
 run "task help <cmd>" for command specific help.
+
+Add -- to ignore the current context.
 
 Available commands:
 
@@ -93,9 +95,10 @@ pull            : Pull then push to git repository, automatic merge commit.
 git             : Pass a command to git in the repository. Used for push/pull.
 resolved-today  : Show tasks completed since midnight in current context
 resolved-week   : Show tasks completed within the last week
-projects        : List projects with completion status
+show-projects   : List projects with completion status
 open            : Open all URLs found in summary/annotations
 import-tw       : Import tasks from taskwarrior via stdin
 help            : Get help on any command or show this message
+
 
 ```

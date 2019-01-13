@@ -106,7 +106,15 @@ Example: task git status
 Run the given git command inside ~/.dstask
 `
 	case CMD_RESOLVED_TODAY:
+		helpStr = `Usage: task resolved-today
+
+Show a report of tasks that were resolved since midnight.
+`
 	case CMD_RESOLVED_WEEK:
+		helpStr = `Usage: task resolved-week
+
+Show a report of tasks that were resolved in the last 7 days.
+`
 	case CMD_OPEN:
 		helpStr = `Usage: task <id...> open
 
