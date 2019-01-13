@@ -7,4 +7,3 @@ _dstask() {
 }
 
 compdef _dstask dstask
-compdef task=dstask
