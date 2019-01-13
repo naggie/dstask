@@ -84,8 +84,26 @@ Example: task 15 done replaced some hardware
 Resolve a task. Optional text may be added, which will be appended to the note.
 `
 	case CMD_CONTEXT:
+		helpStr = `Usage: task context <filter>
+Example: task context +work -bug
+
+Set a global filter consisting of a project, tags or antitags. Subsequent new
+tasks and most commands will then have this filter applied automatically.
+
+For example, if you were to run "task add fix the webserver," the given task
+would then have the tag "work" applied automatically.
+`
 	case CMD_MODIFY:
+		helpStr = `Usage: task <id...> modify <filter>
+Example: task 34 modify -work +home project:workbench -project:website
+
+Modify the attributes of a task.
+`
 	case CMD_EDIT:
+		helpStr = `Usage: task <id...> edit
+
+Edit a task in your text editor.
+`
 	case CMD_UNDO:
 		helpStr = `Usage: task undo
 
