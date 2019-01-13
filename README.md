@@ -32,7 +32,7 @@ Note: This is beta software. There may be breaking changes before the 1.0 releas
 
 1. Copy the executable (from the [releases page][1]) to somewhere in your path, named `dstask` and mark it executable. `/usr/local/bin/` is suggested.
 1. Enable bash completions
-1. Set up an alias in your bashrc: `alias task=dstask`
+1. Set up an alias in your bashrc: `alias task=dstask`, and source the relevant completion script
 
 # Moving from Taskwarrior
 
