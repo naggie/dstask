@@ -59,10 +59,11 @@ Commands and syntax are deliberately very similar to taskwarrior. Here are the e
 There are a few things missing at the moment. That said I use dstask day to day and trust it with my work.
 
 * Recurring tasks
-* Help for individual commands
 * Dependencies
 * Subtask implementation (github issue style or otherwise)
-
+* zsh completions
+* tests/CI
+* deferring.due dates
 
 # Usage
 
