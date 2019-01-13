@@ -17,6 +17,7 @@ upx -q dstask
 mv dstask dist/dstask-linux-amd64
 
 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" cmd/dstask.go
+upx -q dstask
 mv dstask dist/dstask-darwin-amd64
 
 hub release create \
