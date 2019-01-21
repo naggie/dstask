@@ -9,6 +9,7 @@ Features:
  * Task listing won't break with long task text
  * `open` command -- open URLs found in specified task in the browser
  * `note` command -- edit a full markdown note for a task
+ * zsh/bash completion for speed
 
 Non-features:
 
@@ -61,7 +62,6 @@ There are a few things missing at the moment. That said I use dstask day to day 
 * Recurring tasks
 * Dependencies
 * Subtask implementation (github issue style or otherwise)
-* zsh completions
 * tests/CI
 * deferring.due dates
 

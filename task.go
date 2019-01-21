@@ -45,7 +45,11 @@ type Task struct {
 }
 
 func (task Task) String() string {
-	return fmt.Sprintf("%v: %s", task.ID, task.Summary)
+	if task.ID > 0 {
+		return fmt.Sprintf("%v: %s", task.ID, task.Summary)
+	} else {
+		return task.Summary
+	}
 }
 
 // when refering to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
