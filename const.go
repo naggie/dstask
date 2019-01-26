@@ -42,6 +42,7 @@ const (
 	MAX_TASKS_OPEN = 10000
 
 	IGNORE_CONTEXT_KEYWORD = "--"
+	NOTE_MODE_KEYWORD = "/"
 )
 
 // for import (etc) it's necessary to have full context

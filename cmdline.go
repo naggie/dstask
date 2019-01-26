@@ -20,6 +20,8 @@ type CmdLine struct {
 	Text          string
 	IgnoreContext bool
 	IDsExhausted  bool
+	// any words after the note operator: /
+	Note          string
 }
 
 // reconstruct args string
@@ -63,6 +65,8 @@ func ParseCmdLine(args ...string) CmdLine {
 	var antiProjects []string
 	var priority string
 	var words []string
+	var notesModeActivated bool
+	var notes []string
 	var ignoreContext bool
 
 	// something other than an ID has been parsed -- accept no more IDs
@@ -94,6 +98,10 @@ func ParseCmdLine(args ...string) CmdLine {
 			priority = item
 		} else if item == IGNORE_CONTEXT_KEYWORD {
 			ignoreContext = true
+		} else if item == NOTE_MODE_KEYWORD {
+			notesModeActivated = true
+		} else if notesModeActivated {
+			notes = append(notes, item)
 		} else {
 			words = append(words, item)
 		}
@@ -108,6 +116,7 @@ func ParseCmdLine(args ...string) CmdLine {
 		AntiProjects:  antiProjects,
 		Priority:      priority,
 		Text:          strings.Join(words, " "),
+		Note:          strings.Join(notes, " "),
 		IgnoreContext: ignoreContext,
 		IDsExhausted:  IDsExhausted,
 	}

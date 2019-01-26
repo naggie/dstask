@@ -46,6 +46,7 @@ func main() {
 				Tags:         cmdLine.Tags,
 				Project:      cmdLine.Project,
 				Priority:     cmdLine.Priority,
+				Notes:        cmdLine.Note,
 			}
 			task = ts.AddTask(task)
 			ts.SaveToDisk("Added %s", task)

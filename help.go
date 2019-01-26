@@ -28,7 +28,8 @@ later to reference the task.
 
 Tags, project and priority can be added anywhere within the task summary.
 
-Add -- to ignore the current context.
+Add -- to ignore the current context. / can be used when adding tasks to note
+any words after.
 
 `
 
@@ -164,7 +165,8 @@ operations.
 
 run "task help <cmd>" for command specific help.
 
-Add -- to ignore the current context.
+Add -- to ignore the current context. / can be used when adding tasks to note
+any words after.
 
 Available commands:
 

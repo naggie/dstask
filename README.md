@@ -78,7 +78,8 @@ a project:g prefix eg: project:dstask -- no quotes. Priorities run from P3
 
 run "task help <cmd>" for command specific help.
 
-Add -- to ignore the current context.
+Add -- to ignore the current context. / can be used when adding tasks to note
+any words after.
 
 Available commands:
 
