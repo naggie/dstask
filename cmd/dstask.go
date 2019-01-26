@@ -77,6 +77,8 @@ func main() {
 				task.Status = dstask.STATUS_ACTIVE
 				ts.MustUpdateTask(task)
 				ts.SaveToDisk("Started %s", task)
+				fmt.Println("Task notes:")
+				fmt.Println(task.Notes)
 			}
 		} else if len(cmdLine.Text) != 0 {
 			// create a new task that is already active (started)

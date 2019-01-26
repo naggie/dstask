@@ -136,6 +136,7 @@ func (ts *TaskSet) SaveToDisk(format string, a ...interface{}) {
 	// added/modified/deleted files -- only if slow.
 	MustRunGitCmd("add", ".")
 	MustRunGitCmd("commit", "--no-gpg-sign", "-m", commitMsg)
+	fmt.Printf("\n\033[1m%s\033[0m\n", commitMsg)
 }
 
 func SaveContext(context CmdLine) {
