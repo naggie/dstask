@@ -14,7 +14,6 @@ import (
 const (
 	GIT_REPO = "~/.dstask/"
 	// space delimited keyword file for compgen
-	COMPLETION_FILE = "~/.cache/dstask/completions"
 	CONTEXT_FILE    = "~/.cache/dstask/context"
 )
 
