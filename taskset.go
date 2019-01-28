@@ -132,7 +132,7 @@ func (ts *TaskSet) FilterResolvedSince(t time.Time) {
 	var tasks []*Task
 
 	for _, task := range ts.tasks {
-		if task.Resolved.After(t) {
+		if task.Status == STATUS_RESOLVED && task.Resolved.After(t) {
 			tasks = append(tasks, task)
 		}
 	}
