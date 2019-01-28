@@ -235,6 +235,7 @@ func DisplayTask(task *Task) {
 	)
 
 	table.AddRow([]string{"ID", strconv.Itoa(task.ID)}, STYLE_PRIORITY_NORMAL)
+	table.AddRow([]string{"Priority", task.Priority}, STYLE_PRIORITY_NORMAL)
 	table.AddRow([]string{"Summary", task.Summary}, STYLE_PRIORITY_NORMAL)
 	table.AddRow([]string{"Notes", task.Notes}, STYLE_PRIORITY_NORMAL)
 	table.AddRow([]string{"Status", task.Status}, STYLE_PRIORITY_NORMAL)
