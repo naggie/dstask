@@ -80,9 +80,7 @@ func MustRunCmd(name string, args ...string) {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	fmt.Printf("\033[38;5;245m")
 	cmd.Run()
-	fmt.Printf("\033[0m")
 }
 
 func MustRunGitCmd(args ...string) {
