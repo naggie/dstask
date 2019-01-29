@@ -133,9 +133,9 @@ func (ts *TaskSet) SaveToDisk(format string, a ...interface{}) {
 	// git add all changed/created files
 	// could optimise this to be given an explicit list of
 	// added/modified/deleted files -- only if slow.
+	fmt.Printf("\n%s\n", commitMsg)
 	MustRunGitCmd("add", ".")
 	MustRunGitCmd("commit", "--no-gpg-sign", "-m", commitMsg)
-	fmt.Printf("\n%s\n", commitMsg)
 }
 
 func SaveContext(context CmdLine) {
