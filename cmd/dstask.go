@@ -260,8 +260,12 @@ func main() {
 		cmdLine.MergeContext(context)
 		ts.Filter(context)
 		projects := ts.GetProjects()
+		fmt.Println("TODO: make this a table with bar charts.")
 		for name := range projects {
-			fmt.Printf("%+v\n", projects[name])
+			project := projects[name]
+			if project.TasksNotResolved < project.TasksResolved {
+				fmt.Printf("%+v\n", project)
+			}
 		}
 
 	case dstask.CMD_HELP:
