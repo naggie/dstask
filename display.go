@@ -10,17 +10,28 @@ import (
 )
 
 const (
-	// keep it readable
-	TABLE_MAX_WIDTH = 160
-
-	// styles for rows
-	STYLE_HEADER = iota
-	STYLE_ACTIVE
-	STYLE_PRIORITY_CRITICAL
-	STYLE_PRIORITY_HIGH
-	STYLE_PRIORITY_NORMAL
-	STYLE_PRIORITY_LOW
+	TABLE_MAX_WIDTH      = 160 // keep it readable
+	MODE_HEADER          = 4
+	FG_DEFAULT           = 250
+	BG_DEFAULT_1         = 233
+	BG_DEFAULT_2         = 232
+	MODE_DEFAULT         = 0
+	FG_ACTIVE            = 255
+	BG_ACTIVE            = 166
+	MODE_STOPPED         = 1 // task that has been started then stopped
+	FG_PRIORITY_CRITICAL = 160
+	FG_PRIORITY_HIGH     = 166
+	FG_PRIORITY_NORMAL   = FG_DEFAULT
+	FG_PRIORITY_LOW      = 245
 )
+
+type RowStyle struct {
+	// ansi mode
+	Mode int
+	// xterm 256-colour palette
+	Fg int
+	Bg int
+}
 
 // should use a better console library after first POC
 
@@ -50,7 +61,7 @@ type Table struct {
 	MaxColWidths []int
 	TermWidth    int
 	TermHeight   int
-	RowStyles    []int
+	RowStyles    []RowStyle
 }
 
 // header may  havetruncated words
@@ -65,11 +76,15 @@ func NewTable(header ...string) *Table {
 		MaxColWidths: make([]int, len(header)),
 		TermWidth:    int(ws.Col),
 		TermHeight:   int(ws.Row),
-		RowStyles:    []int{STYLE_HEADER},
+		RowStyles: []RowStyle{
+			RowStyle{
+				Mode: MODE_HEADER,
+			},
+		},
 	}
 }
 
-func (t *Table) AddRow(row []string, style int) {
+func (t *Table) AddRow(row []string, style RowStyle) {
 	if len(row) != len(t.Header) {
 		panic("Row is incorrect length")
 	}
@@ -125,8 +140,6 @@ func (t *Table) calcColWidths(gap int) []int {
 // theme loosely based on https://github.com/GothenburgBitFactory/taskwarrior/blob/2.6.0/doc/rc/dark-256.theme
 // render table, returning count of rows rendered
 func (t *Table) Render(gap int) int {
-	var fg, bg, mode int
-
 	widths := t.calcColWidths(2)
 	maxRows := t.TermHeight - gap
 	rows := append([][]string{t.Header}, t.Rows...)
@@ -139,36 +152,29 @@ func (t *Table) Render(gap int) int {
 
 		line := strings.Join(cells, "  ")
 
-		// default
-		fg = 250
-		bg = 232
-		mode = 0
+		mode := t.RowStyles[i].Mode
+		fg := t.RowStyles[i].Fg
+		bg := t.RowStyles[i].Bg
 
-		// default row style alternates. FG and BG can be overridden
-		// independently.
-		if i%2 != 0 {
-			bg = 233
-		} else {
-			bg = 232
+		// defaults
+		if mode == 0 {
+			mode = MODE_DEFAULT
 		}
 
-		switch t.RowStyles[i] {
-		case STYLE_HEADER:
-			// header -- underline
-			mode = 4
-		case STYLE_ACTIVE:
-			fg = 255
-			bg = 166
-		case STYLE_PRIORITY_CRITICAL:
-			fg = 160
-		case STYLE_PRIORITY_HIGH:
-			fg = 166
-		case STYLE_PRIORITY_LOW:
-			fg = 245
+		if fg == 0 {
+			fg = FG_DEFAULT
+		}
+
+		if bg == 0 {
+			/// alternate if not specified
+			if i%2 != 0 {
+				bg = BG_DEFAULT_1
+			} else {
+				bg = BG_DEFAULT_2
+			}
 		}
 
 		// print style, line then reset
-		//fmt.Printf("\033[%dm\033[38;5;%dm\033[48;5;%dm%s\033[0m\n", mode, fg, bg, line)
 		fmt.Printf("\033[%d;38;5;%d;48;5;%dm%s\033[0m\n", mode, fg, bg, line)
 
 		if i > maxRows {
@@ -191,18 +197,19 @@ func DisplayTasks(tasks []*Task) {
 	now := time.Now()
 
 	for _, t := range tasks {
-		style := STYLE_PRIORITY_NORMAL
+		style := RowStyle{}
 
 		if t.Status == STATUS_ACTIVE {
-			style = STYLE_ACTIVE
+			style.Fg = FG_ACTIVE
+			style.Bg = BG_ACTIVE
 		} else if !t.Due.IsZero() && t.Due.Before(now) {
-			style = STYLE_PRIORITY_HIGH
+			style.Fg = FG_PRIORITY_HIGH
 		} else if t.Priority == PRIORITY_CRITICAL {
-			style = STYLE_PRIORITY_CRITICAL
+			style.Fg = FG_PRIORITY_CRITICAL
 		} else if t.Priority == PRIORITY_HIGH {
-			style = STYLE_PRIORITY_HIGH
+			style.Fg = FG_PRIORITY_HIGH
 		} else if t.Priority == PRIORITY_LOW {
-			style = STYLE_PRIORITY_LOW
+			style.Fg = FG_PRIORITY_LOW
 		}
 
 		table.AddRow(
@@ -234,20 +241,20 @@ func DisplayTask(task *Task) {
 		"Value",
 	)
 
-	table.AddRow([]string{"ID", strconv.Itoa(task.ID)}, STYLE_PRIORITY_NORMAL)
-	table.AddRow([]string{"Priority", task.Priority}, STYLE_PRIORITY_NORMAL)
-	table.AddRow([]string{"Summary", task.Summary}, STYLE_PRIORITY_NORMAL)
-	table.AddRow([]string{"Notes", task.Notes}, STYLE_PRIORITY_NORMAL)
-	table.AddRow([]string{"Status", task.Status}, STYLE_PRIORITY_NORMAL)
-	table.AddRow([]string{"Project", task.Project}, STYLE_PRIORITY_NORMAL)
-	table.AddRow([]string{"Tags", strings.Join(task.Tags, ", ")}, STYLE_PRIORITY_NORMAL)
-	table.AddRow([]string{"UUID", task.UUID}, STYLE_PRIORITY_NORMAL)
-	table.AddRow([]string{"Created", task.Created.String()}, STYLE_PRIORITY_NORMAL)
+	table.AddRow([]string{"ID", strconv.Itoa(task.ID)}, RowStyle{})
+	table.AddRow([]string{"Priority", task.Priority}, RowStyle{})
+	table.AddRow([]string{"Summary", task.Summary}, RowStyle{})
+	table.AddRow([]string{"Notes", task.Notes}, RowStyle{})
+	table.AddRow([]string{"Status", task.Status}, RowStyle{})
+	table.AddRow([]string{"Project", task.Project}, RowStyle{})
+	table.AddRow([]string{"Tags", strings.Join(task.Tags, ", ")}, RowStyle{})
+	table.AddRow([]string{"UUID", task.UUID}, RowStyle{})
+	table.AddRow([]string{"Created", task.Created.String()}, RowStyle{})
 	if !task.Resolved.IsZero() {
-		table.AddRow([]string{"Resolved", task.Resolved.String()}, STYLE_PRIORITY_NORMAL)
+		table.AddRow([]string{"Resolved", task.Resolved.String()}, RowStyle{})
 	}
 	if !task.Due.IsZero() {
-		table.AddRow([]string{"Due", task.Due.String()}, STYLE_PRIORITY_NORMAL)
+		table.AddRow([]string{"Due", task.Due.String()}, RowStyle{})
 	}
 	table.Render(0)
 }

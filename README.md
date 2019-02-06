@@ -5,7 +5,7 @@ A personal task tracker designed to help you focus.
 Features:
 
  * Powerful context system
- * Git powered sync/undo/resolve (passwordstore.org style)
+ * Git powered sync/undo/resolve (passwordstore.org style) which means no need to set up a sync server, and sync between devices is easy!
  * Task listing won't break with long task text
  * `open` command -- open URLs found in specified task in the browser
  * `note` command -- edit a full markdown note for a task
@@ -64,6 +64,7 @@ There are a few things missing at the moment. That said I use dstask day to day 
 * Subtask implementation (github issue style or otherwise)
 * tests/CI
 * deferring.due dates
+* Lots of nice reports
 
 # Usage
 
