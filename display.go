@@ -18,7 +18,7 @@ const (
 	MODE_DEFAULT         = 0
 	FG_ACTIVE            = 255
 	BG_ACTIVE            = 166
-	MODE_STOPPED         = 1 // task that has been started then stopped
+	BG_PAUSED            = 235 // task that has been started then stopped
 	FG_PRIORITY_CRITICAL = 160
 	FG_PRIORITY_HIGH     = 166
 	FG_PRIORITY_NORMAL   = FG_DEFAULT
@@ -210,6 +210,10 @@ func DisplayTasks(tasks []*Task) {
 			style.Fg = FG_PRIORITY_HIGH
 		} else if t.Priority == PRIORITY_LOW {
 			style.Fg = FG_PRIORITY_LOW
+		}
+
+		if t.Status == STATUS_PAUSED {
+			style.Bg = BG_PAUSED
 		}
 
 		table.AddRow(

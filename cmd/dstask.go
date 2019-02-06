@@ -99,7 +99,7 @@ func main() {
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
-			task.Status = dstask.STATUS_PENDING
+			task.Status = dstask.STATUS_PAUSED
 			ts.MustUpdateTask(task)
 			ts.SaveToDisk("Stopped %s", task)
 		}
