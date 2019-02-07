@@ -25,8 +25,7 @@ const (
 	CMD_UNDO           = "undo"
 	CMD_SYNC           = "sync"
 	CMD_GIT            = "git"
-	CMD_RESOLVED_TODAY = "resolved-today"
-	CMD_RESOLVED_WEEK  = "resolved-week"
+	CMD_RESOLVED       = "resolved"
 	CMD_OPEN           = "open"
 	CMD_SHOW_PROJECTS  = "show-projects"
 	CMD_IMPORT_TW      = "import-tw"
@@ -91,8 +90,7 @@ var ALL_CMDS = []string{
 	CMD_UNDO,
 	CMD_SYNC,
 	CMD_GIT,
-	CMD_RESOLVED_TODAY,
-	CMD_RESOLVED_WEEK,
+	CMD_RESOLVED,
 	CMD_SHOW_PROJECTS,
 	CMD_OPEN,
 	CMD_IMPORT_TW,

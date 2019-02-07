@@ -36,23 +36,18 @@ type RowStyle struct {
 // should use a better console library after first POC
 
 /// display list of filtered tasks with context and filter
-func (ts *TaskSet) Display() {
+func (ts *TaskSet) DisplayNext() {
 	if ts.numTasksLoaded == 0 {
 		fmt.Println("\033[31mNo tasks found. Showing help.\033[0m")
 		Help("")
 	} else if len(ts.tasks) == 0 {
 		ExitFail("No matching tasks in given context or filter.")
 	} else if len(ts.tasks) == 1 {
-		DisplayTask(ts.tasks[0])
+		ts.tasks[0].Display()
 		return
 	} else {
-		DisplayTasks(ts.tasks)
+		ts.Display(11)
 	}
-}
-
-// display a single task in detail, with numbered subtasks
-func (t *Task) Display() {
-
 }
 
 type Table struct {
@@ -139,6 +134,9 @@ func (t *Table) calcColWidths(gap int) []int {
 
 // theme loosely based on https://github.com/GothenburgBitFactory/taskwarrior/blob/2.6.0/doc/rc/dark-256.theme
 // render table, returning count of rows rendered
+// gap of zero means fit terminal exactly by truncating table -- you will want
+// a larger gap to account for prompt or other text. A gap of -1 means the row
+// count is not limited -- useful for reports or inspecting tasks.
 func (t *Table) Render(gap int) int {
 	widths := t.calcColWidths(2)
 	maxRows := t.TermHeight - gap
@@ -177,7 +175,7 @@ func (t *Table) Render(gap int) int {
 		// print style, line then reset
 		fmt.Printf("\033[%d;38;5;%d;48;5;%dm%s\033[0m\n", mode, fg, bg, line)
 
-		if i > maxRows {
+		if gap != -1 && i > maxRows {
 			return i
 		}
 	}
@@ -185,7 +183,7 @@ func (t *Table) Render(gap int) int {
 	return len(t.Rows)
 }
 
-func DisplayTasks(tasks []*Task) {
+func (ts TaskSet) Display(gap int) {
 	table := NewTable(
 		"ID",
 		"Priority",
@@ -194,28 +192,8 @@ func DisplayTasks(tasks []*Task) {
 		"Summary",
 	)
 
-	now := time.Now()
-
-	for _, t := range tasks {
-		style := RowStyle{}
-
-		if t.Status == STATUS_ACTIVE {
-			style.Fg = FG_ACTIVE
-			style.Bg = BG_ACTIVE
-		} else if !t.Due.IsZero() && t.Due.Before(now) {
-			style.Fg = FG_PRIORITY_HIGH
-		} else if t.Priority == PRIORITY_CRITICAL {
-			style.Fg = FG_PRIORITY_CRITICAL
-		} else if t.Priority == PRIORITY_HIGH {
-			style.Fg = FG_PRIORITY_HIGH
-		} else if t.Priority == PRIORITY_LOW {
-			style.Fg = FG_PRIORITY_LOW
-		}
-
-		if t.Status == STATUS_PAUSED {
-			style.Bg = BG_PAUSED
-		}
-
+	for _, t := range ts.tasks {
+		style := t.Style()
 		table.AddRow(
 			[]string{
 				// id should be at least 2 chars wide to match column header
@@ -230,16 +208,16 @@ func DisplayTasks(tasks []*Task) {
 		)
 	}
 
-	rowsRendered := table.Render(11)
+	rowsRendered := table.Render(gap)
 
-	if rowsRendered == len(tasks) {
-		fmt.Printf("\n%v tasks.\n", len(tasks))
+	if rowsRendered == len(ts.tasks) {
+		fmt.Printf("\n%v tasks.\n", len(ts.tasks))
 	} else {
-		fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(tasks), rowsRendered)
+		fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(ts.tasks), rowsRendered)
 	}
 }
 
-func DisplayTask(task *Task) {
+func (task *Task) Display() {
 	table := NewTable(
 		"Name",
 		"Value",
@@ -261,4 +239,28 @@ func DisplayTask(task *Task) {
 		table.AddRow([]string{"Due", task.Due.String()}, RowStyle{})
 	}
 	table.Render(0)
+}
+
+func (t *Task) Style() RowStyle {
+	now := time.Now()
+	style := RowStyle{}
+
+	if t.Status == STATUS_ACTIVE {
+		style.Fg = FG_ACTIVE
+		style.Bg = BG_ACTIVE
+	} else if !t.Due.IsZero() && t.Due.Before(now) {
+		style.Fg = FG_PRIORITY_HIGH
+	} else if t.Priority == PRIORITY_CRITICAL {
+		style.Fg = FG_PRIORITY_CRITICAL
+	} else if t.Priority == PRIORITY_HIGH {
+		style.Fg = FG_PRIORITY_HIGH
+	} else if t.Priority == PRIORITY_LOW {
+		style.Fg = FG_PRIORITY_LOW
+	}
+
+	if t.Status == STATUS_PAUSED {
+		style.Bg = BG_PAUSED
+	}
+
+	return style
 }

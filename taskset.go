@@ -28,9 +28,13 @@ type Project struct {
 	Resolved time.Time
 }
 
-func (ts *TaskSet) SortTaskList() {
+func (ts *TaskSet) SortByPriority() {
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.Before(ts.tasks[j].Created) })
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority < ts.tasks[j].Priority })
+}
+
+func (ts *TaskSet) SortByResolved() {
+	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Resolved.Before(ts.tasks[j].Resolved) })
 }
 
 // add a task, but only if it has a new uuid or no uuid. Return annotated task.
@@ -128,11 +132,11 @@ func (ts *TaskSet) Filter(cmdLine CmdLine) {
 	ts.tasks = tasks
 }
 
-func (ts *TaskSet) FilterResolvedSince(t time.Time) {
+func (ts *TaskSet) FilterByStatus(status string) {
 	var tasks []*Task
 
 	for _, task := range ts.tasks {
-		if task.Status == STATUS_RESOLVED && task.Resolved.After(t) {
+		if task.Status == status {
 			tasks = append(tasks, task)
 		}
 	}

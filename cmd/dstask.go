@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/mvdan/xurls"
 	"github.com/naggie/dstask"
 	"gopkg.in/yaml.v2"
-	"os"
-	"strings"
-	"time"
 )
 
 func main() {
@@ -26,13 +26,13 @@ func main() {
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
-		ts.SortTaskList()
+		ts.SortByPriority()
 		if context.String() != "" {
 			fmt.Printf("\n\n\033[33mActive context: %s\033[0m\n", context)
 		} else {
 			fmt.Printf("\n\n\n")
 		}
-		ts.Display()
+		ts.DisplayNext()
 
 	case dstask.CMD_ADD:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
@@ -225,20 +225,12 @@ func main() {
 	case dstask.CMD_GIT:
 		dstask.MustRunGitCmd(os.Args[2:]...)
 
-	case dstask.CMD_RESOLVED_TODAY:
-		t := time.Now()
-		year, month, day := t.Date()
-		bod := time.Date(year, month, day, 0, 0, 0, 0, t.Location())
+	case dstask.CMD_RESOLVED:
 		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
 		ts.Filter(context)
-		ts.FilterResolvedSince(bod)
-		ts.Display()
-
-	case dstask.CMD_RESOLVED_WEEK:
-		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
-		ts.Filter(context)
-		ts.FilterResolvedSince(time.Now().AddDate(0, 0, -7))
-		ts.Display()
+		ts.FilterByStatus(dstask.STATUS_RESOLVED)
+		ts.SortByResolved()
+		ts.Display(-1)
 
 	case dstask.CMD_OPEN:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
