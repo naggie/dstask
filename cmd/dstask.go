@@ -32,7 +32,7 @@ func main() {
 		} else {
 			fmt.Printf("\n\n\n")
 		}
-		ts.DisplayNext()
+		ts.DisplayByNext()
 
 	case dstask.CMD_ADD:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
@@ -230,7 +230,7 @@ func main() {
 		ts.Filter(context)
 		ts.FilterByStatus(dstask.STATUS_RESOLVED)
 		ts.SortByResolved()
-		ts.Display(-1)
+		ts.DisplayByResolved()
 
 	case dstask.CMD_OPEN:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)

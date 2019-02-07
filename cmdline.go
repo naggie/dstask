@@ -21,7 +21,7 @@ type CmdLine struct {
 	IgnoreContext bool
 	IDsExhausted  bool
 	// any words after the note operator: /
-	Note          string
+	Note string
 }
 
 // reconstruct args string

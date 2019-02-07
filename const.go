@@ -17,20 +17,20 @@ const (
 	CMD_NOTES = "notes"
 	CMD_STOP  = "stop"
 	// done === resolved, for compatibility with taskwarrior
-	CMD_DONE           = "done"
-	CMD_RESOLVE        = "resolve"
-	CMD_CONTEXT        = "context"
-	CMD_MODIFY         = "modify"
-	CMD_EDIT           = "edit"
-	CMD_UNDO           = "undo"
-	CMD_SYNC           = "sync"
-	CMD_GIT            = "git"
-	CMD_RESOLVED       = "resolved"
-	CMD_OPEN           = "open"
-	CMD_SHOW_PROJECTS  = "show-projects"
-	CMD_IMPORT_TW      = "import-tw"
-	CMD_HELP           = "help"
-	CMD_COMPLETIONS    = "_completions"
+	CMD_DONE          = "done"
+	CMD_RESOLVE       = "resolve"
+	CMD_CONTEXT       = "context"
+	CMD_MODIFY        = "modify"
+	CMD_EDIT          = "edit"
+	CMD_UNDO          = "undo"
+	CMD_SYNC          = "sync"
+	CMD_GIT           = "git"
+	CMD_RESOLVED      = "resolved"
+	CMD_OPEN          = "open"
+	CMD_SHOW_PROJECTS = "show-projects"
+	CMD_IMPORT_TW     = "import-tw"
+	CMD_HELP          = "help"
+	CMD_COMPLETIONS   = "_completions"
 
 	// filter: P1 P2 etc
 	PRIORITY_CRITICAL = "P0"
@@ -41,7 +41,7 @@ const (
 	MAX_TASKS_OPEN = 10000
 
 	IGNORE_CONTEXT_KEYWORD = "--"
-	NOTE_MODE_KEYWORD = "/"
+	NOTE_MODE_KEYWORD      = "/"
 )
 
 // for import (etc) it's necessary to have full context

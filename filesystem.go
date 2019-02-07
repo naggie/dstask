@@ -14,7 +14,7 @@ import (
 const (
 	GIT_REPO = "~/.dstask/"
 	// space delimited keyword file for compgen
-	CONTEXT_FILE    = "~/.cache/dstask/context"
+	CONTEXT_FILE = "~/.cache/dstask/context"
 )
 
 func MustGetRepoDirectory(directory ...string) string {

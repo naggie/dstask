@@ -36,7 +36,7 @@ type RowStyle struct {
 // should use a better console library after first POC
 
 /// display list of filtered tasks with context and filter
-func (ts *TaskSet) DisplayNext() {
+func (ts *TaskSet) DisplayByNext() {
 	if ts.numTasksLoaded == 0 {
 		fmt.Println("\033[31mNo tasks found. Showing help.\033[0m")
 		Help("")
@@ -46,7 +46,37 @@ func (ts *TaskSet) DisplayNext() {
 		ts.tasks[0].Display()
 		return
 	} else {
-		ts.Display(11)
+		table := NewTable(
+			"ID",
+			"Priority",
+			"Tags",
+			"Project",
+			"Summary",
+		)
+
+		for _, t := range ts.tasks {
+			style := t.Style()
+			table.AddRow(
+				[]string{
+					// id should be at least 2 chars wide to match column header
+					// (headers can be truncated)
+					fmt.Sprintf("%-2d", t.ID),
+					t.Priority,
+					strings.Join(t.Tags, " "),
+					t.Project,
+					t.Summary,
+				},
+				style,
+			)
+		}
+
+		rowsRendered := table.Render(11)
+
+		if rowsRendered == len(ts.tasks) {
+			fmt.Printf("\n%v tasks.\n", len(ts.tasks))
+		} else {
+			fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(ts.tasks), rowsRendered)
+		}
 	}
 }
 
@@ -183,40 +213,6 @@ func (t *Table) Render(gap int) int {
 	return len(t.Rows)
 }
 
-func (ts TaskSet) Display(gap int) {
-	table := NewTable(
-		"ID",
-		"Priority",
-		"Tags",
-		"Project",
-		"Summary",
-	)
-
-	for _, t := range ts.tasks {
-		style := t.Style()
-		table.AddRow(
-			[]string{
-				// id should be at least 2 chars wide to match column header
-				// (headers can be truncated)
-				fmt.Sprintf("%-2d", t.ID),
-				t.Priority,
-				strings.Join(t.Tags, " "),
-				t.Project,
-				t.Summary,
-			},
-			style,
-		)
-	}
-
-	rowsRendered := table.Render(gap)
-
-	if rowsRendered == len(ts.tasks) {
-		fmt.Printf("\n%v tasks.\n", len(ts.tasks))
-	} else {
-		fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(ts.tasks), rowsRendered)
-	}
-}
-
 func (task *Task) Display() {
 	table := NewTable(
 		"Name",
@@ -263,4 +259,31 @@ func (t *Task) Style() RowStyle {
 	}
 
 	return style
+}
+
+func (ts TaskSet) DisplayByResolved() {
+	table := NewTable(
+		"Resolved",
+		"Priority",
+		"Tags",
+		"Project",
+		"Summary",
+	)
+
+	for _, t := range ts.tasks {
+		style := t.Style()
+		table.AddRow(
+			[]string{
+				t.Resolved.Format("Mon 2 Jan 2006"),
+				t.Priority,
+				strings.Join(t.Tags, " "),
+				t.Project,
+				t.Summary,
+			},
+			style,
+		)
+	}
+
+	table.Render(-1)
+	fmt.Printf("\n%v tasks.\n", len(ts.tasks))
 }
