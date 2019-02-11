@@ -270,7 +270,18 @@ func (ts TaskSet) DisplayByResolved() {
 		"Summary",
 	)
 
+	var lastWeek int
+
 	for _, t := range ts.tasks {
+		if lastWeek != 0 {
+			_, week := t.Resolved.ISOWeek()
+
+			if week != lastWeek {
+				// insert gap
+				table.AddRow([]string{"","","","",""}, RowStyle{})
+			}
+		}
+
 		style := t.Style()
 		table.AddRow(
 			[]string{
@@ -282,6 +293,8 @@ func (ts TaskSet) DisplayByResolved() {
 			},
 			style,
 		)
+
+		_, lastWeek = t.Resolved.ISOWeek()
 	}
 
 	table.Render(-1)
