@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/mvdan/xurls"
 	"github.com/naggie/dstask"
@@ -64,6 +65,7 @@ func main() {
 				Tags:         cmdLine.Tags,
 				Project:      cmdLine.Project,
 				Priority:     cmdLine.Priority,
+				Resolved:     time.Now(),
 			}
 			task = ts.AddTask(task)
 			ts.SaveToDisk("Logged %s", task)

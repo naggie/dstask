@@ -53,7 +53,6 @@ func (ts *TaskSet) AddTask(task Task) Task {
 	if task.Status == STATUS_RESOLVED {
 		// resolved task should not have ID as it's meaningless
 		task.ID = 0
-		task.Resolved = time.Now()
 	}
 
 	// check ID is unique if there is one
