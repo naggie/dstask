@@ -18,7 +18,6 @@ const (
 	MODE_DEFAULT         = 0
 	FG_ACTIVE            = 255
 	BG_ACTIVE            = 166
-	FG_PAUSED            = 252 // task that has been started then stopped
 	BG_PAUSED            = 236 // task that has been started then stopped
 	FG_PRIORITY_CRITICAL = 160
 	FG_PRIORITY_HIGH     = 166
@@ -256,7 +255,6 @@ func (t *Task) Style() RowStyle {
 	}
 
 	if t.Status == STATUS_PAUSED {
-		style.Fg = FG_PAUSED
 		style.Bg = BG_PAUSED
 	}
 
