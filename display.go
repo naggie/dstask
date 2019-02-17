@@ -273,19 +273,25 @@ func (ts TaskSet) DisplayByResolved() {
 	var lastWeek int
 
 	for _, t := range ts.tasks {
-		if lastWeek != 0 {
-			_, week := t.Resolved.ISOWeek()
+		_, week := t.Resolved.ISOWeek()
 
-			if week != lastWeek {
-				// insert gap
-				table.AddRow([]string{"","","","",""}, RowStyle{})
-			}
+		if lastWeek != 0 && week != lastWeek {
+			table.Render(-1)
+			// insert gap
+			fmt.Printf("\n\n> Week %d, starting %s\n\n", week, t.Resolved.Format("Mon 2 Jan 2006"))
+			table = NewTable(
+				"Resolved",
+				"Priority",
+				"Tags",
+				"Project",
+				"Summary",
+			)
 		}
 
 		style := t.Style()
 		table.AddRow(
 			[]string{
-				t.Resolved.Format("Mon 2 Jan 2006"),
+				t.Resolved.Format("Mon 2"),
 				t.Priority,
 				strings.Join(t.Tags, " "),
 				t.Project,
