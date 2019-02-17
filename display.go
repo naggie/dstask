@@ -270,6 +270,7 @@ func (ts TaskSet) DisplayByResolved() {
 		"Tags",
 		"Project",
 		"Summary",
+		"Closing note",
 	)
 
 	var lastWeek int
@@ -287,10 +288,11 @@ func (ts TaskSet) DisplayByResolved() {
 				"Tags",
 				"Project",
 				"Summary",
+				"Closing note",
 			)
 		}
 
-		style := t.Style()
+		noteLines := strings.Split(t.Notes,"\n")
 		table.AddRow(
 			[]string{
 				t.Resolved.Format("Mon 2"),
@@ -298,8 +300,9 @@ func (ts TaskSet) DisplayByResolved() {
 				strings.Join(t.Tags, " "),
 				t.Project,
 				t.Summary,
+				noteLines[len(noteLines)-1],
 			},
-			style,
+			t.Style(),
 		)
 
 		_, lastWeek = t.Resolved.ISOWeek()
