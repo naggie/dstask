@@ -183,8 +183,23 @@ open            : Open all URLs found in summary/annotations
 import-tw       : Import tasks from taskwarrior via stdin
 help            : Get help on any command or show this message
 
+Task table key:
+
 `
 	}
 	fmt.Fprintf(os.Stderr, helpStr)
+
+	colourPrintln(0, FG_PRIORITY_CRITICAL, BG_DEFAULT_2, "Critical priority")
+	colourPrintln(0, FG_PRIORITY_HIGH, BG_DEFAULT_2, "High priority")
+	colourPrintln(0, FG_DEFAULT, BG_DEFAULT_1, "Normal priority")
+	colourPrintln(0, FG_PRIORITY_LOW, BG_DEFAULT_2, "Low priority")
+	colourPrintln(0, FG_ACTIVE, BG_ACTIVE, "Active")
+	colourPrintln(0, FG_DEFAULT, BG_PAUSED, "Paused")
+
 	os.Exit(1)
+}
+
+func colourPrintln(mode, fg, bg int, line string) {
+	line = FixStr(line, 25)
+	fmt.Fprintf(os.Stderr, "\033[%d;38;5;%d;48;5;%dm%s\033[0m\n", mode, fg, bg, line)
 }
