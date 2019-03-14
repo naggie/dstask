@@ -43,7 +43,7 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 		ExitFail("Could not find git repository at " + GIT_REPO + ", please clone or create. Try `dstask help` for more information.")
 	}
 
-	for _, status := range ALL_STATUSES {
+	for _, status := range statuses {
 		dir := MustGetRepoDirectory(status)
 		files, err := ioutil.ReadDir(dir)
 		if err != nil {
