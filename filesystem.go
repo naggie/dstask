@@ -19,7 +19,16 @@ const (
 
 func MustGetRepoDirectory(directory ...string) string {
 	root := MustExpandHome(GIT_REPO)
-	return path.Join(append([]string{root}, directory...)...)
+	dir :=  path.Join(append([]string{root}, directory...)...)
+
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		err = os.Mkdir(dir, 0700)
+		if err != nil {
+			ExitFail("Failed to create directory in git repository")
+		}
+	}
+
+	return dir
 }
 
 func LoadTaskSetFromDisk(statuses []string) *TaskSet {
@@ -36,13 +45,6 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 
 	for _, status := range ALL_STATUSES {
 		dir := MustGetRepoDirectory(status)
-		if _, err := os.Stat(dir); os.IsNotExist(err) {
-			err = os.Mkdir(dir, 0700)
-			if err != nil {
-				ExitFail("Failed to create directory in git repository")
-			}
-		}
-
 		files, err := ioutil.ReadDir(dir)
 		if err != nil {
 			ExitFail("Failed to read " + dir)
