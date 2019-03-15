@@ -153,7 +153,8 @@ command can be used for this.
 Where [task summary] is text with tags/project/priority specified. Tags are
 specified with + (or - for filtering) eg: +work. The project is specified with
 a project:g prefix eg: project:dstask -- no quotes. Priorities run from P3
-(low), P2 (default) to P1 (high) and P0 (critical).
+(low), P2 (default) to P1 (high) and P0 (critical). Text can also be specified
+for a substring search of description and notes.
 
 Cmd and IDs can be swapped, multiple IDs can be specified for batch
 operations.
