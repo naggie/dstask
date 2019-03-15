@@ -17,9 +17,19 @@ const (
 	CONTEXT_FILE = "~/.cache/dstask/context"
 )
 
-func MustGetRepoDirectory(directory ...string) string {
+// leave file as an empty string to return directory
+func MustGetRepoPath(directory, file string) string {
 	root := MustExpandHome(GIT_REPO)
-	return path.Join(append([]string{root}, directory...)...)
+	dir := path.Join(root, directory)
+
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		err = os.Mkdir(dir, 0700)
+		if err != nil {
+			ExitFail("Failed to create directory in git repository")
+		}
+	}
+
+	return path.Join(dir, file)
 }
 
 func LoadTaskSetFromDisk(statuses []string) *TaskSet {
@@ -28,20 +38,14 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 		tasksByUUID: make(map[string]*Task),
 	}
 
-	gitDotGitLocation := MustGetRepoDirectory(".git")
+	gitDotGitLocation := MustExpandHome(path.Join(GIT_REPO,".git"))
 
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
 		ExitFail("Could not find git repository at " + GIT_REPO + ", please clone or create. Try `dstask help` for more information.")
 	}
 
 	for _, status := range statuses {
-		dir := MustGetRepoDirectory(status)
-		if _, err := os.Stat(dir); os.IsNotExist(err) {
-			err = os.Mkdir(dir, 0700)
-			if err != nil {
-				ExitFail("Failed to create directory in git repository")
-			}
-		}
+		dir := MustGetRepoPath(status, "")
 
 		files, err := ioutil.ReadDir(dir)
 		if err != nil {
@@ -92,7 +96,7 @@ func (t *Task) SaveToDisk() {
 	// save should be idempotent
 	t.WritePending = false
 
-	filepath := MustGetRepoDirectory(t.Status, t.UUID+".yml")
+	filepath := MustGetRepoPath(t.Status, t.UUID+".yml")
 	d, err := yaml.Marshal(&t)
 	if err != nil {
 		// TODO present error to user, specific error message is important
@@ -111,7 +115,7 @@ func (t *Task) SaveToDisk() {
 			continue
 		}
 
-		filepath := MustGetRepoDirectory(st, t.UUID+".yml")
+		filepath := MustGetRepoPath(st, t.UUID+".yml")
 
 		if _, err := os.Stat(filepath); !os.IsNotExist(err) {
 			err := os.Remove(filepath)
