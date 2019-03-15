@@ -1,5 +1,7 @@
 # dstask
 
+[![CircleCI](https://circleci.com/gh/naggie/dstask.svg?style=svg)](https://circleci.com/gh/naggie/dstask)
+
 A personal task tracker designed to help you focus.
 
 Features:
