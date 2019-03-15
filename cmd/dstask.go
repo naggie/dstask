@@ -127,7 +127,9 @@ func main() {
 		}
 
 	case dstask.CMD_CONTEXT:
-		if os.Args[2] == "none" {
+		if len(os.Args) < 3 {
+			fmt.Printf("Current context: %s", context)
+		} else if os.Args[2] == "none" {
 			dstask.SaveContext(dstask.CmdLine{})
 		} else {
 			dstask.SaveContext(cmdLine)
