@@ -33,3 +33,9 @@ git -C ~/.dstask config user.name "Test user"
 ./dstask 1 done
 ./dstask resolved
 ./dstask show-projects
+
+# we are in context project:bar, adding with another project should fail
+./dstask context project:bar
+! ./dstask add project:baz test
+# ... however, bypassing the context with -- should work
+./dstask add project:cheese test --
