@@ -45,7 +45,7 @@ Before installing dstask, you may want to export your taskwarrior database:
 
 After uninstalling taskwarrior and installing dstask, to import the tasks to dstask:
 
-    task import-tw < taskwarrior.json
+    dstask import-tw < taskwarrior.json
 
 
 Commands and syntax are deliberately very similar to taskwarrior. Here are the exceptions:
@@ -62,22 +62,26 @@ Commands and syntax are deliberately very similar to taskwarrior. Here are the e
 There are a few things missing at the moment. That said I use dstask day to day and trust it with my work.
 
 * Recurring tasks
-* Dependencies
 * Subtask implementation (github issue style or otherwise)
-* tests/CI
-* deferring.due dates
-* Lots of nice reports
+* Deferring tasks
+* Due dates
+* Advanced reports
+* Task dependencies
 
 # Usage
 
 ```
 
-Usage: task <cmd> [id...] [task summary/filter]
+Usage: dstask [id...] <cmd> [task summary/filter]
 
 Where [task summary] is text with tags/project/priority specified. Tags are
 specified with + (or - for filtering) eg: +work. The project is specified with
 a project:g prefix eg: project:dstask -- no quotes. Priorities run from P3
-(low), P2 (default) to P1 (high) and P0 (critical). Cmd and IDs can be swapped.
+(low), P2 (default) to P1 (high) and P0 (critical). Text can also be specified
+for a substring search of description and notes.
+
+Cmd and IDs can be swapped, multiple IDs can be specified for batch
+operations.
 
 run "task help <cmd>" for command specific help.
 
@@ -91,20 +95,18 @@ log             : Log a task (already resolved)
 start           : Change task status to active
 note            : Append to or edit note for a task
 stop            : Change task status to pending
-resolve         : Resolve a task
+done            : Resolve a task
 context         : Set global context for task list and new tasks
 modify          : Set attributes for a task
 edit            : Edit task with text editor
 undo            : Undo last action with git revert
 pull            : Pull then push to git repository, automatic merge commit.
 git             : Pass a command to git in the repository. Used for push/pull.
-resolved-today  : Show tasks completed since midnight in current context
-resolved-week   : Show tasks completed within the last week
+resolved        : Show completed tasks
 show-projects   : List projects with completion status
 open            : Open all URLs found in summary/annotations
 import-tw       : Import tasks from taskwarrior via stdin
 help            : Get help on any command or show this message
-
 
 ```
 

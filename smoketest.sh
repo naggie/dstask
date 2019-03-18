@@ -29,7 +29,8 @@ git -C $DSTASK_GIT_REPO config user.name "Test user"
 git -C $UPSTREAM_BARE_REPO init --bare
 
 
-# general task state management
+# general task state management and commands
+./dstask help
 ./dstask add test task +foo project:bar
 ./dstask start 1
 ./dstask stop 1

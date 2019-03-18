@@ -10,9 +10,9 @@ func Help(cmd string) {
 
 	switch cmd {
 	case CMD_NEXT:
-		helpStr = `Usage: task next [filter] [--]
-Usage: task [filter] [--]
-Example: task +work +bug --
+		helpStr = `Usage: dstask next [filter] [--]
+Usage: dstask [filter] [--]
+Example: dstask +work +bug --
 
 Display list of non-resolved tasks in the current context, most recent last,
 optional filter. It is the default command, so "next" is unnecessary.
@@ -20,8 +20,8 @@ optional filter. It is the default command, so "next" is unnecessary.
 Bypass the current context with --.
 `
 	case CMD_ADD:
-		helpStr = `Usage: task add [task summary] [--]
-Example: task add Fix main web page 500 error +bug P1 project:website
+		helpStr = `Usage: dstask add [task summary] [--]
+Example: dstask add Fix main web page 500 error +bug P1 project:website
 
 Add a task, returning the git commit output which contains the task ID, used
 later to reference the task.
@@ -34,8 +34,8 @@ any words after.
 `
 
 	case CMD_LOG:
-		helpStr = `Usage: task log [task summary] [--]
-Example: task log Fix main web page 500 error +bug P1 project:website
+		helpStr = `Usage: dstask log [task summary] [--]
+Example: dstask log Fix main web page 500 error +bug P1 project:website
 
 Add an immediately resolved task. Syntax identical to add command.
 
@@ -45,10 +45,10 @@ Add -- to ignore the current context.
 
 `
 	case CMD_START:
-		helpStr = `Usage: task <id...> start
-Usage: task start [task summary] [--]
-Example: task 15 start
-Example: task start Fix main web page 500 error +bug P1 project:website
+		helpStr = `Usage: dstask <id...> start
+Usage: dstask start [task summary] [--]
+Example: dstask 15 start
+Example: dstask start Fix main web page 500 error +bug P1 project:website
 
 Mark a task as active, meaning you're currently at work on the task.
 
@@ -61,16 +61,16 @@ Add -- to ignore the current context.
 	case CMD_NOTE:
 		fallthrough
 	case CMD_NOTES:
-		helpStr = `Usage: task note <id>
-Usage: task note <id> <text>
+		helpStr = `Usage: dstask note <id>
+Usage: dstask note <id> <text>
 Example task 13 note problem is faulty hardware
 
 Edit or append text to the markdown notes attached to a particular task.
 `
 	case CMD_STOP:
-		helpStr = `Usage: task <id...> stop [text]
-Example: task 15 stop
-Example: task 15 stop replaced some hardware
+		helpStr = `Usage: dstask <id...> stop [text]
+Example: dstask 15 stop
+Example: dstask 15 stop replaced some hardware
 
 Set a task as inactive, meaning you've stopped work on the task. Optional text
 may be added, which will be appended to the note.
@@ -78,15 +78,15 @@ may be added, which will be appended to the note.
 	case CMD_RESOLVE:
 		fallthrough
 	case CMD_DONE:
-		helpStr = `Usage: task <id...> done [text]
-Example: task 15 done
-Example: task 15 done replaced some hardware
+		helpStr = `Usage: dstask <id...> done [text]
+Example: dstask 15 done
+Example: dstask 15 done replaced some hardware
 
 Resolve a task. Optional text may be added, which will be appended to the note.
 `
 	case CMD_CONTEXT:
-		helpStr = `Usage: task context <filter>
-Example: task context +work -bug
+		helpStr = `Usage: dstask context <filter>
+Example: dstask context +work -bug
 
 Set a global filter consisting of a project, tags or antitags. Subsequent new
 tasks and most commands will then have this filter applied automatically.
@@ -95,49 +95,49 @@ For example, if you were to run "task add fix the webserver," the given task
 would then have the tag "work" applied automatically.
 `
 	case CMD_MODIFY:
-		helpStr = `Usage: task <id...> modify <filter>
-Example: task 34 modify -work +home project:workbench -project:website
+		helpStr = `Usage: dstask <id...> modify <filter>
+Example: dstask 34 modify -work +home project:workbench -project:website
 
 Modify the attributes of a task.
 `
 	case CMD_EDIT:
-		helpStr = `Usage: task <id...> edit
+		helpStr = `Usage: dstask <id...> edit
 
 Edit a task in your text editor.
 `
 	case CMD_UNDO:
-		helpStr = `Usage: task undo
+		helpStr = `Usage: dstask undo
 
 Undo the last command that changed the repository. This uses git revert on one
 or more commits.
 `
 	case CMD_SYNC:
-		helpStr = `Usage: task sync
+		helpStr = `Usage: dstask sync
 
 Synchronise with the remote git server. Runs git pull then git push. If there
 are conflicts that cannot be automatically resolved, it is necessary to
 manually resolve them in  ~/.dstask or with the "task git" command.
 `
 	case CMD_GIT:
-		helpStr = `Usage: task git <args...>
-Example: task git status
+		helpStr = `Usage: dstask git <args...>
+Example: dstask git status
 
 Run the given git command inside ~/.dstask
 `
 	case CMD_RESOLVED:
-		helpStr = `Usage: task resolved
+		helpStr = `Usage: dstask resolved
 
 Show a report of last 1000 resolved tasks.
 `
 	case CMD_OPEN:
-		helpStr = `Usage: task <id...> open
+		helpStr = `Usage: dstask <id...> open
 
 Open all URLs found withing the task summary and notes. If you commonly have
 dozens of tabs open to later action, convert them into tasks to open later with
 this command.
 `
 	case CMD_SHOW_PROJECTS:
-		helpStr = `Usage: task show-projects
+		helpStr = `Usage: dstask show-projects
 
 Show a breakdown of projects with progress information
 `
@@ -148,7 +148,7 @@ Import tasks from a taskwarrior json dump. The "task export" taskwarrior
 command can be used for this.
 `
 	default:
-		helpStr = `Usage: task [id...] <cmd> [task summary/filter]
+		helpStr = `Usage: dstask [id...] <cmd> [task summary/filter]
 
 Where [task summary] is text with tags/project/priority specified. Tags are
 specified with + (or - for filtering) eg: +work. The project is specified with
