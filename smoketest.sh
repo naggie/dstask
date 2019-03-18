@@ -5,14 +5,16 @@
 set -x
 set -e
 
-# isolated db locations
+# isolated db locations (repo2 is used for a sync target)
 export DSTASK_GIT_REPO=$(mktemp -d)
+export UPSTREAM_BARE_REPO=$(mktemp -d)
 export DSTASK_CONTEXT_FILE=$(mktemp -u)
 
 cleanup() {
     set +x
     set +e
     rm -rf $DSTASK_GIT_REPO
+    rm -rf $UPSTREAM_BARE_REPO
     rm $DSTASK_CONTEXT_FILE
 }
 
@@ -24,6 +26,8 @@ go build cmd/dstask.go
 git -C $DSTASK_GIT_REPO init
 git -C $DSTASK_GIT_REPO config user.email "you@example.com"
 git -C $DSTASK_GIT_REPO config user.name "Test user"
+git -C $UPSTREAM_BARE_REPO init --bare
+
 
 # general task state management
 ./dstask add test task +foo project:bar
@@ -59,6 +63,23 @@ git -C $DSTASK_GIT_REPO config user.name "Test user"
 # test import
 ./dstask import-tw < etc/taskwarrior-export.json
 ./dstask next
+
+# test git command pass through
+./dstask git status
+
+# set the bare repository as upstream origin to test sync against, and then push to it
+git -C $DSTASK_GIT_REPO remote add origin $UPSTREAM_BARE_REPO
+git -C $DSTASK_GIT_REPO push origin master
+git -C $DSTASK_GIT_REPO branch --set-upstream-to=origin/master master
+./dstask sync
+
+# cause independent changes (could be from separate downstream repositories,
+# but its easier and equivalent to simulate this with a hard reset)
+./dstask add eggs test task +foo project:bar
+./dstask sync
+./dstask git reset --hard HEAD~1
+./dstask add bacon test task +foo project:bar
+./dstask sync
 
 # there should be no staged changes
 git -C $DSTASK_GIT_REPO diff-index --quiet --cached HEAD --
