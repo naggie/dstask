@@ -1,5 +1,13 @@
 package dstask
 
+import "os"
+
+var (
+	GIT_REPO = "~/.dstask/"
+	// space delimited keyword file for compgen
+	CONTEXT_FILE = "~/.cache/dstask/context"
+)
+
 const (
 	STATUS_PENDING   = "pending"
 	STATUS_ACTIVE    = "active"
@@ -111,4 +119,19 @@ var ALL_CMDS = []string{
 	CMD_IMPORT_TW,
 	CMD_HELP,
 	CMD_COMPLETIONS,
+}
+
+// Replaces default GIT_REPO and CONTEXT_FILE from env if set
+func LoadConfigFromEnv() {
+	_GIT_REPO := os.Getenv("DSTASK_GIT_REPO")
+
+	if _GIT_REPO != "" {
+		GIT_REPO = _GIT_REPO
+	}
+
+	_CONTEXT_FILE := os.Getenv("DSTASK_CONTEXT_FILE")
+
+	if _CONTEXT_FILE != "" {
+		CONTEXT_FILE = _CONTEXT_FILE
+	}
 }

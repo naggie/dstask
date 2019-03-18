@@ -1,16 +1,25 @@
 #!/bin/bash
 # Just a quick smoke test to check nothing major is broken as a start of CI
 
+# exit on error and print commands
 set -x
 set -e
 
+export DSTASK_GIT_REPO=$(mktemp -d)
+export DSTASK_CONTEXT_FILE=$(mktemp -u)
+
+cleanup() {
+    rm -rf $DSTASK_GIT_REPO
+    rm $DSTASK_CONTEXT_FILE
+}
+
+trap cleanup EXIT
+
 go build cmd/dstask.go
 
-mkdir ~/.dstask
-git -C ~/.dstask init
-
-git -C ~/.dstask config user.email "you@example.com"
-git -C ~/.dstask config user.name "Test user"
+git -C $DSTASK_GIT_REPO init
+git -C $DSTASK_GIT_REPO config user.email "you@example.com"
+git -C $DSTASK_GIT_REPO config user.name "Test user"
 
 ./dstask add test task +foo project:bar
 ./dstask start 1

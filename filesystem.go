@@ -11,12 +11,6 @@ import (
 	"path/filepath"
 )
 
-const (
-	GIT_REPO = "~/.dstask/"
-	// space delimited keyword file for compgen
-	CONTEXT_FILE = "~/.cache/dstask/context"
-)
-
 // leave file as an empty string to return directory
 func MustGetRepoPath(directory, file string) string {
 	root := MustExpandHome(GIT_REPO)
