@@ -9,6 +9,8 @@ export DSTASK_GIT_REPO=$(mktemp -d)
 export DSTASK_CONTEXT_FILE=$(mktemp -u)
 
 cleanup() {
+    set +x
+    set +e
     rm -rf $DSTASK_GIT_REPO
     rm $DSTASK_CONTEXT_FILE
 }
@@ -51,3 +53,13 @@ git -C $DSTASK_GIT_REPO config user.name "Test user"
 
 ./dstask import-tw < etc/taskwarrior-export.json
 ./dstask next
+
+# there should be no staged changes
+git -C $DSTASK_GIT_REPO diff-index --quiet --cached HEAD --
+
+# there should be no un-staged changes
+git -C $DSTASK_GIT_REPO diff-files
+git -C $DSTASK_GIT_REPO diff-files --quiet
+
+# there should be no untracked files changes
+test -z "$(git -C $DSTASK_GIT_REPO ls-files --others)"
