@@ -5,6 +5,7 @@
 set -x
 set -e
 
+# isolated db locations
 export DSTASK_GIT_REPO=$(mktemp -d)
 export DSTASK_CONTEXT_FILE=$(mktemp -u)
 
@@ -19,10 +20,12 @@ trap cleanup EXIT
 
 go build cmd/dstask.go
 
+# initialse git repo
 git -C $DSTASK_GIT_REPO init
 git -C $DSTASK_GIT_REPO config user.email "you@example.com"
 git -C $DSTASK_GIT_REPO config user.name "Test user"
 
+# general task state management
 ./dstask add test task +foo project:bar
 ./dstask start 1
 ./dstask stop 1
@@ -48,9 +51,12 @@ git -C $DSTASK_GIT_REPO config user.name "Test user"
 # ... however, bypassing the context with -- should work
 ./dstask add project:cheese test --
 
+# test context listing with a context and no context
+./dstask context
 ./dstask context none
 ./dstask context
 
+# test import
 ./dstask import-tw < etc/taskwarrior-export.json
 ./dstask next
 
