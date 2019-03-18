@@ -39,3 +39,6 @@ git -C ~/.dstask config user.name "Test user"
 
 ./dstask context none
 ./dstask context
+
+./dstask import-tw < etc/taskwarrior-export.json
+./dstask next
