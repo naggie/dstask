@@ -122,3 +122,11 @@ actually performant thanks to modern OS disk caches and SSDs.
 
 If it starts to slow down as my number of non-resolved tasks increases, I'll
 look into indexing and other optimisations such as archiving really old tasks.
+
+# Issues
+
+As you've probably noticed, I don't use the github issues. Currently I use
+dstask itself to track dstask bugs in my personal dstask repository. I've left
+the issues system enabled to allow people to report bugs or request features.
+As soon as dstask is used by more than a handful of people, I'll probably
+import the dstask issues to github.

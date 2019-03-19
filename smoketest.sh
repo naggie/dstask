@@ -7,8 +7,8 @@ set -e
 
 # isolated db locations (repo2 is used for a sync target)
 export DSTASK_GIT_REPO=$(mktemp -d)
-export UPSTREAM_BARE_REPO=$(mktemp -d)
 export DSTASK_CONTEXT_FILE=$(mktemp -u)
+UPSTREAM_BARE_REPO=$(mktemp -d)
 
 cleanup() {
     set +x
@@ -86,7 +86,6 @@ git -C $DSTASK_GIT_REPO branch --set-upstream-to=origin/master master
 git -C $DSTASK_GIT_REPO diff-index --quiet --cached HEAD --
 
 # there should be no un-staged changes
-git -C $DSTASK_GIT_REPO diff-files
 git -C $DSTASK_GIT_REPO diff-files --quiet
 
 # there should be no untracked files changes
