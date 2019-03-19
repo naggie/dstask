@@ -197,7 +197,7 @@ Task table key:
 	colourPrintln(0, FG_ACTIVE, BG_ACTIVE, "Active")
 	colourPrintln(0, FG_DEFAULT, BG_PAUSED, "Paused")
 
-	os.Exit(1)
+	os.Exit(0)
 }
 
 func colourPrintln(mode, fg, bg int, line string) {
