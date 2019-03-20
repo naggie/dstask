@@ -113,7 +113,7 @@ func (t *Table) AddRow(row []string, style RowStyle) {
 // fields recommended -- not included.
 // A nice characteristic of this, is that if there are no populated cells the
 // column will disappear.
-func (t *Table) calcColWidths(gap int) []int {
+func (t *Table) calcColWidths(colGap int) []int {
 	target := TABLE_MAX_WIDTH
 
 	if t.TermWidth < target {
@@ -122,8 +122,8 @@ func (t *Table) calcColWidths(gap int) []int {
 
 	colWidths := t.MaxColWidths[:]
 
-	// account for gaps
-	target -= gap*len(colWidths) - 1
+	// account for gaps of 2 chrs
+	target -= colGap*len(colWidths) - 1
 
 	for SumInts(colWidths...) > target {
 		// find max col width index

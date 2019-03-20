@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"sort"
 )
 
 type SubTask struct {
@@ -130,7 +131,14 @@ func (task *Task) MatchesFilter(cmdLine CmdLine) bool {
 func (task *Task) Normalise() {
 	task.Project = strings.ToLower(task.Project)
 
+	// tags must be lowercase
 	for i, tag := range task.Tags {
 		task.Tags[i] = strings.ToLower(tag)
 	}
+
+	// tags must be sorted
+	sort.Strings(task.Tags)
+
+	// tags must be unique
+	task.Tags = DeduplicateStrings(task.Tags)
 }
