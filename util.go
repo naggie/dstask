@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"github.com/gofrs/uuid"
+	"golang.org/x/sys/unix"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -194,4 +195,19 @@ func DeduplicateStrings(s []string) []string {
 		j++
 	}
 	return s[:j]
+}
+
+func MustGetTermSize() (int,int) {
+	ws, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
+	if err != nil {
+		ExitFail("Not a TTY")
+	}
+
+	return int(ws.Col), int(ws.Row)
+
+}
+
+func IsTTY() bool {
+	_, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
+	return err == nil
 }

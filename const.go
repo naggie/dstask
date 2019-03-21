@@ -52,6 +52,7 @@ const (
 	NOTE_MODE_KEYWORD      = "/"
 
 	TABLE_MAX_WIDTH      = 160 // keep it readable
+	TABLE_COL_GAP        = 2   // differentiate columns
 	MODE_HEADER          = 4
 	FG_DEFAULT           = 250
 	BG_DEFAULT_1         = 233

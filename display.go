@@ -2,12 +2,17 @@ package dstask
 
 import (
 	"fmt"
-	"golang.org/x/sys/unix"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 )
+
+type Table struct {
+	Header       []string
+	Rows         [][]string
+	RowStyles    []RowStyle
+	Width        int
+}
 
 type RowStyle struct {
 	// ansi mode
@@ -17,72 +22,15 @@ type RowStyle struct {
 	Bg int
 }
 
-// should use a better console library after first POC
-
-/// display list of filtered tasks with context and filter
-func (ts *TaskSet) DisplayByNext() {
-	if ts.numTasksLoaded == 0 {
-		fmt.Println("\033[31mNo tasks found. Showing help.\033[0m")
-		Help("")
-	} else if len(ts.tasks) == 0 {
-		ExitFail("No matching tasks in given context or filter.")
-	} else if len(ts.tasks) == 1 {
-		ts.tasks[0].Display()
-		return
-	} else {
-		table := NewTable(
-			"ID",
-			"Priority",
-			"Tags",
-			"Project",
-			"Summary",
-		)
-
-		for _, t := range ts.tasks {
-			style := t.Style()
-			table.AddRow(
-				[]string{
-					// id should be at least 2 chars wide to match column header
-					// (headers can be truncated)
-					fmt.Sprintf("%-2d", t.ID),
-					t.Priority,
-					strings.Join(t.Tags, " "),
-					t.Project,
-					t.Summary,
-				},
-				style,
-			)
-		}
-
-		rowsRendered := table.Render(11)
-
-		if rowsRendered == len(ts.tasks) {
-			fmt.Printf("\n%v tasks.\n", len(ts.tasks))
-		} else {
-			fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(ts.tasks), rowsRendered)
-		}
-	}
-}
-
-type Table struct {
-	Header       []string
-	Rows         [][]string
-	TermWidth    int
-	TermHeight   int
-	RowStyles    []RowStyle
-}
-
 // header may  havetruncated words
-func NewTable(header ...string) *Table {
-	ws, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
-	if err != nil {
-		ExitFail("Not a TTY")
+func NewTable(w int, header ...string) *Table {
+	if w > TABLE_MAX_WIDTH {
+		w = TABLE_MAX_WIDTH
 	}
 
 	return &Table{
 		Header:       header,
-		TermWidth:    int(ws.Col),
-		TermHeight:   int(ws.Row),
+		Width:        w,
 		RowStyles: []RowStyle{
 			RowStyle{
 				Mode: MODE_HEADER,
@@ -100,29 +48,10 @@ func (t *Table) AddRow(row []string, style RowStyle) {
 	t.RowStyles = append(t.RowStyles, style)
 }
 
-// get widths appropriate to the terminal size and TABLE_MAX_WIDTH
-// cells may require padding or truncation. Cell padding of 1char between
-// fields recommended -- not included.
-// A nice characteristic of this, is that if there are no populated cells the
-// column will disappear.
-func (t *Table) calcColWidths(colGap, limit int) []int {
-	targetWidth := TABLE_MAX_WIDTH
-
-	if t.TermWidth < targetWidth {
-		targetWidth = t.TermWidth
-	}
-
-	if limit < 0 {
-		ExitFail("Limit does not make sense")
-	}
-
-	if limit > len(t.Rows) {
-		limit = len(t.Rows)
-	}
-
+func (t *Table) calcColWidths() []int {
 	originalWidths := make([]int, len(t.Header))
 
-	for _, row := range t.Rows[:limit] {
+	for _, row := range t.Rows {
 		for j, cell := range row {
 			if originalWidths[j] < len(cell) {
 				originalWidths[j] = len(cell)
@@ -134,9 +63,9 @@ func (t *Table) calcColWidths(colGap, limit int) []int {
 	newWidths := originalWidths[:]
 
 	// account for gaps of 2 chrs
-	targetWidth -= colGap*len(t.Header) - 1
+	widthBudget := t.Width - TABLE_COL_GAP*(len(t.Header) - 1)
 
-	for SumInts(newWidths...) > targetWidth {
+	for SumInts(newWidths...) > widthBudget {
 		// find max col width index
 		var max, maxi int
 
@@ -162,14 +91,8 @@ func (t *Table) calcColWidths(colGap, limit int) []int {
 // gap of zero means fit terminal exactly by truncating table -- you will want
 // a larger gap to account for prompt or other text. A gap of -1 means the row
 // count is not limited -- useful for reports or inspecting tasks.
-func (t *Table) Render(gap int) int {
-	maxRows := t.TermHeight - gap
-
-	if maxRows < 1 {
-		ExitFail("Not enough space to render anything")
-	}
-
-	widths := t.calcColWidths(2, maxRows)
+func (t *Table) Render() {
+	widths := t.calcColWidths()
 	rows := append([][]string{t.Header}, t.Rows...)
 
 	for i, row := range rows {
@@ -178,7 +101,7 @@ func (t *Table) Render(gap int) int {
 			cells[i] = FixStr(cells[i], w)
 		}
 
-		line := strings.Join(cells, "  ")
+		line := strings.Join(cells, strings.Repeat(" ", TABLE_COL_GAP))
 
 		mode := t.RowStyles[i].Mode
 		fg := t.RowStyles[i].Fg
@@ -204,17 +127,75 @@ func (t *Table) Render(gap int) int {
 
 		// print style, line then reset
 		fmt.Printf("\033[%d;38;5;%d;48;5;%dm%s\033[0m\n", mode, fg, bg, line)
+	}
+}
 
-		if gap != -1 && i > maxRows {
-			return i
+/// display list of filtered tasks with context and filter
+func (ts *TaskSet) DisplayByNext() {
+	if ts.numTasksLoaded == 0 {
+		fmt.Println("\033[31mNo tasks found. Showing help.\033[0m")
+		Help("")
+	} else if len(ts.tasks) == 0 {
+		ExitFail("No matching tasks in given context or filter.")
+	} else if len(ts.tasks) == 1 {
+		ts.tasks[0].Display()
+		return
+	} else {
+		var tasks []*Task
+		w, h := MustGetTermSize()
+
+		h -=8
+
+		if h < 4 {
+			ExitFail("Terminal is too small to display next tasks")
+		}
+
+		if h > len(ts.tasks) {
+			tasks = ts.tasks
+		} else {
+			tasks = ts.tasks[:h]
+		}
+
+		table := NewTable(
+			w,
+			"ID",
+			"Priority",
+			"Tags",
+			"Project",
+			"Summary",
+		)
+
+		for _, t := range tasks {
+			style := t.Style()
+			table.AddRow(
+				[]string{
+					// id should be at least 2 chars wide to match column header
+					// (headers can be truncated)
+					fmt.Sprintf("%-2d", t.ID),
+					t.Priority,
+					strings.Join(t.Tags, " "),
+					t.Project,
+					t.Summary,
+				},
+				style,
+			)
+		}
+
+		table.Render()
+
+		if h == len(ts.tasks) {
+			fmt.Printf("\n%v tasks.\n", len(ts.tasks))
+		} else {
+			fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(ts.tasks), h)
 		}
 	}
-
-	return len(t.Rows)
 }
 
 func (task *Task) Display() {
+	w, _ := MustGetTermSize()
+
 	table := NewTable(
+		w,
 		"Name",
 		"Value",
 	)
@@ -234,7 +215,7 @@ func (task *Task) Display() {
 	if !task.Due.IsZero() {
 		table.AddRow([]string{"Due", task.Due.String()}, RowStyle{})
 	}
-	table.Render(0)
+	table.Render()
 }
 
 func (t *Task) Style() RowStyle {
@@ -262,7 +243,10 @@ func (t *Task) Style() RowStyle {
 }
 
 func (ts TaskSet) DisplayByResolved() {
+	w, _ := MustGetTermSize()
+
 	table := NewTable(
+		w,
 		"Resolved",
 		"Priority",
 		"Tags",
@@ -277,10 +261,11 @@ func (ts TaskSet) DisplayByResolved() {
 		_, week := t.Resolved.ISOWeek()
 
 		if lastWeek != 0 && week != lastWeek {
-			table.Render(-1)
+			table.Render()
 			// insert gap
 			fmt.Printf("\n\n> Week %d, starting %s\n\n", week, t.Resolved.Format("Mon 2 Jan 2006"))
 			table = NewTable(
+				w,
 				"Resolved",
 				"Priority",
 				"Tags",
@@ -306,6 +291,6 @@ func (ts TaskSet) DisplayByResolved() {
 		_, lastWeek = t.Resolved.ISOWeek()
 	}
 
-	table.Render(-1)
+	table.Render()
 	fmt.Printf("\n%v tasks.\n", len(ts.tasks))
 }
