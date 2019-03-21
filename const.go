@@ -51,6 +51,7 @@ const (
 	IGNORE_CONTEXT_KEYWORD = "--"
 	NOTE_MODE_KEYWORD      = "/"
 
+	// theme loosely based on https://github.com/GothenburgBitFactory/taskwarrior/blob/2.6.0/doc/rc/dark-256.theme
 	TABLE_MAX_WIDTH      = 160 // keep it readable
 	TABLE_COL_GAP        = 2   // differentiate columns
 	MODE_HEADER          = 4

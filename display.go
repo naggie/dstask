@@ -48,7 +48,6 @@ func (t *Table) AddRow(row []string, style RowStyle) {
 	t.RowStyles = append(t.RowStyles, style)
 }
 
-// theme loosely based on https://github.com/GothenburgBitFactory/taskwarrior/blob/2.6.0/doc/rc/dark-256.theme
 // render table, returning count of rows rendered
 // gap of zero means fit terminal exactly by truncating table -- you will want
 // a larger gap to account for prompt or other text. A gap of -1 means the row
