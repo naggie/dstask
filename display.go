@@ -48,7 +48,12 @@ func (t *Table) AddRow(row []string, style RowStyle) {
 	t.RowStyles = append(t.RowStyles, style)
 }
 
-func (t *Table) calcColWidths() []int {
+// theme loosely based on https://github.com/GothenburgBitFactory/taskwarrior/blob/2.6.0/doc/rc/dark-256.theme
+// render table, returning count of rows rendered
+// gap of zero means fit terminal exactly by truncating table -- you will want
+// a larger gap to account for prompt or other text. A gap of -1 means the row
+// count is not limited -- useful for reports or inspecting tasks.
+func (t *Table) Render() {
 	originalWidths := make([]int, len(t.Header))
 
 	for _, row := range t.Rows {
@@ -60,16 +65,16 @@ func (t *Table) calcColWidths() []int {
 	}
 
 	// initialise with original size and reduce interatively
-	newWidths := originalWidths[:]
+	widths := originalWidths[:]
 
 	// account for gaps of 2 chrs
 	widthBudget := t.Width - TABLE_COL_GAP*(len(t.Header) - 1)
 
-	for SumInts(newWidths...) > widthBudget {
+	for SumInts(widths...) > widthBudget {
 		// find max col width index
 		var max, maxi int
 
-		for i, w := range newWidths {
+		for i, w := range widths {
 			if w > max {
 				max = w
 				maxi = i
@@ -77,22 +82,12 @@ func (t *Table) calcColWidths() []int {
 		}
 
 		// decrement, if 0 abort
-		if newWidths[maxi] == 0 {
+		if widths[maxi] == 0 {
 			break
 		}
-		newWidths[maxi] = newWidths[maxi] - 1
+		widths[maxi] = widths[maxi] - 1
 	}
 
-	return newWidths
-}
-
-// theme loosely based on https://github.com/GothenburgBitFactory/taskwarrior/blob/2.6.0/doc/rc/dark-256.theme
-// render table, returning count of rows rendered
-// gap of zero means fit terminal exactly by truncating table -- you will want
-// a larger gap to account for prompt or other text. A gap of -1 means the row
-// count is not limited -- useful for reports or inspecting tasks.
-func (t *Table) Render() {
-	widths := t.calcColWidths()
 	rows := append([][]string{t.Header}, t.Rows...)
 
 	for i, row := range rows {
