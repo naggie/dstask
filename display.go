@@ -67,7 +67,6 @@ func (ts *TaskSet) DisplayByNext() {
 type Table struct {
 	Header       []string
 	Rows         [][]string
-	MaxColWidths []int
 	TermWidth    int
 	TermHeight   int
 	RowStyles    []RowStyle
@@ -82,7 +81,6 @@ func NewTable(header ...string) *Table {
 
 	return &Table{
 		Header:       header,
-		MaxColWidths: make([]int, len(header)),
 		TermWidth:    int(ws.Col),
 		TermHeight:   int(ws.Row),
 		RowStyles: []RowStyle{
@@ -98,12 +96,6 @@ func (t *Table) AddRow(row []string, style RowStyle) {
 		panic("Row is incorrect length")
 	}
 
-	for i, cell := range row {
-		if t.MaxColWidths[i] < len(cell) {
-			t.MaxColWidths[i] = len(cell)
-		}
-	}
-
 	t.Rows = append(t.Rows, row)
 	t.RowStyles = append(t.RowStyles, style)
 }
@@ -113,23 +105,38 @@ func (t *Table) AddRow(row []string, style RowStyle) {
 // fields recommended -- not included.
 // A nice characteristic of this, is that if there are no populated cells the
 // column will disappear.
-func (t *Table) calcColWidths(colGap int) []int {
-	target := TABLE_MAX_WIDTH
+func (t *Table) calcColWidths(colGap, limit int) []int {
+	targetWidth := TABLE_MAX_WIDTH
 
-	if t.TermWidth < target {
-		target = t.TermWidth
+	if t.TermWidth < targetWidth {
+		targetWidth = t.TermWidth
 	}
 
-	colWidths := t.MaxColWidths[:]
+	if limit > len(t.Rows) {
+		limit = len(t.Rows)
+	}
+
+	originalWidths := make([]int, len(t.Header))
+
+	for _, row := range t.Rows[:limit] {
+		for j, cell := range row {
+			if originalWidths[j] < len(cell) {
+				originalWidths[j] = len(cell)
+			}
+		}
+	}
+
+	// initialise with original size and reduce interatively
+	newWidths := originalWidths[:]
 
 	// account for gaps of 2 chrs
-	target -= colGap*len(colWidths) - 1
+	targetWidth -= colGap*len(t.Header) - 1
 
-	for SumInts(colWidths...) > target {
+	for SumInts(newWidths...) > targetWidth {
 		// find max col width index
 		var max, maxi int
 
-		for i, w := range colWidths {
+		for i, w := range newWidths {
 			if w > max {
 				max = w
 				maxi = i
@@ -137,13 +144,13 @@ func (t *Table) calcColWidths(colGap int) []int {
 		}
 
 		// decrement, if 0 abort
-		if colWidths[maxi] == 0 {
+		if newWidths[maxi] == 0 {
 			break
 		}
-		colWidths[maxi] = colWidths[maxi] - 1
+		newWidths[maxi] = newWidths[maxi] - 1
 	}
 
-	return colWidths
+	return newWidths
 }
 
 // theme loosely based on https://github.com/GothenburgBitFactory/taskwarrior/blob/2.6.0/doc/rc/dark-256.theme
@@ -152,8 +159,8 @@ func (t *Table) calcColWidths(colGap int) []int {
 // a larger gap to account for prompt or other text. A gap of -1 means the row
 // count is not limited -- useful for reports or inspecting tasks.
 func (t *Table) Render(gap int) int {
-	widths := t.calcColWidths(2)
 	maxRows := t.TermHeight - gap
+	widths := t.calcColWidths(2, maxRows)
 	rows := append([][]string{t.Header}, t.Rows...)
 
 	for i, row := range rows {
