@@ -112,6 +112,10 @@ func (t *Table) calcColWidths(colGap, limit int) []int {
 		targetWidth = t.TermWidth
 	}
 
+	if limit < 0 {
+		ExitFail("Limit does not make sense")
+	}
+
 	if limit > len(t.Rows) {
 		limit = len(t.Rows)
 	}
@@ -160,6 +164,11 @@ func (t *Table) calcColWidths(colGap, limit int) []int {
 // count is not limited -- useful for reports or inspecting tasks.
 func (t *Table) Render(gap int) int {
 	maxRows := t.TermHeight - gap
+
+	if maxRows < 1 {
+		ExitFail("Not enough space to render anything")
+	}
+
 	widths := t.calcColWidths(2, maxRows)
 	rows := append([][]string{t.Header}, t.Rows...)
 
