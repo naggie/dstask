@@ -320,7 +320,9 @@ func main() {
 			// limit completions to available context, but not if the user is
 			// trying to change context, context ignore is on, or modify
 			// command is being completed
-			if !cmdLine.IgnoreContext && cmdLine.Cmd != dstask.CMD_CONTEXT  && cmdLine.Cmd != dstask.CMD_MODIFY {
+			if !cmdLine.IgnoreContext &&
+				cmdLine.Cmd != dstask.CMD_CONTEXT &&
+				cmdLine.Cmd != dstask.CMD_MODIFY {
 				ts.Filter(context)
 			}
 
