@@ -198,16 +198,16 @@ func DeduplicateStrings(s []string) []string {
 }
 
 func MustGetTermSize() (int,int) {
+	if FAKE_PTY {
+		return 80, 24
+	}
+
 	ws, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
 	if err != nil {
 		ExitFail("Not a TTY")
 	}
 
-	if !FAKE_PTY {
-		return int(ws.Col), int(ws.Row)
-	} else {
-		return 80, 24
-	}
+	return int(ws.Col), int(ws.Row)
 }
 
 func IsTTY() bool {
