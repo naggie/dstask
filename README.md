@@ -26,7 +26,7 @@ Requirements:
 * A 256-color capable terminal
 
 <p align="center">
-  <img src="https://github.com/naggie/dstask/raw/master/dstask.png">
+  <img src="https://github.com/naggie/dstask/raw/master/etc/dstask.png">
 </p>
 
 # Installation
