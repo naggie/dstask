@@ -6,6 +6,8 @@ var (
 	GIT_REPO = "~/.dstask/"
 	// space delimited keyword file for compgen
 	CONTEXT_FILE = "~/.cache/dstask/context"
+	// for CI testing
+	FAKE_PTY = false
 )
 
 const (
@@ -135,5 +137,9 @@ func LoadConfigFromEnv() {
 
 	if _CONTEXT_FILE != "" {
 		CONTEXT_FILE = _CONTEXT_FILE
+	}
+
+	if os.Getenv("DSTASK_FAKE_PTY") != "" {
+		FAKE_PTY = true
 	}
 }

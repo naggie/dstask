@@ -8,6 +8,8 @@ set -e
 # isolated db locations (repo2 is used for a sync target)
 export DSTASK_GIT_REPO=$(mktemp -d)
 export DSTASK_CONTEXT_FILE=$(mktemp -u)
+export DSTASK_FAKE_PTY=1
+
 UPSTREAM_BARE_REPO=$(mktemp -d)
 
 cleanup() {

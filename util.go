@@ -203,11 +203,14 @@ func MustGetTermSize() (int,int) {
 		ExitFail("Not a TTY")
 	}
 
-	return int(ws.Col), int(ws.Row)
-
+	if !FAKE_PTY {
+		return int(ws.Col), int(ws.Row)
+	} else {
+		return 80, 24
+	}
 }
 
 func IsTTY() bool {
 	_, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
-	return err == nil
+	return err == nil || FAKE_PTY
 }
