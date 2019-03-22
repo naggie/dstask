@@ -138,13 +138,9 @@ func (ts *TaskSet) DisplayByNext() {
 		var tasks []*Task
 		w, h := MustGetTermSize()
 
-		h -=8
+		h -=8 // leave room for context message, header and prompt
 
-		if h < 4 {
-			ExitFail("Terminal is too small to display next tasks")
-		}
-
-		if h > len(ts.tasks) {
+		if h > len(ts.tasks) || h < 0 {
 			tasks = ts.tasks
 		} else {
 			tasks = ts.tasks[:h]
