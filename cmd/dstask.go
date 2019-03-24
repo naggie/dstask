@@ -83,7 +83,12 @@ func main() {
 					task.Notes += "\n" + cmdLine.Text
 				}
 				ts.MustUpdateTask(task)
+
 				ts.SaveToDisk("Started %s", task)
+
+				if task.Notes != "" {
+					fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m", task.ID, task.Notes)
+				}
 			}
 		} else if len(cmdLine.Text) != 0 {
 			// create a new task that is already active (started)
