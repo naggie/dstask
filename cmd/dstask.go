@@ -235,7 +235,7 @@ func main() {
 	case dstask.CMD_GIT:
 		dstask.MustRunGitCmd(os.Args[2:]...)
 
-	case dstask.CMD_RESOLVED:
+	case dstask.CMD_SHOW_RESOLVED:
 		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
 		ts.Filter(context)
 		ts.FilterByStatus(dstask.STATUS_RESOLVED)

@@ -124,7 +124,7 @@ Example: dstask git status
 
 Run the given git command inside ~/.dstask
 `
-	case CMD_RESOLVED:
+	case CMD_SHOW_RESOLVED:
 		helpStr = `Usage: dstask resolved
 
 Show a report of last 1000 resolved tasks.
@@ -178,7 +178,7 @@ edit            : Edit task with text editor
 undo            : Undo last action with git revert
 pull            : Pull then push to git repository, automatic merge commit.
 git             : Pass a command to git in the repository. Used for push/pull.
-resolved        : Show completed tasks
+show-resolved   : Show resolved tasks
 show-projects   : List projects with completion status
 open            : Open all URLs found in summary/annotations
 import-tw       : Import tasks from taskwarrior via stdin

@@ -1,6 +1,9 @@
 #!/bin/bash
 # Just a quick smoke test to check nothing major is broken as a start of CI
 
+# This script should only test commands work without crashing. Behavioural
+# tests should use the go test system.
+
 # exit on error and print commands
 set -x
 set -e
@@ -49,7 +52,7 @@ git -C $UPSTREAM_BARE_REPO init --bare
 ./dstask context +foo
 ./dstask next
 ./dstask 1 done
-./dstask resolved
+./dstask show-resolved
 ./dstask show-projects
 
 # we are in context project:bar, adding with another project should fail
