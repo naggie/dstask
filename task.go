@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 	"sort"
+	"errors"
 )
 
 type SubTask struct {
@@ -127,7 +128,6 @@ func (task *Task) MatchesFilter(cmdLine CmdLine) bool {
 	return true
 }
 
-// make tags + projects are lowercase
 func (task *Task) Normalise() {
 	task.Project = strings.ToLower(task.Project)
 
@@ -141,4 +141,37 @@ func (task *Task) Normalise() {
 
 	// tags must be unique
 	task.Tags = DeduplicateStrings(task.Tags)
+
+	if task.Status == STATUS_RESOLVED {
+		// resolved task should not have ID as it's meaningless
+		task.ID = 0
+	}
+
+	if task.Priority == "" {
+		task.Priority = PRIORITY_NORMAL
+	}
 }
+
+// normalise the task before validating!
+func (task *Task) Validate() error {
+	if !IsValidUUID4String(task.UUID) {
+		return errors.New("Invalid task UUID4")
+	}
+
+	if !IsValidStatus(task.Status) {
+		return errors.New("Invalid status specified")
+	}
+
+	if !IsValidPriority(task.Priority) {
+		return errors.New("Invalid priority specified")
+	}
+
+	for _, uuid := range task.Dependencies {
+		if !IsValidUUID4String(uuid) {
+			return errors.New("Invalid dependency UUID4")
+		}
+	}
+
+	return nil
+}
+

@@ -45,14 +45,13 @@ func (ts *TaskSet) AddTask(task Task) Task {
 		task.UUID = MustGetUUID4String()
 	}
 
+	if err := task.Validate(); err != nil {
+		ExitFail(err.Error())
+	}
+
 	if ts.tasksByUUID[task.UUID] != nil {
 		// load tasks, do not overwrite
 		return Task{}
-	}
-
-	if task.Status == STATUS_RESOLVED {
-		// resolved task should not have ID as it's meaningless
-		task.ID = 0
 	}
 
 	// check ID is unique if there is one
@@ -69,10 +68,6 @@ func (ts *TaskSet) AddTask(task Task) Task {
 				break
 			}
 		}
-	}
-
-	if task.Priority == "" {
-		task.Priority = PRIORITY_NORMAL
 	}
 
 	if task.Created.IsZero() {
@@ -92,6 +87,10 @@ func (ts *TaskSet) AddTask(task Task) Task {
 // need this to work regardless.
 func (ts *TaskSet) MustUpdateTask(task Task) {
 	task.Normalise()
+
+	if err := task.Validate(); err != nil {
+		ExitFail(err.Error())
+	}
 
 	if ts.tasksByUUID[task.UUID] == nil {
 		ExitFail("Could not find given task to update by UUID")

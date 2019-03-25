@@ -56,6 +56,10 @@ func IsValidPriority(priority string) bool {
 	}[priority]
 }
 
+func IsValidStatus(status string) bool {
+    return StrSliceContains(ALL_STATUSES, status)
+}
+
 func SumInts(vals ...int) int {
 	var total int
 
