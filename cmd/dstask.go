@@ -238,6 +238,7 @@ func main() {
 	case dstask.CMD_SHOW_RESOLVED:
 		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
 		ts.Filter(context)
+		ts.Filter(cmdLine)
 		ts.FilterByStatus(dstask.STATUS_RESOLVED)
 		ts.SortByResolved()
 		ts.DisplayByResolved()
