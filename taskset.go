@@ -46,7 +46,7 @@ func (ts *TaskSet) AddTask(task Task) Task {
 	}
 
 	if err := task.Validate(); err != nil {
-		ExitFail(err.Error())
+		ExitFail("%s, task %s", err, task.UUID)
 	}
 
 	if ts.tasksByUUID[task.UUID] != nil {
@@ -89,7 +89,7 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 	task.Normalise()
 
 	if err := task.Validate(); err != nil {
-		ExitFail(err.Error())
+		ExitFail("%s, task %s", err, task.UUID)
 	}
 
 	if ts.tasksByUUID[task.UUID] == nil {

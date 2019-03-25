@@ -159,7 +159,7 @@ func (task *Task) Validate() error {
 	}
 
 	if !IsValidStatus(task.Status) {
-		return errors.New("Invalid status specified")
+		return errors.New("Invalid status specified on task")
 	}
 
 	if !IsValidPriority(task.Priority) {
