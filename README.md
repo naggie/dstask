@@ -110,6 +110,15 @@ help            : Get help on any command or show this message
 
 ```
 
+# Priority levels
+
+| Symbol | Name      | Description                                             |
+|--------|-----------|---------------------------------------------------------|
+| P0     | Critical  | Must be resolved immediately                            |
+| P1     | High      |                                                         |
+| P2     | Normal    | Default priority                                        |
+| P3     | Low       |                                                         |
+
 
 # A note on performance
 
