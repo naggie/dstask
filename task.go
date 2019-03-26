@@ -3,11 +3,11 @@ package dstask
 // main task data structures
 
 import (
+	"errors"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
-	"sort"
-	"errors"
 )
 
 type SubTask struct {
@@ -174,4 +174,3 @@ func (task *Task) Validate() error {
 
 	return nil
 }
-

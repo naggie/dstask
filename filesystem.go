@@ -32,7 +32,7 @@ func LoadTaskSetFromDisk(statuses []string) *TaskSet {
 		tasksByUUID: make(map[string]*Task),
 	}
 
-	gitDotGitLocation := MustExpandHome(path.Join(GIT_REPO,".git"))
+	gitDotGitLocation := MustExpandHome(path.Join(GIT_REPO, ".git"))
 
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
 		ExitFail("Could not find git repository at " + GIT_REPO + ", please clone or create. Try `dstask help` for more information.")

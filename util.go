@@ -57,7 +57,7 @@ func IsValidPriority(priority string) bool {
 }
 
 func IsValidStatus(status string) bool {
-    return StrSliceContains(ALL_STATUSES, status)
+	return StrSliceContains(ALL_STATUSES, status)
 }
 
 func SumInts(vals ...int) int {
@@ -201,7 +201,7 @@ func DeduplicateStrings(s []string) []string {
 	return s[:j]
 }
 
-func MustGetTermSize() (int,int) {
+func MustGetTermSize() (int, int) {
 	if FAKE_PTY {
 		return 80, 24
 	}
