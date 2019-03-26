@@ -267,14 +267,7 @@ func main() {
 		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
 		cmdLine.MergeContext(context)
 		ts.Filter(context)
-		projects := ts.GetProjects()
-		fmt.Println("TODO: make this a table with bar charts.")
-		for name := range projects {
-			project := projects[name]
-			if project.TasksNotResolved < project.TasksResolved {
-				fmt.Printf("%+v\n", project)
-			}
-		}
+		ts.DisplayProjects()
 
 	case dstask.CMD_HELP:
 		if len(os.Args) > 2 {

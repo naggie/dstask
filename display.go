@@ -167,3 +167,32 @@ func (ts TaskSet) DisplayByResolved() {
 	table.Render()
 	fmt.Printf("\n%v tasks.\n", len(ts.tasks))
 }
+
+func (ts TaskSet) DisplayProjects() {
+	projects := ts.GetProjects()
+
+	w, _ := MustGetTermSize()
+	table := NewTable(
+		w,
+		"Name",
+		"Progress",
+		"Created",
+	)
+
+	for name := range projects {
+		project := projects[name]
+		if project.TasksNotResolved < project.TasksResolved {
+			table.AddRow(
+				[]string{
+					project.Name,
+					fmt.Sprintf("%d/%d", project.TasksNotResolved, project.TasksResolved),
+					project.Created.Format("Mon 2 Jan 2006"),
+				},
+				RowStyle{},
+			)
+		}
+	}
+
+	table.Render()
+}
+
