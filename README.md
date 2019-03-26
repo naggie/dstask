@@ -31,11 +31,9 @@ Requirements:
 
 # Installation
 
-Note: This is beta software. There may be breaking changes before the 1.0 release.
-
 1. Copy the executable (from the [releases page][1]) to somewhere in your path, named `dstask` and mark it executable. `/usr/local/bin/` is suggested.
-1. Enable bash completions
-1. Set up an alias in your bashrc: `alias task=dstask`, and source the relevant completion script
+1. Enable bash completions by copying `.bash-completion.sh` into your home directory and sourcing it from your `.bashrc`. There's also a zsh completion script.
+1. Set up an alias in your `.bashrc`: `alias task=dstask` or `alias n=dstask` to make task management slightly faster.
 
 # Moving from Taskwarrior
 
@@ -43,15 +41,15 @@ Before installing dstask, you may want to export your taskwarrior database:
 
     task export > taskwarrior.json
 
-After uninstalling taskwarrior and installing dstask, to import the tasks to dstask:
+After un-installing taskwarrior and installing dstask, to import the tasks to dstask:
 
     dstask import-tw < taskwarrior.json
 
 
 Commands and syntax are deliberately very similar to taskwarrior. Here are the exceptions:
 
-  * The command is (nearly) always the first argument. Eg, `task eat some add bananas` won't work, but `task add eat some bananas` will. If there's an ID, it can proceed the command.
-  * Priorities are added by the keywords `P0` `P1` `P2` `P3`. Lower number is more urgent. Default is `P2`. For example `task add eat some bananas P1`
+  * The command is (nearly) always the first argument. Eg, `task eat some add bananas` won't work, but `task add eat some bananas` will. If there's an ID, it can proceed the command but doesn't have to.
+  * Priorities are added by the keywords `P0` `P1` `P2` `P3`. Lower number is more urgent. Default is `P2`. For example `task add eat some bananas P1`. The keyword can be anywhere after the command.
   * Action is always the first argument. Eg, `task eat some add bananas` won't work, but `task add eat some bananas` will.
   * Contexts are defined on-the-fly, and are added to all new tasks if set. Use `--` to ignore current context in any command.
 
@@ -146,6 +144,8 @@ actually performant thanks to modern OS disk caches and SSDs.
 
 If it starts to slow down as my number of non-resolved tasks increases, I'll
 look into indexing and other optimisations such as archiving really old tasks.
+I don't believe that this will be necessary, as the number of open tasks is
+(hopefully) bounded.
 
 # Issues
 
