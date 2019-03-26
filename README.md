@@ -7,10 +7,10 @@ A personal task tracker designed to help you focus.
 Features:
 
  * Powerful context system
- * Git powered sync/undo/resolve (passwordstore.org style) which means no need to set up a sync server, and sync between devices is easy!
+ * **Git powered sync**/undo/resolve (passwordstore.org style) which means no need to set up a sync server, and sync between devices is easy!
  * Task listing won't break with long task text
- * `open` command -- open URLs found in specified task in the browser
- * `note` command -- edit a full markdown note for a task
+ * `open` command -- **open URLs found in specified task** in the browser
+ * `note` command -- edit a **full markdown note** for a task
  * zsh/bash completion for speed
 
 Non-features:
