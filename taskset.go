@@ -22,6 +22,8 @@ type Project struct {
 	Name             string
 	TasksNotResolved int
 	TasksResolved    int
+	// if any task is in the active state
+	Active           bool
 	// first task created
 	Created time.Time
 	// last task resolved
@@ -198,6 +200,10 @@ func (ts *TaskSet) GetProjects() map[string]*Project {
 			project.TasksResolved += 1
 		} else {
 			project.TasksNotResolved += 1
+		}
+
+		if task.Status == STATUS_ACTIVE {
+			project.Active = true
 		}
 	}
 

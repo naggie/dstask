@@ -169,6 +169,7 @@ func (ts TaskSet) DisplayByResolved() {
 }
 
 func (ts TaskSet) DisplayProjects() {
+	var style RowStyle
 	projects := ts.GetProjects()
 
 	w, _ := MustGetTermSize()
@@ -182,13 +183,19 @@ func (ts TaskSet) DisplayProjects() {
 	for name := range projects {
 		project := projects[name]
 		if project.TasksNotResolved < project.TasksResolved {
+			if project.Active {
+				style = RowStyle{Fg: FG_ACTIVE, Bg: BG_ACTIVE}
+			} else {
+				style = RowStyle{}
+			}
+
 			table.AddRow(
 				[]string{
 					project.Name,
 					fmt.Sprintf("%d/%d", project.TasksNotResolved, project.TasksResolved),
 					project.Created.Format("Mon 2 Jan 2006"),
 				},
-				RowStyle{},
+				style,
 			)
 		}
 	}
