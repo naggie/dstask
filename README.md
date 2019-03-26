@@ -117,22 +117,22 @@ help            : Get help on any command or show this message
 
 | Symbol | Name      | Note                                                    |
 |--------|-----------|---------------------------------------------------------|
-| P0     | Critical  | Must be resolved immediately                            |
-| P1     | High      |                                                         |
-| P2     | Normal    | Default priority                                        |
-| P3     | Low       | Shown at bottom and faded.                              |
+| `P0`   | Critical  | Must be resolved immediately                            |
+| `P1`   | High      |                                                         |
+| `P2`   | Normal    | Default priority                                        |
+| `P3`   | Low       | Shown at bottom and faded.                              |
 
 
 ## Operators
 
-| Symbol    | Syntax               | Description                                          | Example                                     |
-|-----------|----------------------|------------------------------------------------------|---------------------------------------------|
-| +         | +\<tag\>             | Include tag. Filter/context, or when adding task.    | `task add fix server +work`                 |
-| -         | -\<tag\>             | Exclude tag. Filter/context only.                    | `task next -feature`                        |
-| --        | --                   | Ignore context. When listing or adding tasks.        | `task --`, `task add -- +home do guttering` |
-| /         | /                    | When adding a task, everything after will be a note. | `task add check out ipfs / https://ipfs.io` |
-| project:  | project:\<project\>  | Set project. Filter/context, or when adding task.    | `task context project:dstask`               |
-| -project: | -project:\<project\> | Exclude project, filter/context only.                | `task next -project:dstask -work`           |
+| Symbol      | Syntax               | Description                                          | Example                                     |
+|-------------|----------------------|------------------------------------------------------|---------------------------------------------|
+| `+`         | `+<tag>`             | Include tag. Filter/context, or when adding task.    | `task add fix server +work`                 |
+| `-`         | `-<tag>`             | Exclude tag. Filter/context only.                    | `task next -feature`                        |
+| `--`        | `--`                 | Ignore context. When listing or adding tasks.        | `task --`, `task add -- +home do guttering` |
+| `/`         | `/`                  | When adding a task, everything after will be a note. | `task add check out ipfs / https://ipfs.io` |
+| `project:`  | `project:<project>`  | Set project. Filter/context, or when adding task.    | `task context project:dstask`               |
+| `-project:` | `-project:<project>` | Exclude project, filter/context only.                | `task next -project:dstask -work`           |
 
 
 # A note on performance
