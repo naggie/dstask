@@ -154,3 +154,11 @@ dstask itself to track dstask bugs in my personal dstask repository. I've left
 the issues system enabled to allow people to report bugs or request features.
 As soon as dstask is used by more than a handful of people, I'll probably
 import the dstask issues to github.
+
+
+# General tips
+
+* Overwhelmed by tasks? Try focussing by prioritising (set priorities) or narrowing the context. The `show-tags` and `show-projects` commands are useful for creating a context.
+* Use dstask to track things you might forget, rather than everything. SNR is important.
+* Spend regular time reviewing tasks. You'll probably find some you've already resolved, and many you've forgotten.
+* Try to work through tasks from the top of the list. Dstask sorts by priority then creation date -- the most important tasks are at the top.
