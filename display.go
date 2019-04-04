@@ -56,7 +56,7 @@ func (ts *TaskSet) DisplayByNext() {
 
 		table.Render()
 
-		if h == len(ts.tasks) {
+		if h >= len(ts.tasks) {
 			fmt.Printf("\n%v tasks.\n", len(ts.tasks))
 		} else {
 			fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(ts.tasks), h)
