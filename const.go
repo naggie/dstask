@@ -61,8 +61,8 @@ const (
 	BG_DEFAULT_1         = 233
 	BG_DEFAULT_2         = 232
 	MODE_DEFAULT         = 0
-	FG_ACTIVE            = 255
-	BG_ACTIVE            = 166
+	FG_ACTIVE            = 233
+	BG_ACTIVE            = 250
 	BG_PAUSED            = 236 // task that has been started then stopped
 	FG_PRIORITY_CRITICAL = 160
 	FG_PRIORITY_HIGH     = 166
