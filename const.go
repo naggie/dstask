@@ -35,12 +35,17 @@ const (
 	CMD_UNDO          = "undo"
 	CMD_SYNC          = "sync"
 	CMD_GIT           = "git"
-	CMD_SHOW_RESOLVED = "show-resolved"
 	CMD_OPEN          = "open"
-	CMD_SHOW_PROJECTS = "show-projects"
 	CMD_IMPORT_TW     = "import-tw"
 	CMD_HELP          = "help"
 	CMD_COMPLETIONS   = "_completions"
+	CMD_SHOW_PROJECTS = "show-projects"
+	CMD_SHOW_TAGS     = "show-tags"
+	CMD_SHOW_ACTIVE   = "show-active"
+	CMD_SHOW_PAUSED   = "show-paused"
+	CMD_SHOW_OPEN     = "show-open"
+	CMD_SHOW_NEXT     = "show-next"
+	CMD_SHOW_RESOLVED = "show-resolved"
 
 	// filter: P1 P2 etc
 	PRIORITY_CRITICAL = "P0"
@@ -117,12 +122,17 @@ var ALL_CMDS = []string{
 	CMD_UNDO,
 	CMD_SYNC,
 	CMD_GIT,
-	CMD_SHOW_RESOLVED,
-	CMD_SHOW_PROJECTS,
 	CMD_OPEN,
 	CMD_IMPORT_TW,
 	CMD_HELP,
 	CMD_COMPLETIONS,
+	CMD_SHOW_PROJECTS,
+	CMD_SHOW_TAGS,
+	CMD_SHOW_ACTIVE,
+	CMD_SHOW_PAUSED,
+	CMD_SHOW_OPEN,
+	CMD_SHOW_NEXT,
+	CMD_SHOW_RESOLVED,
 }
 
 // Replaces default GIT_REPO and CONTEXT_FILE from env if set

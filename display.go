@@ -115,7 +115,7 @@ func (t *Task) Style() RowStyle {
 	return style
 }
 
-func (ts TaskSet) DisplayByResolved() {
+func (ts TaskSet) DisplayByWeek() {
 	w, _ := MustGetTermSize()
 
 	table := NewTable(
@@ -202,4 +202,3 @@ func (ts TaskSet) DisplayProjects() {
 
 	table.Render()
 }
-

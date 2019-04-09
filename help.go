@@ -166,23 +166,27 @@ any words after.
 
 Available commands:
 
-add             : Add a task
-log             : Log a task (already resolved)
-start           : Change task status to active
-note            : Append to or edit note for a task
-stop            : Change task status to pending
-done            : Resolve a task
-context         : Set global context for task list and new tasks
-modify          : Set attributes for a task
-edit            : Edit task with text editor
-undo            : Undo last action with git revert
-pull            : Pull then push to git repository, automatic merge commit.
-git             : Pass a command to git in the repository. Used for push/pull.
-show-resolved   : Show resolved tasks
-show-projects   : List projects with completion status
-open            : Open all URLs found in summary/annotations
-import-tw       : Import tasks from taskwarrior via stdin
-help            : Get help on any command or show this message
+add            : Add a task
+log            : Log a task (already resolved)
+start          : Change task status to active
+note           : Append to or edit note for a task
+stop           : Change task status to pending
+done           : Resolve a task
+context        : Set global context for task list and new tasks
+modify         : Set attributes for a task
+edit           : Edit task with text editor
+undo           : Undo last action with git revert
+pull           : Pull then push to git repository, automatic merge commit.
+git            : Pass a command to git in the repository. Used for push/pull.
+open           : Open all URLs found in summary/annotations
+import-tw      : Import tasks from taskwarrior via stdin
+help           : Get help on any command or show this message
+show-projects  : List projects with completion status
+show-tags      : List tags in use
+show-active    : Show tasks that have been started
+show-paused    : Show tasks that have been started then stopped
+show-open      : Show non-resolved tasks
+show-resolved  : Show resolved tasks
 
 Task table key:
 

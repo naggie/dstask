@@ -23,7 +23,7 @@ type Project struct {
 	TasksNotResolved int
 	TasksResolved    int
 	// if any task is in the active state
-	Active           bool
+	Active bool
 	// first task created
 	Created time.Time
 	// last task resolved
