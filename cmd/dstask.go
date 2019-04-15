@@ -24,6 +24,9 @@ func main() {
 	case "":
 		// default command is CMD_NEXT if not specified
 		fallthrough
+	case dstask.CMD_SHOW_OPEN:
+		// TODO replace with non-truncated equivalent
+		fallthrough
 	case dstask.CMD_NEXT:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
