@@ -117,6 +117,10 @@ func MustEditBytes(data []byte, ext string) []byte {
 	MustRunCmd(editor, tmpfile.Name())
 	data, err = ioutil.ReadFile(tmpfile.Name())
 
+	if err != nil {
+		ExitFail("Could not read back temporary edited file")
+	}
+
 	return data
 }
 
