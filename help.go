@@ -177,17 +177,17 @@ context        : Set global context for task list and new tasks
 modify         : Set attributes for a task
 edit           : Edit task with text editor
 undo           : Undo last action with git revert
-pull           : Pull then push to git repository, automatic merge commit.
-git            : Pass a command to git in the repository. Used for push/pull.
+sync           : Pull then push to git repository, automatic merge commit.
 open           : Open all URLs found in summary/annotations
-import-tw      : Import tasks from taskwarrior via stdin
-help           : Get help on any command or show this message
+git            : Pass a command to git in the repository. Used for push/pull.
 show-projects  : List projects with completion status
 show-tags      : List tags in use
 show-active    : Show tasks that have been started
 show-paused    : Show tasks that have been started then stopped
 show-open      : Show non-resolved tasks (without truncation)
 show-resolved  : Show resolved tasks
+import-tw      : Import tasks from taskwarrior via stdin
+help           : Get help on any command or show this message
 
 Task table key:
 

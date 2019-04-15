@@ -26,7 +26,6 @@ const (
 	CMD_NOTE  = "note"
 	CMD_NOTES = "notes"
 	CMD_STOP  = "stop"
-	// done === resolved, for compatibility with taskwarrior
 	CMD_DONE          = "done"
 	CMD_RESOLVE       = "resolve"
 	CMD_CONTEXT       = "context"
@@ -34,18 +33,18 @@ const (
 	CMD_EDIT          = "edit"
 	CMD_UNDO          = "undo"
 	CMD_SYNC          = "sync"
-	CMD_GIT           = "git"
 	CMD_OPEN          = "open"
-	CMD_IMPORT_TW     = "import-tw"
-	CMD_HELP          = "help"
-	CMD_COMPLETIONS   = "_completions"
+	CMD_GIT           = "git"
+	CMD_SHOW_NEXT     = "show-next"
 	CMD_SHOW_PROJECTS = "show-projects"
 	CMD_SHOW_TAGS     = "show-tags"
 	CMD_SHOW_ACTIVE   = "show-active"
 	CMD_SHOW_PAUSED   = "show-paused"
 	CMD_SHOW_OPEN     = "show-open"
-	CMD_SHOW_NEXT     = "show-next"
 	CMD_SHOW_RESOLVED = "show-resolved"
+	CMD_COMPLETIONS   = "_completions"
+	CMD_IMPORT_TW     = "import-tw"
+	CMD_HELP          = "help"
 
 	// filter: P1 P2 etc
 	PRIORITY_CRITICAL = "P0"
@@ -121,18 +120,19 @@ var ALL_CMDS = []string{
 	CMD_EDIT,
 	CMD_UNDO,
 	CMD_SYNC,
-	CMD_GIT,
 	CMD_OPEN,
-	CMD_IMPORT_TW,
-	CMD_HELP,
-	CMD_COMPLETIONS,
+	CMD_GIT,
+	CMD_SHOW_NEXT,
 	CMD_SHOW_PROJECTS,
 	CMD_SHOW_TAGS,
 	CMD_SHOW_ACTIVE,
 	CMD_SHOW_PAUSED,
 	CMD_SHOW_OPEN,
-	CMD_SHOW_NEXT,
 	CMD_SHOW_RESOLVED,
+	CMD_IMPORT_TW,
+	CMD_COMPLETIONS,
+	CMD_HELP,
+
 }
 
 // Replaces default GIT_REPO and CONTEXT_FILE from env if set
