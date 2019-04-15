@@ -287,6 +287,15 @@ func main() {
 			fmt.Println(tag)
 		}
 
+	case dstask.CMD_SHOW_RESOLVED:
+		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
+		ts.Filter(context)
+		ts.Filter(cmdLine)
+		ts.FilterByStatus(dstask.STATUS_RESOLVED)
+		ts.SortByResolved()
+		ts.DisplayByWeek()
+		context.PrintContextDescription()
+
 	case dstask.CMD_HELP:
 		if len(os.Args) > 2 {
 			dstask.Help(os.Args[2])
