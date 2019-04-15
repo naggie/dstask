@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-// when refering to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
+// when referring to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
 // even if the filter is set to show issues that have only some statuses.
 type CmdLine struct {
 	Cmd           string

@@ -195,7 +195,7 @@ func main() {
 			err = yaml.Unmarshal(data, &task)
 			if err != nil {
 				// TODO present error to user, specific error message is important
-				// TODO reattempt mechansim
+				// TODO reattempt mechanism
 				dstask.ExitFail("Failed to unmarshal yml")
 			}
 

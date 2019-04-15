@@ -132,7 +132,7 @@ Show a report of last 1000 resolved tasks.
 	case CMD_OPEN:
 		helpStr = `Usage: dstask <id...> open
 
-Open all URLs found withing the task summary and notes. If you commonly have
+Open all URLs found within the task summary and notes. If you commonly have
 dozens of tabs open to later action, convert them into tasks to open later with
 this command.
 `
