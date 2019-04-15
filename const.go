@@ -19,13 +19,13 @@ const (
 	STATUS_PAUSED    = "paused"
 	STATUS_RECURRING = "recurring" // tentative
 
-	CMD_NEXT  = "next"
-	CMD_ADD   = "add"
-	CMD_LOG   = "log"
-	CMD_START = "start"
-	CMD_NOTE  = "note"
-	CMD_NOTES = "notes"
-	CMD_STOP  = "stop"
+	CMD_NEXT          = "next"
+	CMD_ADD           = "add"
+	CMD_LOG           = "log"
+	CMD_START         = "start"
+	CMD_NOTE          = "note"
+	CMD_NOTES         = "notes"
+	CMD_STOP          = "stop"
 	CMD_DONE          = "done"
 	CMD_RESOLVE       = "resolve"
 	CMD_CONTEXT       = "context"
@@ -132,7 +132,6 @@ var ALL_CMDS = []string{
 	CMD_IMPORT_TW,
 	CMD_COMPLETIONS,
 	CMD_HELP,
-
 }
 
 // Replaces default GIT_REPO and CONTEXT_FILE from env if set

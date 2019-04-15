@@ -3,9 +3,9 @@ package dstask
 // main task data structures
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
-	"fmt"
 )
 
 // when referring to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
