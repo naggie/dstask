@@ -235,13 +235,13 @@ func main() {
 	case dstask.CMD_GIT:
 		dstask.MustRunGitCmd(os.Args[2:]...)
 
-	case dstask.CMD_SHOW_RESOLVED:
-		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
+	case dstask.CMD_SHOW_ACTIVE:
+		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
-		ts.FilterByStatus(dstask.STATUS_RESOLVED)
-		ts.SortByResolved()
-		ts.DisplayByWeek()
+		ts.FilterByStatus(dstask.STATUS_ACTIVE)
+		ts.SortByPriority()
+		ts.DisplayByNext()
 
 	case dstask.CMD_OPEN:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
