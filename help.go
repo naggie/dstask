@@ -166,6 +166,7 @@ any words after.
 
 Available commands:
 
+next           : Show most important tasks (priority, creation date -- truncated and default)
 add            : Add a task
 log            : Log a task (already resolved)
 start          : Change task status to active
@@ -185,7 +186,7 @@ show-projects  : List projects with completion status
 show-tags      : List tags in use
 show-active    : Show tasks that have been started
 show-paused    : Show tasks that have been started then stopped
-show-open      : Show non-resolved tasks
+show-open      : Show non-resolved tasks (without truncation)
 show-resolved  : Show resolved tasks
 
 Task table key:
