@@ -270,7 +270,7 @@ func main() {
 		ts.DisplayProjects()
 
 	case dstask.CMD_SHOW_TAGS:
-		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
+		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		cmdLine.MergeContext(context)
 		ts.Filter(context)
 		for tag := range ts.GetTags() {
