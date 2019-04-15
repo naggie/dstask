@@ -5,6 +5,7 @@ package dstask
 import (
 	"strconv"
 	"strings"
+	"fmt"
 )
 
 // when refering to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
@@ -54,6 +55,12 @@ func (cmdLine CmdLine) String() string {
 	}
 
 	return strings.Join(args, " ")
+}
+
+func (cmdLine CmdLine) PrintContextDescription() {
+	if cmdLine.String() != "" {
+		fmt.Printf("\033[33mActive context: %s\033[0m\n", cmdLine)
+	}
 }
 
 func ParseCmdLine(args ...string) CmdLine {
