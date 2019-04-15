@@ -243,6 +243,14 @@ func main() {
 		ts.SortByPriority()
 		ts.DisplayByNext()
 
+	case dstask.CMD_SHOW_PAUSED:
+		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts.Filter(context)
+		ts.Filter(cmdLine)
+		ts.FilterByStatus(dstask.STATUS_PAUSED)
+		ts.SortByPriority()
+		ts.DisplayByNext()
+
 	case dstask.CMD_OPEN:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
