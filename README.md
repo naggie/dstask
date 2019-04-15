@@ -1,6 +1,8 @@
-# dstask
+[![CircleCI](https://circleci.com/gh/naggie/dstask.svg?style=svg)](https://circleci.com/gh/naggie/dstask)
 
-CI status of master: [![CircleCI](https://circleci.com/gh/naggie/dstask.svg?style=svg)](https://circleci.com/gh/naggie/dstask)
+[![Go Report Card](https://goreportcard.com/badge/github.com/naggie/dstask)](https://goreportcard.com/report/github.com/naggie/dstask)
+
+# dstask
 
 A personal task tracker designed to help you focus.
 
