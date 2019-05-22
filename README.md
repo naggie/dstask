@@ -6,6 +6,10 @@
 
 A personal task tracker designed to help you focus.
 
+Dstask is currently in beta -- the interface, data format and commands may
+change before version 1.0. That said, it's unlikely that there will be a
+breaking change as things are nearly finalised.
+
 Features:
 
  * Powerful context system
@@ -136,6 +140,16 @@ help           : Get help on any command or show this message
 | `/`         | `/`                  | When adding a task, everything after will be a note. | `task add check out ipfs / https://ipfs.io` |
 | `project:`  | `project:<project>`  | Set project. Filter/context, or when adding task.    | `task context project:dstask`               |
 | `-project:` | `-project:<project>` | Exclude project, filter/context only.                | `task next -project:dstask -work`           |
+
+
+# State
+
+| State    | Description                                   |
+|----------| ----------------------------------------------|
+| Pending  | Tasks that have never been started            |
+| Active   | Tasks that have been started                  |
+| Paused   | Tasks that have been started but then stopped |
+| Resolved | Tasks that have been done/close/completed     |
 
 
 # A note on performance
