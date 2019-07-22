@@ -16,6 +16,9 @@ func (ts *TaskSet) DisplayByNext() {
 		ExitFail("No matching tasks in given context or filter.")
 	} else if len(ts.tasks) == 1 {
 		ts.tasks[0].Display()
+		if ts.tasks[0].Notes != "" {
+			fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m", ts.tasks[0].ID, ts.tasks[0].Notes)
+		}
 		return
 	} else {
 		var tasks []*Task
@@ -76,7 +79,6 @@ func (task *Task) Display() {
 	table.AddRow([]string{"ID", strconv.Itoa(task.ID)}, RowStyle{})
 	table.AddRow([]string{"Priority", task.Priority}, RowStyle{})
 	table.AddRow([]string{"Summary", task.Summary}, RowStyle{})
-	table.AddRow([]string{"Notes", task.Notes}, RowStyle{})
 	table.AddRow([]string{"Status", task.Status}, RowStyle{})
 	table.AddRow([]string{"Project", task.Project}, RowStyle{})
 	table.AddRow([]string{"Tags", strings.Join(task.Tags, ", ")}, RowStyle{})
