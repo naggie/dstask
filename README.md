@@ -14,9 +14,9 @@ Features:
 
  * Powerful context system
  * **Git powered sync**/undo/resolve (passwordstore.org style) which means no need to set up a sync server, and sync between devices is easy!
- * Task listing won't break with long task text
+ * Task listing won't break with long task text (unlike taskwarrior, currently)
  * `open` command -- **open URLs found in specified task** in the browser
- * `note` command -- edit a **full markdown note** for a task
+ * `note` command -- edit a **full markdown note** for each task. Checklists are useful here.
  * zsh/bash completion for speed
 
 Non-features:
@@ -39,7 +39,7 @@ Requirements:
 
 1. Copy the executable (from the [releases page][1]) to somewhere in your path, named `dstask` and mark it executable. `/usr/local/bin/` is suggested.
 1. Enable bash completions by copying `.bash-completion.sh` into your home directory and sourcing it from your `.bashrc`. There's also a zsh completion script.
-1. Set up an alias in your `.bashrc`: `alias task=dstask` or `alias n=dstask` to make task management slightly faster.
+1. Set up an alias in your `.bashrc`: `alias task=dstask` or `alias t=dstask` to make task management slightly faster.
 
 # Moving from Taskwarrior
 
@@ -122,12 +122,12 @@ help           : Get help on any command or show this message
 
 ## Priority
 
-| Symbol | Name      | Note                                                    |
-|--------|-----------|---------------------------------------------------------|
-| `P0`   | Critical  | Must be resolved immediately                            |
-| `P1`   | High      |                                                         |
-| `P2`   | Normal    | Default priority                                        |
-| `P3`   | Low       | Shown at bottom and faded.                              |
+| Symbol | Name      | Note                                                                 |
+|--------|-----------|----------------------------------------------------------------------|
+| `P0`   | Critical  | Must be resolved immediately. May appear in all contexts in future.  |
+| `P1`   | High      |                                                                      |
+| `P2`   | Normal    | Default priority                                                     |
+| `P3`   | Low       | Shown at bottom and faded.                                           |
 
 
 ## Operators
@@ -158,8 +158,8 @@ Currently I'm using dstask to manage thousands of tasks and the interface still
 appears instant.
 
 Dstask currently loads and parses every non-resolved task, each task being a
-single file. This may sound wasteful, but it allows for a simple design and is
-actually performant thanks to modern OS disk caches and SSDs.
+single file. This may sound wasteful, but it allows git to track history
+natively and is actually performant thanks to modern OS disk caches and SSDs.
 
 If it starts to slow down as my number of non-resolved tasks increases, I'll
 look into indexing and other optimisations such as archiving really old tasks.
