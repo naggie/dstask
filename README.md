@@ -10,6 +10,8 @@ Dstask is currently in beta -- the interface, data format and commands may
 change before version 1.0. That said, it's unlikely that there will be a
 breaking change as things are nearly finalised.
 
+It's mature enough for daily use. I use dstask dozens of times a day, synchronised across 4 computers.
+
 Features:
 
  * Powerful context system
@@ -151,6 +153,16 @@ help           : Get help on any command or show this message
 | Paused   | Tasks that have been started but then stopped |
 | Resolved | Tasks that have been done/close/completed     |
 
+
+# Dealing with merge conflicts
+
+Dstask is written in such a way that merge conflicts should not happen, unless
+a task is edited independently on 2 or more machines without synchronising. In
+practice this happens rarely; however when it does happen dstask will fail to
+commit and warn you. You'll then need to go to the underlying `~/.dstask` git
+repository and resolve manually before committing and running `dstask sync`. In
+some rare cases the ID can conflict. This is something dstask will soon be
+equipped to handle automatically when the `sync` command runs.
 
 # A note on performance
 
