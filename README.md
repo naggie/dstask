@@ -68,7 +68,7 @@ Commands and syntax are deliberately very similar to taskwarrior. Here are the e
 There are a few things missing at the moment. That said I use dstask day to day and trust it with my work.
 
 * Recurring tasks
-* Subtask implementation (github issue style or otherwise)
+* Subtask/checklist implementation (github check list style)
 * Deferring tasks
 * Due dates
 * Advanced reports
