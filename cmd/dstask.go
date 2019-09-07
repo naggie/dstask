@@ -258,7 +258,7 @@ func main() {
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
-			urls := xurls.Relaxed().FindAllString(task.Summary+" "+task.Notes, -1)
+			urls := xurls.Relaxed.FindAllString(task.Summary+" "+task.Notes, -1)
 
 			if len(urls) == 0 {
 				dstask.ExitFail("No URLs found in task %v", task.ID)
