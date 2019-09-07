@@ -1,0 +1,13 @@
+---
+kind: pipeline
+type: docker
+name: default
+
+clone:
+  depth: 50
+
+steps:
+  - name: test
+    image: golang:1.13
+    commands:
+      - "./smoketest.sh"
