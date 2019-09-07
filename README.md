@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/naggie/dstask.svg?style=svg)](https://circleci.com/gh/naggie/dstask)
+[![Build Status](https://cloud.drone.io/api/badges/naggie/dstask/status.svg)](https://cloud.drone.io/naggie/dstask)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/naggie/dstask)](https://goreportcard.com/report/github.com/naggie/dstask)
 
