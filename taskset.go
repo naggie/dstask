@@ -145,11 +145,11 @@ func (ts *TaskSet) FilterByStatus(status string) {
 	ts.tasks = tasks
 }
 
-func (ts *TaskSet) FilterUntagged() {
+func (ts *TaskSet) FilterUnorganised() {
 	var tasks []*Task
 
 	for _, task := range ts.tasks {
-		if len(task.Tags) == 0 {
+		if len(task.Tags) == 0  && task.Project == "" {
 			tasks = append(tasks, task)
 		}
 	}

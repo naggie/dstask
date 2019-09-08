@@ -42,7 +42,7 @@ const (
 	CMD_SHOW_PAUSED   = "show-paused"
 	CMD_SHOW_OPEN     = "show-open"
 	CMD_SHOW_RESOLVED = "show-resolved"
-	CMD_SHOW_UNTAGGED = "show-untagged"
+	CMD_SHOW_UNORGANISED = "show-unorganised"
 	CMD_COMPLETIONS   = "_completions"
 	CMD_IMPORT_TW     = "import-tw"
 	CMD_HELP          = "help"
@@ -130,7 +130,7 @@ var ALL_CMDS = []string{
 	CMD_SHOW_PAUSED,
 	CMD_SHOW_OPEN,
 	CMD_SHOW_RESOLVED,
-	CMD_SHOW_UNTAGGED,
+	CMD_SHOW_UNORGANISED,
 	CMD_IMPORT_TW,
 	CMD_COMPLETIONS,
 	CMD_HELP,

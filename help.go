@@ -166,29 +166,29 @@ any words after.
 
 Available commands:
 
-next           : Show most important tasks (priority, creation date -- truncated and default)
-add            : Add a task
-log            : Log a task (already resolved)
-start          : Change task status to active
-note           : Append to or edit note for a task
-stop           : Change task status to pending
-done           : Resolve a task
-context        : Set global context for task list and new tasks
-modify         : Set attributes for a task
-edit           : Edit task with text editor
-undo           : Undo last action with git revert
-sync           : Pull then push to git repository, automatic merge commit.
-open           : Open all URLs found in summary/annotations
-git            : Pass a command to git in the repository. Used for push/pull.
-show-projects  : List projects with completion status
-show-tags      : List tags in use
-show-active    : Show tasks that have been started
-show-paused    : Show tasks that have been started then stopped
-show-open      : Show non-resolved tasks (without truncation)
-show-resolved  : Show resolved tasks
-show-untagged  : Show untagged tasks
-import-tw      : Import tasks from taskwarrior via stdin
-help           : Get help on any command or show this message
+next              : Show most important tasks (priority, creation date -- truncated and default)
+add               : Add a task
+log               : Log a task (already resolved)
+start             : Change task status to active
+note              : Append to or edit note for a task
+stop              : Change task status to pending
+done              : Resolve a task
+context           : Set global context for task list and new tasks
+modify            : Set attributes for a task
+edit              : Edit task with text editor
+undo              : Undo last action with git revert
+sync              : Pull then push to git repository, automatic merge commit.
+open              : Open all URLs found in summary/annotations
+git               : Pass a command to git in the repository. Used for push/pull.
+show-projects     : List projects with completion status
+show-tags         : List tags in use
+show-active       : Show tasks that have been started
+show-paused       : Show tasks that have been started then stopped
+show-open         : Show non-resolved tasks (without truncation)
+show-resolved     : Show resolved tasks
+show-unorganised  : Show untagged tasks with no projects
+import-tw         : Import tasks from taskwarrior via stdin
+help              : Get help on any command or show this message
 
 Task table key:
 
