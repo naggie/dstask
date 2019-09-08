@@ -1,5 +1,5 @@
 .PHONY: release clean unstall
-dist/dstask:
+dist/dstask: clean
 	mkdir -p dstask
 	go build -mod=vendor -o dist/dstask cmd/dstask.go
 
@@ -9,5 +9,5 @@ release:
 clean:
 	rm -rf dist
 
-install: dist/dstask
+install:
 	cp dist/dstask /usr/local/bin
