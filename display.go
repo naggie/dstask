@@ -9,7 +9,7 @@ import (
 
 /// display list of filtered tasks with context and filter
 func (ts *TaskSet) DisplayByNext() {
-	if ts.numTasksLoaded == 0 {
+	if ts.tasksLoaded == 0 {
 		fmt.Println("\033[31mNo tasks found. Showing help.\033[0m")
 		Help("")
 	} else if len(ts.tasks) == 0 {
@@ -203,4 +203,18 @@ func (ts TaskSet) DisplayProjects() {
 	}
 
 	table.Render()
+}
+
+func (ts TaskSet) DisplayCriticalTaskWarning() {
+	var critical int
+
+	for _, t := range ts.tasks {
+		if (t.Priority == PRIORITY_CRITICAL) {
+			critical += 1
+		}
+	}
+
+	if (critical < ts.tasksLoadedCritical) {
+		fmt.Printf("\033[31m%v more critical tasks outside this context!\033[0m\n", ts.tasksLoadedCritical - critical)
+	}
 }

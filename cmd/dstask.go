@@ -34,6 +34,7 @@ func main() {
 		ts.SortByPriority()
 		context.PrintContextDescription()
 		ts.DisplayByNext()
+		ts.DisplayCriticalTaskWarning()
 
 	case dstask.CMD_ADD:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)

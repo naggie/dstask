@@ -15,7 +15,10 @@ type TaskSet struct {
 	tasksByUUID map[string]*Task
 
 	// task count before filters
-	numTasksLoaded int
+	tasksLoaded int
+
+	// critical tasks
+	tasksLoadedCritical int
 }
 
 type Project struct {
@@ -80,7 +83,12 @@ func (ts *TaskSet) AddTask(task Task) Task {
 	ts.tasks = append(ts.tasks, &task)
 	ts.tasksByUUID[task.UUID] = &task
 	ts.tasksByID[task.ID] = &task
-	ts.numTasksLoaded += 1
+	ts.tasksLoaded += 1
+
+	if (task.Priority == PRIORITY_CRITICAL) {
+		ts.tasksLoadedCritical += 1
+	}
+
 	return task
 }
 
