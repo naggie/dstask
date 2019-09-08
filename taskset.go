@@ -149,7 +149,7 @@ func (ts *TaskSet) FilterUnorganised() {
 	var tasks []*Task
 
 	for _, task := range ts.tasks {
-		if len(task.Tags) == 0  && task.Project == "" {
+		if len(task.Tags) == 0 && task.Project == "" {
 			tasks = append(tasks, task)
 		}
 	}
