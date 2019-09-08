@@ -1,4 +1,4 @@
-.PHONY: release
+.PHONY: release clean unstall
 dist/dstask:
 	mkdir -p dstask
 	go build -mod=vendor -o dist/dstask cmd/dstask.go
