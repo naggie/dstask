@@ -14,7 +14,7 @@ It's mature enough for daily use. I use dstask dozens of times a day, synchronis
 
 Features:
 
- * Powerful context system
+ * Powerful context system (automatically applies filter/tags to queries and new tasks)
  * **Git powered sync**/undo/resolve (passwordstore.org style) which means no need to set up a sync server, and sync between devices is easy!
  * Task listing won't break with long task text (unlike taskwarrior, currently)
  * `open` command -- **open URLs found in specified task** in the browser
