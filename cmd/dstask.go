@@ -300,9 +300,7 @@ func main() {
 		context.PrintContextDescription()
 
 	case dstask.CMD_SHOW_UNORGANISED:
-		context.PrintContextDescription()
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
 		ts.Filter(cmdLine)
 		ts.FilterUnorganised()
 		ts.DisplayByNext()
