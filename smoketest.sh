@@ -53,6 +53,7 @@ git -C $UPSTREAM_BARE_REPO init --bare
 ./dstask next
 ./dstask 1 done
 ./dstask show-resolved
+./dstask show-untagged
 ./dstask show-projects
 
 # we are in context project:bar, adding with another project should fail

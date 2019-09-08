@@ -299,6 +299,14 @@ func main() {
 		ts.DisplayByWeek()
 		context.PrintContextDescription()
 
+	case dstask.CMD_SHOW_UNTAGGED:
+		context.PrintContextDescription()
+		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts.Filter(context)
+		ts.Filter(cmdLine)
+		ts.FilterUntagged()
+		ts.DisplayByNext()
+
 	case dstask.CMD_HELP:
 		if len(os.Args) > 2 {
 			dstask.Help(os.Args[2])

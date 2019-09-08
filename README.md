@@ -115,6 +115,7 @@ show-active    : Show tasks that have been started
 show-paused    : Show tasks that have been started then stopped
 show-open      : Show non-resolved tasks (without truncation)
 show-resolved  : Show resolved tasks
+show-untagged  : Show untagged tasks
 import-tw      : Import tasks from taskwarrior via stdin
 help           : Get help on any command or show this message
 ```
