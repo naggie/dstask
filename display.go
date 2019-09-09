@@ -17,7 +17,7 @@ func (ts *TaskSet) DisplayByNext() {
 	} else if len(ts.tasks) == 1 {
 		ts.tasks[0].Display()
 		if ts.tasks[0].Notes != "" {
-			fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m", ts.tasks[0].ID, ts.tasks[0].Notes)
+			fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m\n\n", ts.tasks[0].ID, ts.tasks[0].Notes)
 		}
 		return
 	} else {
