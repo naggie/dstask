@@ -184,7 +184,7 @@ func (ts TaskSet) DisplayProjects() {
 
 	for name := range projects {
 		project := projects[name]
-		if project.TasksNotResolved < project.TasksResolved {
+		if project.TasksResolved < project.Tasks {
 			if project.Active {
 				style = RowStyle{Fg: FG_ACTIVE, Bg: BG_ACTIVE}
 			} else {
@@ -195,7 +195,7 @@ func (ts TaskSet) DisplayProjects() {
 				[]string{
 					project.Created.Format("Mon 2 Jan 2006"),
 					project.Name,
-					fmt.Sprintf("%d/%d", project.TasksNotResolved, project.TasksResolved),
+					fmt.Sprintf("%d/%d", project.TasksResolved, project.Tasks),
 				},
 				style,
 			)

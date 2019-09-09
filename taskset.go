@@ -22,9 +22,9 @@ type TaskSet struct {
 }
 
 type Project struct {
-	Name             string
-	TasksNotResolved int
-	TasksResolved    int
+	Name          string
+	Tasks         int
+	TasksResolved int
 	// if any task is in the active state
 	Active bool
 	// first task created
@@ -208,6 +208,8 @@ func (ts *TaskSet) GetProjects() map[string]*Project {
 
 		project := projects[name]
 
+		project.Tasks += 1
+
 		if project.Created.IsZero() || task.Created.Before(project.Created) {
 			project.Created = task.Created
 		}
@@ -218,8 +220,6 @@ func (ts *TaskSet) GetProjects() map[string]*Project {
 
 		if task.Status == STATUS_RESOLVED {
 			project.TasksResolved += 1
-		} else {
-			project.TasksNotResolved += 1
 		}
 
 		if task.Status == STATUS_ACTIVE {
