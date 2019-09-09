@@ -351,6 +351,12 @@ func main() {
 			dstask.CMD_RESOLVE,
 			dstask.CMD_CONTEXT,
 			dstask.CMD_MODIFY,
+			dstask.CMD_SHOW_NEXT,
+			dstask.CMD_SHOW_PROJECTS,
+			dstask.CMD_SHOW_ACTIVE,
+			dstask.CMD_SHOW_PAUSED,
+			dstask.CMD_SHOW_OPEN,
+			dstask.CMD_SHOW_RESOLVED,
 		}, cmdLine.Cmd) {
 			ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 			// limit completions to available context, but not if the user is
