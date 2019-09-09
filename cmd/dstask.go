@@ -24,16 +24,22 @@ func main() {
 	case "":
 		// default command is CMD_NEXT if not specified
 		fallthrough
-	case dstask.CMD_SHOW_OPEN:
-		// TODO replace with non-truncated equivalent
-		fallthrough
 	case dstask.CMD_NEXT:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
 		ts.SortByPriority()
 		context.PrintContextDescription()
-		ts.DisplayByNext()
+		ts.DisplayByNext(true)
+		ts.DisplayCriticalTaskWarning()
+
+	case dstask.CMD_SHOW_OPEN:
+		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts.Filter(context)
+		ts.Filter(cmdLine)
+		ts.SortByPriority()
+		context.PrintContextDescription()
+		ts.DisplayByNext(false)
 		ts.DisplayCriticalTaskWarning()
 
 	case dstask.CMD_ADD:
@@ -244,7 +250,7 @@ func main() {
 		ts.Filter(cmdLine)
 		ts.FilterByStatus(dstask.STATUS_ACTIVE)
 		ts.SortByPriority()
-		ts.DisplayByNext()
+		ts.DisplayByNext(true)
 
 	case dstask.CMD_SHOW_PAUSED:
 		context.PrintContextDescription()
@@ -253,7 +259,7 @@ func main() {
 		ts.Filter(cmdLine)
 		ts.FilterByStatus(dstask.STATUS_PAUSED)
 		ts.SortByPriority()
-		ts.DisplayByNext()
+		ts.DisplayByNext(true)
 
 	case dstask.CMD_OPEN:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
@@ -304,7 +310,7 @@ func main() {
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(cmdLine)
 		ts.FilterUnorganised()
-		ts.DisplayByNext()
+		ts.DisplayByNext(true)
 
 	case dstask.CMD_HELP:
 		if len(os.Args) > 2 {

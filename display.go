@@ -8,7 +8,7 @@ import (
 )
 
 /// display list of filtered tasks with context and filter
-func (ts *TaskSet) DisplayByNext() {
+func (ts *TaskSet) DisplayByNext(truncate bool) {
 	if ts.tasksLoaded == 0 {
 		fmt.Println("\033[31mNo tasks found. Showing help.\033[0m")
 		Help("")
@@ -24,12 +24,16 @@ func (ts *TaskSet) DisplayByNext() {
 		var tasks []*Task
 		w, h := MustGetTermSize()
 
-		h -= 8 // leave room for context message, header and prompt
+		maxTasks := h - 8 // leave room for context message, header and prompt
 
-		if h > len(ts.tasks) || h < 0 {
-			tasks = ts.tasks
+		if maxTasks < 8 {
+			maxTasks = 8
+		}
+
+		if truncate && maxTasks < len(ts.tasks) {
+			tasks = ts.tasks[:maxTasks]
 		} else {
-			tasks = ts.tasks[:h]
+			tasks = ts.tasks
 		}
 
 		table := NewTable(
@@ -59,10 +63,10 @@ func (ts *TaskSet) DisplayByNext() {
 
 		table.Render()
 
-		if h >= len(ts.tasks) {
-			fmt.Printf("\n%v tasks.\n", len(ts.tasks))
-		} else {
+		if truncate && maxTasks < len(ts.tasks) {
 			fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(ts.tasks), h)
+		} else {
+			fmt.Printf("\n%v tasks.\n", len(ts.tasks))
 		}
 	}
 }

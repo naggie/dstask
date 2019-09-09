@@ -184,7 +184,7 @@ show-projects     : List projects with completion status
 show-tags         : List tags in use
 show-active       : Show tasks that have been started
 show-paused       : Show tasks that have been started then stopped
-show-open         : Show non-resolved tasks (without truncation)
+show-open         : Show all non-resolved tasks (without truncation)
 show-resolved     : Show resolved tasks
 show-unorganised  : Show untagged tasks with no projects (global context)
 import-tw         : Import tasks from taskwarrior via stdin
