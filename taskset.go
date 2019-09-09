@@ -230,7 +230,7 @@ func (ts *TaskSet) GetProjects() map[string]*Project {
 			project.Active = true
 		}
 
-		if task.Priority < project.Priority {
+		if task.Status != STATUS_RESOLVED && task.Priority < project.Priority {
 			project.Priority = task.Priority
 		}
 	}

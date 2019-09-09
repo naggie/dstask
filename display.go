@@ -190,9 +190,9 @@ func (ts TaskSet) DisplayProjects() {
 	w, _ := MustGetTermSize()
 	table := NewTable(
 		w,
-		"Created",
 		"Name",
 		"Progress",
+		"Created",
 	)
 
 	for name := range projects {
@@ -201,9 +201,9 @@ func (ts TaskSet) DisplayProjects() {
 
 			table.AddRow(
 				[]string{
-					project.Created.Format("Mon 2 Jan 2006"),
 					project.Name,
 					fmt.Sprintf("%d/%d", project.TasksResolved, project.Tasks),
+					project.Created.Format("Mon 2 Jan 2006"),
 				},
 			    project.Style(),
 			)
