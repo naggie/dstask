@@ -119,24 +119,17 @@ func (t *Task) Style() RowStyle {
 
 func (ts TaskSet) DisplayByWeek() {
 	w, _ := MustGetTermSize()
-
-	table := NewTable(
-		w,
-		"Resolved",
-		"Priority",
-		"Tags",
-		"Project",
-		"Summary",
-		"Closing note",
-	)
-
+	var table *Table
 	var lastWeek int
 
 	for _, t := range ts.tasks {
 		_, week := t.Resolved.ISOWeek()
 
-		if lastWeek != 0 && week != lastWeek {
-			table.Render()
+		// guaranteed true for first iteration, ISOweek starts with 1.
+		if week != lastWeek {
+			if table != nil && len(table.Rows) > 0 {
+				table.Render()
+			}
 			// insert gap
 			fmt.Printf("\n\n> Week %d, starting %s\n\n", week, t.Resolved.Format("Mon 2 Jan 2006"))
 			table = NewTable(
