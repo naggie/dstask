@@ -216,7 +216,7 @@ func (ts TaskSet) DisplayCriticalTaskWarning() {
 
 	if (critical < ts.tasksLoadedCritical) {
 		fmt.Printf(
-			"\033[38;5;%dm%v more critical tasks outside this context!\033[0m\n",
+			"\033[38;5;%dm%v critical tasks outside this context!\033[0m\n",
 			FG_PRIORITY_CRITICAL,
 			ts.tasksLoadedCritical - critical,
 		)
