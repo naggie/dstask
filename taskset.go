@@ -31,6 +31,9 @@ type Project struct {
 	Created time.Time
 	// last task resolved
 	Resolved time.Time
+
+	// highest non-resolved priority within project
+	Priority      string
 }
 
 func (ts *TaskSet) SortByPriority() {
@@ -203,6 +206,7 @@ func (ts *TaskSet) GetProjects() map[string]*Project {
 		if projects[name] == nil {
 			projects[name] = &Project{
 				Name: name,
+				Priority: PRIORITY_LOW,
 			}
 		}
 
@@ -224,6 +228,10 @@ func (ts *TaskSet) GetProjects() map[string]*Project {
 
 		if task.Status == STATUS_ACTIVE {
 			project.Active = true
+		}
+
+		if task.Priority < project.Priority {
+			project.Priority = task.Priority
 		}
 	}
 
