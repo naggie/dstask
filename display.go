@@ -121,6 +121,24 @@ func (t *Task) Style() RowStyle {
 	return style
 }
 
+// TODO combine with previous with interface, plus computed Project status
+func (p *Project) Style() RowStyle {
+	style := RowStyle{}
+
+	if p.Active {
+		style.Fg = FG_ACTIVE
+		style.Bg = BG_ACTIVE
+	} else if p.Priority == PRIORITY_CRITICAL {
+		style.Fg = FG_PRIORITY_CRITICAL
+	} else if p.Priority == PRIORITY_HIGH {
+		style.Fg = FG_PRIORITY_HIGH
+	} else if p.Priority == PRIORITY_LOW {
+		style.Fg = FG_PRIORITY_LOW
+	}
+
+	return style
+}
+
 func (ts TaskSet) DisplayByWeek() {
 	w, _ := MustGetTermSize()
 	var table *Table
@@ -168,35 +186,26 @@ func (ts TaskSet) DisplayByWeek() {
 }
 
 func (ts TaskSet) DisplayProjects() {
-	var style RowStyle
 	projects := ts.GetProjects()
-
 	w, _ := MustGetTermSize()
 	table := NewTable(
 		w,
 		"Created",
 		"Name",
 		"Progress",
-		"Priority",
 	)
 
 	for name := range projects {
 		project := projects[name]
 		if project.TasksResolved < project.Tasks {
-			if project.Active {
-				style = RowStyle{Fg: FG_ACTIVE, Bg: BG_ACTIVE}
-			} else {
-				style = RowStyle{}
-			}
 
 			table.AddRow(
 				[]string{
 					project.Created.Format("Mon 2 Jan 2006"),
 					project.Name,
 					fmt.Sprintf("%d/%d", project.TasksResolved, project.Tasks),
-					project.Priority,
 				},
-				style,
+			    project.Style(),
 			)
 		}
 	}
