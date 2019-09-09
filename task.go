@@ -54,33 +54,33 @@ func (task Task) String() string {
 }
 
 // used for applying a context to a new task
-func (cmdLine *CmdLine) MergeContext(_tl CmdLine) {
-	for _, tag := range _tl.Tags {
+func (cmdLine *CmdLine) MergeContext(context CmdLine) {
+	for _, tag := range context.Tags {
 		if !StrSliceContains(cmdLine.Tags, tag) {
 			cmdLine.Tags = append(cmdLine.Tags, tag)
 		}
 	}
 
-	for _, tag := range _tl.AntiTags {
+	for _, tag := range context.AntiTags {
 		if !StrSliceContains(cmdLine.AntiTags, tag) {
 			cmdLine.AntiTags = append(cmdLine.AntiTags, tag)
 		}
 	}
 
 	// TODO same for antitags
-	if _tl.Project != "" {
-		if cmdLine.Project != "" {
+	if context.Project != "" {
+		if cmdLine.Project != "" && cmdLine.Project != context.Project {
 			ExitFail("Could not apply context, project conflict")
 		} else {
-			cmdLine.Project = _tl.Project
+			cmdLine.Project = context.Project
 		}
 	}
 
-	if _tl.Priority != "" {
+	if context.Priority != "" {
 		if cmdLine.Priority != "" {
 			ExitFail("Could not apply context, priority conflict")
 		} else {
-			cmdLine.Priority = _tl.Priority
+			cmdLine.Priority = context.Priority
 		}
 	}
 }
