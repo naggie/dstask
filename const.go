@@ -55,6 +55,12 @@ const (
 
 	MAX_TASKS_OPEN = 10000
 
+	// if the terminal is too short, show this many tasks anyway
+	MIN_TASKS_SHOWN = 8
+
+	// reserve this many lines for status messages/prompt
+	TERMINAL_HEIGHT_MARGIN = 9
+
 	IGNORE_CONTEXT_KEYWORD = "--"
 	NOTE_MODE_KEYWORD      = "/"
 

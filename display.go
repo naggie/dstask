@@ -24,10 +24,10 @@ func (ts *TaskSet) DisplayByNext(truncate bool) {
 		var tasks []*Task
 		w, h := MustGetTermSize()
 
-		maxTasks := h - 8 // leave room for context message, header and prompt
+		maxTasks := h - TERMINAL_HEIGHT_MARGIN // leave room for context message, header and prompt
 
-		if maxTasks < 8 {
-			maxTasks = 8
+		if maxTasks < MIN_TASKS_SHOWN {
+			maxTasks = MIN_TASKS_SHOWN
 		}
 
 		if truncate && maxTasks < len(ts.tasks) {
