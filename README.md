@@ -4,7 +4,9 @@
 
 # dstask
 
-A personal task tracker designed to help you focus.
+A personal task tracker designed to help you focus. It is similar to
+[taskwarrior](https://taskwarrior.org/) but uses git to synchronise instead of
+a proprietary protocol.
 
 Dstask is currently in beta -- the interface, data format and commands may
 change before version 1.0. That said, it's unlikely that there will be a
@@ -81,7 +83,9 @@ After these features are implemented, I intend on adding CalDav integration. dst
 * Display of resolved tasks (maybe, separate calendar)
 * Possible creation of time based tasks from calendar
 
-Running a caldav server would enable synchronisation with an iPhone/Android phone, MacOS Calendar, Outlook calendar etc.
+Running a caldav server would enable synchronisation with an iPhone/Android
+phone, MacOS Calendar, Outlook calendar etc. It would provide similar
+functionality to [timewarrior](https://timewarrior.net/).
 
 # Usage
 
