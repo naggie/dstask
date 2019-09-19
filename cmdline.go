@@ -93,7 +93,7 @@ func ParseCmdLine(args ...string) CmdLine {
 
 		IDsExhausted = true
 
-		if strings.HasPrefix(lcItem, "project:") {
+		if strings.HasPrefix(lcItem, "project:") || strings.HasPrefix(lcItem, "+project:") {
 			project = lcItem[8:]
 		} else if strings.HasPrefix(lcItem, "-project:") {
 			antiProjects = append(antiProjects, lcItem[9:])
