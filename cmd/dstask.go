@@ -11,6 +11,12 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+var (
+	// populated by linker flags, see do-release.sh
+	GIT_COMMIT string
+	VERSION string
+)
+
 func main() {
 	dstask.LoadConfigFromEnv()
 	context := dstask.LoadContext()
@@ -318,6 +324,9 @@ func main() {
 		} else {
 			dstask.Help("")
 		}
+
+	case dstask.CMD_VERSION:
+		fmt.Printf("Version: %s\nGit commit: %s\n", VERSION, GIT_COMMIT);
 
 	case dstask.CMD_COMPLETIONS:
 		// given the entire user's command line arguments as the arguments for

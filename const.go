@@ -46,6 +46,7 @@ const (
 	CMD_COMPLETIONS      = "_completions"
 	CMD_IMPORT_TW        = "import-tw"
 	CMD_HELP             = "help"
+	CMD_VERSION          = "version"
 
 	// filter: P1 P2 etc
 	PRIORITY_CRITICAL = "P0"
@@ -140,6 +141,7 @@ var ALL_CMDS = []string{
 	CMD_IMPORT_TW,
 	CMD_COMPLETIONS,
 	CMD_HELP,
+	CMD_VERSION,
 }
 
 // Replaces default GIT_REPO and CONTEXT_FILE from env if set
