@@ -13,8 +13,8 @@ import (
 
 var (
 	// populated by linker flags, see do-release.sh
-	GIT_COMMIT string
-	VERSION string
+	GIT_COMMIT = "Unknown"
+	VERSION = "Unknown"
 )
 
 func main() {
