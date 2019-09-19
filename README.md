@@ -127,6 +127,7 @@ show-resolved     : Show resolved tasks
 show-unorganised  : Show untagged tasks with no projects
 import-tw         : Import tasks from taskwarrior via stdin
 help              : Get help on any command or show this message
+version           : Show dstask version information
 ```
 
 # Syntax
