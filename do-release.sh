@@ -15,7 +15,7 @@ LDFLAGS="-s -w -X  main.GIT_COMMIT=$GIT_COMMIT -X  main.VERSION=$VERSION"
 
 # get release information
 
-if ! test -f $RELEASE_FILE || head -n 1 $RELEASE_FILE | grep -q $VERSION; then
+if ! test -f $RELEASE_FILE || head -n 1 $RELEASE_FILE | grep -vq $VERSION; then
     # file doesn't exist or is for old version, replace
     printf "$VERSION\n\n\n" > $RELEASE_FILE
 fi
