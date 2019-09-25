@@ -21,6 +21,7 @@ cleanup() {
     rm -rf $DSTASK_GIT_REPO
     rm -rf $UPSTREAM_BARE_REPO
     rm $DSTASK_CONTEXT_FILE
+    rm dstask
 }
 
 trap cleanup EXIT
