@@ -208,4 +208,4 @@ import the dstask issues to github.
 * Use dstask to track things you might forget, rather than everything. SNR is important. Don't track tasks for the sake of it.
 * Spend regular time reviewing tasks. You'll probably find some you've already resolved, and many you've forgotten. The `show-unorganised` command is good for this.
 * Try to work through tasks from the top of the list. Dstask sorts by priority then creation date -- the most important tasks are at the top.
-
+* Use `start`/`stop` to mark what you're genuinely working on right now; it makes resuming work faster. Paused tasks will be slightly highlighted, so you won't lose track of them. `show-paused` helps if they start to pile up.
