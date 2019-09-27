@@ -101,7 +101,7 @@ for a substring search of description and notes.
 Cmd and IDs can be swapped, multiple IDs can be specified for batch
 operations.
 
-run "task help <cmd>" for command specific help.
+run "dstask help <cmd>" for command specific help.
 
 Add -- to ignore the current context. / can be used when adding tasks to note
 any words after.
@@ -151,12 +151,12 @@ version           : Show dstask version information
 
 | Symbol      | Syntax               | Description                                          | Example                                     |
 |-------------|----------------------|------------------------------------------------------|---------------------------------------------|
-| `+`         | `+<tag>`             | Include tag. Filter/context, or when adding task.    | `task add fix server +work`                 |
-| `-`         | `-<tag>`             | Exclude tag. Filter/context only.                    | `task next -feature`                        |
-| `--`        | `--`                 | Ignore context. When listing or adding tasks.        | `task --`, `task add -- +home do guttering` |
-| `/`         | `/`                  | When adding a task, everything after will be a note. | `task add check out ipfs / https://ipfs.io` |
-| `project:`  | `project:<project>`  | Set project. Filter/context, or when adding task.    | `task context project:dstask`               |
-| `-project:` | `-project:<project>` | Exclude project, filter/context only.                | `task next -project:dstask -work`           |
+| `+`         | `+<tag>`             | Include tag. Filter/context, or when adding task.    | `dstask add fix server +work`                 |
+| `-`         | `-<tag>`             | Exclude tag. Filter/context only.                    | `dstask next -feature`                        |
+| `--`        | `--`                 | Ignore context. When listing or adding tasks.        | `dstask --`, `task add -- +home do guttering` |
+| `/`         | `/`                  | When adding a task, everything after will be a note. | `dstask add check out ipfs / https://ipfs.io` |
+| `project:`  | `project:<project>`  | Set project. Filter/context, or when adding task.    | `dstask context project:dstask`               |
+| `-project:` | `-project:<project>` | Exclude project, filter/context only.                | `dstask next -project:dstask -work`           |
 
 
 # State

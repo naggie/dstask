@@ -159,7 +159,7 @@ for a substring search of description and notes.
 Cmd and IDs can be swapped, multiple IDs can be specified for batch
 operations.
 
-run "task help <cmd>" for command specific help.
+run "dstask help <cmd>" for command specific help.
 
 Add -- to ignore the current context. / can be used when adding tasks to note
 any words after.
