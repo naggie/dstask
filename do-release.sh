@@ -13,7 +13,11 @@ BUILD_DATE=$(date)
 
 RELEASE_FILE=RELEASE.md
 
-LDFLAGS="-s -w -X  main.GIT_COMMIT=$GIT_COMMIT -X  main.VERSION=$VERSION -X \"main.BUILD_DATE=$BUILD_DATE\""
+LDFLAGS="-s -w \
+    -X  github.com/naggie/dstask.GIT_COMMIT=$GIT_COMMIT \
+    -X  github.com/naggie/dstask.VERSION=$VERSION \
+    -X \"github.com/naggie/dstask.BUILD_DATE=$BUILD_DATE\"\
+"
 
 # get release information
 

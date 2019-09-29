@@ -8,6 +8,10 @@ var (
 	CONTEXT_FILE = "~/.cache/dstask/context"
 	// for CI testing
 	FAKE_PTY = false
+	// populated by linker flags, see do-release.sh
+	GIT_COMMIT = "Unknown"
+	VERSION = "Unknown"
+	BUILD_DATE = "Unknown"
 )
 
 const (
