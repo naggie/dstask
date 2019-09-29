@@ -15,6 +15,7 @@ var (
 	// populated by linker flags, see do-release.sh
 	GIT_COMMIT = "Unknown"
 	VERSION = "Unknown"
+	BUILD_DATE = "Unknown"
 )
 
 func main() {
@@ -326,7 +327,7 @@ func main() {
 		}
 
 	case dstask.CMD_VERSION:
-		fmt.Printf("Version: %s\nGit commit: %s\n", VERSION, GIT_COMMIT);
+		fmt.Printf("Version: %s\nGit commit: %s\nBuild date: %s\n", VERSION, GIT_COMMIT, BUILD_DATE);
 
 	case dstask.CMD_COMPLETIONS:
 		// given the entire user's command line arguments as the arguments for

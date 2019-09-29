@@ -9,9 +9,11 @@ fi
 
 VERSION="$1"
 GIT_COMMIT=$(git rev-list -1 HEAD)
+BUILD_DATE=$(date)
+
 RELEASE_FILE=RELEASE.md
 
-LDFLAGS="-s -w -X  main.GIT_COMMIT=$GIT_COMMIT -X  main.VERSION=$VERSION"
+LDFLAGS="-s -w -X  main.GIT_COMMIT=$GIT_COMMIT -X  main.VERSION=$VERSION -X \"main.BUILD_DATE=$BUILD_DATE\""
 
 # get release information
 
