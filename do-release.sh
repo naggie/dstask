@@ -14,13 +14,12 @@ BUILD_DATE=$(date)
 RELEASE_FILE=RELEASE.md
 
 LDFLAGS="-s -w \
-    -X  github.com/naggie/dstask.GIT_COMMIT=$GIT_COMMIT \
-    -X  github.com/naggie/dstask.VERSION=$VERSION \
+    -X \"github.com/naggie/dstask.GIT_COMMIT=$GIT_COMMIT\" \
+    -X \"github.com/naggie/dstask.VERSION=$VERSION\" \
     -X \"github.com/naggie/dstask.BUILD_DATE=$BUILD_DATE\"\
 "
 
 # get release information
-
 if ! test -f $RELEASE_FILE || head -n 1 $RELEASE_FILE | grep -vq $VERSION; then
     # file doesn't exist or is for old version, replace
     printf "$VERSION\n\n\n" > $RELEASE_FILE
@@ -30,7 +29,6 @@ vim "+ normal G $" $RELEASE_FILE
 
 
 # build
-
 mkdir -p dist
 
 GOOS=linux GOARCH=arm GOARM=5 go build -mod=vendor -ldflags="$LDFLAGS" cmd/dstask.go
@@ -52,5 +50,3 @@ hub release create \
     -a dist/dstask-darwin-amd64#"dstask darwin-amd64" \
     -F $RELEASE_FILE \
     $1
-
-rm -rf dist/tmp
