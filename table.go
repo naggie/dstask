@@ -99,25 +99,6 @@ func (t *Table) Render() {
 	rows := append([][]string{t.Header}, t.Rows...)
 
 	for i, row := range rows {
-		cells := row[:]
-		for i, w := range widths {
-			trimmed := FixStr(cells[i], w)
-
-			// support ' / ' markup -- show notes faded
-			if strings.Contains(trimmed, " " + NOTE_MODE_KEYWORD + " ") {
-				trimmed = strings.Replace(
-					FixStr(cells[i], w + 2),
-					" " + NOTE_MODE_KEYWORD + " ",
-					fmt.Sprintf("\033[38;5;%dm ", FG_NOTE),
-					1,
-				)
-			}
-
-			cells[i] = trimmed
-		}
-
-		line := strings.Join(cells, strings.Repeat(" ", TABLE_COL_GAP))
-
 		mode := t.RowStyles[i].Mode
 		fg := t.RowStyles[i].Fg
 		bg := t.RowStyles[i].Bg
@@ -139,6 +120,26 @@ func (t *Table) Render() {
 				bg = BG_DEFAULT_2
 			}
 		}
+
+		cells := row[:]
+		for i, w := range widths {
+			trimmed := FixStr(cells[i], w)
+
+			// support ' / ' markup -- show notes faded. Insert ANSI escape
+			// formatting, ensuring reset to original colour for given row.
+			if strings.Contains(trimmed, " " + NOTE_MODE_KEYWORD + " ") {
+				trimmed = strings.Replace(
+					FixStr(cells[i], w + 2),
+					" " + NOTE_MODE_KEYWORD + " ",
+					fmt.Sprintf("\033[38;5;%dm ", FG_NOTE),
+					1,
+				) + fmt.Sprintf("\033[38;5;%dm", fg)
+			}
+
+			cells[i] = trimmed
+		}
+
+		line := strings.Join(cells, strings.Repeat(" ", TABLE_COL_GAP))
 
 		// print style, line then reset
 		fmt.Printf("\033[%d;38;5;%d;48;5;%dm%s\033[0m\n", mode, fg, bg, line)
