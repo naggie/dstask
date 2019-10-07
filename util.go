@@ -11,7 +11,6 @@ import (
 	"os/user"
 	"path"
 	"runtime"
-	"strconv"
 	"strings"
 )
 
@@ -68,16 +67,6 @@ func SumInts(vals ...int) int {
 	}
 
 	return total
-}
-
-func FixStr(text string, width int) string {
-	// remove after newline
-	text = strings.Split(text, "\n")[0]
-	if len(text) <= width {
-		return fmt.Sprintf("%-"+strconv.Itoa(width)+"v", text)
-	} else {
-		return text[:width]
-	}
 }
 
 func MustRunCmd(name string, args ...string) {

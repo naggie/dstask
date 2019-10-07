@@ -174,3 +174,15 @@ func (task *Task) Validate() error {
 
 	return nil
 }
+
+// provides Summary + Last note if available
+func (task *Task) LongSummary() string {
+	noteLines := strings.Split(task.Notes, "\n")
+	lastNote := noteLines[len(noteLines)-1]
+
+	if len(lastNote) > 0 {
+		return task.Summary + " " + NOTE_MODE_KEYWORD + " " + lastNote
+	} else {
+		return task.Summary
+	}
+}

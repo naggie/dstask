@@ -47,6 +47,7 @@ func (ts *TaskSet) DisplayByNext(truncate bool) {
 
 		for _, t := range tasks {
 			style := t.Style()
+
 			table.AddRow(
 				[]string{
 					// id should be at least 2 chars wide to match column header
@@ -55,7 +56,7 @@ func (ts *TaskSet) DisplayByNext(truncate bool) {
 					t.Priority,
 					strings.Join(t.Tags, " "),
 					t.Project,
-					t.Summary,
+					t.LongSummary(),
 				},
 				style,
 			)
@@ -161,19 +162,16 @@ func (ts TaskSet) DisplayByWeek() {
 				"Tags",
 				"Project",
 				"Summary",
-				"Closing note",
 			)
 		}
 
-		noteLines := strings.Split(t.Notes, "\n")
 		table.AddRow(
 			[]string{
 				t.Resolved.Format("Mon 2"),
 				t.Priority,
 				strings.Join(t.Tags, " "),
 				t.Project,
-				t.Summary,
-				noteLines[len(noteLines)-1],
+				t.LongSummary(),
 			},
 			t.Style(),
 		)

@@ -83,7 +83,8 @@ const (
 	FG_PRIORITY_CRITICAL = 160
 	FG_PRIORITY_HIGH     = 166
 	FG_PRIORITY_NORMAL   = FG_DEFAULT
-	FG_PRIORITY_LOW      = 245
+	FG_PRIORITY_LOW		 = 245
+	FG_NOTE              = 240
 )
 
 // for import (etc) it's necessary to have full context

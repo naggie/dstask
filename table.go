@@ -3,6 +3,7 @@ package dstask
 import (
 	"fmt"
 	"strings"
+	"strconv"
 )
 
 type Table struct {
@@ -34,6 +35,16 @@ func NewTable(w int, header ...string) *Table {
 				Mode: MODE_HEADER,
 			},
 		},
+	}
+}
+
+func FixStr(text string, width int) string {
+	// remove after newline
+	text = strings.Split(text, "\n")[0]
+	if len(text) <= width {
+		return fmt.Sprintf("%-"+strconv.Itoa(width)+"v", text)
+	} else {
+		return text[:width]
 	}
 }
 
@@ -90,7 +101,19 @@ func (t *Table) Render() {
 	for i, row := range rows {
 		cells := row[:]
 		for i, w := range widths {
-			cells[i] = FixStr(cells[i], w)
+			trimmed := FixStr(cells[i], w)
+
+			// support ' / ' markup -- show notes faded
+			if strings.Contains(trimmed, " " + NOTE_MODE_KEYWORD + " ") {
+				trimmed = strings.Replace(
+					FixStr(cells[i], w + 2),
+					" " + NOTE_MODE_KEYWORD + " ",
+					fmt.Sprintf("\033[38;5;%dm ", FG_NOTE),
+					1,
+				)
+			}
+
+			cells[i] = trimmed
 		}
 
 		line := strings.Join(cells, strings.Repeat(" ", TABLE_COL_GAP))
