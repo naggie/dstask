@@ -28,22 +28,24 @@ type CmdLine struct {
 // reconstruct args string
 func (cmdLine CmdLine) String() string {
 	var args []string
-	var annotatedTags []string
 
 	for _, id := range cmdLine.IDs {
 		args = append(args, strconv.Itoa(id))
 	}
 
 	for _, tag := range cmdLine.Tags {
-		annotatedTags = append(annotatedTags, "+"+tag)
+		args = append(args, "+"+tag)
 	}
 	for _, tag := range cmdLine.AntiTags {
-		annotatedTags = append(annotatedTags, "-"+tag)
+		args = append(args, "-"+tag)
 	}
-	args = append(args, annotatedTags...)
 
 	if cmdLine.Project != "" {
 		args = append(args, "project:"+cmdLine.Project)
+	}
+
+	for _, project := range cmdLine.AntiProjects {
+		args = append(args, "-project:"+project)
 	}
 
 	if cmdLine.Priority != "" {
