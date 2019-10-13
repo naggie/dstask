@@ -183,7 +183,7 @@ version           : Show dstask version information
 | `-project:` | `-project:<project>` | Exclude project, filter/context only.                | `dstask next -project:dstask -work`           |
 
 
-# State
+## State
 
 | State    | Description                                   |
 |----------| ----------------------------------------------|
@@ -250,3 +250,9 @@ The ID presented to the user is simply a sequential ID. IDs are re-used when
 tasks are resolved; tasks store their preferred ID for consistency across
 different systems.
 
+# Alternatives
+
+Alternatives listed must be capable of running in the terminal.
+
+* [Taskwarrior](https://taskwarrior.org/) -- the closest analogue
+* [Taskbook](https://github.com/klaussinani/taskbook) -- board metaphor, note support
