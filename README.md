@@ -116,7 +116,7 @@ start             : Change task status to active
 note              : Append to or edit note for a task
 stop              : Change task status to pending
 done              : Resolve a task
-context           : Set global context for task list and new tasks
+context           : Set global context for task list and new tasks (use "none" to set no context)
 modify            : Set attributes for a task
 edit              : Edit task with text editor
 undo              : Undo last action with git revert
@@ -127,9 +127,9 @@ show-projects     : List projects with completion status
 show-tags         : List tags in use
 show-active       : Show tasks that have been started
 show-paused       : Show tasks that have been started then stopped
-show-open         : Show non-resolved tasks (without truncation)
+show-open         : Show all non-resolved tasks (without truncation)
 show-resolved     : Show resolved tasks
-show-unorganised  : Show untagged tasks with no projects
+show-unorganised  : Show untagged tasks with no projects (global context)
 import-tw         : Import tasks from taskwarrior via stdin
 help              : Get help on any command or show this message
 version           : Show dstask version information

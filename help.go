@@ -87,12 +87,15 @@ Resolve a task. Optional text may be added, which will be appended to the note.
 	case CMD_CONTEXT:
 		helpStr = `Usage: dstask context <filter>
 Example: dstask context +work -bug
+Example: dstask context none
 
 Set a global filter consisting of a project, tags or antitags. Subsequent new
 tasks and most commands will then have this filter applied automatically.
 
 For example, if you were to run "task add fix the webserver," the given task
 would then have the tag "work" applied automatically.
+
+To reset to no context, run: dstask context none
 `
 	case CMD_MODIFY:
 		helpStr = `Usage: dstask <id...> modify <filter>
@@ -173,7 +176,7 @@ start             : Change task status to active
 note              : Append to or edit note for a task
 stop              : Change task status to pending
 done              : Resolve a task
-context           : Set global context for task list and new tasks
+context           : Set global context for task list and new tasks (use "none" to set no context)
 modify            : Set attributes for a task
 edit              : Edit task with text editor
 undo              : Undo last action with git revert
