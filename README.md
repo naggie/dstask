@@ -61,6 +61,7 @@ Requirements:
   <img src="https://github.com/naggie/dstask/raw/master/etc/sync.png">
   <em>Sync command (which uses git)</em>
 </p>
+
 # Installation
 
 1. Copy the executable (from the [releases page][1]) to somewhere in your path, named `dstask` and mark it executable. `/usr/local/bin/` is suggested.
