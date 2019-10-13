@@ -35,10 +35,32 @@ Requirements:
 * Git
 * A 256-color capable terminal
 
+# Screenshots
+
 <p align="center">
   <img src="https://github.com/naggie/dstask/raw/master/etc/dstask.png">
+  <em>Next command (default when no command is specified)</em>
 </p>
 
+<p align="center">
+  <img src="https://github.com/naggie/dstask/raw/master/etc/show-resolved.png">
+  <em>Show-resolved command to review completed tasks by week. Useful for meetings.</em>
+</p>
+
+<p align="center">
+  <img src="https://github.com/naggie/dstask/raw/master/etc/edit.png">
+  <em>Editing a task with $EDITOR (which happens to be vim)</em>
+</p>
+
+<p align="center">
+  <img src="https://github.com/naggie/dstask/raw/master/etc/add.png">
+  <em>Adding a task</em>
+</p>
+
+<p align="center">
+  <img src="https://github.com/naggie/dstask/raw/master/etc/sync.png">
+  <em>Sync command (which uses git)</em>
+</p>
 # Installation
 
 1. Copy the executable (from the [releases page][1]) to somewhere in your path, named `dstask` and mark it executable. `/usr/local/bin/` is suggested.
