@@ -55,6 +55,14 @@ type Task struct {
 	// TaskSet uses this to indicate if a given task is excluded by a filter
 	// (context etc)
 	filtered bool
+
+	// only valid for recurring tasks
+	// syntax: cron
+	Schedule string `yaml:"omitempty"`
+	// if this task was created by the scheduler, link the source task. This is
+	// used to keep track of occurrences such that new occurrences are only
+	// created as necessary.
+	Parent string
 }
 
 func (task Task) String() string {
