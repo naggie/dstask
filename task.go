@@ -56,13 +56,14 @@ type Task struct {
 	// (context etc)
 	filtered bool
 
-	// only valid for recurring tasks
-	// syntax: cron
-	Schedule string `yaml:"omitempty"`
-	// if this task was created by the scheduler, link the source task. This is
-	// used to keep track of occurrences such that new occurrences are only
-	// created as necessary.
 	Parent string
+	// only valid for recurring tasks, and resolved recurring tasks. Tasks
+	// created by a recurring task should have this removed or will fail
+	// validation. syntax: cron.
+	Schedule string `yaml:"omitempty"`
+	// Recurring task this was derived from. Used by scheduler to gate new
+	// tasks.
+	Parent   string `yaml:"omitempty"`
 }
 
 func (task Task) String() string {
