@@ -186,3 +186,30 @@ func (task *Task) LongSummary() string {
 		return task.Summary
 	}
 }
+
+func (task *Task) Modify(cmdLine CmdLine) {
+	for _, tag := range cmdLine.Tags {
+		if !StrSliceContains(task.Tags, tag) {
+			task.Tags = append(task.Tags, tag)
+		}
+	}
+
+	for i, tag := range task.Tags {
+		if StrSliceContains(cmdLine.AntiTags, tag) {
+			// delete item
+			task.Tags = append(task.Tags[:i], task.Tags[i+1:]...)
+		}
+	}
+
+	if cmdLine.Project != "" {
+		task.Project = cmdLine.Project
+	}
+
+	if StrSliceContains(cmdLine.AntiProjects, task.Project) {
+		task.Project = ""
+	}
+
+	if cmdLine.Priority != "" {
+		task.Priority = cmdLine.Priority
+	}
+}

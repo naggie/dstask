@@ -21,7 +21,7 @@ func ExitFail(format string, a ...interface{}) {
 }
 
 func ConfirmOrAbort(format string, a ...interface{}) {
-	fmt.Fprintf(os.Stderr, format+". Continue? [y/n] ", a...)
+	fmt.Fprintf(os.Stderr, format+" [y/n] ", a...)
 
 	reader := bufio.NewReader(os.Stdin)
 

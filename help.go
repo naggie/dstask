@@ -99,9 +99,14 @@ To reset to no context, run: dstask context none
 `
 	case CMD_MODIFY:
 		helpStr = `Usage: dstask <id...> modify <filter>
+Usage: dstask modify <filter>
 Example: dstask 34 modify -work +home project:workbench -project:website
 
-Modify the attributes of a task.
+Modify the attributes of the given tasks, specified by ID. If no ID is given,
+the operation will be performed to all tasks in the current context subject to
+confirmation.
+
+Modifiable attributes: tags, project and priority.
 `
 	case CMD_EDIT:
 		helpStr = `Usage: dstask <id...> edit
@@ -177,7 +182,7 @@ note              : Append to or edit note for a task
 stop              : Change task status to pending
 done              : Resolve a task
 context           : Set global context for task list and new tasks (use "none" to set no context)
-modify            : Set attributes for a task
+modify            : Change task attributes specified on command line
 edit              : Edit task with text editor
 undo              : Undo last action with git revert
 sync              : Pull then push to git repository, automatic merge commit.

@@ -151,34 +151,22 @@ func main() {
 
 	case dstask.CMD_MODIFY:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+
+		if len(cmdLine.IDs) == 0 {
+			ts.Filter(context)
+			dstask.ConfirmOrAbort("No IDs specified. Apply to all %d tasks in current context?", len(ts.Tasks()))
+
+			for _, task := range ts.Tasks() {
+				task.Modify(cmdLine)
+				ts.MustUpdateTask(task)
+				ts.SaveToDisk("Modified %s", task)
+			}
+			return
+		}
+
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
-
-			for _, tag := range cmdLine.Tags {
-				if !dstask.StrSliceContains(task.Tags, tag) {
-					task.Tags = append(task.Tags, tag)
-				}
-			}
-
-			for i, tag := range task.Tags {
-				if dstask.StrSliceContains(cmdLine.AntiTags, tag) {
-					// delete item
-					task.Tags = append(task.Tags[:i], task.Tags[i+1:]...)
-				}
-			}
-
-			if cmdLine.Project != "" {
-				task.Project = cmdLine.Project
-			}
-
-			if dstask.StrSliceContains(cmdLine.AntiProjects, task.Project) {
-				task.Project = ""
-			}
-
-			if cmdLine.Priority != "" {
-				task.Priority = cmdLine.Priority
-			}
-
+			task.Modify(cmdLine)
 			ts.MustUpdateTask(task)
 			ts.SaveToDisk("Modified %s", task)
 		}

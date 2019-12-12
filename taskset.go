@@ -176,9 +176,12 @@ func (ts *TaskSet) MustGetByID(id int) Task {
 	return *ts.tasksByID[id]
 }
 
-// TODO should probably return copies.
-func (ts *TaskSet) Tasks() []*Task {
-	return ts.tasks
+func (ts *TaskSet) Tasks() []Task {
+	tasks := make([]Task, 0, len(ts.tasks))
+	for _, task := range ts.tasks {
+		tasks = append(tasks,*task)
+	}
+	return tasks
 }
 
 func (ts *TaskSet) GetTags() map[string]bool {
