@@ -12,11 +12,29 @@ import (
 	"path"
 	"runtime"
 	"strings"
+	"bufio"
 )
 
 func ExitFail(format string, a ...interface{}) {
 	fmt.Fprintf(os.Stderr, "\033[31m"+format+"\033[0m\n", a...)
 	os.Exit(1)
+}
+
+func ConfirmOrAbort(format string, a ...interface{}) {
+	fmt.Fprintf(os.Stderr, format+". Continue? [y/n] ", a...)
+
+	reader := bufio.NewReader(os.Stdin)
+
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		panic(err)
+	}
+
+	if input == "y\n" {
+		return
+	} else {
+		ExitFail("Aborted.");
+	}
 }
 
 func MustExpandHome(filepath string) string {
