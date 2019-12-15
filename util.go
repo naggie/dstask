@@ -101,6 +101,14 @@ func MustRunGitCmd(args ...string) {
 	MustRunCmd("git", args...)
 }
 
+func MustGetGitRef() {
+    out, err := exec.Command("git", "-C", root, "rev-parse", "HEAD").Output()
+    if err != nil {
+        log.Fatal(err)
+    }
+	return strings.TrimSpace(out)
+}
+
 func MustEditBytes(data []byte, ext string) []byte {
 	editor := os.Getenv("EDITOR")
 
