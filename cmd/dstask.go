@@ -13,11 +13,11 @@ import (
 
 func main() {
 	dstask.LoadConfigFromEnv()
-	context := dstask.LoadContext()
+	state := dstask.LoadState()
 	cmdLine := dstask.ParseCmdLine(os.Args[1:]...)
 
 	if cmdLine.IgnoreContext {
-		context = dstask.CmdLine{}
+		state.Context = dstask.CmdLine{}
 	}
 
 	switch cmdLine.Cmd {
@@ -26,19 +26,19 @@ func main() {
 		fallthrough
 	case dstask.CMD_NEXT:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
+		ts.Filter(state.Context)
 		ts.Filter(cmdLine)
 		ts.SortByPriority()
-		context.PrintContextDescription()
+		state.Context.PrintContextDescription()
 		ts.DisplayByNext(true)
 		ts.DisplayCriticalTaskWarning()
 
 	case dstask.CMD_SHOW_OPEN:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
+		ts.Filter(state.Context)
 		ts.Filter(cmdLine)
 		ts.SortByPriority()
-		context.PrintContextDescription()
+		state.Context.PrintContextDescription()
 		ts.DisplayByNext(false)
 		ts.DisplayCriticalTaskWarning()
 
@@ -46,8 +46,8 @@ func main() {
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 
 		if len(cmdLine.Text) != 0 {
-			context.PrintContextDescription()
-			cmdLine.MergeContext(context)
+			state.Context.PrintContextDescription()
+			cmdLine.MergeContext(state.Context)
 			task := dstask.Task{
 				WritePending: true,
 				Status:       dstask.STATUS_PENDING,
@@ -65,8 +65,8 @@ func main() {
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 
 		if len(cmdLine.Text) != 0 {
-			context.PrintContextDescription()
-			cmdLine.MergeContext(context)
+			state.Context.PrintContextDescription()
+			cmdLine.MergeContext(state.Context)
 			task := dstask.Task{
 				WritePending: true,
 				Status:       dstask.STATUS_RESOLVED,
@@ -100,7 +100,7 @@ func main() {
 			}
 		} else if len(cmdLine.Text) != 0 {
 			// create a new task that is already active (started)
-			cmdLine.MergeContext(context)
+			cmdLine.MergeContext(state.Context)
 			task := dstask.Task{
 				WritePending: true,
 				Status:       dstask.STATUS_ACTIVE,
@@ -142,19 +142,21 @@ func main() {
 
 	case dstask.CMD_CONTEXT:
 		if len(os.Args) < 3 {
-			fmt.Printf("Current context: %s", context)
+			fmt.Printf("Current state.Context: %s", state.Context)
 		} else if os.Args[2] == "none" {
-			dstask.SaveContext(dstask.CmdLine{})
+			state.Context = dstask.CmdLine{}
+			dstask.SaveState(state)
 		} else {
-			dstask.SaveContext(cmdLine)
+			state.Context = cmdLine
+			dstask.SaveState(state)
 		}
 
 	case dstask.CMD_MODIFY:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 
 		if len(cmdLine.IDs) == 0 {
-			ts.Filter(context)
-			dstask.ConfirmOrAbort("No IDs specified. Apply to all %d tasks in current context?", len(ts.Tasks()))
+			ts.Filter(state.Context)
+			dstask.ConfirmOrAbort("No IDs specified. Apply to all %d tasks in current state.Context?", len(ts.Tasks()))
 
 			for _, task := range ts.Tasks() {
 				task.Modify(cmdLine)
@@ -232,18 +234,18 @@ func main() {
 		dstask.MustRunGitCmd(os.Args[2:]...)
 
 	case dstask.CMD_SHOW_ACTIVE:
-		context.PrintContextDescription()
+		state.Context.PrintContextDescription()
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
+		ts.Filter(state.Context)
 		ts.Filter(cmdLine)
 		ts.FilterByStatus(dstask.STATUS_ACTIVE)
 		ts.SortByPriority()
 		ts.DisplayByNext(true)
 
 	case dstask.CMD_SHOW_PAUSED:
-		context.PrintContextDescription()
+		state.Context.PrintContextDescription()
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
+		ts.Filter(state.Context)
 		ts.Filter(cmdLine)
 		ts.FilterByStatus(dstask.STATUS_PAUSED)
 		ts.SortByPriority()
@@ -270,29 +272,29 @@ func main() {
 		ts.SaveToDisk("Import from taskwarrior")
 
 	case dstask.CMD_SHOW_PROJECTS:
-		context.PrintContextDescription()
+		state.Context.PrintContextDescription()
 		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
-		cmdLine.MergeContext(context)
-		ts.Filter(context)
+		cmdLine.MergeContext(state.Context)
+		ts.Filter(state.Context)
 		ts.DisplayProjects()
 
 	case dstask.CMD_SHOW_TAGS:
-		context.PrintContextDescription()
+		state.Context.PrintContextDescription()
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
-		cmdLine.MergeContext(context)
-		ts.Filter(context)
+		cmdLine.MergeContext(state.Context)
+		ts.Filter(state.Context)
 		for tag := range ts.GetTags() {
 			fmt.Println(tag)
 		}
 
 	case dstask.CMD_SHOW_RESOLVED:
 		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
-		ts.Filter(context)
+		ts.Filter(state.Context)
 		ts.Filter(cmdLine)
 		ts.FilterByStatus(dstask.STATUS_RESOLVED)
 		ts.SortByResolved()
 		ts.DisplayByWeek()
-		context.PrintContextDescription()
+		state.Context.PrintContextDescription()
 
 	case dstask.CMD_SHOW_UNORGANISED:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
@@ -367,7 +369,7 @@ func main() {
 			if !cmdLine.IgnoreContext &&
 				cmdLine.Cmd != dstask.CMD_CONTEXT &&
 				cmdLine.Cmd != dstask.CMD_MODIFY {
-				ts.Filter(context)
+				ts.Filter(state.Context)
 			}
 
 			// priorities

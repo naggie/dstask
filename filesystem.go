@@ -4,11 +4,11 @@ package dstask
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path"
-	"path/filepath"
+
+	"gopkg.in/yaml.v2"
 )
 
 // leave file as an empty string to return directory
@@ -136,29 +136,4 @@ func (ts *TaskSet) SaveToDisk(format string, a ...interface{}) {
 	MustRunGitCmd("add", ".")
 	MustRunGitCmd("commit", "--no-gpg-sign", "-m", commitMsg)
 	fmt.Printf("\033[0m")
-}
-
-func SaveContext(context CmdLine) {
-	if len(context.IDs) != 0 {
-		ExitFail("Context cannot contain IDs")
-	}
-
-	if context.Text != "" {
-		ExitFail("Context cannot contain text")
-	}
-
-	fp := MustExpandHome(CONTEXT_FILE)
-	os.MkdirAll(filepath.Dir(fp), os.ModePerm)
-	MustWriteGob(fp, &context)
-}
-
-func LoadContext() CmdLine {
-	fp := MustExpandHome(CONTEXT_FILE)
-	if _, err := os.Stat(fp); os.IsNotExist(err) {
-		return CmdLine{}
-	}
-
-	context := CmdLine{}
-	MustReadGob(fp, &context)
-	return context
 }
