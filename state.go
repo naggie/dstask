@@ -8,10 +8,15 @@ import (
 type State struct {
 	Context CmdLine
 	// git ref before the last consequential command
-	LastOperationFrom string
+	LastChangeFrom string
 	// git ref after the last consequential command (if does not match HEAD.
 	// undo should fail) -- this can happen as a consequence of sync.
-	LastOperationTo string
+	LastChangeTo string
+	// last command -- joined args. Used to confirm an undo
+	// TODO confirm undo
+	LastChangeCmd string
+	// when did change occur? more than a day?
+	LastChangeTime time.Time
 }
 
 // TODO separate validate context fn then move to context cmd
