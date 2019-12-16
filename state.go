@@ -110,5 +110,8 @@ func MustGetGitRef() string {
 
 // revert commits after last checkpoint if current commit is known
 func (state *State) Undo() {
-	ExitFail("Not possible to undo, please edit history manually in git repository")
+	// https://stackoverflow.com/questions/4991594/revert-a-range-of-commits-in-git
+	// revert all without committing, then make a single commit
+	MustRunGitCmd("revert", "-n", state.checkpoint + "^.." + state.lastKnown)
+	MustRunGitCmd("commit","-m","Revert " + state.lastChangeCmd)
 }
