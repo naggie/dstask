@@ -94,12 +94,17 @@ Commands and syntax are deliberately very similar to taskwarrior. Here are the e
 There are a few things missing at the moment. That said I use dstask day to day and trust it with my work.
 
 * Subtask/checklist implementation (github check list style)
-* Task dependencies
 * Recurring tasks
-* Deferred/scheduled tasks with duration
-* Due dates
 
-After these features are implemented, I intend on adding CalDav integration. dstask should be able to act as a CalDav server with the following features:
+Project management features:
+
+* Task dependencies
+* Deferred/scheduled tasks with duration
+* Due/deadline dates
+* Maybe a gantt display
+
+After these features are implemented, I might add CalDav integration to
+enable:
 
 * Display of recurring tasks
 * Display of appointments/meetings
@@ -107,9 +112,7 @@ After these features are implemented, I intend on adding CalDav integration. dst
 * Display of resolved tasks (maybe, separate calendar)
 * Possible creation of time based tasks from calendar
 
-Running a caldav server would enable synchronisation with an iPhone/Android
-phone, MacOS Calendar, Outlook calendar etc. It would provide similar
-functionality to [timewarrior](https://timewarrior.net/).
+This could work by acting as a client to add/update/remove appointments, or a server to provide them.
 
 # Usage
 
