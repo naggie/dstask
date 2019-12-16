@@ -10,7 +10,7 @@ var (
 	FAKE_PTY = false
 	// populated by linker flags, see do-release.sh
 	GIT_COMMIT = "Unknown"
-	VERSION = "Unknown"
+	VERSION    = "Unknown"
 	BUILD_DATE = "Unknown"
 )
 
@@ -83,7 +83,7 @@ const (
 	FG_PRIORITY_CRITICAL = 160
 	FG_PRIORITY_HIGH     = 166
 	FG_PRIORITY_NORMAL   = FG_DEFAULT
-	FG_PRIORITY_LOW		 = 245
+	FG_PRIORITY_LOW      = 245
 	FG_NOTE              = 240
 )
 

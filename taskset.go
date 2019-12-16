@@ -3,8 +3,14 @@ package dstask
 // main task data structures
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path"
 	"sort"
 	"time"
+
+	yaml "gopkg.in/yaml.v2"
 )
 
 type TaskSet struct {
@@ -33,7 +39,7 @@ type Project struct {
 	Resolved time.Time
 
 	// highest non-resolved priority within project
-	Priority      string
+	Priority string
 }
 
 func (ts *TaskSet) SortByPriority() {
@@ -88,7 +94,7 @@ func (ts *TaskSet) AddTask(task Task) Task {
 	ts.tasksByID[task.ID] = &task
 	ts.tasksLoaded += 1
 
-	if (task.Priority == PRIORITY_CRITICAL) {
+	if task.Priority == PRIORITY_CRITICAL {
 		ts.tasksLoadedCritical += 1
 	}
 
@@ -179,7 +185,7 @@ func (ts *TaskSet) MustGetByID(id int) Task {
 func (ts *TaskSet) Tasks() []Task {
 	tasks := make([]Task, 0, len(ts.tasks))
 	for _, task := range ts.tasks {
-		tasks = append(tasks,*task)
+		tasks = append(tasks, *task)
 	}
 	return tasks
 }
@@ -208,7 +214,7 @@ func (ts *TaskSet) GetProjects() map[string]*Project {
 
 		if projects[name] == nil {
 			projects[name] = &Project{
-				Name: name,
+				Name:     name,
 				Priority: PRIORITY_LOW,
 			}
 		}
@@ -239,4 +245,78 @@ func (ts *TaskSet) GetProjects() map[string]*Project {
 	}
 
 	return projects
+}
+
+// may be removed
+func (ts *TaskSet) SaveToDisk(format string, a ...interface{}) {
+	for _, task := range ts.tasks {
+		task.SaveToDisk()
+	}
+
+	commitMsg := fmt.Sprintf(format, a...)
+
+	// git add all changed/created files
+	// could optimise this to be given an explicit list of
+	// added/modified/deleted files -- only if slow.
+	fmt.Printf("\n%s\n", commitMsg)
+	fmt.Printf("\033[38;5;245m")
+	MustRunGitCmd("add", ".")
+	MustRunGitCmd("commit", "--no-gpg-sign", "-m", commitMsg)
+	fmt.Printf("\033[0m")
+}
+
+func LoadTaskSetFromDisk(statuses []string) *TaskSet {
+	ts := &TaskSet{
+		tasksByID:   make(map[int]*Task),
+		tasksByUUID: make(map[string]*Task),
+	}
+
+	gitDotGitLocation := MustExpandHome(path.Join(GIT_REPO, ".git"))
+
+	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
+		ExitFail("Could not find git repository at " + GIT_REPO + ", please clone or create. Try `dstask help` for more information.")
+	}
+
+	for _, status := range statuses {
+		dir := MustGetRepoPath(status, "")
+
+		files, err := ioutil.ReadDir(dir)
+		if err != nil {
+			ExitFail("Failed to read " + dir)
+		}
+
+		for _, file := range files {
+			filepath := path.Join(dir, file.Name())
+
+			if len(file.Name()) != 40 {
+				// not <uuid4>.yml
+				continue
+			}
+
+			uuid := file.Name()[0:36]
+
+			if !IsValidUUID4String(uuid) {
+				continue
+			}
+
+			t := Task{
+				UUID:   uuid,
+				Status: status,
+			}
+
+			data, err := ioutil.ReadFile(filepath)
+			if err != nil {
+				ExitFail("Failed to read %s", filepath)
+			}
+			err = yaml.Unmarshal(data, &t)
+			if err != nil {
+				// TODO present error to user, specific error message is important
+				ExitFail("Failed to unmarshal %s", filepath)
+			}
+
+			ts.AddTask(t)
+		}
+	}
+
+	return ts
 }

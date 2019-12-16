@@ -203,7 +203,7 @@ func (ts TaskSet) DisplayProjects() {
 					fmt.Sprintf("%d/%d", project.TasksResolved, project.Tasks),
 					project.Created.Format("Mon 2 Jan 2006"),
 				},
-			    project.Style(),
+				project.Style(),
 			)
 		}
 	}
@@ -215,16 +215,16 @@ func (ts TaskSet) DisplayCriticalTaskWarning() {
 	var critical int
 
 	for _, t := range ts.tasks {
-		if (t.Priority == PRIORITY_CRITICAL) {
+		if t.Priority == PRIORITY_CRITICAL {
 			critical += 1
 		}
 	}
 
-	if (critical < ts.tasksLoadedCritical) {
+	if critical < ts.tasksLoadedCritical {
 		fmt.Printf(
 			"\033[38;5;%dm%v critical tasks outside this context! Use `dstask -- P0` to see them.\033[0m\n",
 			FG_PRIORITY_CRITICAL,
-			ts.tasksLoadedCritical - critical,
+			ts.tasksLoadedCritical-critical,
 		)
 	}
 }

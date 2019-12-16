@@ -6,12 +6,12 @@ import (
 )
 
 type State struct {
-	Context    CmdLine
+	Context CmdLine
 	// git ref before the last consequential command
-	LastGitRef string
+	LastOperationFrom string
 	// git ref after the last consequential command (if does not match HEAD.
-	// undo should fail)
-	CurrentGitRef string
+	// undo should fail) -- this can happen as a consequence of sync.
+	LastOperationTo string
 }
 
 // TODO separate validate context fn then move to context cmd
@@ -38,4 +38,8 @@ func LoadState() State {
 	state := State{}
 	MustReadGob(fp, &state)
 	return state
+}
+
+func (*State) SetGitRef() {
+
 }

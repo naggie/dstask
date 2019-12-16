@@ -2,8 +2,8 @@ package dstask
 
 import (
 	"fmt"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 type Table struct {
@@ -127,10 +127,10 @@ func (t *Table) Render() {
 
 			// support ' / ' markup -- show notes faded. Insert ANSI escape
 			// formatting, ensuring reset to original colour for given row.
-			if strings.Contains(trimmed, " " + NOTE_MODE_KEYWORD + " ") {
+			if strings.Contains(trimmed, " "+NOTE_MODE_KEYWORD+" ") {
 				trimmed = strings.Replace(
-					FixStr(cells[i], w + 2),
-					" " + NOTE_MODE_KEYWORD + " ",
+					FixStr(cells[i], w+2),
+					" "+NOTE_MODE_KEYWORD+" ",
 					fmt.Sprintf("\033[38;5;%dm ", FG_NOTE),
 					1,
 				) + fmt.Sprintf("\033[38;5;%dm", fg)

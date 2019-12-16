@@ -5,9 +5,13 @@ package dstask
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"sort"
 	"strings"
 	"time"
+
+	yaml "gopkg.in/yaml.v2"
 )
 
 type SubTask struct {
@@ -211,5 +215,43 @@ func (task *Task) Modify(cmdLine CmdLine) {
 
 	if cmdLine.Priority != "" {
 		task.Priority = cmdLine.Priority
+	}
+}
+
+func (t *Task) SaveToDisk() {
+	if !t.WritePending {
+		return
+	}
+
+	// save should be idempotent
+	t.WritePending = false
+
+	filepath := MustGetRepoPath(t.Status, t.UUID+".yml")
+	d, err := yaml.Marshal(&t)
+	if err != nil {
+		// TODO present error to user, specific error message is important
+		ExitFail("Failed to marshal task %s", t)
+	}
+
+	err = ioutil.WriteFile(filepath, d, 0600)
+	if err != nil {
+		ExitFail("Failed to write task %s", t)
+	}
+
+	// delete from all other locations to make sure there is only one copy
+	// that exists
+	for _, st := range ALL_STATUSES {
+		if st == t.Status {
+			continue
+		}
+
+		filepath := MustGetRepoPath(st, t.UUID+".yml")
+
+		if _, err := os.Stat(filepath); !os.IsNotExist(err) {
+			err := os.Remove(filepath)
+			if err != nil {
+				ExitFail("Failed to delete " + filepath)
+			}
+		}
 	}
 }

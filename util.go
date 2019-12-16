@@ -1,18 +1,20 @@
 package dstask
 
 import (
+	"bufio"
 	"encoding/gob"
 	"fmt"
-	"github.com/gofrs/uuid"
-	"golang.org/x/sys/unix"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"os/user"
 	"path"
 	"runtime"
 	"strings"
-	"bufio"
+
+	"github.com/gofrs/uuid"
+	"golang.org/x/sys/unix"
 )
 
 func ExitFail(format string, a ...interface{}) {
@@ -33,7 +35,7 @@ func ConfirmOrAbort(format string, a ...interface{}) {
 	if input == "y\n" {
 		return
 	} else {
-		ExitFail("Aborted.");
+		ExitFail("Aborted.")
 	}
 }
 
@@ -102,10 +104,10 @@ func MustRunGitCmd(args ...string) {
 }
 
 func MustGetGitRef() {
-    out, err := exec.Command("git", "-C", root, "rev-parse", "HEAD").Output()
-    if err != nil {
-        log.Fatal(err)
-    }
+	out, err := exec.Command("git", "-C", root, "rev-parse", "HEAD").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
 	return strings.TrimSpace(out)
 }
 
@@ -236,4 +238,19 @@ func MustGetTermSize() (int, int) {
 func IsTTY() bool {
 	_, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
 	return err == nil || FAKE_PTY
+}
+
+// leave file as an empty string to return directory
+func MustGetRepoPath(directory, file string) string {
+	root := MustExpandHome(GIT_REPO)
+	dir := path.Join(root, directory)
+
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		err = os.Mkdir(dir, 0700)
+		if err != nil {
+			ExitFail("Failed to create directory in git repository")
+		}
+	}
+
+	return path.Join(dir, file)
 }
