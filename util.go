@@ -2,10 +2,8 @@ package dstask
 
 import (
 	"bufio"
-	"encoding/gob"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"os/user"
@@ -100,16 +98,10 @@ func MustRunCmd(name string, args ...string) {
 func MustRunGitCmd(args ...string) {
 	root := MustExpandHome(GIT_REPO)
 	args = append([]string{"-C", root}, args...)
-	MustRunCmd("git", args...)
-}
-
-func MustGetGitRef() string {
-	root := MustExpandHome(GIT_REPO)
-	out, err := exec.Command("git", "-C", root, "rev-parse", "HEAD").Output()
+	err := MustRunCmd("git", args...)
 	if err != nil {
-		log.Fatal(err)
+		ExitFail("Failed to run git cmd.")
 	}
-	return strings.TrimSpace(string(out))
 }
 
 func MustEditBytes(data []byte, ext string) []byte {
@@ -150,34 +142,6 @@ func StrSliceContains(haystack []string, needle string) bool {
 	}
 
 	return false
-}
-
-func MustWriteGob(filePath string, object interface{}) {
-	file, err := os.Create(filePath)
-	defer file.Close()
-
-	if err != nil {
-		ExitFail("Failed to open %s for writing: ", filePath)
-	}
-
-	encoder := gob.NewEncoder(file)
-	encoder.Encode(object)
-}
-
-func MustReadGob(filePath string, object interface{}) {
-	file, err := os.Open(filePath)
-	defer file.Close()
-
-	if err != nil {
-		ExitFail("Failed to open %s for reading: ", filePath)
-	}
-
-	decoder := gob.NewDecoder(file)
-	err = decoder.Decode(object)
-
-	if err != nil {
-		ExitFail("Failed to parse gob: %s", filePath)
-	}
 }
 
 func IsValidStateTransition(from string, to string) bool {

@@ -1,7 +1,10 @@
 package dstask
 
 import (
+	"encoding/gob"
+	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -66,4 +69,46 @@ func (state *State) SetCheckpoint() {
 func (state *State) SetLastCmd() {
 	state.lastChangeCmd = strings.Join(os.Args[1:], " ")
 	state.lastKnown = MustGetGitRef()
+}
+
+func MustWriteGob(filePath string, object interface{}) {
+	file, err := os.Create(filePath)
+	defer file.Close()
+
+	if err != nil {
+		ExitFail("Failed to open %s for writing: ", filePath)
+	}
+
+	encoder := gob.NewEncoder(file)
+	encoder.Encode(object)
+}
+
+func MustReadGob(filePath string, object interface{}) {
+	file, err := os.Open(filePath)
+	defer file.Close()
+
+	if err != nil {
+		ExitFail("Failed to open %s for reading: ", filePath)
+	}
+
+	decoder := gob.NewDecoder(file)
+	err = decoder.Decode(object)
+
+	if err != nil {
+		ExitFail("Failed to parse gob: %s", filePath)
+	}
+}
+
+func MustGetGitRef() string {
+	root := MustExpandHome(GIT_REPO)
+	out, err := exec.Command("git", "-C", root, "rev-parse", "HEAD").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return strings.TrimSpace(string(out))
+}
+
+// revert commits after last checkpoint if current commit is known
+func (state *State) Undo() {
+	ExitFail("Not possible to undo, please edit history manually in git repository")
 }
