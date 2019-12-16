@@ -3,32 +3,26 @@ package dstask
 import (
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 )
 
 type State struct {
-	Context CmdLine
+	context CmdLine
 	// git ref before the last consequential command
-	LastChangeFrom string
+	checkpoint string
 	// git ref after the last consequential command (if does not match HEAD.
 	// undo should fail) -- this can happen as a consequence of sync.
-	LastChangeTo string
+	lastKnown string
 	// last command -- joined args. Used to confirm an undo
 	// TODO confirm undo
-	LastChangeCmd string
+	lastChangeCmd string
 	// when did change occur? more than a day?
-	LastChangeTime time.Time
+	lastChangeTime time.Time
 }
 
 // TODO separate validate context fn then move to context cmd
-func SaveState(state State) {
-	if len(state.Context.IDs) != 0 {
-		ExitFail("Context cannot contain IDs")
-	}
-
-	if state.Context.Text != "" {
-		ExitFail("Context cannot contain text")
-	}
-
+func (state State) Save() {
 	fp := MustExpandHome(STATE_FILE)
 	os.MkdirAll(filepath.Dir(fp), os.ModePerm)
 	MustWriteGob(fp, &state)
@@ -45,6 +39,31 @@ func LoadState() State {
 	return state
 }
 
-func (*State) SetGitRef() {
+func (state State) GetContext() CmdLine {
+	return state.context
+}
 
+func (state *State) SetContext(context CmdLine) {
+	if len(context.IDs) != 0 {
+		ExitFail("Context cannot contain IDs")
+	}
+
+	if context.Text != "" {
+		ExitFail("Context cannot contain text")
+	}
+
+	state.context = context
+}
+
+func (state *State) ClearContext() {
+	state.SetContext(CmdLine{})
+}
+
+func (state *State) SetCheckpoint() {
+	state.checkpoint = MustGetGitRef()
+}
+
+func (state *State) SetLastCmd() {
+	state.lastChangeCmd = strings.Join(os.Args[1:], " ")
+	state.lastKnown = MustGetGitRef()
 }

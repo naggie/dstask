@@ -103,12 +103,13 @@ func MustRunGitCmd(args ...string) {
 	MustRunCmd("git", args...)
 }
 
-func MustGetGitRef() {
+func MustGetGitRef() string {
+	root := MustExpandHome(GIT_REPO)
 	out, err := exec.Command("git", "-C", root, "rev-parse", "HEAD").Output()
 	if err != nil {
 		log.Fatal(err)
 	}
-	return strings.TrimSpace(out)
+	return strings.TrimSpace(string(out))
 }
 
 func MustEditBytes(data []byte, ext string) []byte {
