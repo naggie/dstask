@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"strings"
 )
 
 func MustRunGitCmd(args ...string) {

@@ -59,7 +59,8 @@ func main() {
 				Notes:        cmdLine.Note,
 			}
 			task = ts.AddTask(task)
-			ts.SaveToDisk("Added %s", task)
+			ts.SavePendingChanges()
+			dstask.MustGitCommit("Added %s", task)
 		}
 
 	case dstask.CMD_LOG:
@@ -78,7 +79,8 @@ func main() {
 				Resolved:     time.Now(),
 			}
 			task = ts.AddTask(task)
-			ts.SaveToDisk("Logged %s", task)
+			ts.SavePendingChanges()
+			dstask.MustGitCommit("Logged %s", task)
 		}
 
 	case dstask.CMD_START:
@@ -93,7 +95,8 @@ func main() {
 				}
 				ts.MustUpdateTask(task)
 
-				ts.SaveToDisk("Started %s", task)
+				ts.SavePendingChanges()
+				dstask.MustGitCommit("Started %s", task)
 
 				if task.Notes != "" {
 					fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m\n\n", task.ID, task.Notes)
@@ -112,7 +115,8 @@ func main() {
 				Notes:        cmdLine.Note,
 			}
 			task = ts.AddTask(task)
-			ts.SaveToDisk("Added and started %s", task)
+			ts.SavePendingChanges()
+			dstask.MustGitCommit("Added and started %s", task)
 		}
 
 	case dstask.CMD_STOP:
@@ -124,7 +128,8 @@ func main() {
 				task.Notes += "\n" + cmdLine.Text
 			}
 			ts.MustUpdateTask(task)
-			ts.SaveToDisk("Stopped %s", task)
+			ts.SavePendingChanges()
+			dstask.MustGitCommit("Stopped %s", task)
 		}
 
 	case dstask.CMD_DONE:
@@ -138,7 +143,8 @@ func main() {
 				task.Notes += "\n" + cmdLine.Text
 			}
 			ts.MustUpdateTask(task)
-			ts.SaveToDisk("Resolved %s", task)
+			ts.SavePendingChanges()
+			dstask.MustGitCommit("Resolved %s", task)
 		}
 
 	case dstask.CMD_CONTEXT:
@@ -162,7 +168,8 @@ func main() {
 			for _, task := range ts.Tasks() {
 				task.Modify(cmdLine)
 				ts.MustUpdateTask(task)
-				ts.SaveToDisk("Modified %s", task)
+				ts.SavePendingChanges()
+				dstask.MustGitCommit("Modified %s", task)
 			}
 			return
 		}
@@ -171,7 +178,8 @@ func main() {
 			task := ts.MustGetByID(id)
 			task.Modify(cmdLine)
 			ts.MustUpdateTask(task)
-			ts.SaveToDisk("Modified %s", task)
+			ts.SavePendingChanges()
+			dstask.MustGitCommit("Modified %s", task)
 		}
 
 	case dstask.CMD_EDIT:
@@ -201,7 +209,8 @@ func main() {
 			task.ID = id
 
 			ts.MustUpdateTask(task)
-			ts.SaveToDisk("Edited %s", task)
+			ts.SavePendingChanges()
+			dstask.MustGitCommit("Edited %s", task)
 		}
 
 	case dstask.CMD_NOTES:
@@ -221,7 +230,8 @@ func main() {
 			}
 
 			ts.MustUpdateTask(task)
-			ts.SaveToDisk("Edit note %s", task)
+			ts.SavePendingChanges()
+			dstask.MustGitCommit("Edit note %s", task)
 		}
 
 	case dstask.CMD_UNDO:
@@ -270,7 +280,8 @@ func main() {
 	case dstask.CMD_IMPORT_TW:
 		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
 		ts.ImportFromTaskwarrior()
-		ts.SaveToDisk("Import from taskwarrior")
+		ts.SavePendingChanges()
+		dstask.MustGitCommit("Import from taskwarrior")
 
 	case dstask.CMD_SHOW_PROJECTS:
 		context.PrintContextDescription()

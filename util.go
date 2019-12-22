@@ -195,18 +195,3 @@ func IsTTY() bool {
 	_, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
 	return err == nil || FAKE_PTY
 }
-
-// leave file as an empty string to return directory
-func MustGetRepoPath(directory, file string) string {
-	root := MustExpandHome(GIT_REPO)
-	dir := path.Join(root, directory)
-
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		err = os.Mkdir(dir, 0700)
-		if err != nil {
-			ExitFail("Failed to create directory in git repository")
-		}
-	}
-
-	return path.Join(dir, file)
-}
