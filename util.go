@@ -104,8 +104,9 @@ func MustRunGitCmd(args ...string) {
 	}
 }
 
-func MustGitCommit(message string, body []string) {
-	fullMsg := message + "\n\n" + strings.Join(body, "\n")
+func MustGitCommit(changelist []string) {
+	// TODO show compiled merged contet/cmdline for synthetic equivalent cmd?
+	fullMsg := strings.Join(os.Args[1:], " ") + "\n\n" + strings.Join(changelist, "\n")
 
 	// git add all changed/created files
 	// could optimise this to be given an explicit list of

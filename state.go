@@ -18,7 +18,6 @@ type State struct {
 	context CmdLine
 }
 
-// TODO separate validate context fn then move to context cmd
 func (state State) Save() {
 	fp := MustExpandHome(STATE_FILE)
 	os.MkdirAll(filepath.Dir(fp), os.ModePerm)
@@ -82,13 +81,4 @@ func MustReadGob(filePath string, object interface{}) {
 	if err != nil {
 		ExitFail("Failed to parse gob: %s", filePath)
 	}
-}
-
-func MustGetGitRef() string {
-	root := MustExpandHome(GIT_REPO)
-	out, err := exec.Command("git", "-C", root, "rev-parse", "HEAD").Output()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return strings.TrimSpace(string(out))
 }
