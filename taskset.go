@@ -3,7 +3,6 @@ package dstask
 // main task data structures
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path"

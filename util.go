@@ -95,29 +95,6 @@ func MustRunCmd(name string, args ...string) error {
 	return cmd.Run()
 }
 
-func MustRunGitCmd(args ...string) {
-	root := MustExpandHome(GIT_REPO)
-	args = append([]string{"-C", root}, args...)
-	err := MustRunCmd("git", args...)
-	if err != nil {
-		ExitFail("Failed to run git cmd.")
-	}
-}
-
-func MustGitCommit(changelist []string) {
-	// TODO show compiled merged contet/cmdline for synthetic equivalent cmd?
-	fullMsg := strings.Join(os.Args[1:], " ") + "\n\n" + strings.Join(changelist, "\n")
-
-	// git add all changed/created files
-	// could optimise this to be given an explicit list of
-	// added/modified/deleted files -- only if slow.
-	fmt.Printf("\n%s\n", fullMsg)
-	fmt.Printf("\033[38;5;245m")
-	MustRunGitCmd("add", ".")
-	MustRunGitCmd("commit", "--no-gpg-sign", "-m", fullMsg)
-	fmt.Printf("\033[0m")
-}
-
 func MustEditBytes(data []byte, ext string) []byte {
 	editor := os.Getenv("EDITOR")
 

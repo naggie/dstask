@@ -6,11 +6,8 @@ package dstask
 
 import (
 	"encoding/gob"
-	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strings"
 )
 
 type State struct {
