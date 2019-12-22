@@ -12,7 +12,7 @@ import (
 
 type State struct {
 	// context to automatically apply to all queries and new tasks
-	context CmdLine
+	Context CmdLine
 }
 
 func (state State) Save() {
@@ -33,7 +33,7 @@ func LoadState() State {
 }
 
 func (state State) GetContext() CmdLine {
-	return state.context
+	return state.Context
 }
 
 func (state *State) SetContext(context CmdLine) {
@@ -45,7 +45,7 @@ func (state *State) SetContext(context CmdLine) {
 		ExitFail("Context cannot contain text")
 	}
 
-	state.context = context
+	state.Context = context
 }
 
 func (state *State) ClearContext() {
@@ -61,7 +61,11 @@ func MustWriteGob(filePath string, object interface{}) {
 	}
 
 	encoder := gob.NewEncoder(file)
-	encoder.Encode(object)
+	err = encoder.Encode(object)
+
+	if err != nil {
+		ExitFail("Failed to encode state gob: %s, %s", filePath, err)
+	}
 }
 
 func MustReadGob(filePath string, object interface{}) {
@@ -76,6 +80,6 @@ func MustReadGob(filePath string, object interface{}) {
 	err = decoder.Decode(object)
 
 	if err != nil {
-		ExitFail("Failed to parse gob: %s", filePath)
+		ExitFail("Failed to parse state gob: %s, %s", filePath, err)
 	}
 }
