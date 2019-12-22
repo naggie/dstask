@@ -5,7 +5,7 @@ import "os"
 var (
 	GIT_REPO = "~/.dstask/"
 	// space delimited keyword file for compgen
-	STATE_FILE = "~/.cache/dstask/state.bin"
+	STATE_FILE = "~/.config/dstask/state.bin"
 	// for CI testing
 	FAKE_PTY = false
 	// populated by linker flags, see do-release.sh
