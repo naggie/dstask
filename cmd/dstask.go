@@ -225,7 +225,7 @@ func main() {
 		}
 
 	case dstask.CMD_UNDO:
-		state.Undo()
+		dstask.MustRunGitCmd("revert", "--no-gpg-sign", "--no-edit", "HEAD")
 
 	case dstask.CMD_SYNC:
 		dstask.MustRunGitCmd("pull", "--no-edit", "--commit", "origin", "master")

@@ -219,10 +219,6 @@ func (task *Task) Modify(cmdLine CmdLine) {
 }
 
 func (t *Task) SaveToDisk() {
-	if !t.WritePending {
-		return
-	}
-
 	// save should be idempotent
 	t.WritePending = false
 

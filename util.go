@@ -104,6 +104,19 @@ func MustRunGitCmd(args ...string) {
 	}
 }
 
+func MustGitCommit(message string, body []string) {
+	fullMsg := message + "\n\n" + strings.Join(body, "\n")
+
+	// git add all changed/created files
+	// could optimise this to be given an explicit list of
+	// added/modified/deleted files -- only if slow.
+	fmt.Printf("\n%s\n", fullMsg)
+	fmt.Printf("\033[38;5;245m")
+	MustRunGitCmd("add", ".")
+	MustRunGitCmd("commit", "--no-gpg-sign", "-m", fullMsg)
+	fmt.Printf("\033[0m")
+}
+
 func MustEditBytes(data []byte, ext string) []byte {
 	editor := os.Getenv("EDITOR")
 

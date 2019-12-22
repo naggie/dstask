@@ -247,22 +247,15 @@ func (ts *TaskSet) GetProjects() map[string]*Project {
 	return projects
 }
 
-// may be removed
-func (ts *TaskSet) SaveToDisk(format string, a ...interface{}) {
+// save pending changes to disk
+// TODO return files that have been added/deleted/modified/renamed so they can
+// be passed to git add for performance, instead of doing git add .
+func (ts *TaskSet) SavePendingChanges() {
 	for _, task := range ts.tasks {
-		task.SaveToDisk()
+		if task.WritePending {
+			task.SaveToDisk()
+		}
 	}
-
-	commitMsg := fmt.Sprintf(format, a...)
-
-	// git add all changed/created files
-	// could optimise this to be given an explicit list of
-	// added/modified/deleted files -- only if slow.
-	fmt.Printf("\n%s\n", commitMsg)
-	fmt.Printf("\033[38;5;245m")
-	MustRunGitCmd("add", ".")
-	MustRunGitCmd("commit", "--no-gpg-sign", "-m", commitMsg)
-	fmt.Printf("\033[0m")
 }
 
 func LoadTaskSetFromDisk(statuses []string) *TaskSet {
