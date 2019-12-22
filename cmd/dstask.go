@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"strconv"
 	"time"
 
 	"github.com/mvdan/xurls"
@@ -235,7 +236,16 @@ func main() {
 		}
 
 	case dstask.CMD_UNDO:
-		dstask.MustRunGitCmd("revert", "--no-gpg-sign", "--no-edit", "HEAD")
+		var err error
+		n := 1
+		if len(os.Args) == 3 {
+			n, err = strconv.Atoi(os.Args[2])
+			if err != nil {
+				dstask.Help(dstask.CMD_UNDO)
+			}
+		}
+
+		dstask.MustRunGitCmd("revert", "--no-gpg-sign", "--no-edit", "HEAD~" + strconv.Itoa(n) + "..")
 
 	case dstask.CMD_SYNC:
 		dstask.MustRunGitCmd("pull", "--no-edit", "--commit", "origin", "master")

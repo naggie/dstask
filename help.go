@@ -115,9 +115,15 @@ Edit a task in your text editor.
 `
 	case CMD_UNDO:
 		helpStr = `Usage: dstask undo
+Usage: dstask undo <n>
 
-Undo the last command that changed the repository. This uses git revert on one
-or more commits.
+Undo the last <n> commits on the repository. Default is 1. Use
+
+	dstask git log
+
+To see commit history. For more complicated history manipulation it may be best
+to revert/rebase/merge on the dstask repository itself. The dstask repository
+is at ~/.dstask by default.
 `
 	case CMD_SYNC:
 		helpStr = `Usage: dstask sync
@@ -184,7 +190,7 @@ done              : Resolve a task
 context           : Set global context for task list and new tasks (use "none" to set no context)
 modify            : Change task attributes specified on command line
 edit              : Edit task with text editor
-undo              : Undo last action with git revert
+undo              : Undo last n commits
 sync              : Pull then push to git repository, automatic merge commit.
 open              : Open all URLs found in summary/annotations
 git               : Pass a command to git in the repository. Used for push/pull.
