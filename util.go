@@ -87,12 +87,12 @@ func SumInts(vals ...int) int {
 	return total
 }
 
-func MustRunCmd(name string, args ...string) {
+func MustRunCmd(name string, args ...string) error {
 	cmd := exec.Command(name, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Run()
+	return cmd.Run()
 }
 
 func MustRunGitCmd(args ...string) {
