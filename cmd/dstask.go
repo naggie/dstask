@@ -46,7 +46,7 @@ func main() {
 	case dstask.CMD_ADD:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 
-		if len(cmdLine.Text) != 0 {
+		if cmdLine.Text != "" {
 			context.PrintContextDescription()
 			cmdLine.MergeContext(context)
 			task := dstask.Task{
@@ -65,7 +65,7 @@ func main() {
 	case dstask.CMD_LOG:
 		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
 
-		if len(cmdLine.Text) != 0 {
+		if cmdLine.Text != "" {
 			context.PrintContextDescription()
 			cmdLine.MergeContext(context)
 			task := dstask.Task{
@@ -99,7 +99,7 @@ func main() {
 					fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m\n\n", task.ID, task.Notes)
 				}
 			}
-		} else if len(cmdLine.Text) != 0 {
+		} else if cmdLine.Text != "" {
 			// create a new task that is already active (started)
 			cmdLine.MergeContext(context)
 			task := dstask.Task{
