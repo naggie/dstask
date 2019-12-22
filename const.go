@@ -5,12 +5,12 @@ import "os"
 var (
 	GIT_REPO = "~/.dstask/"
 	// space delimited keyword file for compgen
-	CONTEXT_FILE = "~/.cache/dstask/context"
+	STATE_FILE = "~/.config/dstask/state.bin"
 	// for CI testing
 	FAKE_PTY = false
 	// populated by linker flags, see do-release.sh
 	GIT_COMMIT = "Unknown"
-	VERSION = "Unknown"
+	VERSION    = "Unknown"
 	BUILD_DATE = "Unknown"
 )
 
@@ -83,7 +83,7 @@ const (
 	FG_PRIORITY_CRITICAL = 160
 	FG_PRIORITY_HIGH     = 166
 	FG_PRIORITY_NORMAL   = FG_DEFAULT
-	FG_PRIORITY_LOW		 = 245
+	FG_PRIORITY_LOW      = 245
 	FG_NOTE              = 240
 )
 
@@ -149,7 +149,7 @@ var ALL_CMDS = []string{
 	CMD_VERSION,
 }
 
-// Replaces default GIT_REPO and CONTEXT_FILE from env if set
+// Replaces default GIT_REPO and STATE_FILE from env if set
 func LoadConfigFromEnv() {
 	_GIT_REPO := os.Getenv("DSTASK_GIT_REPO")
 
@@ -157,10 +157,10 @@ func LoadConfigFromEnv() {
 		GIT_REPO = _GIT_REPO
 	}
 
-	_CONTEXT_FILE := os.Getenv("DSTASK_CONTEXT_FILE")
+	_STATE_FILE := os.Getenv("DSTASK_STATE_FILE")
 
-	if _CONTEXT_FILE != "" {
-		CONTEXT_FILE = _CONTEXT_FILE
+	if _STATE_FILE != "" {
+		STATE_FILE = _STATE_FILE
 	}
 
 	if os.Getenv("DSTASK_FAKE_PTY") != "" {

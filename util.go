@@ -1,10 +1,8 @@
 package dstask
 
 import (
-	"encoding/gob"
+	"bufio"
 	"fmt"
-	"github.com/gofrs/uuid"
-	"golang.org/x/sys/unix"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -12,7 +10,9 @@ import (
 	"path"
 	"runtime"
 	"strings"
-	"bufio"
+
+	"github.com/gofrs/uuid"
+	"golang.org/x/sys/unix"
 )
 
 func ExitFail(format string, a ...interface{}) {
@@ -33,7 +33,7 @@ func ConfirmOrAbort(format string, a ...interface{}) {
 	if input == "y\n" {
 		return
 	} else {
-		ExitFail("Aborted.");
+		ExitFail("Aborted.")
 	}
 }
 
@@ -87,18 +87,12 @@ func SumInts(vals ...int) int {
 	return total
 }
 
-func MustRunCmd(name string, args ...string) {
+func MustRunCmd(name string, args ...string) error {
 	cmd := exec.Command(name, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Run()
-}
-
-func MustRunGitCmd(args ...string) {
-	root := MustExpandHome(GIT_REPO)
-	args = append([]string{"-C", root}, args...)
-	MustRunCmd("git", args...)
+	return cmd.Run()
 }
 
 func MustEditBytes(data []byte, ext string) []byte {
@@ -139,34 +133,6 @@ func StrSliceContains(haystack []string, needle string) bool {
 	}
 
 	return false
-}
-
-func MustWriteGob(filePath string, object interface{}) {
-	file, err := os.Create(filePath)
-	defer file.Close()
-
-	if err != nil {
-		ExitFail("Failed to open %s for writing: ", filePath)
-	}
-
-	encoder := gob.NewEncoder(file)
-	encoder.Encode(object)
-}
-
-func MustReadGob(filePath string, object interface{}) {
-	file, err := os.Open(filePath)
-	defer file.Close()
-
-	if err != nil {
-		ExitFail("Failed to open %s for reading: ", filePath)
-	}
-
-	decoder := gob.NewDecoder(file)
-	err = decoder.Decode(object)
-
-	if err != nil {
-		ExitFail("Failed to parse gob: %s", filePath)
-	}
 }
 
 func IsValidStateTransition(from string, to string) bool {
