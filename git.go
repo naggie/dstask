@@ -42,3 +42,12 @@ func MustGetRepoPath(directory, file string) string {
 
 	return path.Join(dir, file)
 }
+
+// TODO check git exists within path
+func InitialiseRepo() {
+	gitDotGitLocation := MustExpandHome(path.Join(GIT_REPO, ".git"))
+
+	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
+		ExitFail("Could not find git repository at " + GIT_REPO + ", please clone or create. Try `dstask help` for more information.")
+	}
+}
