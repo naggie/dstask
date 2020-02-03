@@ -47,6 +47,7 @@ GOOS=darwin GOARCH=amd64 go build -mod=vendor -ldflags="$LDFLAGS" cmd/dstask.go
 mv dstask dist/dstask-darwin-amd64
 
 hub release create \
+    --draft \
     -a dist/dstask-linux-arm5#"dstask linux-arm5" \
     -a dist/dstask-linux-amd64#"dstask linux-amd64" \
     -a dist/dstask-darwin-amd64#"dstask darwin-amd64" \
