@@ -179,7 +179,9 @@ func (ts TaskSet) DisplayByWeek() {
 		_, lastWeek = t.Resolved.ISOWeek()
 	}
 
-	table.Render()
+	if table != nil {
+		table.Render()
+	}
 	fmt.Printf("\n%v tasks.\n", len(ts.tasks))
 }
 

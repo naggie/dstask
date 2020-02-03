@@ -237,6 +237,7 @@ import the dstask issues to github.
 * Try to work through tasks from the top of the list. Dstask sorts by priority then creation date -- the most important tasks are at the top.
 * Use `start`/`stop` to mark what you're genuinely working on right now; it makes resuming work faster. Paused tasks will be slightly highlighted, so you won't lose track of them. `show-paused` helps if they start to pile up.
 * Keep a [github-style check list](https://help.github.com/en/articles/about-task-lists) in the markdown note of complex or procedural tasks
+* Failing to get started working? Start with the smallest task
 
 # Database format
 

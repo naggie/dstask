@@ -97,3 +97,6 @@ git -C $DSTASK_GIT_REPO diff-files --quiet
 
 # there should be no untracked files changes
 test -z "$(git -C $DSTASK_GIT_REPO ls-files --others)"
+
+# regression test: nil pointer dereference when showing by-week tables of zero length
+./dstask show-resolved project:doesnotexist
