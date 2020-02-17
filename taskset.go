@@ -7,6 +7,7 @@ import (
 	"path"
 	"sort"
 	"time"
+	"strings"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -121,6 +122,10 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 
 	if old.Status != task.Status && !IsValidStateTransition(old.Status, task.Status) {
 		ExitFail("Invalid state transition: %s -> %s", old.Status, task.Status)
+	}
+
+	if old.Status != task.Status && task.Status == STATUS_RESOLVED  && strings.Contains(task.Notes, "- [ ] ") {
+		ExitFail("Refusing to resolve task with incomplete tasklist")
 	}
 
 	if task.Status == STATUS_RESOLVED {

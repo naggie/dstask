@@ -68,6 +68,10 @@ git -C $UPSTREAM_BARE_REPO init --bare
 ./dstask context none
 ./dstask context
 
+# try to resolve a task with an incomplete tasklist: should fail
+./dstask add a tasklist task -- "- [ ] incomplete task"
+! ./dstask 2 done
+
 # test import
 ./dstask import-tw < etc/taskwarrior-export.json
 ./dstask next

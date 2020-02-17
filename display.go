@@ -182,7 +182,7 @@ func (ts TaskSet) DisplayByWeek() {
 	if table != nil {
 		table.Render()
 	}
-	fmt.Printf("\n%v tasks.\n", len(ts.tasks))
+	fmt.Printf("%v tasks.\n", len(ts.tasks))
 }
 
 func (ts TaskSet) DisplayProjects() {
