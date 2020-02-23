@@ -248,8 +248,7 @@ func main() {
 		dstask.MustRunGitCmd("revert", "--no-gpg-sign", "--no-edit", "HEAD~" + strconv.Itoa(n) + "..")
 
 	case dstask.CMD_SYNC:
-		dstask.MustRunGitCmd("pull", "--no-edit", "--commit", "origin", "master")
-		dstask.MustRunGitCmd("push", "origin", "master")
+		dstask.Sync()
 
 	case dstask.CMD_GIT:
 		dstask.MustRunGitCmd(os.Args[2:]...)

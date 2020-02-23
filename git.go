@@ -51,3 +51,8 @@ func InitialiseRepo() {
 		ExitFail("Could not find git repository at " + GIT_REPO + ", please clone or create. Try `dstask help` for more information.")
 	}
 }
+
+func Sync() {
+	dstask.MustRunGitCmd("pull", "--no-edit", "--commit", "origin", "master")
+	dstask.MustRunGitCmd("push", "origin", "master")
+}
