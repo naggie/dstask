@@ -87,7 +87,7 @@ func SumInts(vals ...int) int {
 	return total
 }
 
-func MustRunCmd(name string, args ...string) error {
+func RunCmd(name string, args ...string) error {
 	cmd := exec.Command(name, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -115,7 +115,7 @@ func MustEditBytes(data []byte, ext string) []byte {
 		ExitFail("Could not write to temporary file to edit")
 	}
 
-	MustRunCmd(editor, tmpfile.Name())
+	RunCmd(editor, tmpfile.Name())
 	data, err = ioutil.ReadFile(tmpfile.Name())
 
 	if err != nil {

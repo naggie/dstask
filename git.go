@@ -9,7 +9,7 @@ import (
 func MustRunGitCmd(args ...string) {
 	root := MustExpandHome(GIT_REPO)
 	args = append([]string{"-C", root}, args...)
-	err := MustRunCmd("git", args...)
+	err := RunCmd("git", args...)
 	if err != nil {
 		ExitFail("Failed to run git cmd.")
 	}
