@@ -26,8 +26,9 @@ type Task struct {
 	// is new or has changed. Need to write to disk.
 	WritePending bool `yaml:"-"`
 
-	// ephemeral, used to address tasks quickly. Non-resolved only.
-	ID int `yaml:",omitempty"`
+	// ephemeral, used to address tasks quickly. Non-resolved only. Populated
+	// from IDCache or on-the-fly.
+	ID int `yaml:"-"`
 
 	// concise representation of task
 	Summary string

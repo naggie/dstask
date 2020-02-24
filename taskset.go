@@ -41,6 +41,58 @@ type Project struct {
 	Priority string
 }
 
+func LoadTaskSetFromDisk(statuses []string) *TaskSet {
+	ts := &TaskSet{
+		tasksByID:   make(map[int]*Task),
+		tasksByUUID: make(map[string]*Task),
+	}
+
+	InitialiseRepo()
+
+	for _, status := range statuses {
+		dir := MustGetRepoPath(status, "")
+
+		files, err := ioutil.ReadDir(dir)
+		if err != nil {
+			ExitFail("Failed to read " + dir)
+		}
+
+		for _, file := range files {
+			filepath := path.Join(dir, file.Name())
+
+			if len(file.Name()) != 40 {
+				// not <uuid4>.yml
+				continue
+			}
+
+			uuid := file.Name()[0:36]
+
+			if !IsValidUUID4String(uuid) {
+				continue
+			}
+
+			t := Task{
+				UUID:   uuid,
+				Status: status,
+			}
+
+			data, err := ioutil.ReadFile(filepath)
+			if err != nil {
+				ExitFail("Failed to read %s", filepath)
+			}
+			err = yaml.Unmarshal(data, &t)
+			if err != nil {
+				// TODO present error to user, specific error message is important
+				ExitFail("Failed to unmarshal %s", filepath)
+			}
+
+			ts.AddTask(t)
+		}
+	}
+
+	return ts
+}
+
 func (ts *TaskSet) SortByPriority() {
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.Before(ts.tasks[j].Created) })
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority < ts.tasks[j].Priority })
@@ -259,56 +311,4 @@ func (ts *TaskSet) SavePendingChanges() {
 			task.SaveToDisk()
 		}
 	}
-}
-
-func LoadTaskSetFromDisk(statuses []string) *TaskSet {
-	ts := &TaskSet{
-		tasksByID:   make(map[int]*Task),
-		tasksByUUID: make(map[string]*Task),
-	}
-
-	InitialiseRepo()
-
-	for _, status := range statuses {
-		dir := MustGetRepoPath(status, "")
-
-		files, err := ioutil.ReadDir(dir)
-		if err != nil {
-			ExitFail("Failed to read " + dir)
-		}
-
-		for _, file := range files {
-			filepath := path.Join(dir, file.Name())
-
-			if len(file.Name()) != 40 {
-				// not <uuid4>.yml
-				continue
-			}
-
-			uuid := file.Name()[0:36]
-
-			if !IsValidUUID4String(uuid) {
-				continue
-			}
-
-			t := Task{
-				UUID:   uuid,
-				Status: status,
-			}
-
-			data, err := ioutil.ReadFile(filepath)
-			if err != nil {
-				ExitFail("Failed to read %s", filepath)
-			}
-			err = yaml.Unmarshal(data, &t)
-			if err != nil {
-				// TODO present error to user, specific error message is important
-				ExitFail("Failed to unmarshal %s", filepath)
-			}
-
-			ts.AddTask(t)
-		}
-	}
-
-	return ts
 }

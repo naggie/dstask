@@ -10,15 +10,22 @@ import (
 	"path/filepath"
 )
 
+// note that fields must be exported for gob marshalling to work.
 type State struct {
 	// context to automatically apply to all queries and new tasks
 	Context CmdLine
+	// Cache of UUID -> ID to ensure that tasks have a persistent ID local to
+	// this machine for their lifetime. This is important to ensure the correct
+	// task is targeted between operations. Historically, each task stored its
+	// preferred ID but this resulted in merge conflicts when 2 machines were
+	// using dstask concurrently on the same repository.
+	IDCache map[int]string
 }
 
 func (state State) Save() {
 	fp := MustExpandHome(STATE_FILE)
 	os.MkdirAll(filepath.Dir(fp), os.ModePerm)
-	MustWriteGob(fp, &state)
+	mustWriteGob(fp, &state)
 }
 
 func LoadState() State {
@@ -28,7 +35,7 @@ func LoadState() State {
 	}
 
 	state := State{}
-	MustReadGob(fp, &state)
+	mustReadGob(fp, &state)
 	return state
 }
 
@@ -48,11 +55,19 @@ func (state *State) SetContext(context CmdLine) {
 	state.Context = context
 }
 
+func (state State) GetIDCache() CmdLine {
+	return state.IDCache
+}
+
+func (state *State) SetIDCache(idCache map[int]string) {
+	state.IDCache = idCache;
+}
+
 func (state *State) ClearContext() {
 	state.SetContext(CmdLine{})
 }
 
-func MustWriteGob(filePath string, object interface{}) {
+func mustWriteGob(filePath string, object interface{}) {
 	file, err := os.Create(filePath)
 	defer file.Close()
 
@@ -68,7 +83,7 @@ func MustWriteGob(filePath string, object interface{}) {
 	}
 }
 
-func MustReadGob(filePath string, object interface{}) {
+func mustReadGob(filePath string, object interface{}) {
 	file, err := os.Open(filePath)
 	defer file.Close()
 
