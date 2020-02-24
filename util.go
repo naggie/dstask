@@ -115,7 +115,11 @@ func MustEditBytes(data []byte, ext string) []byte {
 		ExitFail("Could not write to temporary file to edit")
 	}
 
-	RunCmd(editor, tmpfile.Name())
+	err = RunCmd(editor, tmpfile.Name())
+	if err != nil {
+		ExitFail("Failed to run $EDITOR")
+	}
+
 	data, err = ioutil.ReadFile(tmpfile.Name())
 
 	if err != nil {
