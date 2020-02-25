@@ -21,8 +21,6 @@ type TaskSet struct {
 
 	// critical tasks
 	tasksLoadedCritical int
-
-	idMap map[int]string
 }
 
 type Project struct {
@@ -40,12 +38,18 @@ type Project struct {
 	Priority string
 }
 
-func LoadTasksFromDisk(idMap map[int]string, statuses []string) *TaskSet {
+func LoadTasksFromDisk(statuses []string) *TaskSet {
 	ts := &TaskSet{
 		tasksByID:   make(map[int]*Task),
 		tasksByUUID: make(map[string]*Task),
-		idMap: idMap,
 	}
+
+	// Persistent DB of UUID -> ID to ensure that tasks have a persistent ID
+	// local to this machine for their lifetime. This is important to ensure
+	// the correct task is targeted between operations. Historically, each task
+	// stored its preferred ID but this resulted in merge conflicts when 2
+	// machines were using dstask concurrently on the same repository.
+	//dMap map[int]string
 
 	InitialiseRepo()
 
@@ -195,7 +199,7 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 
 func (ts *TaskSet) Filter(cmdLine CmdLine) {
 	for _, task := range ts.tasks {
-		if task.MatchesFilter(cmdLine) {
+		if !task.MatchesFilter(cmdLine) {
 			task.filtered = true
 		}
 	}
@@ -203,7 +207,7 @@ func (ts *TaskSet) Filter(cmdLine CmdLine) {
 
 func (ts *TaskSet) FilterByStatus(status string) {
 	for _, task := range ts.tasks {
-		if task.Status == status {
+		if task.Status != status {
 			task.filtered = true
 		}
 	}
@@ -211,7 +215,7 @@ func (ts *TaskSet) FilterByStatus(status string) {
 
 func (ts *TaskSet) FilterUnorganised() {
 	for _, task := range ts.tasks {
-		if len(task.Tags) == 0 && task.Project == "" {
+		if len(task.Tags) > 0 || task.Project != "" {
 			task.filtered = true
 		}
 	}
@@ -293,17 +297,7 @@ func (ts *TaskSet) GetProjects() map[string]*Project {
 }
 
 func (ts *TaskSet) NumTotal() int {
-	return len(ts.Tasks)
-}
-
-func (ts *TaskSet) NumMatching() int {
-	matching := 0
-	for _, task := range ts.tasks {
-		if !task.filtered {
-			matching += 1
-		}
-	}
-	return matching
+	return len(ts.tasks)
 }
 
 // save pending changes to disk

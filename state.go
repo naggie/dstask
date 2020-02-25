@@ -14,12 +14,6 @@ import (
 type State struct {
 	// context to automatically apply to all queries and new tasks
 	Context CmdLine
-	// DB of UUID -> ID to ensure that tasks have a persistent ID local to this
-	// machine for their lifetime. This is important to ensure the correct task
-	// is targeted between operations. Historically, each task stored its
-	// preferred ID but this resulted in merge conflicts when 2 machines were
-	// using dstask concurrently on the same repository.
-	IDmap map[int]string
 }
 
 func (state State) Save() {
@@ -53,14 +47,6 @@ func (state *State) SetContext(context CmdLine) {
 	}
 
 	state.Context = context
-}
-
-func (state State) GetIDCache() CmdLine {
-	return state.IDmap
-}
-
-func (state *State) SetIDCache(idCache map[int]string) {
-	state.IDmap = idCache;
 }
 
 func (state *State) ClearContext() {

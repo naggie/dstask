@@ -9,19 +9,20 @@ import (
 
 /// display list of filtered tasks with context and filter
 func (ts *TaskSet) DisplayByNext(truncate bool) {
+	tasks := ts.Tasks()
 	if ts.NumTotal() == 0 {
 		fmt.Println("\033[31mNo tasks found. Showing help.\033[0m")
 		Help("")
-	} else if ts.NumMatching() == 0 {
+	} else if len(tasks) == 0 {
 		ExitFail("No matching tasks in given context or filter.")
-	} else if ts.NumMatching() == 1 {
-		ts.tasks[0].Display()
-		if ts.tasks[0].Notes != "" {
-			fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m\n\n", ts.tasks[0].ID, ts.tasks[0].Notes)
+	} else if len(tasks) == 1 {
+		task := tasks[0]
+		task.Display()
+		if task.Notes != "" {
+			fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m\n\n", task.ID, task.Notes)
 		}
 		return
 	} else {
-		var tasks []*Task
 		w, h := MustGetTermSize()
 
 		maxTasks := h - TERMINAL_HEIGHT_MARGIN // leave room for context message, header and prompt
@@ -30,10 +31,8 @@ func (ts *TaskSet) DisplayByNext(truncate bool) {
 			maxTasks = MIN_TASKS_SHOWN
 		}
 
-		if truncate && maxTasks < len(ts.tasks) {
-			tasks = ts.tasks[:maxTasks]
-		} else {
-			tasks = ts.tasks
+		if truncate && maxTasks < len(tasks) {
+			tasks = tasks[:maxTasks]
 		}
 
 		table := NewTable(
@@ -64,10 +63,10 @@ func (ts *TaskSet) DisplayByNext(truncate bool) {
 
 		table.Render()
 
-		if truncate && maxTasks < len(ts.tasks) {
-			fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(ts.tasks), h)
+		if truncate && maxTasks < len(tasks) {
+			fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(tasks), h)
 		} else {
-			fmt.Printf("\n%v tasks.\n", len(ts.tasks))
+			fmt.Printf("\n%v tasks.\n", len(tasks))
 		}
 	}
 }
@@ -144,8 +143,9 @@ func (ts TaskSet) DisplayByWeek() {
 	w, _ := MustGetTermSize()
 	var table *Table
 	var lastWeek int
+	tasks := ts.Tasks()
 
-	for _, t := range ts.tasks {
+	for _, t := range tasks {
 		_, week := t.Resolved.ISOWeek()
 
 		// guaranteed true for first iteration, ISOweek starts with 1.
@@ -182,7 +182,7 @@ func (ts TaskSet) DisplayByWeek() {
 	if table != nil {
 		table.Render()
 	}
-	fmt.Printf("%v tasks.\n", len(ts.tasks))
+	fmt.Printf("%v tasks.\n", len(tasks))
 }
 
 func (ts TaskSet) DisplayProjects() {
@@ -215,8 +215,9 @@ func (ts TaskSet) DisplayProjects() {
 
 func (ts TaskSet) DisplayCriticalTaskWarning() {
 	var critical int
+	tasks := ts.Tasks()
 
-	for _, t := range ts.tasks {
+	for _, t := range tasks {
 		if t.Priority == PRIORITY_CRITICAL {
 			critical += 1
 		}

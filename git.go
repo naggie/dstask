@@ -53,6 +53,6 @@ func InitialiseRepo() {
 }
 
 func Sync() {
-	dstask.MustRunGitCmd("pull", "--no-edit", "--commit", "origin", "master")
-	dstask.MustRunGitCmd("push", "origin", "master")
+	MustRunGitCmd("pull", "--no-edit", "--commit", "origin", "master")
+	MustRunGitCmd("push", "origin", "master")
 }
