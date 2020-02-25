@@ -43,7 +43,7 @@ type Project struct {
 	Priority string
 }
 
-func LoadTaskSetFromDisk(idMap map[int]string, statuses []string) *TaskSet {
+func LoadTasksFromDisk(idMap map[int]string, statuses []string) *TaskSet {
 	ts := &TaskSet{
 		tasksByID:   make(map[int]*Task),
 		tasksByUUID: make(map[string]*Task),
@@ -89,7 +89,7 @@ func LoadTaskSetFromDisk(idMap map[int]string, statuses []string) *TaskSet {
 				ExitFail("Failed to unmarshal %s", filepath)
 			}
 
-			ts.AddTask(t)
+			ts.LoadTask(t)
 		}
 	}
 
@@ -106,7 +106,7 @@ func (ts *TaskSet) SortByResolved() {
 }
 
 // add a task, but only if it has a new uuid or no uuid. Return annotated task.
-func (ts *TaskSet) AddTask(task Task) Task {
+func (ts *TaskSet) LoadTask(task Task) Task {
 	task.Normalise()
 
 	if task.UUID == "" {

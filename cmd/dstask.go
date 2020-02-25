@@ -27,7 +27,7 @@ func main() {
 		// default command is CMD_NEXT if not specified
 		fallthrough
 	case dstask.CMD_NEXT:
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
 		ts.SortByPriority()
@@ -36,7 +36,7 @@ func main() {
 		ts.DisplayCriticalTaskWarning()
 
 	case dstask.CMD_SHOW_OPEN:
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
 		ts.SortByPriority()
@@ -45,7 +45,7 @@ func main() {
 		ts.DisplayCriticalTaskWarning()
 
 	case dstask.CMD_ADD:
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 
 		if cmdLine.Text != "" {
 			context.PrintContextDescription()
@@ -59,13 +59,13 @@ func main() {
 				Priority:     cmdLine.Priority,
 				Notes:        cmdLine.Note,
 			}
-			task = ts.AddTask(task)
+			task = ts.LoadTask(task)
 			ts.SavePendingChanges()
 			dstask.MustGitCommit("Added %s", task)
 		}
 
 	case dstask.CMD_LOG:
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 
 		if cmdLine.Text != "" {
 			context.PrintContextDescription()
@@ -79,13 +79,13 @@ func main() {
 				Priority:     cmdLine.Priority,
 				Resolved:     time.Now(),
 			}
-			task = ts.AddTask(task)
+			task = ts.LoadTask(task)
 			ts.SavePendingChanges()
 			dstask.MustGitCommit("Logged %s", task)
 		}
 
 	case dstask.CMD_START:
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		if len(cmdLine.IDs) > 0 {
 			// start given tasks by IDs
 			for _, id := range cmdLine.IDs {
@@ -115,13 +115,13 @@ func main() {
 				Priority:     cmdLine.Priority,
 				Notes:        cmdLine.Note,
 			}
-			task = ts.AddTask(task)
+			task = ts.LoadTask(task)
 			ts.SavePendingChanges()
 			dstask.MustGitCommit("Added and started %s", task)
 		}
 
 	case dstask.CMD_STOP:
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
 			task.Status = dstask.STATUS_PAUSED
@@ -136,7 +136,7 @@ func main() {
 	case dstask.CMD_DONE:
 		fallthrough
 	case dstask.CMD_RESOLVE:
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
 			task.Status = dstask.STATUS_RESOLVED
@@ -160,7 +160,7 @@ func main() {
 		}
 
 	case dstask.CMD_MODIFY:
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 
 		if len(cmdLine.IDs) == 0 {
 			ts.Filter(context)
@@ -184,7 +184,7 @@ func main() {
 		}
 
 	case dstask.CMD_EDIT:
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
 
@@ -217,7 +217,7 @@ func main() {
 	case dstask.CMD_NOTES:
 		fallthrough
 	case dstask.CMD_NOTE:
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
 			if cmdLine.Text == "" {
@@ -255,7 +255,7 @@ func main() {
 
 	case dstask.CMD_SHOW_ACTIVE:
 		context.PrintContextDescription()
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
 		ts.FilterByStatus(dstask.STATUS_ACTIVE)
@@ -264,7 +264,7 @@ func main() {
 
 	case dstask.CMD_SHOW_PAUSED:
 		context.PrintContextDescription()
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
 		ts.FilterByStatus(dstask.STATUS_PAUSED)
@@ -272,7 +272,7 @@ func main() {
 		ts.DisplayByNext(true)
 
 	case dstask.CMD_OPEN:
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
 			urls := xurls.Relaxed.FindAllString(task.Summary+" "+task.Notes, -1)
@@ -287,21 +287,21 @@ func main() {
 		}
 
 	case dstask.CMD_IMPORT_TW:
-		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.ALL_STATUSES)
 		ts.ImportFromTaskwarrior()
 		ts.SavePendingChanges()
 		dstask.MustGitCommit("Import from taskwarrior")
 
 	case dstask.CMD_SHOW_PROJECTS:
 		context.PrintContextDescription()
-		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.ALL_STATUSES)
 		cmdLine.MergeContext(context)
 		ts.Filter(context)
 		ts.DisplayProjects()
 
 	case dstask.CMD_SHOW_TAGS:
 		context.PrintContextDescription()
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		cmdLine.MergeContext(context)
 		ts.Filter(context)
 		for tag := range ts.GetTags() {
@@ -309,7 +309,7 @@ func main() {
 		}
 
 	case dstask.CMD_SHOW_RESOLVED:
-		ts := dstask.LoadTaskSetFromDisk(dstask.ALL_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.ALL_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
 		ts.FilterByStatus(dstask.STATUS_RESOLVED)
@@ -318,7 +318,7 @@ func main() {
 		context.PrintContextDescription()
 
 	case dstask.CMD_SHOW_UNORGANISED:
-		ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(cmdLine)
 		ts.FilterUnorganised()
 		ts.DisplayByNext(true)
@@ -383,7 +383,7 @@ func main() {
 			dstask.CMD_SHOW_OPEN,
 			dstask.CMD_SHOW_RESOLVED,
 		}, cmdLine.Cmd) {
-			ts := dstask.LoadTaskSetFromDisk(dstask.NON_RESOLVED_STATUSES)
+			ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 			// limit completions to available context, but not if the user is
 			// trying to change context, context ignore is on, or modify
 			// command is being completed
