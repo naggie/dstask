@@ -215,19 +215,25 @@ func (ts TaskSet) DisplayProjects() {
 
 func (ts TaskSet) DisplayCriticalTaskWarning() {
 	var critical int
-	tasks := ts.Tasks()
+	var totalCritical int
 
-	for _, t := range tasks {
+	for _, t := range ts.Tasks() {
 		if t.Priority == PRIORITY_CRITICAL {
 			critical += 1
 		}
 	}
 
-	if critical < ts.tasksLoadedCritical {
+	for _, t := range ts.AllTasks() {
+		if t.Priority == PRIORITY_CRITICAL {
+			totalCritical += 1
+		}
+	}
+
+	if critical < totalCritical {
 		fmt.Printf(
 			"\033[38;5;%dm%v critical tasks outside this context! Use `dstask -- P0` to see them.\033[0m\n",
 			FG_PRIORITY_CRITICAL,
-			ts.tasksLoadedCritical-critical,
+			totalCritical-critical,
 		)
 	}
 }

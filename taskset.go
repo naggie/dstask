@@ -18,9 +18,6 @@ type TaskSet struct {
 	// indices
 	tasksByID   map[int]*Task
 	tasksByUUID map[string]*Task
-
-	// critical tasks
-	tasksLoadedCritical int
 }
 
 type Project struct {
@@ -149,10 +146,6 @@ func (ts *TaskSet) LoadTask(task Task) Task {
 	ts.tasksByUUID[task.UUID] = &task
 	ts.tasksByID[task.ID] = &task
 
-	if task.Priority == PRIORITY_CRITICAL {
-		ts.tasksLoadedCritical += 1
-	}
-
 	return task
 }
 
@@ -235,6 +228,14 @@ func (ts *TaskSet) Tasks() []Task {
 		if !task.filtered {
 			tasks = append(tasks, *task)
 		}
+	}
+	return tasks
+}
+
+func (ts *TaskSet) AllTasks() []Task {
+	tasks := make([]Task, 0, len(ts.tasks))
+	for _, task := range ts.tasks {
+		tasks = append(tasks, *task)
 	}
 	return tasks
 }
