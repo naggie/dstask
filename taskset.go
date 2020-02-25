@@ -19,9 +19,6 @@ type TaskSet struct {
 	tasksByID   map[int]*Task
 	tasksByUUID map[string]*Task
 
-	// task count before filters
-	tasksLoaded int
-
 	// critical tasks
 	tasksLoadedCritical int
 
@@ -147,7 +144,6 @@ func (ts *TaskSet) LoadTask(task Task) Task {
 	ts.tasks = append(ts.tasks, &task)
 	ts.tasksByUUID[task.UUID] = &task
 	ts.tasksByID[task.ID] = &task
-	ts.tasksLoaded += 1
 
 	if task.Priority == PRIORITY_CRITICAL {
 		ts.tasksLoadedCritical += 1
@@ -200,7 +196,7 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 func (ts *TaskSet) Filter(cmdLine CmdLine) {
 	for _, task := range ts.tasks {
 		if task.MatchesFilter(cmdLine) {
-			task.filtered = true;
+			task.filtered = true
 		}
 	}
 }
@@ -208,7 +204,7 @@ func (ts *TaskSet) Filter(cmdLine CmdLine) {
 func (ts *TaskSet) FilterByStatus(status string) {
 	for _, task := range ts.tasks {
 		if task.Status == status {
-			task.filtered = true;
+			task.filtered = true
 		}
 	}
 }
@@ -216,7 +212,7 @@ func (ts *TaskSet) FilterByStatus(status string) {
 func (ts *TaskSet) FilterUnorganised() {
 	for _, task := range ts.tasks {
 		if len(task.Tags) == 0 && task.Project == "" {
-			task.filtered = true;
+			task.filtered = true
 		}
 	}
 }
@@ -294,6 +290,20 @@ func (ts *TaskSet) GetProjects() map[string]*Project {
 	}
 
 	return projects
+}
+
+func (ts *TaskSet) NumTotal() int {
+	return len(ts.Tasks)
+}
+
+func (ts *TaskSet) NumMatching() int {
+	matching := 0
+	for _, task := range ts.tasks {
+		if !task.filtered {
+			matching += 1
+		}
+	}
+	return matching
 }
 
 // save pending changes to disk

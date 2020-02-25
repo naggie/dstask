@@ -9,12 +9,12 @@ import (
 
 /// display list of filtered tasks with context and filter
 func (ts *TaskSet) DisplayByNext(truncate bool) {
-	if ts.tasksLoaded == 0 {
+	if ts.NumTotal() == 0 {
 		fmt.Println("\033[31mNo tasks found. Showing help.\033[0m")
 		Help("")
-	} else if len(ts.tasks) == 0 {
+	} else if ts.NumMatching() == 0 {
 		ExitFail("No matching tasks in given context or filter.")
-	} else if len(ts.tasks) == 1 {
+	} else if ts.NumMatching() == 1 {
 		ts.tasks[0].Display()
 		if ts.tasks[0].Notes != "" {
 			fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m\n\n", ts.tasks[0].ID, ts.tasks[0].Notes)
