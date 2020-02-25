@@ -24,6 +24,8 @@ type TaskSet struct {
 
 	// critical tasks
 	tasksLoadedCritical int
+
+	idMap map[int]string
 }
 
 type Project struct {
@@ -41,10 +43,11 @@ type Project struct {
 	Priority string
 }
 
-func LoadTaskSetFromDisk(statuses []string) *TaskSet {
+func LoadTaskSetFromDisk(idMap map[int]string, statuses []string) *TaskSet {
 	ts := &TaskSet{
 		tasksByID:   make(map[int]*Task),
 		tasksByUUID: make(map[string]*Task),
+		idMap: idMap,
 	}
 
 	InitialiseRepo()
@@ -116,10 +119,11 @@ func (ts *TaskSet) AddTask(task Task) Task {
 
 	if ts.tasksByUUID[task.UUID] != nil {
 		// load tasks, do not overwrite
+		// TODO ??? (maybe return a nil pointer instead?)
 		return Task{}
 	}
 
-	// check ID is unique if there is one
+	// remove ID if already taken
 	if task.ID > 0 && ts.tasksByID[task.ID] != nil {
 		task.ID = 0
 	}
