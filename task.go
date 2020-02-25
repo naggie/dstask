@@ -48,6 +48,10 @@ type Task struct {
 	Created  time.Time
 	Resolved time.Time
 	Due      time.Time
+
+	// TaskSet uses this to indicate if a given task is excluded by a filter
+	// (context etc)
+	filtered bool
 }
 
 func (task Task) String() string {

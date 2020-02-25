@@ -198,39 +198,27 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 }
 
 func (ts *TaskSet) Filter(cmdLine CmdLine) {
-	var tasks []*Task
-
 	for _, task := range ts.tasks {
 		if task.MatchesFilter(cmdLine) {
-			tasks = append(tasks, task)
+			task.filtered = true;
 		}
 	}
-
-	ts.tasks = tasks
 }
 
 func (ts *TaskSet) FilterByStatus(status string) {
-	var tasks []*Task
-
 	for _, task := range ts.tasks {
 		if task.Status == status {
-			tasks = append(tasks, task)
+			task.filtered = true;
 		}
 	}
-
-	ts.tasks = tasks
 }
 
 func (ts *TaskSet) FilterUnorganised() {
-	var tasks []*Task
-
 	for _, task := range ts.tasks {
 		if len(task.Tags) == 0 && task.Project == "" {
-			tasks = append(tasks, task)
+			task.filtered = true;
 		}
 	}
-
-	ts.tasks = tasks
 }
 
 func (ts *TaskSet) MustGetByID(id int) Task {
@@ -244,7 +232,9 @@ func (ts *TaskSet) MustGetByID(id int) Task {
 func (ts *TaskSet) Tasks() []Task {
 	tasks := make([]Task, 0, len(ts.tasks))
 	for _, task := range ts.tasks {
-		tasks = append(tasks, *task)
+		if !task.filtered {
+			tasks = append(tasks, *task)
+		}
 	}
 	return tasks
 }
