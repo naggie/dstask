@@ -151,8 +151,8 @@ var ALL_CMDS = []string{
 	CMD_VERSION,
 }
 
-// Replaces default GIT_REPO and STATE_FILE from env if set
-func LoadConfigFromEnv() {
+// Replaces default from env, expand ~
+func ParseConfig() {
 	_GIT_REPO := os.Getenv("DSTASK_GIT_REPO")
 
 	if _GIT_REPO != "" {
@@ -170,6 +170,10 @@ func LoadConfigFromEnv() {
 	if _IDS_FILE != "" {
 		IDS_FILE = _IDS_FILE
 	}
+
+	GIT_REPO = MustExpandHome(GIT_REPO)
+	STATE_FILE = MustExpandHome(STATE_FILE)
+	IDS_FILE = MustExpandHome(IDS_FILE)
 
 	if os.Getenv("DSTASK_FAKE_PTY") != "" {
 		FAKE_PTY = true

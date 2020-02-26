@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	dstask.LoadConfigFromEnv()
+	dstask.ParseConfig()
 	state := dstask.LoadState()
 	context := state.GetContext()
 	cmdLine := dstask.ParseCmdLine(os.Args[1:]...)

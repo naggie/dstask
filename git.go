@@ -7,8 +7,7 @@ import (
 )
 
 func MustRunGitCmd(args ...string) {
-	root := MustExpandHome(GIT_REPO)
-	args = append([]string{"-C", root}, args...)
+	args = append([]string{"-C", GIT_REPO}, args...)
 	err := RunCmd("git", args...)
 	if err != nil {
 		ExitFail("Failed to run git cmd.")
@@ -30,8 +29,7 @@ func MustGitCommit(format string, a ...interface{}) {
 
 // leave file as an empty string to return directory
 func MustGetRepoPath(directory, file string) string {
-	root := MustExpandHome(GIT_REPO)
-	dir := path.Join(root, directory)
+	dir := path.Join(GIT_REPO, directory)
 
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		err = os.Mkdir(dir, 0700)
@@ -45,7 +43,7 @@ func MustGetRepoPath(directory, file string) string {
 
 // TODO check git exists within path
 func InitialiseRepo() {
-	gitDotGitLocation := MustExpandHome(path.Join(GIT_REPO, ".git"))
+	gitDotGitLocation := path.Join(GIT_REPO, ".git")
 
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
 		ExitFail("Could not find git repository at " + GIT_REPO + ", please clone or create. Try `dstask help` for more information.")

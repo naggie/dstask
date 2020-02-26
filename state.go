@@ -17,19 +17,17 @@ type State struct {
 }
 
 func (state State) Save() {
-	fp := MustExpandHome(STATE_FILE)
-	os.MkdirAll(filepath.Dir(fp), os.ModePerm)
-	mustWriteGob(fp, &state)
+	os.MkdirAll(filepath.Dir(STATE_FILE), os.ModePerm)
+	mustWriteGob(STATE_FILE, &state)
 }
 
 func LoadState() State {
-	fp := MustExpandHome(STATE_FILE)
-	if _, err := os.Stat(fp); os.IsNotExist(err) {
+	if _, err := os.Stat(STATE_FILE); os.IsNotExist(err) {
 		return State{}
 	}
 
 	state := State{}
-	mustReadGob(fp, &state)
+	mustReadGob(STATE_FILE, &state)
 	return state
 }
 
