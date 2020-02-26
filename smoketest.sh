@@ -44,7 +44,6 @@ git -C $UPSTREAM_BARE_REPO init --bare
 ./dstask -foo
 ./dstask -project:foo
 ./dstask 2 done
-./dstask 1 done
 ./dstask undo
 ./dstask log something
 ./dstask +foo
@@ -53,8 +52,11 @@ git -C $UPSTREAM_BARE_REPO init --bare
 ./dstask next
 ./dstask 1 done
 ./dstask show-resolved
-./dstask show-untagged
 ./dstask show-projects
+
+# -- to remove current context which is +foo
+./dstask add -- unorganised task
+./dstask show-unorganised
 
 # we are in context project:bar, adding with another project should fail
 ./dstask context project:bar
