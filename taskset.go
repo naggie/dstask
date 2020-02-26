@@ -41,14 +41,9 @@ func LoadTasksFromDisk(statuses []string) *TaskSet {
 		tasksByUUID: make(map[string]*Task),
 	}
 
-	// Persistent DB of UUID -> ID to ensure that tasks have a persistent ID
-	// local to this machine for their lifetime. This is important to ensure
-	// the correct task is targeted between operations. Historically, each task
-	// stored its preferred ID but this resulted in merge conflicts when 2
-	// machines were using dstask concurrently on the same repository.
-	//dMap map[int]string
-
 	InitialiseRepo()
+
+	ids := LoadIds()
 
 	for _, status := range statuses {
 		dir := MustGetRepoPath(status, "")
@@ -75,6 +70,7 @@ func LoadTasksFromDisk(statuses []string) *TaskSet {
 			t := Task{
 				UUID:   uuid,
 				Status: status,
+				ID: ids[uuid],
 			}
 
 			data, err := ioutil.ReadFile(filepath)
@@ -305,9 +301,17 @@ func (ts *TaskSet) NumTotal() int {
 // TODO return files that have been added/deleted/modified/renamed so they can
 // be passed to git add for performance, instead of doing git add .
 func (ts *TaskSet) SavePendingChanges() {
+	ids := make(IdsMap, len(ts.Tasks()))
+
 	for _, task := range ts.tasks {
 		if task.WritePending {
 			task.SaveToDisk()
+
+			if task.ID > 0 {
+				ids[task.UUID] = task.ID
+			}
 		}
 	}
+
+	ids.Save()
 }

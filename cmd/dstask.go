@@ -152,7 +152,7 @@ func main() {
 		if len(os.Args) < 3 {
 			fmt.Printf("Current context: %s", context)
 		} else if os.Args[2] == "none" {
-			state.SetContext(CmdLine{})
+			state.SetContext(dstask.CmdLine{})
 			state.Save()
 		} else {
 			state.SetContext(cmdLine)

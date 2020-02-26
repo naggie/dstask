@@ -16,6 +16,13 @@ type State struct {
 	Context CmdLine
 }
 
+// Persistent DB of UUID -> ID to ensure that tasks have a persistent ID
+// local to this machine for their lifetime. This is important to ensure
+// the correct task is targeted between operations. Historically, each task
+// stored its preferred ID but this resulted in merge conflicts when 2
+// machines were using dstask concurrently on the same repository.
+type IdsMap map[string]int
+
 func (state State) Save() {
 	os.MkdirAll(filepath.Dir(STATE_FILE), os.ModePerm)
 	mustWriteGob(STATE_FILE, &state)
@@ -73,4 +80,19 @@ func mustReadGob(filePath string, object interface{}) {
 	if err != nil {
 		ExitFail("Failed to parse state gob: %s, %s", filePath, err)
 	}
+}
+
+func (ids *IdsMap) Save() {
+	os.MkdirAll(filepath.Dir(IDS_FILE), os.ModePerm)
+	mustWriteGob(IDS_FILE, &ids)
+}
+
+func LoadIds() IdsMap {
+	if _, err := os.Stat(IDS_FILE); os.IsNotExist(err) {
+		return make(IdsMap)
+	}
+
+	ids := make(IdsMap, 1000)
+	mustReadGob(IDS_FILE, &ids)
+	return ids
 }
