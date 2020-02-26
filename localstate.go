@@ -31,10 +31,6 @@ func LoadState() State {
 	return state
 }
 
-func (state State) GetContext() CmdLine {
-	return state.Context
-}
-
 func (state *State) SetContext(context CmdLine) {
 	if len(context.IDs) != 0 {
 		ExitFail("Context cannot contain IDs")
@@ -45,10 +41,6 @@ func (state *State) SetContext(context CmdLine) {
 	}
 
 	state.Context = context
-}
-
-func (state *State) ClearContext() {
-	state.SetContext(CmdLine{})
 }
 
 func mustWriteGob(filePath string, object interface{}) {

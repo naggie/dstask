@@ -15,7 +15,7 @@ import (
 func main() {
 	dstask.ParseConfig()
 	state := dstask.LoadState()
-	context := state.GetContext()
+	context := state.Context
 	cmdLine := dstask.ParseCmdLine(os.Args[1:]...)
 
 	if cmdLine.IgnoreContext {
@@ -152,7 +152,7 @@ func main() {
 		if len(os.Args) < 3 {
 			fmt.Printf("Current context: %s", context)
 		} else if os.Args[2] == "none" {
-			state.ClearContext()
+			state.SetContext(CmdLine{})
 			state.Save()
 		} else {
 			state.SetContext(cmdLine)
