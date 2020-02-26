@@ -170,28 +170,26 @@ func mustExpandHome(filepath string) string {
 	}
 }
 
-// Replaces default from env, expand ~
+// Getenv with a default
+func getenv(key string, _default string) string {
+	val := os.Getenv(key)
+
+	if val == "" {
+		return _default
+	} else {
+		return val
+	}
+}
+
+// Replaces _default from env, expand ~
 func ParseConfig() {
-	_GIT_REPO := os.Getenv("DSTASK_GIT_REPO")
-
-	if _GIT_REPO != "" {
-		GIT_REPO = _GIT_REPO
-	}
-
-	_STATE_FILE := os.Getenv("DSTASK_STATE_FILE")
-
-	if _STATE_FILE != "" {
-		STATE_FILE = _STATE_FILE
-	}
-
-	_IDS_FILE := os.Getenv("DSTASK_IDS_FILE")
-
-	if _IDS_FILE != "" {
-		IDS_FILE = _IDS_FILE
-	}
-
+	GIT_REPO = getenv("DSTASK_GIT_REPO", GIT_REPO)
 	GIT_REPO = mustExpandHome(GIT_REPO)
+
+	STATE_FILE = getenv("DSTASK_STATE_FILE", STATE_FILE)
 	STATE_FILE = mustExpandHome(STATE_FILE)
+
+	IDS_FILE = getenv("DSTASK_IDS_FILE", IDS_FILE)
 	IDS_FILE = mustExpandHome(IDS_FILE)
 
 	if os.Getenv("DSTASK_FAKE_PTY") != "" {
