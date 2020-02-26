@@ -11,8 +11,9 @@ set -e
 # isolated db locations (repo2 is used for a sync target)
 export DSTASK_GIT_REPO=$(mktemp -d)
 export DSTASK_STATE_FILE=$(mktemp -u)
-export DSTASK_FAKE_PTY=1
+export DSTASK_IDS_FILE=$(mktemp -u)
 export UPSTREAM_BARE_REPO=$(mktemp -d)
+export DSTASK_FAKE_PTY=1
 
 cleanup() {
     set +x
@@ -20,6 +21,7 @@ cleanup() {
     rm -rf $DSTASK_GIT_REPO
     rm -rf $UPSTREAM_BARE_REPO
     [ -f $DSTASK_STATE_FILE ] && rm $DSTASK_STATE_FILE
+    [ -f $DSTASK_IDS_FILE ] && rm $DSTASK_IDS_FILE
     rm dstask
 }
 

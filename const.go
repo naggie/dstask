@@ -4,8 +4,10 @@ import "os"
 
 var (
 	GIT_REPO = "~/.dstask/"
-	// space delimited keyword file for compgen
 	STATE_FILE = "~/.config/dstask/state.bin"
+	// for locally consistent ID numbers. Separate from state so TaskSet can
+	// guarantee coherent save/load
+	IDS_FILE = "~/.config/dstask/ids.bin"
 	// for CI testing
 	FAKE_PTY = false
 	// populated by linker flags, see do-release.sh
@@ -161,6 +163,12 @@ func LoadConfigFromEnv() {
 
 	if _STATE_FILE != "" {
 		STATE_FILE = _STATE_FILE
+	}
+
+	_IDS_FILE := os.Getenv("DSTASK_IDS_FILE")
+
+	if _IDS_FILE != "" {
+		IDS_FILE = _IDS_FILE
 	}
 
 	if os.Getenv("DSTASK_FAKE_PTY") != "" {
