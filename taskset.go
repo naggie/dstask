@@ -313,5 +313,12 @@ func (ts *TaskSet) SavePendingChanges() {
 		}
 	}
 
+	// saving generally only happens when tasks are mutated. This is OK, and
+	// important. Generally the ID assignment process is deterministic such
+	// that a DB is not required. However, if tasks are listed and then tasks
+	// are closed or created, it can have a ripple effect such that it is
+	// possible for every ID to change. Therefore, tasks must retain their IDs
+	// locally. This replaced a system where tasks recorded their IDs, which
+	// can create merge conflicts in some (uncommon) cases.
 	ids.Save()
 }
