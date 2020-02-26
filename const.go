@@ -1,9 +1,16 @@
 package dstask
 
-import "os"
+import (
+	"os"
+	"os/user"
+	"path"
+	"strings"
+)
+
+// Const? Yes, well, effectively.
 
 var (
-	GIT_REPO = "~/.dstask/"
+	GIT_REPO   = "~/.dstask/"
 	STATE_FILE = "~/.config/dstask/state.bin"
 	// for locally consistent ID numbers. Separate from state so TaskSet can
 	// guarantee coherent save/load
@@ -151,6 +158,18 @@ var ALL_CMDS = []string{
 	CMD_VERSION,
 }
 
+func mustExpandHome(filepath string) string {
+	if strings.HasPrefix(filepath, "~/") {
+		usr, err := user.Current()
+		if err != nil {
+			panic(err)
+		}
+		return path.Join(usr.HomeDir, filepath[2:])
+	} else {
+		return filepath
+	}
+}
+
 // Replaces default from env, expand ~
 func ParseConfig() {
 	_GIT_REPO := os.Getenv("DSTASK_GIT_REPO")
@@ -171,9 +190,9 @@ func ParseConfig() {
 		IDS_FILE = _IDS_FILE
 	}
 
-	GIT_REPO = MustExpandHome(GIT_REPO)
-	STATE_FILE = MustExpandHome(STATE_FILE)
-	IDS_FILE = MustExpandHome(IDS_FILE)
+	GIT_REPO = mustExpandHome(GIT_REPO)
+	STATE_FILE = mustExpandHome(STATE_FILE)
+	IDS_FILE = mustExpandHome(IDS_FILE)
 
 	if os.Getenv("DSTASK_FAKE_PTY") != "" {
 		FAKE_PTY = true

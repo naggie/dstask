@@ -6,10 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"os/user"
-	"path"
 	"runtime"
-	"strings"
 
 	"github.com/gofrs/uuid"
 	"golang.org/x/sys/unix"
@@ -34,18 +31,6 @@ func ConfirmOrAbort(format string, a ...interface{}) {
 		return
 	} else {
 		ExitFail("Aborted.")
-	}
-}
-
-func MustExpandHome(filepath string) string {
-	if strings.HasPrefix(filepath, "~/") {
-		usr, err := user.Current()
-		if err != nil {
-			panic(err)
-		}
-		return path.Join(usr.HomeDir, filepath[2:])
-	} else {
-		return filepath
 	}
 }
 
