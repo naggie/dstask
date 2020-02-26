@@ -306,10 +306,10 @@ func (ts *TaskSet) SavePendingChanges() {
 	for _, task := range ts.tasks {
 		if task.WritePending {
 			task.SaveToDisk()
+		}
 
-			if task.ID > 0 {
-				ids[task.UUID] = task.ID
-			}
+		if task.ID > 0 {
+			ids[task.UUID] = task.ID
 		}
 	}
 
