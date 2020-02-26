@@ -22,6 +22,7 @@ Features:
  * `open` command -- **open URLs found in specified task** in the browser
  * `note` command -- edit a **full markdown note** for each task. Checklists are useful here.
  * zsh/bash completion for speed
+ * A single statically-linked binary
 
 Non-features:
 
