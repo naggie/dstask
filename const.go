@@ -7,14 +7,12 @@ import (
 	"strings"
 )
 
-// Const? Yes, well, effectively.
-
 var (
 	GIT_REPO   = "~/.dstask/"
-	STATE_FILE = "~/.config/dstask/state.bin"
+	STATE_FILE = ""
 	// for locally consistent ID numbers. Separate from state so TaskSet can
 	// guarantee coherent save/load
-	IDS_FILE = "~/.config/dstask/ids.bin"
+	IDS_FILE = ""
 	// for CI testing
 	FAKE_PTY = false
 	// populated by linker flags, see do-release.sh
@@ -186,11 +184,10 @@ func ParseConfig() {
 	GIT_REPO = getenv("DSTASK_GIT_REPO", GIT_REPO)
 	GIT_REPO = mustExpandHome(GIT_REPO)
 
-	STATE_FILE = getenv("DSTASK_STATE_FILE", STATE_FILE)
-	STATE_FILE = mustExpandHome(STATE_FILE)
-
-	IDS_FILE = getenv("DSTASK_IDS_FILE", IDS_FILE)
-	IDS_FILE = mustExpandHome(IDS_FILE)
+	// might seem controversial, but this is a place coherent with the
+	// repository and not tracked by git
+	STATE_FILE = path.Join(GIT_REPO, ".git", "dstask", "state.bin")
+	IDS_FILE = path.Join(GIT_REPO, ".git", "dstask", "ids.bin")
 
 	if os.Getenv("DSTASK_FAKE_PTY") != "" {
 		FAKE_PTY = true
