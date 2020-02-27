@@ -255,6 +255,10 @@ The ID presented to the user is simply a sequential ID. IDs are re-used when
 tasks are resolved; tasks store their preferred ID for consistency across
 different systems.
 
+# Database location
+The default database location is `~/.dstask/`, but can be configured by the
+environment variable `DSTASK_GIT_REPO`.
+
 # Alternatives
 
 Alternatives listed must be capable of running in the terminal.
