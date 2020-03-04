@@ -239,7 +239,7 @@ func (ts *TaskSet) AllTasks() []Task {
 func (ts *TaskSet) GetTags() map[string]bool {
 	tagset := make(map[string]bool)
 
-	for _, task := range ts.tasks {
+	for _, task := range ts.Tasks() {
 		for _, tag := range task.Tags {
 			tagset[tag] = true
 		}
@@ -251,7 +251,7 @@ func (ts *TaskSet) GetTags() map[string]bool {
 func (ts *TaskSet) GetProjects() map[string]*Project {
 	projects := make(map[string]*Project)
 
-	for _, task := range ts.tasks {
+	for _, task := range ts.Tasks() {
 		name := task.Project
 
 		if name == "" {
