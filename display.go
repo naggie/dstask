@@ -10,6 +10,7 @@ import (
 /// display list of filtered tasks with context and filter
 func (ts *TaskSet) DisplayByNext(truncate bool) {
 	tasks := ts.Tasks()
+	total := len(tasks)
 	if ts.NumTotal() == 0 {
 		fmt.Println("\033[31mNo tasks found. Showing help.\033[0m")
 		Help("")
@@ -63,10 +64,10 @@ func (ts *TaskSet) DisplayByNext(truncate bool) {
 
 		table.Render()
 
-		if truncate && maxTasks < len(tasks) {
-			fmt.Printf("\n%v tasks, truncated to %v lines.\n", len(tasks), h)
+		if truncate && maxTasks < total {
+			fmt.Printf("\n%v tasks, truncated to %v lines.\n", total, h)
 		} else {
-			fmt.Printf("\n%v tasks.\n", len(tasks))
+			fmt.Printf("\n%v tasks.\n", total)
 		}
 	}
 }
