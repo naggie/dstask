@@ -6,9 +6,13 @@ import (
 	"path"
 )
 
-func MustRunGitCmd(args ...string) {
+func RunGitCmd(args ...string) error {
 	args = append([]string{"-C", GIT_REPO}, args...)
-	err := RunCmd("git", args...)
+	return RunCmd("git", args...)
+}
+
+func MustRunGitCmd(args ...string) {
+	err := RunGitCmd(args...)
 	if err != nil {
 		ExitFail("Failed to run git cmd.")
 	}
@@ -23,6 +27,13 @@ func MustGitCommit(format string, a ...interface{}) {
 	fmt.Printf("\n%s\n", msg)
 	fmt.Printf("\033[38;5;245m")
 	MustRunGitCmd("add", ".")
+
+	// check for changes -- returns exit status 1 on change
+	if RunGitCmd("diff-index", "--quiet", "HEAD", "--") == nil {
+		fmt.Println("No changes detected")
+		return
+	}
+
 	MustRunGitCmd("commit", "--no-gpg-sign", "-m", msg)
 	fmt.Printf("\033[0m")
 }
