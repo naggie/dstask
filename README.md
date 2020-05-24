@@ -266,6 +266,7 @@ Alternatives listed must be capable of running in the terminal.
 
 * [Taskwarrior](https://taskwarrior.org/) -- the closest analogue
 * [Taskbook](https://github.com/klaussinani/taskbook) -- board metaphor, note support
+* [todo.txt-cli](https://github.com/todotxt/todo.txt-cli)
 
 
 # FAQ
