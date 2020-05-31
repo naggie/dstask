@@ -70,6 +70,11 @@ Requirements:
 1. Set up an alias in your `.bashrc`: `alias task=dstask` or `alias t=dstask` to make task management slightly faster.
 1. Create or clone a ~/.dstask git repository for the data, if you haven't already: `mkdir ~/.dstask && git -C ~/.dstask init`.
 
+
+There is also an unofficial
+[Nix](https://github.com/NixOS/nixpkgs/pull/87383#issuecomment-636523231)
+and [Arch AUR](https://aur.archlinux.org/packages/dstask/) package!
+
 # Moving from Taskwarrior
 
 Before installing dstask, you may want to export your taskwarrior database:
