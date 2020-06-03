@@ -72,7 +72,7 @@ Requirements:
 
 
 There is also an unofficial
-[Nix](https://github.com/NixOS/nixpkgs/pull/87383#issuecomment-636523231)
+[Nix](https://nixos.org/nixos/packages.html?attr=dstask&channel=nixpkgs-unstable&query=dstask)
 and [Arch AUR](https://aur.archlinux.org/packages/dstask/) package!
 
 # Moving from Taskwarrior
