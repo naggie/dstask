@@ -285,3 +285,17 @@ repository encrypted, you may consider
 [git-crypt](https://github.com/AGWA/git-crypt). Note that dstask has not been
 tested with these tools, nor can any claims be made about the security of the
 tools themselves.
+
+> Is it possible to modify more than one task at once with a filter?
+
+Yes.
+
+1. Set a context:
+2. Run a modify command without and ID
+3. Hit y to confirm to modify all tasks in context
+
+This means it's natural to review the tasks that would be modified before
+modifying by listing all tasks in the current context first, instead of
+potentially operating blindly by matching tags or numbers.
+
+You can also specify multiple task numbers at one time, as with any other command.
