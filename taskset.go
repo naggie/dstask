@@ -83,6 +83,10 @@ func LoadTasksFromDisk(statuses []string) *TaskSet {
 				ExitFail("Failed to unmarshal %s", filepath)
 			}
 
+			// trust subdirectory over status in yaml file (recently added to
+			// allow status change with task edit)
+			t.Status = status
+
 			ts.LoadTask(t)
 		}
 	}

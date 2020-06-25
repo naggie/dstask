@@ -22,7 +22,7 @@ type SubTask struct {
 type Task struct {
 	// not stored in file -- rather filename and directory
 	UUID   string `yaml:"-"`
-	Status string `yaml:"-"`
+	Status string `yaml:",omitempty"`
 	// is new or has changed. Need to write to disk.
 	WritePending bool `yaml:"-"`
 
@@ -227,8 +227,14 @@ func (t *Task) SaveToDisk() {
 	// save should be idempotent
 	t.WritePending = false
 
+	// make a shallow copy of the task to omit the status which is stored as
+	// by the directory name (no redundant data, this way). The status is not
+	// always omitted in the struct such that it can be present and changed
+	// with `dstask edit`
+	taskCp := *t
+	taskCp.Status = ""
 	filepath := MustGetRepoPath(t.Status, t.UUID+".yml")
-	d, err := yaml.Marshal(&t)
+	d, err := yaml.Marshal(&taskCp)
 	if err != nil {
 		// TODO present error to user, specific error message is important
 		ExitFail("Failed to marshal task %s", t)
