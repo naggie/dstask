@@ -8,11 +8,8 @@ A personal task tracker designed to help you focus. It is similar to
 [taskwarrior](https://taskwarrior.org/) but uses git to synchronise instead of
 a proprietary protocol.
 
-Dstask is currently in beta -- the interface, data format and commands may
-change before version 1.0. That said, it's unlikely that there will be a
-breaking change as things are nearly finalised.
-
-It's mature enough for daily use. I use dstask dozens of times a day, synchronised across 4 computers.
+Dstask is mature enough for daily use. I use dstask dozens of times a day,
+synchronised across 4 computers.
 
 Features:
 
