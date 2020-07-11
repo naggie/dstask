@@ -184,3 +184,10 @@ func IsTTY() bool {
 	_, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
 	return err == nil || FAKE_PTY
 }
+
+func WriteStdout(data []byte) error {
+	if _, err := os.Stdout.Write(data); err != nil {
+		return err
+	}
+	return nil
+}

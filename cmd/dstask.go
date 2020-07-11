@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/mvdan/xurls"
@@ -214,25 +214,32 @@ func main() {
 			dstask.MustGitCommit("Edited %s", task)
 		}
 
-	case dstask.CMD_NOTES:
-		fallthrough
-	case dstask.CMD_NOTE:
+	case dstask.CMD_NOTE, dstask.CMD_NOTES:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
+
+		// If stdout is not a TTY, we simply write markdown notes to stdout
+		openEditor := dstask.IsTTY()
+
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
-			if cmdLine.Text == "" {
-				task.Notes = string(dstask.MustEditBytes([]byte(task.Notes), "md"))
-			} else {
-				if task.Notes == "" {
-					task.Notes = cmdLine.Text
+			if openEditor {
+				if cmdLine.Text == "" {
+					task.Notes = string(dstask.MustEditBytes([]byte(task.Notes), "md"))
 				} else {
-					task.Notes += "\n" + cmdLine.Text
+					if task.Notes == "" {
+						task.Notes = cmdLine.Text
+					} else {
+						task.Notes += "\n" + cmdLine.Text
+					}
+				}
+				ts.MustUpdateTask(task)
+				ts.SavePendingChanges()
+				dstask.MustGitCommit("Edit note %s", task)
+			} else {
+				if err := dstask.WriteStdout([]byte(task.Notes)); err != nil {
+					dstask.ExitFail("Could not write to stdout: %v", err)
 				}
 			}
-
-			ts.MustUpdateTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Edit note %s", task)
 		}
 
 	case dstask.CMD_UNDO:
@@ -245,7 +252,7 @@ func main() {
 			}
 		}
 
-		dstask.MustRunGitCmd("revert", "--no-gpg-sign", "--no-edit", "HEAD~" + strconv.Itoa(n) + "..")
+		dstask.MustRunGitCmd("revert", "--no-gpg-sign", "--no-edit", "HEAD~"+strconv.Itoa(n)+"..")
 
 	case dstask.CMD_SYNC:
 		dstask.Sync()
@@ -336,7 +343,7 @@ func main() {
 			dstask.VERSION,
 			dstask.GIT_COMMIT,
 			dstask.BUILD_DATE,
-		);
+		)
 
 	case dstask.CMD_COMPLETIONS:
 		// given the entire user's command line arguments as the arguments for
