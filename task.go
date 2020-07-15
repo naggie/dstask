@@ -30,6 +30,9 @@ type Task struct {
 	// from IDCache or on-the-fly.
 	ID int `yaml:"-"`
 
+	// Deleted, if true, marks this task for deletion
+	Deleted bool `yaml:"-"`
+
 	// concise representation of task
 	Summary string
 	// more detail, or information to remember to complete the task
