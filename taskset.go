@@ -70,7 +70,7 @@ func LoadTasksFromDisk(statuses []string) *TaskSet {
 			t := Task{
 				UUID:   uuid,
 				Status: status,
-				ID: ids[uuid],
+				ID:     ids[uuid],
 			}
 
 			data, err := ioutil.ReadFile(filepath)
