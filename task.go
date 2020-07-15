@@ -137,6 +137,8 @@ func (task *Task) MatchesFilter(cmdLine CmdLine) bool {
 	return true
 }
 
+// Normalise mutates and sorts some of a task objects fields into a consistent
+// format. This should make git diffs more useful.
 func (task *Task) Normalise() {
 	task.Project = strings.ToLower(task.Project)
 
