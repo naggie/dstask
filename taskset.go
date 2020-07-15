@@ -172,6 +172,7 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 		ExitFail("Invalid state transition: %s -> %s", old.Status, task.Status)
 	}
 
+	// TODO: make this string check a more inclusive regular expression, e.g. `- []`
 	if old.Status != task.Status && task.Status == STATUS_RESOLVED && strings.Contains(task.Notes, "- [ ] ") {
 		ExitFail("Refusing to resolve task with incomplete tasklist")
 	}
