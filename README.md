@@ -103,6 +103,7 @@ Available commands:
 
 next              : Show most important tasks (priority, creation date -- truncated and default)
 add               : Add a task
+remove            : Remove a task
 log               : Log a task (already resolved)
 start             : Change task status to active
 note              : Append to or edit note for a task
