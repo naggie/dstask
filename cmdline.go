@@ -101,7 +101,12 @@ func ParseCmdLine(args ...string) CmdLine {
 
 		IDsExhausted = true
 
-		if strings.HasPrefix(lcItem, "project:") {
+		if item == IGNORE_CONTEXT_KEYWORD {
+			// must be checked before negated tags, as -- is otherwise a valid tag
+			ignoreContext = true
+		} else if item == NOTE_MODE_KEYWORD {
+			notesModeActivated = true
+		} else if strings.HasPrefix(lcItem, "project:") {
 			project = lcItem[8:]
 		} else if strings.HasPrefix(lcItem, "+project:") {
 			project = lcItem[9:]
@@ -111,16 +116,12 @@ func ParseCmdLine(args ...string) CmdLine {
 			if s, err := strconv.ParseInt(lcItem[9:], 10, 64); err == nil {
 				template = int(s)
 			}
-		} else if len(item) > 2 && lcItem[0:1] == "+" {
+		} else if len(item) > 1 && lcItem[0:1] == "+" {
 			tags = append(tags, lcItem[1:])
-		} else if len(item) > 2 && lcItem[0:1] == "-" {
+		} else if len(item) > 1 && lcItem[0:1] == "-" {
 			antiTags = append(antiTags, lcItem[1:])
 		} else if IsValidPriority(item) {
 			priority = item
-		} else if item == IGNORE_CONTEXT_KEYWORD {
-			ignoreContext = true
-		} else if item == NOTE_MODE_KEYWORD {
-			notesModeActivated = true
 		} else if notesModeActivated {
 			notes = append(notes, item)
 		} else {
