@@ -235,7 +235,7 @@ func (t *Task) SaveToDisk() {
 	filepath := MustGetRepoPath(t.Status, t.UUID+".yml")
 
 	if t.Deleted {
-		// Task is marked deleted. Delete from it's current status directory.
+		// Task is marked deleted. Delete from its current status directory.
 		if err := os.Remove(filepath); err != nil {
 			ExitFail("Could not remove task %s: %v", filepath, err)
 		}
