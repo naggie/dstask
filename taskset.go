@@ -131,7 +131,6 @@ func (ts *TaskSet) LoadTask(task Task) Task {
 		for id := 1; id <= MAX_TASKS_OPEN; id++ {
 			if ts.tasksByID[id] == nil {
 				task.ID = id
-				task.WritePending = true
 				break
 			}
 		}
