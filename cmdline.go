@@ -53,7 +53,7 @@ func (cmdLine CmdLine) String() string {
 		args = append(args, cmdLine.Priority)
 	}
 
-	if cmdLine.Template != 0 {
+	if cmdLine.Template > 0 {
 		args = append(args, "template:"+string(cmdLine.Template))
 	}
 

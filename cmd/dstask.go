@@ -47,7 +47,7 @@ func main() {
 	case dstask.CMD_ADD:
 		ts := dstask.LoadTasksFromDisk(append(dstask.NON_RESOLVED_STATUSES, dstask.STATUS_TEMPLATES))
 
-		if cmdLine.Template != 0 {
+		if cmdLine.Template > 0 {
 			tt := ts.MustGetByID(cmdLine.Template)
 			context.PrintContextDescription()
 			cmdLine.MergeContext(context)
