@@ -45,9 +45,29 @@ func main() {
 		ts.DisplayCriticalTaskWarning()
 
 	case dstask.CMD_ADD:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts := dstask.LoadTasksFromDisk(append(dstask.NON_RESOLVED_STATUSES, dstask.STATUS_TEMPLATES))
 
-		if cmdLine.Text != "" {
+		if cmdLine.Template != 0 {
+			tt := ts.MustGetByID(cmdLine.Template)
+			context.PrintContextDescription()
+			cmdLine.MergeContext(context)
+			// create task from template task tt
+			task := dstask.Task{
+				WritePending: true,
+				Status:       dstask.STATUS_PENDING,
+				Summary:      tt.Summary,
+				Tags:         tt.Tags,
+				Project:      tt.Project,
+				Priority:     tt.Priority,
+				Notes:        tt.Notes,
+			}
+			// Modify the task with any tags/projects/antiProjects/priorities in cmdLine
+			task.Modify(cmdLine)
+
+			task = ts.LoadTask(task)
+			ts.SavePendingChanges()
+			dstask.MustGitCommit("Added %s", task)
+		} else if cmdLine.Text != "" {
 			context.PrintContextDescription()
 			cmdLine.MergeContext(context)
 			task := dstask.Task{
@@ -62,6 +82,35 @@ func main() {
 			task = ts.LoadTask(task)
 			ts.SavePendingChanges()
 			dstask.MustGitCommit("Added %s", task)
+		}
+
+	case dstask.CMD_TEMPLATE:
+		ts := dstask.LoadTasksFromDisk(append(dstask.NON_RESOLVED_STATUSES, dstask.STATUS_TEMPLATES))
+
+		if len(cmdLine.IDs) > 0 {
+			for _, id := range cmdLine.IDs {
+				task := ts.MustGetByID(id)
+				task.Status = dstask.STATUS_TEMPLATES
+
+				ts.MustUpdateTask(task)
+				ts.SavePendingChanges()
+				dstask.MustGitCommit("Changed %s to Template", task)
+			}
+		} else if cmdLine.Text != "" {
+			context.PrintContextDescription()
+			cmdLine.MergeContext(context)
+			task := dstask.Task{
+				WritePending: true,
+				Status:       dstask.STATUS_TEMPLATES,
+				Summary:      cmdLine.Text,
+				Tags:         cmdLine.Tags,
+				Project:      cmdLine.Project,
+				Priority:     cmdLine.Priority,
+				Notes:        cmdLine.Note,
+			}
+			task = ts.LoadTask(task)
+			ts.SavePendingChanges()
+			dstask.MustGitCommit("Created Template %s", task)
 		}
 
 	case dstask.CMD_LOG:
@@ -314,6 +363,14 @@ func main() {
 		for tag := range ts.GetTags() {
 			fmt.Println(tag)
 		}
+
+	case dstask.CMD_SHOW_TEMPLATES:
+		ts := dstask.LoadTasksFromDisk(dstask.TEMPLATES)
+		ts.Filter(context)
+		ts.Filter(cmdLine)
+		ts.SortByPriority()
+		ts.DisplayByNext(false)
+		context.PrintContextDescription()
 
 	case dstask.CMD_SHOW_RESOLVED:
 		ts := dstask.LoadTasksFromDisk(dstask.ALL_STATUSES)
