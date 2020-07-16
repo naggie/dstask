@@ -393,6 +393,7 @@ func main() {
 			"",
 			dstask.CMD_NEXT,
 			dstask.CMD_ADD,
+			dstask.CMD_REMOVE,
 			dstask.CMD_LOG,
 			dstask.CMD_START,
 			dstask.CMD_STOP,

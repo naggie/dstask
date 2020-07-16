@@ -185,7 +185,6 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 	}
 
 	task.WritePending = true
-
 	// existing pointer must point to address of new task copied
 	*ts.tasksByUUID[task.UUID] = task
 }
