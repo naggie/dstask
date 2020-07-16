@@ -5,7 +5,6 @@ package dstask
 import (
 	"io/ioutil"
 	"path"
-	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -185,9 +184,8 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 		task.Resolved = time.Now()
 	}
 
-	if !task.Deleted {
-		task.WritePending = true
-	}
+	task.WritePending = true
+
 	// existing pointer must point to address of new task copied
 	*ts.tasksByUUID[task.UUID] = task
 }
@@ -312,11 +310,6 @@ func (ts *TaskSet) SavePendingChanges() {
 	for _, task := range ts.tasks {
 		if task.WritePending {
 			task.SaveToDisk()
-		}
-
-		if task.Deleted {
-			relativePath := filepath.Join(task.Status, task.UUID+".yml")
-			MustGitRemove(relativePath)
 		}
 
 		if task.ID > 0 {

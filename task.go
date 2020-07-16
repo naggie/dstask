@@ -232,26 +232,34 @@ func (t *Task) SaveToDisk() {
 	// save should be idempotent
 	t.WritePending = false
 
-	// make a shallow copy of the task to omit the status which is stored as
-	// by the directory name (no redundant data, this way). The status is not
-	// always omitted in the struct such that it can be present and changed
-	// with `dstask edit`
-	taskCp := *t
-	taskCp.Status = ""
 	filepath := MustGetRepoPath(t.Status, t.UUID+".yml")
-	d, err := yaml.Marshal(&taskCp)
-	if err != nil {
-		// TODO present error to user, specific error message is important
-		ExitFail("Failed to marshal task %s", t)
+
+	if t.Deleted {
+		// Task is marked deleted. Delete from it's current status directory.
+		if err := os.Remove(filepath); err != nil {
+			ExitFail("Could not remove task %s: %v", filepath, err)
+		}
+
+	} else {
+		// Task is not deleted, and will be written to disk to a directory
+		// that indicates its current status. We make a shallow copy first,
+		// and we set Status to empty string. This shallow copy is serialised
+		// to disk, with the Status field omitted. This avoids redundant data.
+		taskCp := *t
+		taskCp.Status = ""
+		d, err := yaml.Marshal(&taskCp)
+		if err != nil {
+			// TODO present error to user, specific error message is important
+			ExitFail("Failed to marshal task %s", t)
+		}
+
+		err = ioutil.WriteFile(filepath, d, 0600)
+		if err != nil {
+			ExitFail("Failed to write task %s", t)
+		}
 	}
 
-	err = ioutil.WriteFile(filepath, d, 0600)
-	if err != nil {
-		ExitFail("Failed to write task %s", t)
-	}
-
-	// delete from all other locations to make sure there is only one copy
-	// that exists
+	// Delete task from other status directories. Only one copy should exist, at most.
 	for _, st := range ALL_STATUSES {
 		if st == t.Status {
 			continue
@@ -262,7 +270,7 @@ func (t *Task) SaveToDisk() {
 		if _, err := os.Stat(filepath); !os.IsNotExist(err) {
 			err := os.Remove(filepath)
 			if err != nil {
-				ExitFail("Failed to delete " + filepath)
+				ExitFail("Could not remove task %s: %v", filepath, err)
 			}
 		}
 	}

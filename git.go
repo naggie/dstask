@@ -38,11 +38,6 @@ func MustGitCommit(format string, a ...interface{}) {
 	fmt.Printf("\033[0m")
 }
 
-// MustGitRemove runs a "git rm" on the provided file path, relative to GIT_REPO.
-func MustGitRemove(relativePath string) {
-	MustRunGitCmd("rm", relativePath)
-}
-
 // leave file as an empty string to return directory
 func MustGetRepoPath(directory, file string) string {
 	dir := path.Join(GIT_REPO, directory)
