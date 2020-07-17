@@ -30,6 +30,7 @@ func main() {
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
+		ts.FilterOutStatus(dstask.STATUS_TEMPLATES)
 		ts.SortByPriority()
 		context.PrintContextDescription()
 		ts.DisplayByNext(true)
@@ -39,13 +40,14 @@ func main() {
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
+		ts.FilterOutStatus(dstask.STATUS_TEMPLATES)
 		ts.SortByPriority()
 		context.PrintContextDescription()
 		ts.DisplayByNext(false)
 		ts.DisplayCriticalTaskWarning()
 
 	case dstask.CMD_ADD:
-		ts := dstask.LoadTasksFromDisk(append(dstask.NON_RESOLVED_STATUSES, dstask.STATUS_TEMPLATES))
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 
 		if cmdLine.Template > 0 {
 			tt := ts.MustGetByID(cmdLine.Template)
@@ -61,12 +63,20 @@ func main() {
 				Priority:     tt.Priority,
 				Notes:        tt.Notes,
 			}
+			// replace Status with cmdLine.Text if available
+			if cmdLine.Text != "" {
+				task.Status = cmdLine.Text
+			}
 			// Modify the task with any tags/projects/antiProjects/priorities in cmdLine
 			task.Modify(cmdLine)
 
 			task = ts.LoadTask(task)
 			ts.SavePendingChanges()
-			dstask.MustGitCommit("Added %s", task)
+			dstask.MustGitCommit("Added %s from task %d", task, cmdLine.Template)
+			if tt.Status != dstask.STATUS_TEMPLATES {
+				// Insert Text Statement to inform user of real Templates
+				fmt.Print("\nYou've copied an open task!\nTo learn more about creating templates enter 'dstask help template'\n\n")
+			}
 		} else if cmdLine.Text != "" {
 			context.PrintContextDescription()
 			cmdLine.MergeContext(context)
@@ -85,7 +95,7 @@ func main() {
 		}
 
 	case dstask.CMD_TEMPLATE:
-		ts := dstask.LoadTasksFromDisk(append(dstask.NON_RESOLVED_STATUSES, dstask.STATUS_TEMPLATES))
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 
 		if len(cmdLine.IDs) > 0 {
 			for _, id := range cmdLine.IDs {
@@ -365,9 +375,10 @@ func main() {
 		}
 
 	case dstask.CMD_SHOW_TEMPLATES:
-		ts := dstask.LoadTasksFromDisk(dstask.TEMPLATES)
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
+		ts.FilterByStatus(dstask.STATUS_TEMPLATES)
 		ts.SortByPriority()
 		ts.DisplayByNext(false)
 		context.PrintContextDescription()
@@ -446,6 +457,7 @@ func main() {
 			dstask.CMD_SHOW_PAUSED,
 			dstask.CMD_SHOW_OPEN,
 			dstask.CMD_SHOW_RESOLVED,
+			dstask.CMD_SHOW_TEMPLATES,
 		}, cmdLine.Cmd) {
 			ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 			// limit completions to available context, but not if the user is
