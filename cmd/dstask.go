@@ -50,29 +50,34 @@ func main() {
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 
 		if cmdLine.Template > 0 {
+			var taskSummary string
 			tt := ts.MustGetByID(cmdLine.Template)
 			context.PrintContextDescription()
 			cmdLine.MergeContext(context)
+
+			if cmdLine.Text != "" {
+				taskSummary = cmdLine.Text
+			} else {
+				taskSummary = tt.Summary
+			}
+
 			// create task from template task tt
 			task := dstask.Task{
 				WritePending: true,
 				Status:       dstask.STATUS_PENDING,
-				Summary:      tt.Summary,
+				Summary:      taskSummary,
 				Tags:         tt.Tags,
 				Project:      tt.Project,
 				Priority:     tt.Priority,
 				Notes:        tt.Notes,
 			}
-			// replace Status with cmdLine.Text if available
-			if cmdLine.Text != "" {
-				task.Status = cmdLine.Text
-			}
+
 			// Modify the task with any tags/projects/antiProjects/priorities in cmdLine
 			task.Modify(cmdLine)
 
 			task = ts.LoadTask(task)
 			ts.SavePendingChanges()
-			dstask.MustGitCommit("Added %s from task %d", task, cmdLine.Template)
+			dstask.MustGitCommit("Added %s", task)
 			if tt.Status != dstask.STATUS_TEMPLATES {
 				// Insert Text Statement to inform user of real Templates
 				fmt.Print("\nYou've copied an open task!\nTo learn more about creating templates enter 'dstask help template'\n\n")
