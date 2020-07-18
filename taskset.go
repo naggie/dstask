@@ -205,6 +205,14 @@ func (ts *TaskSet) FilterByStatus(status string) {
 	}
 }
 
+func (ts *TaskSet) FilterOutStatus(status string) {
+	for _, task := range ts.tasks {
+		if task.Status == status {
+			task.filtered = true
+		}
+	}
+}
+
 func (ts *TaskSet) FilterUnorganised() {
 	for _, task := range ts.tasks {
 		if len(task.Tags) > 0 || task.Project != "" {
