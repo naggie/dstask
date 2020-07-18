@@ -98,7 +98,7 @@ func main() {
 			ts.SavePendingChanges()
 			dstask.MustGitCommit("Added %s", task)
 		}
-    
+
 	case dstask.CMD_RM, dstask.CMD_REMOVE:
 		if len(cmdLine.IDs) < 1 {
 			dstask.ExitFail("%s", "missing argument: id")
@@ -114,6 +114,7 @@ func main() {
 			ts.MustUpdateTask(task)
 			ts.SavePendingChanges()
 			dstask.MustGitCommit("Removed: %s", task)
+		}
 
 	case dstask.CMD_TEMPLATE:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
@@ -143,7 +144,7 @@ func main() {
 			ts.SavePendingChanges()
 			dstask.MustGitCommit("Created Template %s", task)
     }
-      
+
 	case dstask.CMD_LOG:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 
@@ -510,7 +511,7 @@ func main() {
 			}
 		}
 
-		if cmdLine.Cmd dstask.CMD_ADD {
+		if cmdLine.Cmd == dstask.CMD_ADD {
 			completions = append(completions, "template:")
 		}
 
