@@ -40,7 +40,7 @@ A copy of an existing task can be made by including "template:<id>". See
 Example: dstask template Fix main web page 500 error +bug P1 project:website
 Example: dstask template 34 project:
 
-If valid task ID is supplied, a coppy of the task is created as a template. If
+If valid task ID is supplied, a copy of the task is created as a template. If
 no ID is given, a new task template is created.
 
 Tags, project and priority can be added anywhere within the task summary.
@@ -48,14 +48,21 @@ Tags, project and priority can be added anywhere within the task summary.
 Add -- to ignore the current context. / can be used when adding tasks to note
 any words after
 
-Template tasks are stored in the "template/" directory and not displayed with
-"show-open" or "show-next" commands. Their intent is to act as a readily
-available task template for commonly used or repeated tasks.
+Template tasks are not displayed with "show-open" or "show-next" commands.
+Their intent is to act as a readily available task template for commonly used
+or repeated tasks.
 
 To create a new task from a template use the command:
 "dstask add template:<id> [task summary] [--]"
 The template task <id> remains unchanged, but a new task is created as a copy
 with any modifications made in the task summary.
+
+Github-style task lists (checklists) are recommended for templates, useful for
+performing procedures. Example:
+
+- [ ] buy bananas
+- [ ] eat bananas
+- [ ] make coffee
 
 `
 	case CMD_RM, CMD_REMOVE:
