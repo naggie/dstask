@@ -32,6 +32,14 @@ Add -- to ignore the current context. / can be used when adding tasks to note
 any words after.
 
 `
+	case CMD_RM, CMD_REMOVE:
+		helpStr = `Usage: dstask remove <id...>
+Example: dstask 15 remove
+
+Remove a task permanently from the underlying git repository. This command
+delegates to "git rm".
+
+`
 
 	case CMD_LOG:
 		helpStr = `Usage: dstask log [task summary] [--]
@@ -182,6 +190,7 @@ Available commands:
 
 next              : Show most important tasks (priority, creation date -- truncated and default)
 add               : Add a task
+remove            : Remove a task 
 log               : Log a task (already resolved)
 start             : Change task status to active
 note              : Append to or edit note for a task

@@ -32,6 +32,8 @@ const (
 
 	CMD_NEXT             = "next"
 	CMD_ADD              = "add"
+	CMD_RM               = "rm"
+	CMD_REMOVE           = "remove"
 	CMD_LOG              = "log"
 	CMD_START            = "start"
 	CMD_NOTE             = "note"
@@ -128,6 +130,8 @@ var NON_RESOLVED_STATUSES = []string{
 var ALL_CMDS = []string{
 	CMD_NEXT,
 	CMD_ADD,
+	CMD_RM,
+	CMD_REMOVE,
 	CMD_LOG,
 	CMD_START,
 	CMD_NOTE,

@@ -64,6 +64,23 @@ func main() {
 			dstask.MustGitCommit("Added %s", task)
 		}
 
+	case dstask.CMD_RM, dstask.CMD_REMOVE:
+		if len(cmdLine.IDs) < 1 {
+			dstask.ExitFail("%s", "missing argument: id")
+		}
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
+		for _, id := range cmdLine.IDs {
+			task := ts.MustGetByID(id)
+
+			// Mark our task for deletion
+			task.Deleted = true
+
+			// MustUpdateTask validates and normalises our task object
+			ts.MustUpdateTask(task)
+			ts.SavePendingChanges()
+			dstask.MustGitCommit("Removed: %s", task)
+		}
+
 	case dstask.CMD_LOG:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 
@@ -376,6 +393,7 @@ func main() {
 			"",
 			dstask.CMD_NEXT,
 			dstask.CMD_ADD,
+			dstask.CMD_REMOVE,
 			dstask.CMD_LOG,
 			dstask.CMD_START,
 			dstask.CMD_STOP,
