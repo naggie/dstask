@@ -222,7 +222,6 @@ Available commands:
 
 next              : Show most important tasks (priority, creation date -- truncated and default)
 add               : Add a task
-remove            : Remove a task
 template          : Add a task template
 log               : Log a task (already resolved)
 start             : Change task status to active
@@ -236,6 +235,7 @@ undo              : Undo last n commits
 sync              : Pull then push to git repository, automatic merge commit.
 open              : Open all URLs found in summary/annotations
 git               : Pass a command to git in the repository. Used for push/pull.
+remove            : Remove a task (use to remove tasks added by mistake)
 show-projects     : List projects with completion status
 show-tags         : List tags in use
 show-active       : Show tasks that have been started
