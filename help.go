@@ -69,8 +69,9 @@ performing procedures. Example:
 		helpStr = `Usage: dstask remove <id...>
 Example: dstask 15 remove
 
-Remove a task permanently from the underlying git repository. This command
-delegates to "git rm".
+Remove a task.
+
+The task is deleted from the filesystem, and the change is committed.
 
 `
 
