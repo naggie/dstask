@@ -510,6 +510,10 @@ func main() {
 			}
 		}
 
+		if cmdLine.Cmd dstask.CMD_ADD {
+			completions = append(completions, "template:")
+		}
+
 		if len(originalArgs) > 0 {
 			prefix = originalArgs[len(originalArgs)-1]
 		}
