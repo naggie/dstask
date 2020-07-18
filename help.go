@@ -58,6 +58,14 @@ The template task <id> remains unchanged, but a new task is created as a copy
 with any modifications made in the task summary.
 
 `
+	case CMD_RM, CMD_REMOVE:
+		helpStr = `Usage: dstask remove <id...>
+Example: dstask 15 remove
+
+Remove a task permanently from the underlying git repository. This command
+delegates to "git rm".
+
+`
 
 	case CMD_LOG:
 		helpStr = `Usage: dstask log [task summary] [--]
@@ -214,6 +222,7 @@ Available commands:
 
 next              : Show most important tasks (priority, creation date -- truncated and default)
 add               : Add a task
+remove            : Remove a task
 template          : Add a task template
 log               : Log a task (already resolved)
 start             : Change task status to active

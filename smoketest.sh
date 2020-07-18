@@ -37,6 +37,8 @@ git -C $UPSTREAM_BARE_REPO init --bare
 ./dstask add test task +foo project:bar
 ./dstask start 1
 ./dstask stop 1
+./dstask remove 1
+./dstask add re-add add test task +foo project:bar
 ./dstask add another task
 ./dstask +foo
 ./dstask -foo

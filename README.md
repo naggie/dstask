@@ -103,6 +103,7 @@ Available commands:
 
 next              : Show most important tasks (priority, creation date -- truncated and default)
 add               : Add a task
+remove            : Remove a task
 template          : Add a task template
 log               : Log a task (already resolved)
 start             : Change task status to active

@@ -62,6 +62,6 @@ func InitialiseRepo() {
 }
 
 func Sync() {
-	MustRunGitCmd("pull", "--no-edit", "--commit", "origin", "master")
+	MustRunGitCmd("pull", "--no-rebase", "--no-edit", "--commit", "origin", "master")
 	MustRunGitCmd("push", "origin", "master")
 }
