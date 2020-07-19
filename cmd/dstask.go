@@ -492,6 +492,15 @@ func main() {
 				ts.Filter(context)
 			}
 
+			// templates
+			if cmdLine.Cmd == dstask.CMD_ADD {
+				for _, task := range ts.Tasks() {
+					if task.Status == dstask.STATUS_TEMPLATE {
+						completions = append(completions, "template:"+strconv.Itoa(task.ID))
+					}
+				}
+			}
+
 			// priorities
 			completions = append(completions, dstask.PRIORITY_CRITICAL)
 			completions = append(completions, dstask.PRIORITY_HIGH)
@@ -508,18 +517,6 @@ func main() {
 			for tag := range ts.GetTags() {
 				completions = append(completions, "+"+tag)
 				completions = append(completions, "-"+tag)
-			}
-		}
-
-		if cmdLine.Cmd == dstask.CMD_ADD {
-			ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-			// If statement below is uncommented, but no taskIDs are added to completions
-			// then tab completion will insert space after "template:"
-			//completions = append(completions, "template:")
-			for _, task := range ts.Tasks() {
-				// if task.Status == dstask.STATUS_TEMPLATE {
-				completions = append(completions, "template:"+strconv.Itoa(task.ID))
-				//}
 			}
 		}
 
