@@ -143,7 +143,7 @@ func main() {
 			task = ts.LoadTask(task)
 			ts.SavePendingChanges()
 			dstask.MustGitCommit("Created Template %s", task)
-    }
+		}
 
 	case dstask.CMD_LOG:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)

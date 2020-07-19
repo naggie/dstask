@@ -33,7 +33,7 @@ const (
 
 	CMD_NEXT             = "next"
 	CMD_ADD              = "add"
-  CMD_RM               = "rm"
+	CMD_RM               = "rm"
 	CMD_REMOVE           = "remove"
 	CMD_TEMPLATE         = "template"
 	CMD_LOG              = "log"
@@ -138,7 +138,7 @@ var ALL_CMDS = []string{
 	CMD_ADD,
 	CMD_RM,
 	CMD_REMOVE,
-  CMD_TEMPLATE,
+	CMD_TEMPLATE,
 	CMD_LOG,
 	CMD_START,
 	CMD_NOTE,
