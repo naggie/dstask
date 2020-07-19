@@ -70,7 +70,7 @@ func LoadTasksFromDisk(statuses []string) *TaskSet {
 			t := Task{
 				UUID:   uuid,
 				Status: status,
-				ID: ids[uuid],
+				ID:     ids[uuid],
 			}
 
 			data, err := ioutil.ReadFile(filepath)
@@ -200,6 +200,14 @@ func (ts *TaskSet) Filter(cmdLine CmdLine) {
 func (ts *TaskSet) FilterByStatus(status string) {
 	for _, task := range ts.tasks {
 		if task.Status != status {
+			task.filtered = true
+		}
+	}
+}
+
+func (ts *TaskSet) FilterOutStatus(status string) {
+	for _, task := range ts.tasks {
+		if task.Status == status {
 			task.filtered = true
 		}
 	}

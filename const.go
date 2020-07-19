@@ -28,10 +28,14 @@ const (
 	STATUS_DELEGATED = "delegated"
 	STATUS_DEFERRED  = "deferred"
 	STATUS_PAUSED    = "paused"
-	STATUS_RECURRING = "recurring" // tentative
+	STATUS_RECURRING = "recurring"
+	STATUS_TEMPLATE  = "template"
 
 	CMD_NEXT             = "next"
 	CMD_ADD              = "add"
+	CMD_RM               = "rm"
+	CMD_REMOVE           = "remove"
+	CMD_TEMPLATE         = "template"
 	CMD_LOG              = "log"
 	CMD_START            = "start"
 	CMD_NOTE             = "note"
@@ -53,6 +57,7 @@ const (
 	CMD_SHOW_PAUSED      = "show-paused"
 	CMD_SHOW_OPEN        = "show-open"
 	CMD_SHOW_RESOLVED    = "show-resolved"
+	CMD_SHOW_TEMPLATES   = "show-templates"
 	CMD_SHOW_UNORGANISED = "show-unorganised"
 	CMD_COMPLETIONS      = "_completions"
 	CMD_IMPORT_TW        = "import-tw"
@@ -103,6 +108,7 @@ var ALL_STATUSES = []string{
 	STATUS_PAUSED,
 	STATUS_RECURRING,
 	STATUS_RESOLVED,
+	STATUS_TEMPLATE,
 }
 
 // incomplete until all statuses are implemented
@@ -113,6 +119,7 @@ var VALID_STATUS_TRANSITIONS = [][]string{
 	[]string{STATUS_PENDING, STATUS_RESOLVED},
 	[]string{STATUS_PAUSED, STATUS_RESOLVED},
 	[]string{STATUS_ACTIVE, STATUS_RESOLVED},
+	[]string{STATUS_PENDING, STATUS_TEMPLATE},
 }
 
 // for most operations, it's not necessary or desirable to load the expensive resolved tasks
@@ -123,11 +130,15 @@ var NON_RESOLVED_STATUSES = []string{
 	STATUS_DEFERRED,
 	STATUS_PAUSED,
 	STATUS_RECURRING,
+	STATUS_TEMPLATE,
 }
 
 var ALL_CMDS = []string{
 	CMD_NEXT,
 	CMD_ADD,
+	CMD_RM,
+	CMD_REMOVE,
+	CMD_TEMPLATE,
 	CMD_LOG,
 	CMD_START,
 	CMD_NOTE,
@@ -149,6 +160,7 @@ var ALL_CMDS = []string{
 	CMD_SHOW_PAUSED,
 	CMD_SHOW_OPEN,
 	CMD_SHOW_RESOLVED,
+	CMD_SHOW_TEMPLATES,
 	CMD_SHOW_UNORGANISED,
 	CMD_IMPORT_TW,
 	CMD_COMPLETIONS,

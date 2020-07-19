@@ -30,6 +30,7 @@ func main() {
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
+		ts.FilterOutStatus(dstask.STATUS_TEMPLATE)
 		ts.SortByPriority()
 		context.PrintContextDescription()
 		ts.DisplayByNext(true)
@@ -39,6 +40,7 @@ func main() {
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
+		ts.FilterOutStatus(dstask.STATUS_TEMPLATE)
 		ts.SortByPriority()
 		context.PrintContextDescription()
 		ts.DisplayByNext(false)
@@ -47,7 +49,40 @@ func main() {
 	case dstask.CMD_ADD:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 
-		if cmdLine.Text != "" {
+		if cmdLine.Template > 0 {
+			var taskSummary string
+			tt := ts.MustGetByID(cmdLine.Template)
+			context.PrintContextDescription()
+			cmdLine.MergeContext(context)
+
+			if cmdLine.Text != "" {
+				taskSummary = cmdLine.Text
+			} else {
+				taskSummary = tt.Summary
+			}
+
+			// create task from template task tt
+			task := dstask.Task{
+				WritePending: true,
+				Status:       dstask.STATUS_PENDING,
+				Summary:      taskSummary,
+				Tags:         tt.Tags,
+				Project:      tt.Project,
+				Priority:     tt.Priority,
+				Notes:        tt.Notes,
+			}
+
+			// Modify the task with any tags/projects/antiProjects/priorities in cmdLine
+			task.Modify(cmdLine)
+
+			task = ts.LoadTask(task)
+			ts.SavePendingChanges()
+			dstask.MustGitCommit("Added %s", task)
+			if tt.Status != dstask.STATUS_TEMPLATE {
+				// Insert Text Statement to inform user of real Templates
+				fmt.Print("\nYou've copied an open task!\nTo learn more about creating templates enter 'dstask help template'\n\n")
+			}
+		} else if cmdLine.Text != "" {
 			context.PrintContextDescription()
 			cmdLine.MergeContext(context)
 			task := dstask.Task{
@@ -62,6 +97,52 @@ func main() {
 			task = ts.LoadTask(task)
 			ts.SavePendingChanges()
 			dstask.MustGitCommit("Added %s", task)
+		}
+
+	case dstask.CMD_RM, dstask.CMD_REMOVE:
+		if len(cmdLine.IDs) < 1 {
+			dstask.ExitFail("%s", "missing argument: id")
+		}
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
+		for _, id := range cmdLine.IDs {
+			task := ts.MustGetByID(id)
+
+			// Mark our task for deletion
+			task.Deleted = true
+
+			// MustUpdateTask validates and normalises our task object
+			ts.MustUpdateTask(task)
+			ts.SavePendingChanges()
+			dstask.MustGitCommit("Removed: %s", task)
+		}
+
+	case dstask.CMD_TEMPLATE:
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
+
+		if len(cmdLine.IDs) > 0 {
+			for _, id := range cmdLine.IDs {
+				task := ts.MustGetByID(id)
+				task.Status = dstask.STATUS_TEMPLATE
+
+				ts.MustUpdateTask(task)
+				ts.SavePendingChanges()
+				dstask.MustGitCommit("Changed %s to Template", task)
+			}
+		} else if cmdLine.Text != "" {
+			context.PrintContextDescription()
+			cmdLine.MergeContext(context)
+			task := dstask.Task{
+				WritePending: true,
+				Status:       dstask.STATUS_TEMPLATE,
+				Summary:      cmdLine.Text,
+				Tags:         cmdLine.Tags,
+				Project:      cmdLine.Project,
+				Priority:     cmdLine.Priority,
+				Notes:        cmdLine.Note,
+			}
+			task = ts.LoadTask(task)
+			ts.SavePendingChanges()
+			dstask.MustGitCommit("Created Template %s", task)
 		}
 
 	case dstask.CMD_LOG:
@@ -315,6 +396,15 @@ func main() {
 			fmt.Println(tag)
 		}
 
+	case dstask.CMD_SHOW_TEMPLATES:
+		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
+		ts.Filter(context)
+		ts.Filter(cmdLine)
+		ts.FilterByStatus(dstask.STATUS_TEMPLATE)
+		ts.SortByPriority()
+		ts.DisplayByNext(false)
+		context.PrintContextDescription()
+
 	case dstask.CMD_SHOW_RESOLVED:
 		ts := dstask.LoadTasksFromDisk(dstask.ALL_STATUSES)
 		ts.Filter(context)
@@ -376,6 +466,7 @@ func main() {
 			"",
 			dstask.CMD_NEXT,
 			dstask.CMD_ADD,
+			dstask.CMD_REMOVE,
 			dstask.CMD_LOG,
 			dstask.CMD_START,
 			dstask.CMD_STOP,
@@ -389,6 +480,7 @@ func main() {
 			dstask.CMD_SHOW_PAUSED,
 			dstask.CMD_SHOW_OPEN,
 			dstask.CMD_SHOW_RESOLVED,
+			dstask.CMD_SHOW_TEMPLATES,
 		}, cmdLine.Cmd) {
 			ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 			// limit completions to available context, but not if the user is
@@ -417,6 +509,10 @@ func main() {
 				completions = append(completions, "+"+tag)
 				completions = append(completions, "-"+tag)
 			}
+		}
+
+		if cmdLine.Cmd == dstask.CMD_ADD {
+			completions = append(completions, "template:")
 		}
 
 		if len(originalArgs) > 0 {

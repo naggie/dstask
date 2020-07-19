@@ -103,6 +103,7 @@ Available commands:
 
 next              : Show most important tasks (priority, creation date -- truncated and default)
 add               : Add a task
+template          : Add a task template
 log               : Log a task (already resolved)
 start             : Change task status to active
 note              : Append to or edit note for a task
@@ -115,12 +116,14 @@ undo              : Undo last action with git revert
 sync              : Pull then push to git repository, automatic merge commit.
 open              : Open all URLs found in summary/annotations
 git               : Pass a command to git in the repository. Used for push/pull.
+remove            : Remove a task (use to remove tasks added by mistake)
 show-projects     : List projects with completion status
 show-tags         : List tags in use
 show-active       : Show tasks that have been started
 show-paused       : Show tasks that have been started then stopped
 show-open         : Show all non-resolved tasks (without truncation)
 show-resolved     : Show resolved tasks
+show-templates    : Show task templates
 show-unorganised  : Show untagged tasks with no projects (global context)
 import-tw         : Import tasks from taskwarrior via stdin
 help              : Get help on any command or show this message
