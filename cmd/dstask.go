@@ -513,6 +513,9 @@ func main() {
 
 		if cmdLine.Cmd == dstask.CMD_ADD {
 			ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
+			// If statement below is uncommented, but no taskIDs are added to completions
+			// then tab completion will insert space after "template:"
+			//completions = append(completions, "template:")
 			for _, task := range ts.Tasks() {
 				// if task.Status == dstask.STATUS_TEMPLATE {
 				completions = append(completions, "template:"+strconv.Itoa(task.ID))
