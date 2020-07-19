@@ -30,7 +30,7 @@ func main() {
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
-		ts.FilterOutStatus(dstask.STATUS_TEMPLATES)
+		ts.FilterOutStatus(dstask.STATUS_TEMPLATE)
 		ts.SortByPriority()
 		context.PrintContextDescription()
 		ts.DisplayByNext(true)
@@ -40,7 +40,7 @@ func main() {
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
-		ts.FilterOutStatus(dstask.STATUS_TEMPLATES)
+		ts.FilterOutStatus(dstask.STATUS_TEMPLATE)
 		ts.SortByPriority()
 		context.PrintContextDescription()
 		ts.DisplayByNext(false)
@@ -78,7 +78,7 @@ func main() {
 			task = ts.LoadTask(task)
 			ts.SavePendingChanges()
 			dstask.MustGitCommit("Added %s", task)
-			if tt.Status != dstask.STATUS_TEMPLATES {
+			if tt.Status != dstask.STATUS_TEMPLATE {
 				// Insert Text Statement to inform user of real Templates
 				fmt.Print("\nYou've copied an open task!\nTo learn more about creating templates enter 'dstask help template'\n\n")
 			}
@@ -122,7 +122,7 @@ func main() {
 		if len(cmdLine.IDs) > 0 {
 			for _, id := range cmdLine.IDs {
 				task := ts.MustGetByID(id)
-				task.Status = dstask.STATUS_TEMPLATES
+				task.Status = dstask.STATUS_TEMPLATE
 
 				ts.MustUpdateTask(task)
 				ts.SavePendingChanges()
@@ -133,7 +133,7 @@ func main() {
 			cmdLine.MergeContext(context)
 			task := dstask.Task{
 				WritePending: true,
-				Status:       dstask.STATUS_TEMPLATES,
+				Status:       dstask.STATUS_TEMPLATE,
 				Summary:      cmdLine.Text,
 				Tags:         cmdLine.Tags,
 				Project:      cmdLine.Project,
@@ -400,7 +400,7 @@ func main() {
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
-		ts.FilterByStatus(dstask.STATUS_TEMPLATES)
+		ts.FilterByStatus(dstask.STATUS_TEMPLATE)
 		ts.SortByPriority()
 		ts.DisplayByNext(false)
 		context.PrintContextDescription()

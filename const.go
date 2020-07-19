@@ -28,8 +28,8 @@ const (
 	STATUS_DELEGATED = "delegated"
 	STATUS_DEFERRED  = "deferred"
 	STATUS_PAUSED    = "paused"
-	STATUS_RECURRING = "recurring" // tentative
-	STATUS_TEMPLATES = "templates"
+	STATUS_RECURRING = "recurring"
+	STATUS_TEMPLATE  = "template"
 
 	CMD_NEXT             = "next"
 	CMD_ADD              = "add"
@@ -108,7 +108,7 @@ var ALL_STATUSES = []string{
 	STATUS_PAUSED,
 	STATUS_RECURRING,
 	STATUS_RESOLVED,
-	STATUS_TEMPLATES,
+	STATUS_TEMPLATE,
 }
 
 // incomplete until all statuses are implemented
@@ -119,7 +119,7 @@ var VALID_STATUS_TRANSITIONS = [][]string{
 	[]string{STATUS_PENDING, STATUS_RESOLVED},
 	[]string{STATUS_PAUSED, STATUS_RESOLVED},
 	[]string{STATUS_ACTIVE, STATUS_RESOLVED},
-	[]string{STATUS_PENDING, STATUS_TEMPLATES},
+	[]string{STATUS_PENDING, STATUS_TEMPLATE},
 }
 
 // for most operations, it's not necessary or desirable to load the expensive resolved tasks
@@ -130,7 +130,7 @@ var NON_RESOLVED_STATUSES = []string{
 	STATUS_DEFERRED,
 	STATUS_PAUSED,
 	STATUS_RECURRING,
-	STATUS_TEMPLATES,
+	STATUS_TEMPLATE,
 }
 
 var ALL_CMDS = []string{
