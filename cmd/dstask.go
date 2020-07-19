@@ -514,8 +514,9 @@ func main() {
 		if cmdLine.Cmd == dstask.CMD_ADD {
 			ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 			for _, task := range ts.Tasks() {
-				// task.Status == dstask.STATUS_TEMPLATE {}
+				// if task.Status == dstask.STATUS_TEMPLATE {
 				completions = append(completions, "template:"+strconv.Itoa(task.ID))
+				//}
 			}
 		}
 
