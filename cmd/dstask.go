@@ -231,7 +231,7 @@ func main() {
 
 	case dstask.CMD_CONTEXT:
 		if len(os.Args) < 3 {
-			fmt.Printf("Current context: %s", context)
+			fmt.Printf("Current context: %s\n", context)
 		} else if os.Args[2] == "none" {
 			state.SetContext(dstask.CmdLine{})
 			state.Save()
@@ -492,6 +492,15 @@ func main() {
 				ts.Filter(context)
 			}
 
+			// templates
+			if cmdLine.Cmd == dstask.CMD_ADD {
+				for _, task := range ts.Tasks() {
+					if task.Status == dstask.STATUS_TEMPLATE {
+						completions = append(completions, "template:"+strconv.Itoa(task.ID))
+					}
+				}
+			}
+
 			// priorities
 			completions = append(completions, dstask.PRIORITY_CRITICAL)
 			completions = append(completions, dstask.PRIORITY_HIGH)
@@ -509,10 +518,6 @@ func main() {
 				completions = append(completions, "+"+tag)
 				completions = append(completions, "-"+tag)
 			}
-		}
-
-		if cmdLine.Cmd == dstask.CMD_ADD {
-			completions = append(completions, "template:")
 		}
 
 		if len(originalArgs) > 0 {
