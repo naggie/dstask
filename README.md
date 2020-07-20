@@ -1,13 +1,21 @@
+<p align="center">
+<img align="center" src="etc/icon.png" alt="icon" height="64" />
+</p>
 
-<img src="etc/icon.png" alt="icon" align="right" height="64" />
+<h1 align="center">dstask</h1>
 
-# Dstask
+<p align="center">
+<i> Single binary terminal-based todo manager: git-based sync + markdown notes for each task.  </i>
+</p>
 
-_Single binary terminal-based todo manager: git-based sync + markdown notes for each task._
+<p align="center">
+<a href="https://cloud.drone.io/naggie/dstask"><img src="https://cloud.drone.io/api/badges/naggie/dstask/status.svg" /></a>
+<a href="https://goreportcard.com/report/github.com/naggie/dstask"><img src="https://goreportcard.com/badge/github.com/naggie/dstask" /></a>
+<a href="https://img.shields.io/badge/license-MIT-blue.svg"><img src="https://img.shields.io/badge/license-MIT-blue.svg" /></a>
+</p>
 
-[![Build Status](https://cloud.drone.io/api/badges/naggie/dstask/status.svg)](https://cloud.drone.io/naggie/dstask)
-[![Go Report Card](https://goreportcard.com/badge/github.com/naggie/dstask)](https://goreportcard.com/report/github.com/naggie/dstask)
-
+<br>
+<br>
 <br>
 
 
