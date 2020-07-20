@@ -70,6 +70,7 @@ func (cmdLine CmdLine) PrintContextDescription() {
 	}
 }
 
+// ParseCmdLine parses the raw command line typed by the user.
 func ParseCmdLine(args ...string) CmdLine {
 	var cmd string
 	var ids []int
