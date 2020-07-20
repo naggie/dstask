@@ -1,10 +1,17 @@
-[![Build Status](https://cloud.drone.io/api/badges/naggie/dstask/status.svg)](https://cloud.drone.io/naggie/dstask)
 
+<img src="etc/icon.png" alt="icon" align="right" height="64" />
+
+# Dstask
+
+_Single binary terminal-based todo manager: git-based sync + markdown notes for each task._
+
+[![Build Status](https://cloud.drone.io/api/badges/naggie/dstask/status.svg)](https://cloud.drone.io/naggie/dstask)
 [![Go Report Card](https://goreportcard.com/badge/github.com/naggie/dstask)](https://goreportcard.com/report/github.com/naggie/dstask)
 
-# dstask
+<br>
 
-A personal task tracker designed to help you focus. It is similar to
+
+Dstask is a personal task tracker designed to help you focus. It is similar to
 [taskwarrior](https://taskwarrior.org/) but uses git to synchronise instead of
 a proprietary protocol.
 
