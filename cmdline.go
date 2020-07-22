@@ -25,7 +25,7 @@ type CmdLine struct {
 	// any words after the note operator: /
 	Note string
 	// cron syntax for reccurence
-	Schedule      string
+	Schedule string
 }
 
 // reconstruct args string
@@ -123,6 +123,8 @@ func ParseCmdLine(args ...string) CmdLine {
 			if s, err := strconv.ParseInt(lcItem[9:], 10, 64); err == nil {
 				template = int(s)
 			}
+		} else if strings.HasPrefix(lcItem, "recur:") {
+			schedule = lcItem[6:]
 		} else if len(item) > 1 && lcItem[0:1] == "+" {
 			tags = append(tags, lcItem[1:])
 		} else if len(item) > 1 && lcItem[0:1] == "-" {
@@ -149,5 +151,6 @@ func ParseCmdLine(args ...string) CmdLine {
 		Note:          strings.Join(notes, " "),
 		IgnoreContext: ignoreContext,
 		IDsExhausted:  IDsExhausted,
+		Schedule:      schedule,
 	}
 }

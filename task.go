@@ -63,7 +63,7 @@ type Task struct {
 	Schedule string `yaml:"omitempty"`
 	// Recurring task this was derived from. Used by scheduler to gate new
 	// tasks.
-	Parent   string `yaml:"omitempty"`
+	Parent string `yaml:"omitempty"`
 }
 
 func (task Task) String() string {
