@@ -160,14 +160,15 @@ version           : Show dstask version information
 
 ## Operators
 
-| Symbol      | Syntax               | Description                                          | Example                                     |
-|-------------|----------------------|------------------------------------------------------|---------------------------------------------|
+| Symbol      | Syntax               | Description                                          | Example                                       |
+|-------------|----------------------|------------------------------------------------------|-----------------------------------------------|
 | `+`         | `+<tag>`             | Include tag. Filter/context, or when adding task.    | `dstask add fix server +work`                 |
 | `-`         | `-<tag>`             | Exclude tag. Filter/context only.                    | `dstask next -feature`                        |
 | `--`        | `--`                 | Ignore context. When listing or adding tasks.        | `dstask --`, `task add -- +home do guttering` |
 | `/`         | `/`                  | When adding a task, everything after will be a note. | `dstask add check out ipfs / https://ipfs.io` |
 | `project:`  | `project:<project>`  | Set project. Filter/context, or when adding task.    | `dstask context project:dstask`               |
 | `-project:` | `-project:<project>` | Exclude project, filter/context only.                | `dstask next -project:dstask -work`           |
+| `template:` | `template:<id>`      | Base new task on a template.                         | `dstask add template:24`                      |
 
 
 ## State
