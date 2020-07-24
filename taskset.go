@@ -229,6 +229,22 @@ func (ts *TaskSet) MustGetByID(id int) Task {
 	return *ts.tasksByID[id]
 }
 
+func (ts *TaskSet) SearchForUUID(uuid string) []string {
+	var uuids []string
+	for _,task := range ts.tasks {
+		if strings.HasPrefix(task.UUID,uuid){
+			uuids = append(uuids, task.UUID)
+		}
+	}
+	return uuids
+}
+func (ts *TaskSet) MustGetByUUID(uuid string) Task {
+	if ts.tasksByUUID[uuid] == nil {
+		ExitFail("No task with UUID %v exists.", uuid)
+	}
+	return *ts.tasksByUUID[uuid]
+}
+
 func (ts *TaskSet) Tasks() []Task {
 	tasks := make([]Task, 0, len(ts.tasks))
 	for _, task := range ts.tasks {
