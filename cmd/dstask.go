@@ -13,7 +13,10 @@ import (
 )
 
 func main() {
+	// Sets globals: GIT_REPO, STATE_FILE, IDS_FILE
 	dstask.ParseConfig()
+	dstask.EnsureRepoExists(dstask.GIT_REPO)
+	// Load state for getting and setting context
 	state := dstask.LoadState()
 	context := state.Context
 	cmdLine := dstask.ParseCmdLine(os.Args[1:]...)
