@@ -267,18 +267,18 @@ func main() {
 	case dstask.CMD_EDIT:
 		// If UUID present, load resolved tasks. If not load non-resolved tasks.
 		if cmdLine.UUID != "" {
-			ts := dstask.LoadTasksFromDisk([]string {dstask.STATUS_RESOLVED})
+			ts := dstask.LoadTasksFromDisk([]string{dstask.STATUS_RESOLVED})
 			// Search for UUIDs that match uuid: string
 			var uuids []string = ts.SearchForUUID(cmdLine.UUID)
 
 			if len(uuids) == 0 { // No matches
-				fmt.Printf("No Resolved Tasks Match UUID: %s!\n", cmdLine.UUID)
+				fmt.Printf("No Resolved Tasks Match UUID: %s\n", cmdLine.UUID)
 
 			} else if len(uuids) > 1 { // More than one UUID found that matches string
-				
+
 				fmt.Printf("Multiple Tasks match UUID: %s\n", cmdLine.UUID)
-				// Print UUIDs and Summary and prompt user to enter more specific ID. 
-				// Probably better to either filter ts or create new taskset with 
+				// Print UUIDs and Summary and prompt user to enter more specific ID.
+				// Probably better to either filter ts or create new taskset with
 				// uuids then can use DisplayByNext
 				fmt.Printf("\nUUID \t\t\t\t\tSummary\n")
 				for _, uuid := range uuids {
@@ -303,14 +303,12 @@ func main() {
 					// TODO reattempt mechanism
 					dstask.ExitFail("Failed to unmarshal yml")
 				}
-			
 
 				ts.MustUpdateTask(task)
 				ts.SavePendingChanges()
 				dstask.MustGitCommit("Edited %s", task)
-			} 
-				
-			
+			}
+
 		} else {
 			ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 			for _, id := range cmdLine.IDs {
@@ -511,7 +509,7 @@ func main() {
 		}
 
 		//uuid
-		if cmdLine.Cmd == dstask.CMD_EDIT && len(cmdLine.IDs) < 1{
+		if cmdLine.Cmd == dstask.CMD_EDIT && len(cmdLine.IDs) < 1 {
 			// This will complete with a space after the colon.
 			completions = append(completions, "uuid:")
 		}

@@ -20,7 +20,7 @@ type CmdLine struct {
 	Priority      string
 	Template      int
 	Text          string
-	UUID		  string
+	UUID          string
 	IgnoreContext bool
 	IDsExhausted  bool
 	// any words after the note operator: /
@@ -101,8 +101,13 @@ func ParseCmdLine(args ...string) CmdLine {
 		}
 
 		if s, err := strconv.ParseInt(item, 10, 64); !IDsExhausted && err == nil {
-			ids = append(ids, int(s))
-			continue
+			if int(s) <= MAX_TASKS_OPEN && string(lcItem[0]) != "0" {
+				ids = append(ids, int(s))
+				continue
+			} else if IsValidPartialUUID4String(lcItem) {
+				uuid = lcItem
+				continue
+			}
 		}
 
 		IDsExhausted = true
@@ -122,8 +127,6 @@ func ParseCmdLine(args ...string) CmdLine {
 			if s, err := strconv.ParseInt(lcItem[9:], 10, 64); err == nil {
 				template = int(s)
 			}
-		} else if strings.HasPrefix(lcItem, "uuid:") {
-			uuid = lcItem[5:]
 		} else if len(item) > 1 && lcItem[0:1] == "+" {
 			tags = append(tags, lcItem[1:])
 		} else if len(item) > 1 && lcItem[0:1] == "-" {
