@@ -13,7 +13,10 @@ import (
 )
 
 func main() {
+	// Sets globals: GIT_REPO, STATE_FILE, IDS_FILE
 	dstask.ParseConfig()
+	dstask.EnsureRepoExists(dstask.GIT_REPO)
+	// Load state for getting and setting context
 	state := dstask.LoadState()
 	context := state.Context
 	cmdLine := dstask.ParseCmdLine(os.Args[1:]...)
@@ -23,10 +26,8 @@ func main() {
 	}
 
 	switch cmdLine.Cmd {
-	case "":
-		// default command is CMD_NEXT if not specified
-		fallthrough
-	case dstask.CMD_NEXT:
+	// Empty string is interpreted as CMD_NEXT
+	case "", dstask.CMD_NEXT:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
@@ -214,9 +215,7 @@ func main() {
 			dstask.MustGitCommit("Stopped %s", task)
 		}
 
-	case dstask.CMD_DONE:
-		fallthrough
-	case dstask.CMD_RESOLVE:
+	case dstask.CMD_DONE, dstask.CMD_RESOLVE:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
@@ -233,12 +232,15 @@ func main() {
 		if len(os.Args) < 3 {
 			fmt.Printf("Current context: %s\n", context)
 		} else if os.Args[2] == "none" {
-			state.SetContext(dstask.CmdLine{})
-			state.Save()
+			if err := state.SetContext(dstask.CmdLine{}); err != nil {
+				dstask.ExitFail(err.Error())
+			}
 		} else {
-			state.SetContext(cmdLine)
-			state.Save()
+			if err := state.SetContext(cmdLine); err != nil {
+				dstask.ExitFail(err.Error())
+			}
 		}
+		state.Save()
 
 	case dstask.CMD_MODIFY:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)

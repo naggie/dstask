@@ -57,13 +57,13 @@ func MustGetRepoPath(directory, file string) string {
 	return path.Join(dir, file)
 }
 
-// InitialiseRepo checks for the existence of a dstask repository, or exits the program.
-func InitialiseRepo() {
+// EnsureRepoExists checks for the existence of a dstask repository, or exits the program.
+func EnsureRepoExists(repoPath string) {
 	// TODO make sure git is installed
-	gitDotGitLocation := path.Join(GIT_REPO, ".git")
+	gitDotGitLocation := path.Join(repoPath, ".git")
 
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
-		ExitFail("Could not find git repository at " + GIT_REPO + ", please clone or create. Try `dstask help` for more information.")
+		ExitFail("Could not find git repository at " + repoPath + ", please clone or create. Try `dstask help` for more information.")
 	}
 }
 
