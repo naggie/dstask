@@ -26,10 +26,8 @@ func main() {
 	}
 
 	switch cmdLine.Cmd {
-	case "":
-		// default command is CMD_NEXT if not specified
-		fallthrough
-	case dstask.CMD_NEXT:
+	// Empty string is interpreted as CMD_NEXT
+	case "", dstask.CMD_NEXT:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
@@ -217,9 +215,7 @@ func main() {
 			dstask.MustGitCommit("Stopped %s", task)
 		}
 
-	case dstask.CMD_DONE:
-		fallthrough
-	case dstask.CMD_RESOLVE:
+	case dstask.CMD_DONE, dstask.CMD_RESOLVE:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
 			task := ts.MustGetByID(id)
