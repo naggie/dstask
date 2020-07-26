@@ -232,12 +232,15 @@ func main() {
 		if len(os.Args) < 3 {
 			fmt.Printf("Current context: %s\n", context)
 		} else if os.Args[2] == "none" {
-			state.SetContext(dstask.CmdLine{})
-			state.Save()
+			if err := state.SetContext(dstask.CmdLine{}); err != nil {
+				dstask.ExitFail(err.Error())
+			}
 		} else {
-			state.SetContext(cmdLine)
-			state.Save()
+			if err := state.SetContext(cmdLine); err != nil {
+				dstask.ExitFail(err.Error())
+			}
 		}
+		state.Save()
 
 	case dstask.CMD_MODIFY:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)

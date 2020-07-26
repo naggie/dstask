@@ -38,16 +38,18 @@ func LoadState() State {
 	return state
 }
 
-func (state *State) SetContext(context CmdLine) {
+// SetContext sets a context on State, with some validation.
+func (state *State) SetContext(context CmdLine) error {
 	if len(context.IDs) != 0 {
-		ExitFail("Context cannot contain IDs")
+		return errors.New("Context cannot contain IDs")
 	}
 
 	if context.Text != "" {
-		ExitFail("Context cannot contain text")
+		return errors.New("Context cannot contain text")
 	}
 
 	state.Context = context
+	return nil
 }
 
 func mustWriteGob(filePath string, object interface{}) {
