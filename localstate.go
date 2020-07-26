@@ -6,13 +6,16 @@ package dstask
 
 import (
 	"encoding/gob"
+	"errors"
 	"os"
 	"path/filepath"
 )
 
-// note that fields must be exported for gob marshalling to work.
+// State models our local context for serialisation and deserialisation from
+// our state file.
 type State struct {
-	// context to automatically apply to all queries and new tasks
+	// Context is an implicit command line that changes the behavior or display
+	// of some commands.
 	Context CmdLine
 }
 
@@ -23,11 +26,13 @@ type State struct {
 // machines were using dstask concurrently on the same repository.
 type IdsMap map[string]int
 
+// Save serialises State to disk as gob binary data.
 func (state State) Save() {
 	os.MkdirAll(filepath.Dir(STATE_FILE), os.ModePerm)
 	mustWriteGob(STATE_FILE, &state)
 }
 
+// LoadState reads the state file, if it exists. Otherwise a default State is returned.
 func LoadState() State {
 	if _, err := os.Stat(STATE_FILE); os.IsNotExist(err) {
 		return State{}

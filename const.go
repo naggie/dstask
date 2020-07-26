@@ -168,6 +168,7 @@ var ALL_CMDS = []string{
 	CMD_VERSION,
 }
 
+// mustExpandHome handles tilde ~ home dir expansion.
 func mustExpandHome(filepath string) string {
 	if strings.HasPrefix(filepath, "~/") {
 		usr, err := user.Current()
@@ -180,18 +181,15 @@ func mustExpandHome(filepath string) string {
 	}
 }
 
-// Getenv with a default
+// getenv returns an env var's value, or a default.
 func getenv(key string, _default string) string {
-	val := os.Getenv(key)
-
-	if val == "" {
-		return _default
-	} else {
+	if val := os.Getenv(key); val != "" {
 		return val
 	}
+	return _default
 }
 
-// Replaces _default from env, expand ~
+// ParseConfig reads env vars and sets global program configuration.
 func ParseConfig() {
 	GIT_REPO = getenv("DSTASK_GIT_REPO", GIT_REPO)
 	GIT_REPO = mustExpandHome(GIT_REPO)
