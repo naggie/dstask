@@ -133,6 +133,8 @@ func ParseCmdLine(args ...string) CmdLine {
 			antiTags = append(antiTags, lcItem[1:])
 		} else if IsValidPriority(item) {
 			priority = item
+		} else if strings.HasPrefix(lcItem, "uuid:") {
+			uuid = lcItem[5:]
 		} else if notesModeActivated {
 			notes = append(notes, item)
 		} else {
