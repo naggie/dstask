@@ -10,4 +10,5 @@ steps:
   - name: test
     image: golang:1.13
     commands:
+      - "go test -mod=vendor"
       - "./smoketest.sh"

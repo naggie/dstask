@@ -1,10 +1,25 @@
-[![Build Status](https://cloud.drone.io/api/badges/naggie/dstask/status.svg)](https://cloud.drone.io/naggie/dstask)
+<p align="center">
+<img align="center" src="etc/icon.png" alt="icon" height="64" />
+</p>
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/naggie/dstask)](https://goreportcard.com/report/github.com/naggie/dstask)
+<h1 align="center">dstask</h1>
 
-# dstask
+<p align="center">
+<i>Single binary terminal-based TODO manager: git-based sync + markdown notes per task</i>
+</p>
 
-A personal task tracker designed to help you focus. It is similar to
+<p align="center">
+<a href="https://cloud.drone.io/naggie/dstask"><img src="https://cloud.drone.io/api/badges/naggie/dstask/status.svg" /></a>
+<a href="https://goreportcard.com/report/github.com/naggie/dstask"><img src="https://goreportcard.com/badge/github.com/naggie/dstask" /></a>
+<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-blue.svg" /></a>
+</p>
+
+<br>
+<br>
+<br>
+
+
+Dstask is a personal task tracker designed to help you focus. It is similar to
 [taskwarrior](https://taskwarrior.org/) but uses git to synchronise instead of
 a proprietary protocol.
 
@@ -145,14 +160,15 @@ version           : Show dstask version information
 
 ## Operators
 
-| Symbol      | Syntax               | Description                                          | Example                                     |
-|-------------|----------------------|------------------------------------------------------|---------------------------------------------|
+| Symbol      | Syntax               | Description                                          | Example                                       |
+|-------------|----------------------|------------------------------------------------------|-----------------------------------------------|
 | `+`         | `+<tag>`             | Include tag. Filter/context, or when adding task.    | `dstask add fix server +work`                 |
 | `-`         | `-<tag>`             | Exclude tag. Filter/context only.                    | `dstask next -feature`                        |
 | `--`        | `--`                 | Ignore context. When listing or adding tasks.        | `dstask --`, `task add -- +home do guttering` |
 | `/`         | `/`                  | When adding a task, everything after will be a note. | `dstask add check out ipfs / https://ipfs.io` |
 | `project:`  | `project:<project>`  | Set project. Filter/context, or when adding task.    | `dstask context project:dstask`               |
 | `-project:` | `-project:<project>` | Exclude project, filter/context only.                | `dstask next -project:dstask -work`           |
+| `template:` | `template:<id>`      | Base new task on a template.                         | `dstask add template:24`                      |
 
 
 ## State

@@ -35,13 +35,12 @@ type Project struct {
 	Priority string
 }
 
+// LoadTasksFromDisk returns the TaskSet of our current tasks, filtered by status.
 func LoadTasksFromDisk(statuses []string) *TaskSet {
 	ts := &TaskSet{
 		tasksByID:   make(map[int]*Task),
 		tasksByUUID: make(map[string]*Task),
 	}
-
-	InitialiseRepo()
 
 	ids := LoadIds()
 

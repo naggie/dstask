@@ -6,11 +6,13 @@ import (
 	"path"
 )
 
+// RunGitCmd shells out to git in the context of the dstask repo.
 func RunGitCmd(args ...string) error {
 	args = append([]string{"-C", GIT_REPO}, args...)
 	return RunCmd("git", args...)
 }
 
+// MustRunGitCmd delegates to RunGitCmd and exits the program on any error.
 func MustRunGitCmd(args ...string) {
 	err := RunGitCmd(args...)
 	if err != nil {
@@ -18,6 +20,8 @@ func MustRunGitCmd(args ...string) {
 	}
 }
 
+// MustGitCommit stages changes in the dstask repository and commits them. If
+// any error is encountered, the program exits.
 func MustGitCommit(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
 
@@ -38,7 +42,8 @@ func MustGitCommit(format string, a ...interface{}) {
 	fmt.Printf("\033[0m")
 }
 
-// leave file as an empty string to return directory
+// MustGetRepoPath returns the full path to a file within the dstask git repo.
+// Pass file as an empty string to return the git repo directory itself.
 func MustGetRepoPath(directory, file string) string {
 	dir := path.Join(GIT_REPO, directory)
 
@@ -52,15 +57,18 @@ func MustGetRepoPath(directory, file string) string {
 	return path.Join(dir, file)
 }
 
-// TODO check git exists within path
-func InitialiseRepo() {
-	gitDotGitLocation := path.Join(GIT_REPO, ".git")
+// EnsureRepoExists checks for the existence of a dstask repository, or exits the program.
+func EnsureRepoExists(repoPath string) {
+	// TODO make sure git is installed
+	gitDotGitLocation := path.Join(repoPath, ".git")
 
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
-		ExitFail("Could not find git repository at " + GIT_REPO + ", please clone or create. Try `dstask help` for more information.")
+		ExitFail("Could not find git repository at " + repoPath + ", please clone or create. Try `dstask help` for more information.")
 	}
 }
 
+// Sync performs a git pull, and then a git push. If any conflicts are encountered,
+// the user will need to resolve them.
 func Sync() {
 	MustRunGitCmd("pull", "--no-rebase", "--no-edit", "--commit", "origin", "master")
 	MustRunGitCmd("push", "origin", "master")
