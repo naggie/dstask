@@ -270,31 +270,14 @@ func main() {
 		// If UUID present, load resolved tasks. If not load non-resolved tasks.
 		if cmdLine.UUID != "" {
 			ts := dstask.LoadTasksFromDisk([]string{dstask.STATUS_RESOLVED})
-			// Search for UUIDs that match uuid: string
-			var uuids []string = ts.SearchForUUID(cmdLine.UUID)
-
-			if len(uuids) == 0 { // No matches
-				fmt.Printf("No Resolved Tasks Match UUID: %s\n", cmdLine.UUID)
-
-			} else if len(uuids) > 1 { // More than one UUID found that matches string
-
-				fmt.Printf("Multiple Tasks match UUID: %s\n", cmdLine.UUID)
-				// Print UUIDs and Summary and prompt user to enter more specific ID.
-				// Probably better to either filter ts or create new taskset with
-				// uuids then can use DisplayByNext
-				fmt.Printf("\nUUID \t\t\t\t\tSummary\n")
-				for _, uuid := range uuids {
-					task := ts.MustGetByUUID(uuid)
-					fmt.Printf("%s \t%s\n", task.UUID, task.Summary)
-				}
-				fmt.Println("\nProvide provide more specific UUID")
-
-			} else { // Edit resolved task
-				task := ts.MustGetByUUID(uuids[0])
+			task, err := ts.MustGetByUUID(cmdLine.UUID)
+			if err != nil {
+				dstask.ExitFail(err.Error())
+			} else {
 				data, err := yaml.Marshal(&task)
 				if err != nil {
 					// TODO present error to user, specific error message is important
-					dstask.ExitFail("Failed to marshal task %s", task)
+					dstask.ExitFail(fmt.Sprintf("Failed to marshal task %s: %v\n", task, err))
 				}
 
 				data = dstask.MustEditBytes(data, "yml")
@@ -303,12 +286,23 @@ func main() {
 				if err != nil {
 					// TODO present error to user, specific error message is important
 					// TODO reattempt mechanism
-					dstask.ExitFail("Failed to unmarshal yml")
+					dstask.ExitFail(fmt.Sprintf("Failed to unmarshal yml: %v\n", err))
 				}
-
+				// TODO edit MustUpdateTask to erase resolved date if possible
+				// See if LoadTasks can be run from MustUpdateTask
 				ts.MustUpdateTask(task)
 				ts.SavePendingChanges()
 				dstask.MustGitCommit("Edited %s", task)
+				// If the status is changing, load NON_RESOLVED_STATUS to assign ID
+				// When LoadTasksFromDisk() is called, the new ID of the resolved task will be displayed
+				if task.Status != dstask.STATUS_RESOLVED {
+					ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
+					task, err := ts.MustGetByUUID(cmdLine.UUID)
+					if err != nil {
+						dstask.ExitFail(err.Error())
+					}
+					fmt.Printf("This task has now been assigned the ID: %v\n", task.ID)
+				}
 			}
 
 		} else {
@@ -513,7 +507,10 @@ func main() {
 		//uuid
 		if cmdLine.Cmd == dstask.CMD_EDIT && len(cmdLine.IDs) < 1 {
 			// This will complete with a space after the colon.
-			completions = append(completions, "uuid:")
+			ts := dstask.LoadTasksFromDisk([]string{dstask.STATUS_RESOLVED})
+			for _, task := range ts.Tasks() {
+				completions = append(completions, "uuid:"+task.UUID)
+			}
 		}
 
 		if dstask.StrSliceContains([]string{

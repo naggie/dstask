@@ -3,6 +3,8 @@ package dstask
 // main task data structures
 
 import (
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"path"
 	"sort"
@@ -228,20 +230,55 @@ func (ts *TaskSet) MustGetByID(id int) Task {
 	return *ts.tasksByID[id]
 }
 
-func (ts *TaskSet) SearchForUUID(uuid string) []string {
+/*
+type NonUniqueUUIDError struct {
+	uuidQuery 	string
+	uuidResults	[]string
+	Err 		error
+}
+
+func (e *NonUniqueUUIDError) Error() string {
+	return strings.Join(e.uuids[:], "\n")
+}
+
+func (ts *TaskSet) SearchForResolvedUUID(uuid string) (string, error) {
 	var uuids []string
-	for _,task := range ts.tasks {
-		if strings.HasPrefix(task.UUID,uuid){
+	for _, task := range ts.tasks {
+		if strings.HasPrefix(task.UUID, uuid) {
 			uuids = append(uuids, task.UUID)
 		}
+		if len(uuids) == 0 { // No matches
+			errMsg := fmt.Sprintf("No task with partial UUID %s exists.\n", uuid)
+			return nil, errors.New(errMsg)
+
+		} else if len(uuids) > 1 { // More than one UUID found that matches string
+
+			fmt.Printf("Multiple Tasks match UUID: %s\n", cmdLine.UUID)
+			// Print UUIDs and Summary and prompt user to enter more specific ID.
+			// Probably better to either filter ts or create new taskset with
+			// uuids then can use DisplayByNext
+			fmt.Printf("\nUUID \t\t\t\t\tSummary\n")
+			for _, uuid := range uuids {
+				task := ts.MustGetByUUID(uuid)
+				fmt.Printf("%s \t%s\n", task.UUID, task.Summary)
+			}
+			fmt.Println("\nProvide provide more specific UUID")
+		}
+
 	}
 	return uuids
-}
-func (ts *TaskSet) MustGetByUUID(uuid string) Task {
-	if ts.tasksByUUID[uuid] == nil {
-		ExitFail("No task with UUID %v exists.", uuid)
+}*/
+
+func (ts *TaskSet) MustGetByUUID(uuid string) (Task, error) {
+	if !IsValidUUID4String(uuid) {
+		errMsg := fmt.Sprintf("UUID: %s is not a valid UUID4 string", uuid)
+		return Task{}, errors.New(errMsg)
+	} else if ts.tasksByUUID[uuid] == nil {
+		errMsg := fmt.Sprintf("No task with UUID %v exists in %v.", uuid, ts)
+		return Task{}, errors.New(errMsg)
+	} else {
+		return *ts.tasksByUUID[uuid], nil
 	}
-	return *ts.tasksByUUID[uuid]
 }
 
 func (ts *TaskSet) Tasks() []Task {

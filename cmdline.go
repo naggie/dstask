@@ -102,13 +102,8 @@ func ParseCmdLine(args ...string) CmdLine {
 		}
 
 		if s, err := strconv.ParseInt(item, 10, 64); !IDsExhausted && err == nil {
-			if int(s) <= MAX_TASKS_OPEN && string(lcItem[0]) != "0" {
-				ids = append(ids, int(s))
-				continue
-			} else if IsValidPartialUUID4String(lcItem) {
-				uuid = lcItem
-				continue
-			}
+			ids = append(ids, int(s))
+			continue
 		}
 
 		IDsExhausted = true

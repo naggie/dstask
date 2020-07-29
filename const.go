@@ -120,6 +120,8 @@ var VALID_STATUS_TRANSITIONS = [][]string{
 	[]string{STATUS_PAUSED, STATUS_RESOLVED},
 	[]string{STATUS_ACTIVE, STATUS_RESOLVED},
 	[]string{STATUS_PENDING, STATUS_TEMPLATE},
+	[]string{STATUS_RESOLVED, STATUS_TEMPLATE},
+	[]string{STATUS_RESOLVED, STATUS_PENDING},
 }
 
 // for most operations, it's not necessary or desirable to load the expensive resolved tasks
