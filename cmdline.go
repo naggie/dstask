@@ -3,6 +3,7 @@ package dstask
 // main task data structures
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -72,6 +73,32 @@ func (cmdLine CmdLine) String() string {
 func (cmdLine CmdLine) PrintContextDescription() {
 	if cmdLine.String() != "" {
 		fmt.Printf("\033[33mActive context: %s\033[0m\n", cmdLine)
+	}
+}
+
+// MustGetIdentifiers() determines if IDs or UUIDs are selected from the CmdLine.
+// It should be used within functions that accept either IDs or UUIDs such as edit, note(s), or modify.
+// The function returns three types:
+// []interface{}: 	containins the list of task identifiers
+// []string: 		the name of taskSet to load
+//					NON_RESOLVED_STATUSES should be loaded when IDs are present
+//					Tasks with STATUS_RESOLVED should be loaded only when UUIDs are present.
+// error: 			The function will throw an error if no IDs are UUIDs are present in CmdLine.
+//
+
+func (cmdLine CmdLine) MustGetIdentifiers() ([]interface{}, []string, error) {
+	if len(cmdLine.IDs) > 0 {
+		identifiers := make([]interface{}, len(cmdLine.IDs))
+		for i := range cmdLine.IDs {
+			identifiers[i] = cmdLine.IDs[i]
+		}
+		return identifiers, NON_RESOLVED_STATUSES, nil
+	} else if cmdLine.UUID != "" {
+		identifiers := make([]interface{}, 1)
+		identifiers[0] = cmdLine.UUID
+		return identifiers, []string{STATUS_RESOLVED}, nil
+	} else {
+		return nil, nil, errors.New("MustGetIdentifiers() did not find any UUIDs or IDs in the command line.")
 	}
 }
 
