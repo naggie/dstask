@@ -1,6 +1,7 @@
 package dstask
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"testing"
@@ -27,6 +28,7 @@ func TestParseCmdLine(t *testing.T) {
 				AntiProjects:  nil,
 				Template:      0,
 				Text:          "have an adventure",
+				UUID:          "",
 				IgnoreContext: false,
 				IDsExhausted:  true,
 				Note:          "",
@@ -43,6 +45,7 @@ func TestParseCmdLine(t *testing.T) {
 				AntiProjects:  nil,
 				Template:      0,
 				Text:          "have an adventure",
+				UUID:          "",
 				IgnoreContext: false,
 				IDsExhausted:  true,
 				Note:          "",
@@ -59,6 +62,7 @@ func TestParseCmdLine(t *testing.T) {
 				AntiProjects:  nil,
 				Template:      0,
 				Text:          "smile",
+				UUID:          "",
 				IgnoreContext: false,
 				IDsExhausted:  true,
 				Note:          "",
@@ -76,6 +80,7 @@ func TestParseCmdLine(t *testing.T) {
 				AntiProjects:  nil,
 				Template:      0,
 				Text:          "floss",
+				UUID:          "",
 				IgnoreContext: false,
 				IDsExhausted:  true,
 				Note:          "every  day",
@@ -92,6 +97,25 @@ func TestParseCmdLine(t *testing.T) {
 				AntiProjects:  []string{"x"},
 				Template:      0,
 				Text:          "",
+				UUID:          "",
+				IgnoreContext: false,
+				IDsExhausted:  true,
+				Note:          "",
+			},
+		},
+
+		{
+			[]string{"modify", "uuid:0023e003-3453-9348-3452-898729283abc"},
+			CmdLine{
+				Cmd:           "modify",
+				IDs:           nil,
+				Tags:          nil,
+				AntiTags:      nil,
+				Project:       "",
+				AntiProjects:  nil,
+				Template:      0,
+				Text:          "",
+				UUID:          "0023e003-3453-9348-3452-898729283abc",
 				IgnoreContext: false,
 				IDsExhausted:  true,
 				Note:          "",
@@ -108,6 +132,119 @@ func TestParseCmdLine(t *testing.T) {
 
 			parsed := ParseCmdLine(tc.input...)
 			assert.Equal(t, parsed, tc.expected)
+
+		})
+	}
+}
+
+func TestMustGetIdentifiers(t *testing.T) {
+
+	type Result struct {
+		idents  []interface{}
+		taskSet []string
+		err     error
+	}
+
+	type testCase struct {
+		input    CmdLine
+		expected Result
+	}
+
+	var tests = []testCase{
+		{
+			CmdLine{
+				Cmd:           "",
+				IDs:           []int{16, 43, 11},
+				Tags:          nil,
+				AntiTags:      nil,
+				Project:       "",
+				AntiProjects:  nil,
+				Template:      0,
+				Text:          "",
+				UUID:          "",
+				IgnoreContext: false,
+				IDsExhausted:  true,
+				Note:          "",
+			},
+			Result{
+				idents:  []interface{}{16, 43, 11},
+				taskSet: NON_RESOLVED_STATUSES,
+				err:     nil,
+			},
+		},
+		{
+			CmdLine{
+				Cmd:           "",
+				IDs:           []int{16, 43, 11},
+				Tags:          nil,
+				AntiTags:      nil,
+				Project:       "",
+				AntiProjects:  nil,
+				Template:      0,
+				Text:          "",
+				UUID:          "0023e003-3453-9348-3452-898729283abc",
+				IgnoreContext: false,
+				IDsExhausted:  true,
+				Note:          "",
+			},
+			Result{
+				idents:  []interface{}{16, 43, 11},
+				taskSet: NON_RESOLVED_STATUSES,
+				err:     nil,
+			},
+		},
+		{
+			CmdLine{
+				Cmd:           "",
+				IDs:           nil,
+				Tags:          nil,
+				AntiTags:      nil,
+				Project:       "",
+				AntiProjects:  nil,
+				Template:      0,
+				Text:          "",
+				UUID:          "0023e003-3453-9348-3452-898729283abc",
+				IgnoreContext: false,
+				IDsExhausted:  true,
+				Note:          "",
+			},
+			Result{
+				idents:  []interface{}{"0023e003-3453-9348-3452-898729283abc"},
+				taskSet: []string{STATUS_RESOLVED},
+				err:     nil,
+			},
+		},
+		{
+			CmdLine{
+				Cmd:           "",
+				IDs:           nil,
+				Tags:          nil,
+				AntiTags:      nil,
+				Project:       "",
+				AntiProjects:  nil,
+				Template:      0,
+				Text:          "",
+				UUID:          "",
+				IgnoreContext: false,
+				IDsExhausted:  true,
+				Note:          "",
+			},
+			Result{
+				idents:  nil,
+				taskSet: nil,
+				err:     errors.New("mustgetidentifiers() did not find any uuids or ids in the command line."),
+			},
+		},
+	}
+	for i, tc := range tests {
+
+		t.Run(fmt.Sprintf("test %v: %s", i, tc.input), func(t *testing.T) {
+			t.Parallel()
+
+			idents, taskSet, err := tc.input.MustGetIdentifiers()
+			assert.Equal(t, idents, tc.expected.idents)
+			assert.Equal(t, taskSet, tc.expected.taskSet)
+			assert.Equal(t, err, tc.expected.err)
 
 		})
 	}
