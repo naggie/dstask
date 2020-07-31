@@ -232,7 +232,7 @@ func TestMustGetIdentifiers(t *testing.T) {
 			Result{
 				idents:  nil,
 				taskSet: nil,
-				err:     errors.New("mustgetidentifiers() did not find any uuids or ids in the command line."),
+				err:     errors.New("MustGetIdentifiers() did not find any UUIDs or IDs in the command line."),
 			},
 		},
 	}
