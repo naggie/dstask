@@ -242,9 +242,9 @@ func TestMustGetIdentifiers(t *testing.T) {
 			t.Parallel()
 
 			idents, taskSet, err := tc.input.MustGetIdentifiers()
-			assert.Equal(t, idents, tc.expected.idents)
-			assert.Equal(t, taskSet, tc.expected.taskSet)
-			assert.Equal(t, err, tc.expected.err)
+			assert.Equal(t, tc.expected.idents, idents)
+			assert.Equal(t, tc.expected.taskSet, taskSet)
+			assert.Equal(t, tc.expected.err, err)
 
 		})
 	}
