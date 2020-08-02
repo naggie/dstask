@@ -27,7 +27,7 @@ func main() {
 
 	switch cmdLine.Cmd {
 	// Empty string is interpreted as CMD_NEXT
-	case "", dstask.CMD_NEXT:
+	case "", dstask.CMD_NEXT, dstask.CMD_SHOW_OPEN:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		ts.Filter(context)
 		ts.Filter(cmdLine)
@@ -35,16 +35,6 @@ func main() {
 		ts.SortByPriority()
 		context.PrintContextDescription()
 		ts.DisplayByNext(true)
-		ts.DisplayCriticalTaskWarning()
-
-	case dstask.CMD_SHOW_OPEN:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
-		ts.Filter(cmdLine)
-		ts.FilterOutStatus(dstask.STATUS_TEMPLATE)
-		ts.SortByPriority()
-		context.PrintContextDescription()
-		ts.DisplayByNext(false)
 		ts.DisplayCriticalTaskWarning()
 
 	case dstask.CMD_ADD:
