@@ -5,7 +5,7 @@
 <h1 align="center">dstask</h1>
 
 <p align="center">
-<i>Single binary terminal-based TODO manager: git-based sync + markdown notes per task</i>
+<i>Single binary terminal-based TODO manager with git-based sync + markdown notes per task</i>
 </p>
 
 <p align="center">
