@@ -229,48 +229,42 @@ func (ts *TaskSet) MustGetByID(id int) (Task, error) {
 	return *ts.tasksByID[id], nil
 }
 
-/*
-type NonUniqueUUIDError struct {
-	uuidQuery 	string
-	uuidResults	[]string
-	Err 		error
-}
-
-func (e *NonUniqueUUIDError) Error() string {
-	return e.Err
-}
-
-func (ts *TaskSet) SearchForResolvedUUID(uuid string) (string, error) {
+func (ts *TaskSet) SearchForUUID(uuid string) (string, error) {
 	var uuids []string
 	for _, task := range ts.tasks {
 		if strings.HasPrefix(task.UUID, uuid) {
 			uuids = append(uuids, task.UUID)
 		}
-		if len(uuids) == 0 { // No matches
-			errMsg := fmt.Sprintf("No task with partial UUID %s exists.\n", uuid)
-			return nil, errors.New(errMsg)
-
-		} else if len(uuids) > 1 { // More than one UUID found that matches string
-
-			fmt.Printf("Multiple Tasks match UUID: %s\n", cmdLine.UUID)
-			// Print UUIDs and Summary and prompt user to enter more specific ID.
-			// Probably better to either filter ts or create new taskset with
-			// uuids then can use DisplayByNext
-			fmt.Printf("\nUUID \t\t\t\t\tSummary\n")
-			for _, uuid := range uuids {
-				task := ts.MustGetByUUID(uuid)
-				fmt.Printf("%s \t%s\n", task.UUID, task.Summary)
-			}
-			fmt.Println("\nProvide  specific UUID")
-		}
-
 	}
-	return uuids
-}*/
+	if len(uuids) == 0 { // No matches
+		return "", fmt.Errorf("No task matching incomplete UUID: %s exists.\n", uuid)
+
+	} else if len(uuids) > 1 { // More than one UUID found that matches string
+
+		// Print UUIDs and Summary and prompt user to enter more specific ID.
+		// Probably better to either filter ts or create new taskset with
+		// uuids then can use DisplayByNext
+		fmt.Printf("\nUUID \t\t\t\t\tSummary\n")
+		for _, uuid := range uuids {
+			task, err := ts.MustGetByUUID(uuid)
+			if err != nil { //This should never happen
+				ExitFail("Unable to retrieve UUID: %s: ", uuid, err)
+			}
+			fmt.Printf("%s \t%s\n", task.UUID, task.Summary)
+		}
+		fmt.Println()
+		return "", fmt.Errorf("Multiple Tasks Match UUID: %s \nProvide more unique Partial UUID\n", uuid)
+	}
+	return uuids[0], nil
+}
 
 func (ts *TaskSet) MustGetByUUID(uuid string) (Task, error) {
 	if !IsValidUUID4String(uuid) {
-		return Task{}, fmt.Errorf("UUID: %s is not a valid UUID4 string", uuid)
+		uuid, err := ts.SearchForUUID(uuid)
+		if err != nil {
+			return Task{}, err
+		}
+		return *ts.tasksByUUID[uuid], nil
 	} else if ts.tasksByUUID[uuid] == nil {
 		return Task{}, fmt.Errorf("No task with UUID %v exists in %v.", uuid, ts)
 	} else {
@@ -287,7 +281,7 @@ func (ts *TaskSet) MustGetTask(id interface{}) (Task, error) {
 	case string:
 		return ts.MustGetByUUID(id)
 	default:
-		return Task{}, fmt.Errorf("Unable to Find Task with id of type: %v", id)
+		return Task{}, fmt.Errorf("Invalid Identifier type: %v", id)
 	}
 }
 func (ts *TaskSet) Tasks() []Task {

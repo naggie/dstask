@@ -523,10 +523,11 @@ func main() {
 			dstask.CMD_MODIFY,
 		}, cmdLine.Cmd) && len(cmdLine.IDs) < 1 {
 			// This will complete with a space after the colon.
-			ts := dstask.LoadTasksFromDisk([]string{dstask.STATUS_RESOLVED})
-			for _, task := range ts.Tasks() {
-				completions = append(completions, "uuid:"+task.UUID)
-			}
+			//ts := dstask.LoadTasksFromDisk([]string{dstask.STATUS_RESOLVED})
+			//for _, task := range ts.Tasks() {
+			//		completions = append(completions, "uuid:"+task.UUID)
+			//}
+			completions = append(completions, "uuid:")
 		}
 
 		if dstask.StrSliceContains([]string{
