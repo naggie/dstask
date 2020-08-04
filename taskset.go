@@ -3,6 +3,7 @@ package dstask
 // main task data structures
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path"
 	"sort"
@@ -179,7 +180,7 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 		task.ID = 0
 	}
 
-	if task.Status == STATUS_RESOLVED && task.Resolved.IsZero() {
+	if task.Status == STATUS_RESOLVED && (task.Resolved.IsZero() || old.Status != STATUS_RESOLVED) {
 		task.Resolved = time.Now()
 	}
 
@@ -220,14 +221,69 @@ func (ts *TaskSet) FilterUnorganised() {
 	}
 }
 
-func (ts *TaskSet) MustGetByID(id int) Task {
+func (ts *TaskSet) MustGetByID(id int) (Task, error) {
 	if ts.tasksByID[id] == nil {
-		ExitFail("No open task with ID %v exists.", id)
+		return Task{}, fmt.Errorf("No open task with ID %v exists.", id)
 	}
 
-	return *ts.tasksByID[id]
+	return *ts.tasksByID[id], nil
 }
 
+func (ts *TaskSet) SearchForUUID(uuid string) (string, error) {
+	var uuids []string
+	for _, task := range ts.tasks {
+		if strings.HasPrefix(task.UUID, uuid) {
+			uuids = append(uuids, task.UUID)
+		}
+	}
+	if len(uuids) == 0 { // No matches
+		return "", fmt.Errorf("No task matching incomplete UUID: %s exists.\n", uuid)
+
+	} else if len(uuids) > 1 { // More than one UUID found that matches string
+
+		// Print UUIDs and Summary and prompt user to enter more specific ID.
+		// Probably better to either filter ts or create new taskset with
+		// uuids then can use DisplayByNext
+		fmt.Printf("\nUUID \t\t\t\t\tSummary\n")
+		for _, uuid := range uuids {
+			task, err := ts.MustGetByUUID(uuid)
+			if err != nil { //This should never happen
+				ExitFail("Unable to retrieve UUID: %s: ", uuid, err)
+			}
+			fmt.Printf("%s \t%s\n", task.UUID, task.Summary)
+		}
+		fmt.Println()
+		return "", fmt.Errorf("Multiple Tasks Match UUID: %s \nProvide more unique Partial UUID\n", uuid)
+	}
+	return uuids[0], nil
+}
+
+func (ts *TaskSet) MustGetByUUID(uuid string) (Task, error) {
+	if !IsValidUUID4String(uuid) {
+		uuid, err := ts.SearchForUUID(uuid)
+		if err != nil {
+			return Task{}, err
+		}
+		return *ts.tasksByUUID[uuid], nil
+	} else if ts.tasksByUUID[uuid] == nil {
+		return Task{}, fmt.Errorf("No task with UUID %v exists in %v.", uuid, ts)
+	} else {
+		return *ts.tasksByUUID[uuid], nil
+	}
+}
+
+// MustGetTask() accepts an ID partial or complete UUID and calls MustGetByID() or MustGetByUUID() depending input type.
+// An error is thrown if the input is not an int or string.
+func (ts *TaskSet) MustGetTask(id interface{}) (Task, error) {
+	switch id := id.(type) {
+	case int:
+		return ts.MustGetByID(id)
+	case string:
+		return ts.MustGetByUUID(id)
+	default:
+		return Task{}, fmt.Errorf("Invalid Identifier type: %v", id)
+	}
+}
 func (ts *TaskSet) Tasks() []Task {
 	tasks := make([]Task, 0, len(ts.tasks))
 	for _, task := range ts.tasks {

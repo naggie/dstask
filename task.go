@@ -201,6 +201,24 @@ func (task *Task) LongSummary() string {
 	}
 }
 
+// Proceses Task Notes
+func (task *Task) AddNote(cmdLine CmdLine, openEditor bool) error {
+	if openEditor {
+		if cmdLine.Text == "" {
+			task.Notes = string(MustEditBytes([]byte(task.Notes), "md"))
+		} else {
+			if task.Notes == "" {
+				task.Notes = cmdLine.Text
+			} else {
+				task.Notes += "\n" + cmdLine.Text
+			}
+		}
+		return nil
+	} else {
+		return WriteStdout([]byte(task.Notes))
+	}
+}
+
 func (task *Task) Modify(cmdLine CmdLine) {
 	for _, tag := range cmdLine.Tags {
 		if !StrSliceContains(task.Tags, tag) {

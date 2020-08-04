@@ -158,6 +158,7 @@ func (ts TaskSet) DisplayByWeek() {
 			fmt.Printf("\n\n> Week %d, starting %s\n\n", week, t.Resolved.Format("Mon 2 Jan 2006"))
 			table = NewTable(
 				w,
+				"UUID",
 				"Resolved",
 				"Priority",
 				"Tags",
@@ -168,6 +169,7 @@ func (ts TaskSet) DisplayByWeek() {
 
 		table.AddRow(
 			[]string{
+				t.UUID[0:8],
 				t.Resolved.Format("Mon 2"),
 				t.Priority,
 				strings.Join(t.Tags, " "),

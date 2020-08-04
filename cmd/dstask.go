@@ -52,7 +52,11 @@ func main() {
 
 		if cmdLine.Template > 0 {
 			var taskSummary string
-			tt := ts.MustGetByID(cmdLine.Template)
+			tt, err := ts.MustGetByID(cmdLine.Template)
+			if err != nil {
+				dstask.ExitFail("In CMD_ADD: Unable to create Template from task %v: %v", cmdLine.Template, err)
+			}
+
 			context.PrintContextDescription()
 			cmdLine.MergeContext(context)
 
@@ -106,8 +110,10 @@ func main() {
 		}
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
-
+			task, err := ts.MustGetByID(id)
+			if err != nil {
+				dstask.ExitFail("In CMD_RM: %v", err)
+			}
 			// Mark our task for deletion
 			task.Deleted = true
 
@@ -122,7 +128,10 @@ func main() {
 
 		if len(cmdLine.IDs) > 0 {
 			for _, id := range cmdLine.IDs {
-				task := ts.MustGetByID(id)
+				task, err := ts.MustGetByID(id)
+				if err != nil {
+					dstask.ExitFail("In CMD_TEMPLATE: %v", err)
+				}
 				task.Status = dstask.STATUS_TEMPLATE
 
 				ts.MustUpdateTask(task)
@@ -171,7 +180,10 @@ func main() {
 		if len(cmdLine.IDs) > 0 {
 			// start given tasks by IDs
 			for _, id := range cmdLine.IDs {
-				task := ts.MustGetByID(id)
+				task, err := ts.MustGetByID(id)
+				if err != nil {
+					dstask.ExitFail("In CMD_START: %v", err)
+				}
 				task.Status = dstask.STATUS_ACTIVE
 				if cmdLine.Text != "" {
 					task.Notes += "\n" + cmdLine.Text
@@ -205,7 +217,10 @@ func main() {
 	case dstask.CMD_STOP:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
+			task, err := ts.MustGetByID(id)
+			if err != nil {
+				dstask.ExitFail("In CMD_STOP: %v", err)
+			}
 			task.Status = dstask.STATUS_PAUSED
 			if cmdLine.Text != "" {
 				task.Notes += "\n" + cmdLine.Text
@@ -218,7 +233,11 @@ func main() {
 	case dstask.CMD_DONE, dstask.CMD_RESOLVE:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
+			task, err := ts.MustGetByID(id)
+			if err != nil {
+				dstask.ExitFail("In CMD_DONE/CMD_RESOLVE: %v", err)
+			}
+
 			task.Status = dstask.STATUS_RESOLVED
 			if cmdLine.Text != "" {
 				task.Notes += "\n" + cmdLine.Text
@@ -243,9 +262,12 @@ func main() {
 		state.Save()
 
 	case dstask.CMD_MODIFY:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 
-		if len(cmdLine.IDs) == 0 {
+		identifiers, taskSet, nil := cmdLine.MustGetIdentifiers()
+
+		ts := dstask.LoadTasksFromDisk(taskSet)
+
+		if len(identifiers) == 0 {
 			ts.Filter(context)
 			dstask.ConfirmOrAbort("No IDs specified. Apply to all %d tasks in current context?", len(ts.Tasks()))
 
@@ -258,8 +280,12 @@ func main() {
 			return
 		}
 
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
+		for _, id := range identifiers {
+			task, err := ts.MustGetTask(id)
+			if err != nil {
+				dstask.ExitFail("In CMD_MODIFY: %v", err)
+			}
+
 			task.Modify(cmdLine)
 			ts.MustUpdateTask(task)
 			ts.SavePendingChanges()
@@ -267,61 +293,82 @@ func main() {
 		}
 
 	case dstask.CMD_EDIT:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
 
-			// hide ID
+		identifiers, taskSet, err := cmdLine.MustGetIdentifiers()
+		if err != nil {
+			dstask.ExitFail("In CMD_EDIT: %v", err)
+		}
+		editResolved := taskSet[0] == dstask.STATUS_RESOLVED
+
+		ts := dstask.LoadTasksFromDisk(taskSet)
+
+		for _, id := range identifiers {
+			task, err := ts.MustGetTask(id)
+			if err != nil {
+				dstask.ExitFail("In CMD_EDIT: %v", err)
+			}
+
+			// Hide ID
 			task.ID = 0
 
 			data, err := yaml.Marshal(&task)
 			if err != nil {
-				// TODO present error to user, specific error message is important
-				dstask.ExitFail("Failed to marshal task %s", task)
+				dstask.ExitFail(fmt.Sprintf("Failed to marshal task %s: %v\n", task, err))
 			}
 
 			data = dstask.MustEditBytes(data, "yml")
 
 			err = yaml.Unmarshal(data, &task)
 			if err != nil {
-				// TODO present error to user, specific error message is important
 				// TODO reattempt mechanism
-				dstask.ExitFail("Failed to unmarshal yml")
+				dstask.ExitFail(fmt.Sprintf("Failed to unmarshal yml: %v\n", err))
 			}
 
-			// re-add ID
-			task.ID = id
-
+			// Re-add ID
+			if !editResolved {
+				task.ID, _ = id.(int)
+			}
 			ts.MustUpdateTask(task)
 			ts.SavePendingChanges()
 			dstask.MustGitCommit("Edited %s", task)
+
+			if editResolved {
+				// If editing a resolved Task and status is changing, load NON_RESOLVED_STATUSES to assign ID
+				// After LoadTasksFromDisk() is called, the new ID of the resolved task will be displayed
+				if task.Status != dstask.STATUS_RESOLVED {
+					ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
+					task, err := ts.MustGetByUUID(cmdLine.UUID)
+					if err != nil {
+						dstask.ExitFail("In CMD_EDIT: Failed to Assign ID to pending task: %v", err)
+					}
+					fmt.Printf("This task has now been assigned the ID: %v\n", task.ID)
+				}
+			}
 		}
 
 	case dstask.CMD_NOTE, dstask.CMD_NOTES:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 
 		// If stdout is not a TTY, we simply write markdown notes to stdout
 		openEditor := dstask.IsTTY()
 
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
+		identifiers, taskSet, nil := cmdLine.MustGetIdentifiers()
+
+		ts := dstask.LoadTasksFromDisk(taskSet)
+
+		for _, identifier := range identifiers {
+			task, err := ts.MustGetTask(identifier)
+			if err != nil {
+				dstask.ExitFail("In CMD_NOTE(S): Unable to retrieve task: %v", err)
+			}
+			err = task.AddNote(cmdLine, openEditor)
+			if err != nil {
+				dstask.ExitFail("In CMD_NOTE(S): %v", err)
+			}
+
 			if openEditor {
-				if cmdLine.Text == "" {
-					task.Notes = string(dstask.MustEditBytes([]byte(task.Notes), "md"))
-				} else {
-					if task.Notes == "" {
-						task.Notes = cmdLine.Text
-					} else {
-						task.Notes += "\n" + cmdLine.Text
-					}
-				}
 				ts.MustUpdateTask(task)
 				ts.SavePendingChanges()
 				dstask.MustGitCommit("Edit note %s", task)
-			} else {
-				if err := dstask.WriteStdout([]byte(task.Notes)); err != nil {
-					dstask.ExitFail("Could not write to stdout: %v", err)
-				}
 			}
 		}
 
@@ -364,7 +411,10 @@ func main() {
 	case dstask.CMD_OPEN:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
 		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
+			task, err := ts.MustGetByID(id)
+			if err != nil {
+				dstask.ExitFail("In CMD_OPEN: %v", err)
+			}
 			urls := xurls.Relaxed.FindAllString(task.Summary+" "+task.Notes, -1)
 
 			if len(urls) == 0 {
@@ -462,6 +512,24 @@ func main() {
 					completions = append(completions, cmd)
 				}
 			}
+		}
+
+		//uuid
+		if dstask.StrSliceContains([]string{
+			dstask.CMD_EDIT,
+			dstask.CMD_NOTE,
+			dstask.CMD_NOTES,
+			dstask.CMD_MODIFY,
+		}, cmdLine.Cmd) && len(cmdLine.IDs) < 1 {
+
+			// Uncomment to enable UUID cmdline completions
+			//ts := dstask.LoadTasksFromDisk([]string{dstask.STATUS_RESOLVED})
+			//for _, task := range ts.Tasks() {
+			//		completions = append(completions, "uuid:"+task.UUID)
+			//}
+
+			// TODO This will complete with a space after the colon. Fix this.
+			completions = append(completions, "uuid:")
 		}
 
 		if dstask.StrSliceContains([]string{
