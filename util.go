@@ -47,7 +47,7 @@ func MustGetUUID4String() string {
 
 func IsValidPartialUUID4String(str string) bool {
 	// Check that all characters in string are Hex and indices 8,13,18,23 are '-'
-	if len(str) > 4 {
+	if len(str) > 4 && len(str) < 37 {
 		var isHexChar = regexp.MustCompile(`[[:xdigit:]]`)
 		for i, c := range str {
 			if i == 8 || i == 13 || i == 18 || i == 23 {
