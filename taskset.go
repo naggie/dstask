@@ -272,7 +272,7 @@ func (ts *TaskSet) MustGetByUUID(uuid string) (Task, error) {
 	}
 }
 
-// MustGetTask() accepts either a ID or UUID calls MustGetByID() or MustGetByUUID() depending on the input type.
+// MustGetTask() accepts an ID partial or complete UUID and calls MustGetByID() or MustGetByUUID() depending input type.
 // An error is thrown if the input is not an int or string.
 func (ts *TaskSet) MustGetTask(id interface{}) (Task, error) {
 	switch id := id.(type) {

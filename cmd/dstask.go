@@ -328,13 +328,12 @@ func main() {
 			if !editResolved {
 				task.ID, _ = id.(int)
 			}
-			// TODO edit MustUpdateTask to erase resolved date if necessary
 			ts.MustUpdateTask(task)
 			ts.SavePendingChanges()
 			dstask.MustGitCommit("Edited %s", task)
 
 			if editResolved {
-				// If the editing a resolved Task and status is changing, load NON_RESOLVED_STATUSES to assign ID
+				// If editing a resolved Task and status is changing, load NON_RESOLVED_STATUSES to assign ID
 				// After LoadTasksFromDisk() is called, the new ID of the resolved task will be displayed
 				if task.Status != dstask.STATUS_RESOLVED {
 					ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
@@ -522,11 +521,14 @@ func main() {
 			dstask.CMD_NOTES,
 			dstask.CMD_MODIFY,
 		}, cmdLine.Cmd) && len(cmdLine.IDs) < 1 {
-			// This will complete with a space after the colon.
+
+			// Uncomment to enable UUID cmdline completions
 			//ts := dstask.LoadTasksFromDisk([]string{dstask.STATUS_RESOLVED})
 			//for _, task := range ts.Tasks() {
 			//		completions = append(completions, "uuid:"+task.UUID)
 			//}
+
+			// TODO This will complete with a space after the colon. Fix this.
 			completions = append(completions, "uuid:")
 		}
 

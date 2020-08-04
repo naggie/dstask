@@ -239,7 +239,6 @@ func TestMustGetIdentifiers(t *testing.T) {
 	for i, tc := range tests {
 
 		t.Run(fmt.Sprintf("test %v: %s", i, tc.input), func(t *testing.T) {
-			t.Parallel()
 
 			idents, taskSet, err := tc.input.MustGetIdentifiers()
 			assert.Equal(t, tc.expected.idents, idents)
