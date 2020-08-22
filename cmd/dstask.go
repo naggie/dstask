@@ -16,6 +16,7 @@ func main() {
 	// Sets globals: GIT_REPO, STATE_FILE, IDS_FILE
 	dstask.ParseConfig()
 	dstask.EnsureRepoExists(dstask.GIT_REPO)
+	repoPath := dstask.GIT_REPO
 	// Load state for getting and setting context
 	state := dstask.LoadState()
 	context := state.Context
@@ -28,24 +29,14 @@ func main() {
 	switch cmdLine.Cmd {
 	// Empty string is interpreted as CMD_NEXT
 	case "", dstask.CMD_NEXT:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
-		ts.Filter(cmdLine)
-		ts.FilterOutStatus(dstask.STATUS_TEMPLATE)
-		ts.SortByPriority()
-		context.PrintContextDescription()
-		ts.DisplayByNext(true)
-		ts.DisplayCriticalTaskWarning()
+		if err := dstask.CommandNext(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_SHOW_OPEN:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
-		ts.Filter(cmdLine)
-		ts.FilterOutStatus(dstask.STATUS_TEMPLATE)
-		ts.SortByPriority()
-		context.PrintContextDescription()
-		ts.DisplayByNext(false)
-		ts.DisplayCriticalTaskWarning()
+		if err := dstask.CommandShowOpen(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_ADD:
 		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
