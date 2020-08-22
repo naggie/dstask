@@ -34,6 +34,53 @@ type Project struct {
 	Priority string
 }
 
+// NewTaskSet constructs a TaskSet from a repo path and zero or more options.
+func NewTaskSet(repoPath string, opts ...TaskSetOpt) (*TaskSet, error) {
+
+	// Initialise an empty TaskSet
+	var ts TaskSet
+	ts.tasksByUUID = make(map[string]*Task)
+	ts.tasksByID = make(map[int]*Task)
+
+	// Apply our options
+	var tso taskSetOpts
+	for _, opt := range opts {
+		opt(&tso)
+	}
+	ids := LoadIds()
+
+	for _, status := range tso.statuses {
+		dir := filepath.Join(repoPath, status)
+		files, err := ioutil.ReadDir(dir)
+		if err != nil {
+			return nil, err
+		}
+		for _, finfo := range files {
+			path := filepath.Join(dir, finfo.Name())
+			t, err := unmarshalTask(path, finfo, ids, status)
+			if err != nil {
+				log.Printf("error loading task: %v\n", err)
+				continue
+			}
+			ts.LoadTask(t)
+		}
+	}
+
+	return &ts, nil
+}
+
+type TaskSetOpt func(opts *taskSetOpts)
+
+func WithStatuses(statuses ...string) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.statuses = append(opts.statuses, statuses...)
+	}
+}
+
+type taskSetOpts struct {
+	statuses []string
+}
+
 // LoadTasksFromDisk returns the TaskSet of our current tasks, filtered by status.
 func LoadTasksFromDisk(statuses []string) *TaskSet {
 	ts := &TaskSet{
@@ -77,7 +124,8 @@ func (ts *TaskSet) SortByResolved() {
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Resolved.Before(ts.tasks[j].Resolved) })
 }
 
-// add a task, but only if it has a new uuid or no uuid. Return annotated task.
+// LoadTask adds a task to the TaskSet, but only if it has a new uuid or no uuid.
+// Return annotated task.
 func (ts *TaskSet) LoadTask(task Task) Task {
 	task.Normalise()
 
