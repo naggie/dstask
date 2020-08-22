@@ -4,12 +4,11 @@ package dstask
 
 import (
 	"io/ioutil"
-	"path"
+	"log"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
-
-	yaml "gopkg.in/yaml.v2"
 )
 
 type TaskSet struct {
@@ -53,38 +52,14 @@ func LoadTasksFromDisk(statuses []string) *TaskSet {
 		}
 
 		for _, file := range files {
-			filepath := path.Join(dir, file.Name())
 
-			if len(file.Name()) != 40 {
-				// not <uuid4>.yml
+			path := filepath.Join(dir, file.Name())
+
+			t, err := unmarshalTask(path, file, ids, status)
+			if err != nil {
+				log.Printf("error loading task: %v\n", err)
 				continue
 			}
-
-			uuid := file.Name()[0:36]
-
-			if !IsValidUUID4String(uuid) {
-				continue
-			}
-
-			t := Task{
-				UUID:   uuid,
-				Status: status,
-				ID:     ids[uuid],
-			}
-
-			data, err := ioutil.ReadFile(filepath)
-			if err != nil {
-				ExitFail("Failed to read %s", filepath)
-			}
-			err = yaml.Unmarshal(data, &t)
-			if err != nil {
-				// TODO present error to user, specific error message is important
-				ExitFail("Failed to unmarshal %s", filepath)
-			}
-
-			// trust subdirectory over status in yaml file (recently added to
-			// allow status change with task edit)
-			t.Status = status
 
 			ts.LoadTask(t)
 		}

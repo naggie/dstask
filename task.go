@@ -57,6 +57,37 @@ type Task struct {
 	filtered bool
 }
 
+// Unmarshal a Task from disk. We explicitly pass status, because the caller
+// already knows the status, and can override the status declared in yaml.
+func unmarshalTask(path string, finfo os.FileInfo, ids IdsMap, status string) (Task, error) {
+	if len(finfo.Name()) != TASK_FILENAME_LEN {
+		return Task{}, fmt.Errorf("filename does not encode UUID %s (wrong length)", finfo.Name())
+	}
+
+	uuid := finfo.Name()[0:36]
+	if !IsValidUUID4String(uuid) {
+		return Task{}, fmt.Errorf("filename does not encode UUID %s", finfo.Name())
+	}
+
+	t := Task{
+		UUID:   uuid,
+		Status: status,
+		ID:     ids[uuid],
+	}
+
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return Task{}, fmt.Errorf("Failed to read %s", finfo.Name())
+	}
+	err = yaml.Unmarshal(data, &t)
+	if err != nil {
+		return Task{}, fmt.Errorf("Failed to unmarshal %s", finfo.Name())
+	}
+
+	t.Status = status
+	return t, nil
+}
+
 func (task Task) String() string {
 	if task.ID > 0 {
 		return fmt.Sprintf("%v: %s", task.ID, task.Summary)

@@ -70,7 +70,8 @@ const (
 	PRIORITY_NORMAL   = "P2"
 	PRIORITY_LOW      = "P3"
 
-	MAX_TASKS_OPEN = 10000
+	MAX_TASKS_OPEN    = 10000
+	TASK_FILENAME_LEN = 40
 
 	// if the terminal is too short, show this many tasks anyway
 	MIN_TASKS_SHOWN = 8
