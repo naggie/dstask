@@ -2,13 +2,16 @@ package dstask
 
 // CommandNext ...
 func CommandNext(repoPath string, ctx, cmdLine CmdLine) error {
-	ts, err := NewTaskSet(repoPath, WithStatuses(NON_RESOLVED_STATUSES...))
+	ts, err := NewTaskSet(
+		repoPath,
+		WithoutStatuses(STATUS_TEMPLATE),
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
 	if err != nil {
 		return err
 	}
 	ts.Filter(ctx)
 	ts.Filter(cmdLine)
-	ts.FilterOutStatus(STATUS_TEMPLATE)
 	ts.SortByPriority()
 	ctx.PrintContextDescription()
 	ts.DisplayByNext(true)
@@ -19,13 +22,16 @@ func CommandNext(repoPath string, ctx, cmdLine CmdLine) error {
 
 // CommandShowOpen ...
 func CommandShowOpen(repoPath string, ctx, cmdLine CmdLine) error {
-	ts, err := NewTaskSet(repoPath, WithStatuses(NON_RESOLVED_STATUSES...))
+	ts, err := NewTaskSet(
+		repoPath,
+		WithoutStatuses(STATUS_TEMPLATE),
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
 	if err != nil {
 		return err
 	}
 	ts.Filter(ctx)
 	ts.Filter(cmdLine)
-	ts.FilterOutStatus(STATUS_TEMPLATE)
 	ts.SortByPriority()
 	ctx.PrintContextDescription()
 	ts.DisplayByNext(false)

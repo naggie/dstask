@@ -49,7 +49,9 @@ func NewTaskSet(repoPath string, opts ...TaskSetOpt) (*TaskSet, error) {
 	}
 	ids := LoadIds()
 
-	for _, status := range tso.statuses {
+	filteredStatuses := filterStringSlice(tso.statuses, tso.withoutStatuses)
+
+	for _, status := range filteredStatuses {
 		dir := filepath.Join(repoPath, status)
 		files, err := ioutil.ReadDir(dir)
 		if err != nil {
@@ -77,8 +79,27 @@ func WithStatuses(statuses ...string) TaskSetOpt {
 	}
 }
 
+func WithoutStatuses(statuses ...string) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.withoutStatuses = append(opts.withoutStatuses, statuses...)
+	}
+}
+
 type taskSetOpts struct {
-	statuses []string
+	statuses        []string
+	withoutStatuses []string
+}
+
+func filterStringSlice(with, without []string) []string {
+	var ret []string
+	for _, have := range with {
+		for _, unwanted := range without {
+			if have != unwanted {
+				ret = append(ret, have)
+			}
+		}
+	}
+	return ret
 }
 
 // LoadTasksFromDisk returns the TaskSet of our current tasks, filtered by status.
