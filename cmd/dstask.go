@@ -39,56 +39,8 @@ func main() {
 		}
 
 	case dstask.CMD_ADD:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-
-		if cmdLine.Template > 0 {
-			var taskSummary string
-			tt := ts.MustGetByID(cmdLine.Template)
-			context.PrintContextDescription()
-			cmdLine.MergeContext(context)
-
-			if cmdLine.Text != "" {
-				taskSummary = cmdLine.Text
-			} else {
-				taskSummary = tt.Summary
-			}
-
-			// create task from template task tt
-			task := dstask.Task{
-				WritePending: true,
-				Status:       dstask.STATUS_PENDING,
-				Summary:      taskSummary,
-				Tags:         tt.Tags,
-				Project:      tt.Project,
-				Priority:     tt.Priority,
-				Notes:        tt.Notes,
-			}
-
-			// Modify the task with any tags/projects/antiProjects/priorities in cmdLine
-			task.Modify(cmdLine)
-
-			task = ts.LoadTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Added %s", task)
-			if tt.Status != dstask.STATUS_TEMPLATE {
-				// Insert Text Statement to inform user of real Templates
-				fmt.Print("\nYou've copied an open task!\nTo learn more about creating templates enter 'dstask help template'\n\n")
-			}
-		} else if cmdLine.Text != "" {
-			context.PrintContextDescription()
-			cmdLine.MergeContext(context)
-			task := dstask.Task{
-				WritePending: true,
-				Status:       dstask.STATUS_PENDING,
-				Summary:      cmdLine.Text,
-				Tags:         cmdLine.Tags,
-				Project:      cmdLine.Project,
-				Priority:     cmdLine.Priority,
-				Notes:        cmdLine.Note,
-			}
-			task = ts.LoadTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Added %s", task)
+		if err := dstask.CommandAdd(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_RM, dstask.CMD_REMOVE:
