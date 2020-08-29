@@ -345,6 +345,22 @@ func CommandShowActive(repoPath string, ctx, cmdLine CmdLine) error {
 	return nil
 }
 
+// CommandShowProjects ...
+func CommandShowProjects(repoPath string, ctx, cmdLine CmdLine) error {
+	ctx.PrintContextDescription()
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(ALL_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+	cmdLine.MergeContext(ctx)
+	ts.Filter(ctx)
+	ts.DisplayProjects()
+	return nil
+}
+
 // CommandShowOpen ...
 func CommandShowOpen(repoPath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
@@ -377,6 +393,43 @@ func CommandShowPaused(repoPath string, ctx, cmdLine CmdLine) error {
 	ts.FilterByStatus(STATUS_PAUSED)
 	ts.SortByPriority()
 	ts.DisplayByNext(true)
+	return nil
+}
+
+// CommandShowTags ...
+func CommandShowTags(repoPath string, ctx, cmdLine CmdLine) error {
+	ctx.PrintContextDescription()
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+	cmdLine.MergeContext(ctx)
+	ts.Filter(ctx)
+	for tag := range ts.GetTags() {
+		fmt.Println(tag)
+	}
+	return nil
+}
+
+// CommandShowTemplates ...
+func CommandShowTemplates(repoPath string, ctx, cmdLine CmdLine) error {
+
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+	ts.Filter(ctx)
+	ts.Filter(cmdLine)
+	ts.FilterByStatus(STATUS_TEMPLATE)
+	ts.SortByPriority()
+	ts.DisplayByNext(false)
+	ctx.PrintContextDescription()
 	return nil
 }
 

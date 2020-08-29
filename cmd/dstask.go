@@ -121,29 +121,19 @@ func main() {
 		}
 
 	case dstask.CMD_SHOW_PROJECTS:
-		context.PrintContextDescription()
-		ts := dstask.LoadTasksFromDisk(dstask.ALL_STATUSES)
-		cmdLine.MergeContext(context)
-		ts.Filter(context)
-		ts.DisplayProjects()
+		if err := dstask.CommandShowProjects(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_SHOW_TAGS:
-		context.PrintContextDescription()
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		cmdLine.MergeContext(context)
-		ts.Filter(context)
-		for tag := range ts.GetTags() {
-			fmt.Println(tag)
+		if err := dstask.CommandShowTags(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_SHOW_TEMPLATES:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
-		ts.Filter(cmdLine)
-		ts.FilterByStatus(dstask.STATUS_TEMPLATE)
-		ts.SortByPriority()
-		ts.DisplayByNext(false)
-		context.PrintContextDescription()
+		if err := dstask.CommandShowTemplates(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_SHOW_RESOLVED:
 		ts := dstask.LoadTasksFromDisk(dstask.ALL_STATUSES)
