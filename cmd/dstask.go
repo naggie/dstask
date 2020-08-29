@@ -1,10 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"os"
-	"strconv"
-	"strings"
 
 	"github.com/naggie/dstask"
 )
@@ -136,128 +133,26 @@ func main() {
 		}
 
 	case dstask.CMD_SHOW_RESOLVED:
-		ts := dstask.LoadTasksFromDisk(dstask.ALL_STATUSES)
-		ts.Filter(context)
-		ts.Filter(cmdLine)
-		ts.FilterByStatus(dstask.STATUS_RESOLVED)
-		ts.SortByResolved()
-		ts.DisplayByWeek()
-		context.PrintContextDescription()
+		if err := dstask.CommandShowResolved(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_SHOW_UNORGANISED:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(cmdLine)
-		ts.FilterUnorganised()
-		ts.DisplayByNext(true)
+		if err := dstask.CommandShowUnorganised(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_HELP:
-		if len(os.Args) > 2 {
-			dstask.Help(os.Args[2])
-		} else {
-			dstask.Help("")
-		}
+		dstask.CommandHelp(os.Args)
 
 	case dstask.CMD_VERSION:
-		fmt.Printf(
-			"Version: %s\nGit commit: %s\nBuild date: %s\n",
-			dstask.VERSION,
-			dstask.GIT_COMMIT,
-			dstask.BUILD_DATE,
-		)
+		dstask.CommandVersion()
 
 	case dstask.CMD_COMPLETIONS:
-		// given the entire user's command line arguments as the arguments for
-		// this cmd, suggest possible candidates for the last arg.
-		// see the relevant shell completion bindings in this repository for
-		// integration. Note there are various idiosyncrasies with bash
-		// involving arg separation.
-		var completions []string
-		var originalArgs []string
-		var prefix string
+		dstask.Completions(os.Args, context)
 
-		if len(os.Args) > 3 {
-			originalArgs = os.Args[3:]
-		}
-
-		// args are dstask _completions <user command line>
-		// parse command line as normal to set rules
-		cmdLine := dstask.ParseCmdLine(originalArgs...)
-
-		// no command specified, default given
-		if !cmdLine.IDsExhausted || cmdLine.Cmd == dstask.CMD_HELP || cmdLine.Cmd == "" {
-			for _, cmd := range dstask.ALL_CMDS {
-				if !strings.HasPrefix(cmd, "_") {
-					completions = append(completions, cmd)
-				}
-			}
-		}
-
-		if dstask.StrSliceContains([]string{
-			"",
-			dstask.CMD_NEXT,
-			dstask.CMD_ADD,
-			dstask.CMD_REMOVE,
-			dstask.CMD_LOG,
-			dstask.CMD_START,
-			dstask.CMD_STOP,
-			dstask.CMD_DONE,
-			dstask.CMD_RESOLVE,
-			dstask.CMD_CONTEXT,
-			dstask.CMD_MODIFY,
-			dstask.CMD_SHOW_NEXT,
-			dstask.CMD_SHOW_PROJECTS,
-			dstask.CMD_SHOW_ACTIVE,
-			dstask.CMD_SHOW_PAUSED,
-			dstask.CMD_SHOW_OPEN,
-			dstask.CMD_SHOW_RESOLVED,
-			dstask.CMD_SHOW_TEMPLATES,
-		}, cmdLine.Cmd) {
-			ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-			// limit completions to available context, but not if the user is
-			// trying to change context, context ignore is on, or modify
-			// command is being completed
-			if !cmdLine.IgnoreContext &&
-				cmdLine.Cmd != dstask.CMD_CONTEXT &&
-				cmdLine.Cmd != dstask.CMD_MODIFY {
-				ts.Filter(context)
-			}
-
-			// templates
-			if cmdLine.Cmd == dstask.CMD_ADD {
-				for _, task := range ts.Tasks() {
-					if task.Status == dstask.STATUS_TEMPLATE {
-						completions = append(completions, "template:"+strconv.Itoa(task.ID))
-					}
-				}
-			}
-
-			// priorities
-			completions = append(completions, dstask.PRIORITY_CRITICAL)
-			completions = append(completions, dstask.PRIORITY_HIGH)
-			completions = append(completions, dstask.PRIORITY_NORMAL)
-			completions = append(completions, dstask.PRIORITY_LOW)
-
-			// projects
-			for project := range ts.GetProjects() {
-				completions = append(completions, "project:"+project)
-				completions = append(completions, "-project:"+project)
-			}
-
-			// tags
-			for tag := range ts.GetTags() {
-				completions = append(completions, "+"+tag)
-				completions = append(completions, "-"+tag)
-			}
-		}
-
-		if len(originalArgs) > 0 {
-			prefix = originalArgs[len(originalArgs)-1]
-		}
-
-		for _, completion := range completions {
-			if strings.HasPrefix(completion, prefix) && !dstask.StrSliceContains(originalArgs, completion) {
-				fmt.Println(completion)
-			}
-		}
+	default:
+		panic("this should never happen?")
 	}
+
 }

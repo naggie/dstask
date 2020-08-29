@@ -146,6 +146,15 @@ func CommandEdit(repoPath string, ctx, cmdLine CmdLine) error {
 	return nil
 }
 
+// CommandHelp ...
+func CommandHelp(args []string) {
+	if len(os.Args) > 2 {
+		Help(os.Args[2])
+	} else {
+		Help("")
+	}
+}
+
 // CommandImportTW ...
 func CommandImportTW(repoPath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
@@ -396,6 +405,24 @@ func CommandShowPaused(repoPath string, ctx, cmdLine CmdLine) error {
 	return nil
 }
 
+// CommandShowResolved ...
+func CommandShowResolved(repoPath string, ctx, cmdLine CmdLine) error {
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(ALL_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+	ts.Filter(ctx)
+	ts.Filter(cmdLine)
+	ts.FilterByStatus(STATUS_RESOLVED)
+	ts.SortByResolved()
+	ts.DisplayByWeek()
+	ctx.PrintContextDescription()
+	return nil
+}
+
 // CommandShowTags ...
 func CommandShowTags(repoPath string, ctx, cmdLine CmdLine) error {
 	ctx.PrintContextDescription()
@@ -430,6 +457,20 @@ func CommandShowTemplates(repoPath string, ctx, cmdLine CmdLine) error {
 	ts.SortByPriority()
 	ts.DisplayByNext(false)
 	ctx.PrintContextDescription()
+	return nil
+}
+
+func CommandShowUnorganised(repoPath string, ctx, cmdLine CmdLine) error {
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+	ts.Filter(cmdLine)
+	ts.FilterUnorganised()
+	ts.DisplayByNext(true)
 	return nil
 }
 
@@ -561,4 +602,13 @@ func CommandUndo(repoPath string, args []string, ctx, cmdLine CmdLine) error {
 	MustRunGitCmd("revert", "--no-gpg-sign", "--no-edit", "HEAD~"+strconv.Itoa(n)+"..")
 
 	return nil
+}
+
+func CommandVersion() {
+	fmt.Printf(
+		"Version: %s\nGit commit: %s\nBuild date: %s\n",
+		VERSION,
+		GIT_COMMIT,
+		BUILD_DATE,
+	)
 }
