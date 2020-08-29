@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mvdan/xurls"
 	"github.com/naggie/dstask"
 )
 
@@ -107,34 +106,19 @@ func main() {
 		}
 
 	case dstask.CMD_SHOW_PAUSED:
-		context.PrintContextDescription()
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
-		ts.Filter(cmdLine)
-		ts.FilterByStatus(dstask.STATUS_PAUSED)
-		ts.SortByPriority()
-		ts.DisplayByNext(true)
+		if err := dstask.CommandShowPaused(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_OPEN:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
-			urls := xurls.Relaxed.FindAllString(task.Summary+" "+task.Notes, -1)
-
-			if len(urls) == 0 {
-				dstask.ExitFail("No URLs found in task %v", task.ID)
-			}
-
-			for _, url := range urls {
-				dstask.MustOpenBrowser(url)
-			}
+		if err := dstask.CommandOpen(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_IMPORT_TW:
-		ts := dstask.LoadTasksFromDisk(dstask.ALL_STATUSES)
-		ts.ImportFromTaskwarrior()
-		ts.SavePendingChanges()
-		dstask.MustGitCommit("Import from taskwarrior")
+		if err := dstask.CommandImportTW(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_SHOW_PROJECTS:
 		context.PrintContextDescription()

@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/mvdan/xurls"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -145,6 +146,21 @@ func CommandEdit(repoPath string, ctx, cmdLine CmdLine) error {
 	return nil
 }
 
+// CommandImportTW ...
+func CommandImportTW(repoPath string, ctx, cmdLine CmdLine) error {
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(ALL_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+	ts.ImportFromTaskwarrior()
+	ts.SavePendingChanges()
+	MustGitCommit("Import from taskwarrior")
+	return nil
+}
+
 // CommandLog ...
 func CommandLog(repoPath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
@@ -259,6 +275,31 @@ func CommandNote(repoPath string, ctx, cmdLine CmdLine) error {
 	return nil
 }
 
+// CommandOpen ...
+func CommandOpen(repoPath string, ctx, cmdLine CmdLine) error {
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+	for _, id := range cmdLine.IDs {
+		task := ts.MustGetByID(id)
+		urls := xurls.Relaxed.FindAllString(task.Summary+" "+task.Notes, -1)
+
+		if len(urls) == 0 {
+			return fmt.Errorf("No URLs found in task %v", task.ID)
+		}
+
+		for _, url := range urls {
+			MustOpenBrowser(url)
+		}
+	}
+
+	return nil
+}
+
 // CommandRemove ...
 func CommandRemove(repoPath string, ctx, cmdLine CmdLine) error {
 	if len(cmdLine.IDs) < 1 {
@@ -320,6 +361,22 @@ func CommandShowOpen(repoPath string, ctx, cmdLine CmdLine) error {
 	ctx.PrintContextDescription()
 	ts.DisplayByNext(false)
 	ts.DisplayCriticalTaskWarning()
+	return nil
+}
+func CommandShowPaused(repoPath string, ctx, cmdLine CmdLine) error {
+	ctx.PrintContextDescription()
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+	ts.Filter(ctx)
+	ts.Filter(cmdLine)
+	ts.FilterByStatus(STATUS_PAUSED)
+	ts.SortByPriority()
+	ts.DisplayByNext(true)
 	return nil
 }
 
