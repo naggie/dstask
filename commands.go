@@ -3,6 +3,7 @@ package dstask
 import (
 	"errors"
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -68,6 +69,23 @@ func CommandAdd(repoPath string, ctx, cmdLine CmdLine) error {
 	return nil
 }
 
+// CommandContext ...
+func CommandContext(repoPath string, state State, ctx, cmdLine CmdLine) error {
+	if len(os.Args) < 3 {
+		fmt.Printf("Current context: %s\n", ctx)
+	} else if os.Args[2] == "none" {
+		if err := state.SetContext(CmdLine{}); err != nil {
+			ExitFail(err.Error())
+		}
+	} else {
+		if err := state.SetContext(cmdLine); err != nil {
+			ExitFail(err.Error())
+		}
+	}
+	state.Save()
+	return nil
+}
+
 // CommandDone ...
 func CommandDone(repoPath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
@@ -115,6 +133,32 @@ func CommandLog(repoPath string, ctx, cmdLine CmdLine) error {
 		task = ts.LoadTask(task)
 		ts.SavePendingChanges()
 		MustGitCommit("Logged %s", task)
+	}
+
+	return nil
+}
+func CommandModify(repoPath string, ctx, cmdLine CmdLine) error {
+	ts := LoadTasksFromDisk(NON_RESOLVED_STATUSES)
+
+	if len(cmdLine.IDs) == 0 {
+		ts.Filter(ctx)
+		ConfirmOrAbort("No IDs specified. Apply to all %d tasks in current ctx?", len(ts.Tasks()))
+
+		for _, task := range ts.Tasks() {
+			task.Modify(cmdLine)
+			ts.MustUpdateTask(task)
+			ts.SavePendingChanges()
+			MustGitCommit("Modified %s", task)
+		}
+		return nil
+	}
+
+	for _, id := range cmdLine.IDs {
+		task := ts.MustGetByID(id)
+		task.Modify(cmdLine)
+		ts.MustUpdateTask(task)
+		ts.SavePendingChanges()
+		MustGitCommit("Modified %s", task)
 	}
 
 	return nil

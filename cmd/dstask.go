@@ -73,41 +73,13 @@ func main() {
 		}
 
 	case dstask.CMD_CONTEXT:
-		if len(os.Args) < 3 {
-			fmt.Printf("Current context: %s\n", context)
-		} else if os.Args[2] == "none" {
-			if err := state.SetContext(dstask.CmdLine{}); err != nil {
-				dstask.ExitFail(err.Error())
-			}
-		} else {
-			if err := state.SetContext(cmdLine); err != nil {
-				dstask.ExitFail(err.Error())
-			}
+		if err := dstask.CommandContext(repoPath, state, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
-		state.Save()
 
 	case dstask.CMD_MODIFY:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-
-		if len(cmdLine.IDs) == 0 {
-			ts.Filter(context)
-			dstask.ConfirmOrAbort("No IDs specified. Apply to all %d tasks in current context?", len(ts.Tasks()))
-
-			for _, task := range ts.Tasks() {
-				task.Modify(cmdLine)
-				ts.MustUpdateTask(task)
-				ts.SavePendingChanges()
-				dstask.MustGitCommit("Modified %s", task)
-			}
-			return
-		}
-
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
-			task.Modify(cmdLine)
-			ts.MustUpdateTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Modified %s", task)
+		if err := dstask.CommandModify(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_EDIT:
