@@ -54,7 +54,7 @@ func (cmdLine CmdLine) String() string {
 	}
 
 	if cmdLine.Template > 0 {
-		args = append(args, "template:"+string(cmdLine.Template))
+		args = append(args, fmt.Sprintf("template:%v", cmdLine.Template))
 	}
 
 	if cmdLine.Text != "" {
