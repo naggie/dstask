@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	yaml "gopkg.in/yaml.v2"
@@ -284,6 +285,25 @@ func CommandRemove(repoPath string, ctx, cmdLine CmdLine) error {
 	return nil
 }
 
+// CommandShowActive ...
+func CommandShowActive(repoPath string, ctx, cmdLine CmdLine) error {
+	ctx.PrintContextDescription()
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+	ts.Filter(ctx)
+	ts.Filter(cmdLine)
+	ts.FilterByStatus(STATUS_ACTIVE)
+	ts.SortByPriority()
+	ts.DisplayByNext(true)
+
+	return nil
+}
+
 // CommandShowOpen ...
 func CommandShowOpen(repoPath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
@@ -371,6 +391,12 @@ func CommandStop(repoPath string, ctx, cmdLine CmdLine) error {
 	return nil
 }
 
+func CommandSync(repoPath string) error {
+	// TODO update repo w/ passed in path
+	Sync()
+	return nil
+}
+
 // CommandTemplate...
 func CommandTemplate(repoPath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
@@ -408,4 +434,21 @@ func CommandTemplate(repoPath string, ctx, cmdLine CmdLine) error {
 	}
 	return nil
 
+}
+
+// CommandUndo...
+func CommandUndo(repoPath string, args []string, ctx, cmdLine CmdLine) error {
+	var err error
+	n := 1
+	if len(args) == 3 {
+		n, err = strconv.Atoi(args[2])
+		if err != nil {
+			Help(CMD_UNDO)
+			return err
+		}
+	}
+
+	MustRunGitCmd("revert", "--no-gpg-sign", "--no-edit", "HEAD~"+strconv.Itoa(n)+"..")
+
+	return nil
 }

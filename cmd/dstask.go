@@ -87,36 +87,24 @@ func main() {
 		}
 
 	case dstask.CMD_NOTE, dstask.CMD_NOTES:
-		if err := dstask.CommandNote(repoPath, context, cmdLine); err != nil {
+
+	case dstask.CMD_UNDO:
+		if err := dstask.CommandUndo(repoPath, os.Args, context, cmdLine); err != nil {
 			dstask.ExitFail(err.Error())
 		}
 
-	case dstask.CMD_UNDO:
-		var err error
-		n := 1
-		if len(os.Args) == 3 {
-			n, err = strconv.Atoi(os.Args[2])
-			if err != nil {
-				dstask.Help(dstask.CMD_UNDO)
-			}
-		}
-
-		dstask.MustRunGitCmd("revert", "--no-gpg-sign", "--no-edit", "HEAD~"+strconv.Itoa(n)+"..")
-
 	case dstask.CMD_SYNC:
-		dstask.Sync()
+		if err := dstask.CommandSync(repoPath); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_GIT:
 		dstask.MustRunGitCmd(os.Args[2:]...)
 
 	case dstask.CMD_SHOW_ACTIVE:
-		context.PrintContextDescription()
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
-		ts.Filter(cmdLine)
-		ts.FilterByStatus(dstask.STATUS_ACTIVE)
-		ts.SortByPriority()
-		ts.DisplayByNext(true)
+		if err := dstask.CommandShowActive(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_SHOW_PAUSED:
 		context.PrintContextDescription()
