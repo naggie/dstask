@@ -49,32 +49,8 @@ func main() {
 		}
 
 	case dstask.CMD_TEMPLATE:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-
-		if len(cmdLine.IDs) > 0 {
-			for _, id := range cmdLine.IDs {
-				task := ts.MustGetByID(id)
-				task.Status = dstask.STATUS_TEMPLATE
-
-				ts.MustUpdateTask(task)
-				ts.SavePendingChanges()
-				dstask.MustGitCommit("Changed %s to Template", task)
-			}
-		} else if cmdLine.Text != "" {
-			context.PrintContextDescription()
-			cmdLine.MergeContext(context)
-			task := dstask.Task{
-				WritePending: true,
-				Status:       dstask.STATUS_TEMPLATE,
-				Summary:      cmdLine.Text,
-				Tags:         cmdLine.Tags,
-				Project:      cmdLine.Project,
-				Priority:     cmdLine.Priority,
-				Notes:        cmdLine.Note,
-			}
-			task = ts.LoadTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Created Template %s", task)
+		if err := dstask.CommandTemplate(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_LOG:

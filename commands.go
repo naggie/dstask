@@ -131,3 +131,42 @@ func CommandShowOpen(repoPath string, ctx, cmdLine CmdLine) error {
 	ts.DisplayCriticalTaskWarning()
 	return nil
 }
+
+// CommandTemplate...
+func CommandTemplate(repoPath string, ctx, cmdLine CmdLine) error {
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+
+	if len(cmdLine.IDs) > 0 {
+		for _, id := range cmdLine.IDs {
+			task := ts.MustGetByID(id)
+			task.Status = STATUS_TEMPLATE
+
+			ts.MustUpdateTask(task)
+			ts.SavePendingChanges()
+			MustGitCommit("Changed %s to Template", task)
+		}
+	} else if cmdLine.Text != "" {
+		ctx.PrintContextDescription()
+		cmdLine.MergeContext(ctx)
+		task := Task{
+			WritePending: true,
+			Status:       STATUS_TEMPLATE,
+			Summary:      cmdLine.Text,
+			Tags:         cmdLine.Tags,
+			Project:      cmdLine.Project,
+			Priority:     cmdLine.Priority,
+			Notes:        cmdLine.Note,
+		}
+		task = ts.LoadTask(task)
+		ts.SavePendingChanges()
+		MustGitCommit("Created Template %s", task)
+	}
+	return nil
+
+}
