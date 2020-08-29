@@ -114,7 +114,13 @@ func CommandDone(repoPath string, ctx, cmdLine CmdLine) error {
 
 // CommandEdit ...
 func CommandEdit(repoPath string, ctx, cmdLine CmdLine) error {
-	ts := LoadTasksFromDisk(NON_RESOLVED_STATUSES)
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
 	for _, id := range cmdLine.IDs {
 		task := ts.MustGetByID(id)
 
@@ -200,7 +206,13 @@ func CommandLog(repoPath string, ctx, cmdLine CmdLine) error {
 	return nil
 }
 func CommandModify(repoPath string, ctx, cmdLine CmdLine) error {
-	ts := LoadTasksFromDisk(NON_RESOLVED_STATUSES)
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
 
 	if len(cmdLine.IDs) == 0 {
 		ts.Filter(ctx)
