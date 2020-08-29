@@ -5,7 +5,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/mvdan/xurls"
 	"github.com/naggie/dstask"
@@ -54,59 +53,13 @@ func main() {
 		}
 
 	case dstask.CMD_LOG:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-
-		if cmdLine.Text != "" {
-			context.PrintContextDescription()
-			cmdLine.MergeContext(context)
-			task := dstask.Task{
-				WritePending: true,
-				Status:       dstask.STATUS_RESOLVED,
-				Summary:      cmdLine.Text,
-				Tags:         cmdLine.Tags,
-				Project:      cmdLine.Project,
-				Priority:     cmdLine.Priority,
-				Resolved:     time.Now(),
-			}
-			task = ts.LoadTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Logged %s", task)
+		if err := dstask.CommandLog(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_START:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		if len(cmdLine.IDs) > 0 {
-			// start given tasks by IDs
-			for _, id := range cmdLine.IDs {
-				task := ts.MustGetByID(id)
-				task.Status = dstask.STATUS_ACTIVE
-				if cmdLine.Text != "" {
-					task.Notes += "\n" + cmdLine.Text
-				}
-				ts.MustUpdateTask(task)
-
-				ts.SavePendingChanges()
-				dstask.MustGitCommit("Started %s", task)
-
-				if task.Notes != "" {
-					fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m\n\n", task.ID, task.Notes)
-				}
-			}
-		} else if cmdLine.Text != "" {
-			// create a new task that is already active (started)
-			cmdLine.MergeContext(context)
-			task := dstask.Task{
-				WritePending: true,
-				Status:       dstask.STATUS_ACTIVE,
-				Summary:      cmdLine.Text,
-				Tags:         cmdLine.Tags,
-				Project:      cmdLine.Project,
-				Priority:     cmdLine.Priority,
-				Notes:        cmdLine.Note,
-			}
-			task = ts.LoadTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Added and started %s", task)
+		if err := dstask.CommandStart(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_STOP:

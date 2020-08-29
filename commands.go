@@ -3,8 +3,10 @@ package dstask
 import (
 	"errors"
 	"fmt"
+	"time"
 )
 
+// CommandAdd ...
 func CommandAdd(repoPath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath,
@@ -63,6 +65,36 @@ func CommandAdd(repoPath string, ctx, cmdLine CmdLine) error {
 		MustGitCommit("Added %s", task)
 
 	}
+	return nil
+}
+
+// CommandLog ...
+func CommandLog(repoPath string, ctx, cmdLine CmdLine) error {
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+
+	if cmdLine.Text != "" {
+		ctx.PrintContextDescription()
+		cmdLine.MergeContext(ctx)
+		task := Task{
+			WritePending: true,
+			Status:       STATUS_RESOLVED,
+			Summary:      cmdLine.Text,
+			Tags:         cmdLine.Tags,
+			Project:      cmdLine.Project,
+			Priority:     cmdLine.Priority,
+			Resolved:     time.Now(),
+		}
+		task = ts.LoadTask(task)
+		ts.SavePendingChanges()
+		MustGitCommit("Logged %s", task)
+	}
+
 	return nil
 }
 
@@ -130,6 +162,52 @@ func CommandShowOpen(repoPath string, ctx, cmdLine CmdLine) error {
 	ts.DisplayByNext(false)
 	ts.DisplayCriticalTaskWarning()
 	return nil
+}
+
+// CommandStart ...
+func CommandStart(repoPath string, ctx, cmdLine CmdLine) error {
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+	if len(cmdLine.IDs) > 0 {
+		// start given tasks by IDs
+		for _, id := range cmdLine.IDs {
+			task := ts.MustGetByID(id)
+			task.Status = STATUS_ACTIVE
+			if cmdLine.Text != "" {
+				task.Notes += "\n" + cmdLine.Text
+			}
+			ts.MustUpdateTask(task)
+
+			ts.SavePendingChanges()
+			MustGitCommit("Started %s", task)
+
+			if task.Notes != "" {
+				fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m\n\n", task.ID, task.Notes)
+			}
+		}
+	} else if cmdLine.Text != "" {
+		// create a new task that is already active (started)
+		cmdLine.MergeContext(ctx)
+		task := Task{
+			WritePending: true,
+			Status:       STATUS_ACTIVE,
+			Summary:      cmdLine.Text,
+			Tags:         cmdLine.Tags,
+			Project:      cmdLine.Project,
+			Priority:     cmdLine.Priority,
+			Notes:        cmdLine.Note,
+		}
+		task = ts.LoadTask(task)
+		ts.SavePendingChanges()
+		MustGitCommit("Added and started %s", task)
+	}
+	return nil
+
 }
 
 // CommandTemplate...
