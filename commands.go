@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	yaml "gopkg.in/yaml.v2"
 )
 
 // CommandAdd ...
@@ -108,6 +110,40 @@ func CommandDone(repoPath string, ctx, cmdLine CmdLine) error {
 	return nil
 }
 
+// CommandEdit ...
+func CommandEdit(repoPath string, ctx, cmdLine CmdLine) error {
+	ts := LoadTasksFromDisk(NON_RESOLVED_STATUSES)
+	for _, id := range cmdLine.IDs {
+		task := ts.MustGetByID(id)
+
+		// hide ID
+		task.ID = 0
+
+		data, err := yaml.Marshal(&task)
+		if err != nil {
+			// TODO present error to user, specific error message is important
+			ExitFail("Failed to marshal task %s", task)
+		}
+
+		data = MustEditBytes(data, "yml")
+
+		err = yaml.Unmarshal(data, &task)
+		if err != nil {
+			// TODO present error to user, specific error message is important
+			// TODO reattempt mechanism
+			ExitFail("Failed to unmarshal yml")
+		}
+
+		// re-add ID
+		task.ID = id
+
+		ts.MustUpdateTask(task)
+		ts.SavePendingChanges()
+		MustGitCommit("Edited %s", task)
+	}
+	return nil
+}
+
 // CommandLog ...
 func CommandLog(repoPath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
@@ -182,6 +218,43 @@ func CommandNext(repoPath string, ctx, cmdLine CmdLine) error {
 	ts.DisplayByNext(true)
 	ts.DisplayCriticalTaskWarning()
 
+	return nil
+}
+
+// CommandNote ...
+func CommandNote(repoPath string, ctx, cmdLine CmdLine) error {
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+
+	// If stdout is not a TTY, we simply write markdown notes to stdout
+	openEditor := IsTTY()
+
+	for _, id := range cmdLine.IDs {
+		task := ts.MustGetByID(id)
+		if openEditor {
+			if cmdLine.Text == "" {
+				task.Notes = string(MustEditBytes([]byte(task.Notes), "md"))
+			} else {
+				if task.Notes == "" {
+					task.Notes = cmdLine.Text
+				} else {
+					task.Notes += "\n" + cmdLine.Text
+				}
+			}
+			ts.MustUpdateTask(task)
+			ts.SavePendingChanges()
+			MustGitCommit("Edit note %s", task)
+		} else {
+			if err := WriteStdout([]byte(task.Notes)); err != nil {
+				ExitFail("Could not write to stdout: %v", err)
+			}
+		}
+	}
 	return nil
 }
 

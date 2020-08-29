@@ -8,7 +8,6 @@ import (
 
 	"github.com/mvdan/xurls"
 	"github.com/naggie/dstask"
-	"gopkg.in/yaml.v2"
 )
 
 func main() {
@@ -83,62 +82,13 @@ func main() {
 		}
 
 	case dstask.CMD_EDIT:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
-
-			// hide ID
-			task.ID = 0
-
-			data, err := yaml.Marshal(&task)
-			if err != nil {
-				// TODO present error to user, specific error message is important
-				dstask.ExitFail("Failed to marshal task %s", task)
-			}
-
-			data = dstask.MustEditBytes(data, "yml")
-
-			err = yaml.Unmarshal(data, &task)
-			if err != nil {
-				// TODO present error to user, specific error message is important
-				// TODO reattempt mechanism
-				dstask.ExitFail("Failed to unmarshal yml")
-			}
-
-			// re-add ID
-			task.ID = id
-
-			ts.MustUpdateTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Edited %s", task)
+		if err := dstask.CommandEdit(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_NOTE, dstask.CMD_NOTES:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-
-		// If stdout is not a TTY, we simply write markdown notes to stdout
-		openEditor := dstask.IsTTY()
-
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
-			if openEditor {
-				if cmdLine.Text == "" {
-					task.Notes = string(dstask.MustEditBytes([]byte(task.Notes), "md"))
-				} else {
-					if task.Notes == "" {
-						task.Notes = cmdLine.Text
-					} else {
-						task.Notes += "\n" + cmdLine.Text
-					}
-				}
-				ts.MustUpdateTask(task)
-				ts.SavePendingChanges()
-				dstask.MustGitCommit("Edit note %s", task)
-			} else {
-				if err := dstask.WriteStdout([]byte(task.Notes)); err != nil {
-					dstask.ExitFail("Could not write to stdout: %v", err)
-				}
-			}
+		if err := dstask.CommandNote(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_UNDO:
