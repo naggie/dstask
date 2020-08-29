@@ -1,6 +1,9 @@
 package dstask
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 func CommandAdd(repoPath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
@@ -81,6 +84,32 @@ func CommandNext(repoPath string, ctx, cmdLine CmdLine) error {
 	ts.DisplayByNext(true)
 	ts.DisplayCriticalTaskWarning()
 
+	return nil
+}
+
+// CommandRemove ...
+func CommandRemove(repoPath string, ctx, cmdLine CmdLine) error {
+	if len(cmdLine.IDs) < 1 {
+		return errors.New("missing argument: id")
+	}
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+	for _, id := range cmdLine.IDs {
+		task := ts.MustGetByID(id)
+
+		// Mark our task for deletion
+		task.Deleted = true
+
+		// MustUpdateTask validates and normalises our task object
+		ts.MustUpdateTask(task)
+		ts.SavePendingChanges()
+		MustGitCommit("Removed: %s", task)
+	}
 	return nil
 }
 
