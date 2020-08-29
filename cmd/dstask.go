@@ -21,7 +21,7 @@ func main() {
 	}
 
 	switch cmdLine.Cmd {
-	// Empty string is interpreted as CMD_NEXT
+	// The default command
 	case "", dstask.CMD_NEXT:
 		if err := dstask.CommandNext(repoPath, context, cmdLine); err != nil {
 			dstask.ExitFail(err.Error())

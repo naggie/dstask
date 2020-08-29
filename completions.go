@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Completions ...
 func Completions(args []string, ctx CmdLine) {
 	// given the entire user's command line arguments as the arguments for
 	// this cmd, suggest possible candidates for the last arg.
