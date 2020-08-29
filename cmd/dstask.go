@@ -63,16 +63,8 @@ func main() {
 		}
 
 	case dstask.CMD_STOP:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
-			task.Status = dstask.STATUS_PAUSED
-			if cmdLine.Text != "" {
-				task.Notes += "\n" + cmdLine.Text
-			}
-			ts.MustUpdateTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Stopped %s", task)
+		if err := dstask.CommandStop(repoPath, context, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_DONE, dstask.CMD_RESOLVE:

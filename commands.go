@@ -210,6 +210,28 @@ func CommandStart(repoPath string, ctx, cmdLine CmdLine) error {
 
 }
 
+// CommandStop...
+func CommandStop(repoPath string, ctx, cmdLine CmdLine) error {
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+	for _, id := range cmdLine.IDs {
+		task := ts.MustGetByID(id)
+		task.Status = STATUS_PAUSED
+		if cmdLine.Text != "" {
+			task.Notes += "\n" + cmdLine.Text
+		}
+		ts.MustUpdateTask(task)
+		ts.SavePendingChanges()
+		MustGitCommit("Stopped %s", task)
+	}
+	return nil
+}
+
 // CommandTemplate...
 func CommandTemplate(repoPath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
