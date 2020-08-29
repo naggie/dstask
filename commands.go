@@ -68,6 +68,28 @@ func CommandAdd(repoPath string, ctx, cmdLine CmdLine) error {
 	return nil
 }
 
+// CommandDone ...
+func CommandDone(repoPath string, ctx, cmdLine CmdLine) error {
+	ts, err := NewTaskSet(
+		repoPath,
+		WithStatuses(NON_RESOLVED_STATUSES...),
+	)
+	if err != nil {
+		return err
+	}
+	for _, id := range cmdLine.IDs {
+		task := ts.MustGetByID(id)
+		task.Status = STATUS_RESOLVED
+		if cmdLine.Text != "" {
+			task.Notes += "\n" + cmdLine.Text
+		}
+		ts.MustUpdateTask(task)
+		ts.SavePendingChanges()
+		MustGitCommit("Resolved %s", task)
+	}
+	return nil
+}
+
 // CommandLog ...
 func CommandLog(repoPath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
