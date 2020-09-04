@@ -5,6 +5,7 @@ package dstask
 import (
 	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -17,6 +18,11 @@ type TaskSet struct {
 	// indices
 	tasksByID   map[int]*Task
 	tasksByUUID map[string]*Task
+
+	// program metadata
+	idsFilePath   string
+	stateFilePath string
+	repoPath      string
 }
 
 type Project struct {
@@ -35,19 +41,23 @@ type Project struct {
 }
 
 // NewTaskSet constructs a TaskSet from a repo path and zero or more options.
-func NewTaskSet(repoPath string, opts ...TaskSetOpt) (*TaskSet, error) {
+func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt) (*TaskSet, error) {
 
 	// Initialise an empty TaskSet
 	var ts TaskSet
 	ts.tasksByUUID = make(map[string]*Task)
 	ts.tasksByID = make(map[int]*Task)
 
+	ts.idsFilePath = idsFilePath
+	ts.stateFilePath = stateFilePath
+	ts.repoPath = repoPath
+
 	// Apply our options
 	var tso taskSetOpts
 	for _, opt := range opts {
 		opt(&tso)
 	}
-	ids := LoadIds()
+	ids := LoadIds(idsFilePath)
 
 	filteredStatuses := filterStringSlice(tso.statuses, tso.withoutStatuses)
 
@@ -55,6 +65,11 @@ func NewTaskSet(repoPath string, opts ...TaskSetOpt) (*TaskSet, error) {
 		dir := filepath.Join(repoPath, status)
 		files, err := ioutil.ReadDir(dir)
 		if err != nil {
+			if os.IsNotExist(err) {
+				// Continuing here is necessary, because we do not guarantee
+				// that all status directories exist on program startup.
+				continue
+			}
 			return nil, err
 		}
 		for _, finfo := range files {
@@ -90,50 +105,21 @@ type taskSetOpts struct {
 	withoutStatuses []string
 }
 
+// todo add test
 func filterStringSlice(with, without []string) []string {
 	var ret []string
-	for _, have := range with {
+	for _, wanted := range with {
+		keep := true
 		for _, unwanted := range without {
-			if have != unwanted {
-				ret = append(ret, have)
+			if wanted == unwanted {
+				keep = false
 			}
+		}
+		if keep {
+			ret = append(ret, wanted)
 		}
 	}
 	return ret
-}
-
-// LoadTasksFromDisk returns the TaskSet of our current tasks, filtered by status.
-func LoadTasksFromDisk(statuses []string) *TaskSet {
-	ts := &TaskSet{
-		tasksByID:   make(map[int]*Task),
-		tasksByUUID: make(map[string]*Task),
-	}
-
-	ids := LoadIds()
-
-	for _, status := range statuses {
-		dir := MustGetRepoPath(status, "")
-
-		files, err := ioutil.ReadDir(dir)
-		if err != nil {
-			ExitFail("Failed to read " + dir)
-		}
-
-		for _, file := range files {
-
-			path := filepath.Join(dir, file.Name())
-
-			t, err := unmarshalTask(path, file, ids, status)
-			if err != nil {
-				log.Printf("error loading task: %v\n", err)
-				continue
-			}
-
-			ts.LoadTask(t)
-		}
-	}
-
-	return ts
 }
 
 func (ts *TaskSet) SortByPriority() {
@@ -359,7 +345,7 @@ func (ts *TaskSet) SavePendingChanges() {
 
 	for _, task := range ts.tasks {
 		if task.WritePending {
-			task.SaveToDisk()
+			task.SaveToDisk(ts.repoPath)
 		}
 
 		if task.ID > 0 {
@@ -374,5 +360,5 @@ func (ts *TaskSet) SavePendingChanges() {
 	// possible for every ID to change. Therefore, tasks must retain their IDs
 	// locally. This replaced a system where tasks recorded their IDs, which
 	// can create merge conflicts in some (uncommon) cases.
-	ids.Save()
+	ids.Save(ts.idsFilePath)
 }

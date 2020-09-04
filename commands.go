@@ -12,9 +12,9 @@ import (
 )
 
 // CommandAdd ...
-func CommandAdd(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandAdd(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -48,7 +48,7 @@ func CommandAdd(repoPath string, ctx, cmdLine CmdLine) error {
 
 		task = ts.LoadTask(task)
 		ts.SavePendingChanges()
-		MustGitCommit("Added %s", task)
+		MustGitCommit(repoPath, "Added %s", task)
 		if tt.Status != STATUS_TEMPLATE {
 			// Insert Text Statement to inform user of real Templates
 			fmt.Print("\nYou've copied an open task!\nTo learn more about creating templates enter 'dstask help template'\n\n")
@@ -67,14 +67,14 @@ func CommandAdd(repoPath string, ctx, cmdLine CmdLine) error {
 		}
 		task = ts.LoadTask(task)
 		ts.SavePendingChanges()
-		MustGitCommit("Added %s", task)
+		MustGitCommit(repoPath, "Added %s", task)
 
 	}
 	return nil
 }
 
 // CommandContext ...
-func CommandContext(repoPath string, state State, ctx, cmdLine CmdLine) error {
+func CommandContext(repoPath, idsFilePath, stateFilePath string, state State, ctx, cmdLine CmdLine) error {
 	if len(os.Args) < 3 {
 		fmt.Printf("Current context: %s\n", ctx)
 	} else if os.Args[2] == "none" {
@@ -86,14 +86,14 @@ func CommandContext(repoPath string, state State, ctx, cmdLine CmdLine) error {
 			ExitFail(err.Error())
 		}
 	}
-	state.Save()
+	state.Save(stateFilePath)
 	return nil
 }
 
 // CommandDone ...
-func CommandDone(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandDone(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -107,15 +107,15 @@ func CommandDone(repoPath string, ctx, cmdLine CmdLine) error {
 		}
 		ts.MustUpdateTask(task)
 		ts.SavePendingChanges()
-		MustGitCommit("Resolved %s", task)
+		MustGitCommit(repoPath, "Resolved %s", task)
 	}
 	return nil
 }
 
 // CommandEdit ...
-func CommandEdit(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandEdit(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -147,7 +147,7 @@ func CommandEdit(repoPath string, ctx, cmdLine CmdLine) error {
 
 		ts.MustUpdateTask(task)
 		ts.SavePendingChanges()
-		MustGitCommit("Edited %s", task)
+		MustGitCommit(repoPath, "Edited %s", task)
 	}
 	return nil
 }
@@ -162,9 +162,9 @@ func CommandHelp(args []string) {
 }
 
 // CommandImportTW ...
-func CommandImportTW(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandImportTW(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(ALL_STATUSES...),
 	)
 	if err != nil {
@@ -172,14 +172,14 @@ func CommandImportTW(repoPath string, ctx, cmdLine CmdLine) error {
 	}
 	ts.ImportFromTaskwarrior()
 	ts.SavePendingChanges()
-	MustGitCommit("Import from taskwarrior")
+	MustGitCommit(repoPath, "Import from taskwarrior")
 	return nil
 }
 
 // CommandLog ...
-func CommandLog(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandLog(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -200,14 +200,14 @@ func CommandLog(repoPath string, ctx, cmdLine CmdLine) error {
 		}
 		task = ts.LoadTask(task)
 		ts.SavePendingChanges()
-		MustGitCommit("Logged %s", task)
+		MustGitCommit(repoPath, "Logged %s", task)
 	}
 
 	return nil
 }
-func CommandModify(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandModify(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -222,7 +222,7 @@ func CommandModify(repoPath string, ctx, cmdLine CmdLine) error {
 			task.Modify(cmdLine)
 			ts.MustUpdateTask(task)
 			ts.SavePendingChanges()
-			MustGitCommit("Modified %s", task)
+			MustGitCommit(repoPath, "Modified %s", task)
 		}
 		return nil
 	}
@@ -232,7 +232,7 @@ func CommandModify(repoPath string, ctx, cmdLine CmdLine) error {
 		task.Modify(cmdLine)
 		ts.MustUpdateTask(task)
 		ts.SavePendingChanges()
-		MustGitCommit("Modified %s", task)
+		MustGitCommit(repoPath, "Modified %s", task)
 	}
 
 	return nil
@@ -240,9 +240,9 @@ func CommandModify(repoPath string, ctx, cmdLine CmdLine) error {
 
 // CommandNext prints the unresolved tasks associated with the current context.
 // This is the default command.
-func CommandNext(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandNext(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithoutStatuses(STATUS_TEMPLATE),
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
@@ -260,9 +260,9 @@ func CommandNext(repoPath string, ctx, cmdLine CmdLine) error {
 }
 
 // CommandNote ...
-func CommandNote(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandNote(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -286,7 +286,7 @@ func CommandNote(repoPath string, ctx, cmdLine CmdLine) error {
 			}
 			ts.MustUpdateTask(task)
 			ts.SavePendingChanges()
-			MustGitCommit("Edit note %s", task)
+			MustGitCommit(repoPath, "Edit note %s", task)
 		} else {
 			if err := WriteStdout([]byte(task.Notes)); err != nil {
 				ExitFail("Could not write to stdout: %v", err)
@@ -297,9 +297,9 @@ func CommandNote(repoPath string, ctx, cmdLine CmdLine) error {
 }
 
 // CommandOpen ...
-func CommandOpen(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandOpen(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -322,12 +322,12 @@ func CommandOpen(repoPath string, ctx, cmdLine CmdLine) error {
 }
 
 // CommandRemove ...
-func CommandRemove(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandRemove(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	if len(cmdLine.IDs) < 1 {
 		return errors.New("missing argument: id")
 	}
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -342,16 +342,16 @@ func CommandRemove(repoPath string, ctx, cmdLine CmdLine) error {
 		// MustUpdateTask validates and normalises our task object
 		ts.MustUpdateTask(task)
 		ts.SavePendingChanges()
-		MustGitCommit("Removed: %s", task)
+		MustGitCommit(repoPath, "Removed: %s", task)
 	}
 	return nil
 }
 
 // CommandShowActive ...
-func CommandShowActive(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandShowActive(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ctx.PrintContextDescription()
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -367,10 +367,10 @@ func CommandShowActive(repoPath string, ctx, cmdLine CmdLine) error {
 }
 
 // CommandShowProjects ...
-func CommandShowProjects(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandShowProjects(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ctx.PrintContextDescription()
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(ALL_STATUSES...),
 	)
 	if err != nil {
@@ -383,9 +383,9 @@ func CommandShowProjects(repoPath string, ctx, cmdLine CmdLine) error {
 }
 
 // CommandShowOpen ...
-func CommandShowOpen(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandShowOpen(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithoutStatuses(STATUS_TEMPLATE),
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
@@ -400,10 +400,10 @@ func CommandShowOpen(repoPath string, ctx, cmdLine CmdLine) error {
 	ts.DisplayCriticalTaskWarning()
 	return nil
 }
-func CommandShowPaused(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandShowPaused(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ctx.PrintContextDescription()
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -418,9 +418,9 @@ func CommandShowPaused(repoPath string, ctx, cmdLine CmdLine) error {
 }
 
 // CommandShowResolved ...
-func CommandShowResolved(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandShowResolved(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(ALL_STATUSES...),
 	)
 	if err != nil {
@@ -436,10 +436,10 @@ func CommandShowResolved(repoPath string, ctx, cmdLine CmdLine) error {
 }
 
 // CommandShowTags ...
-func CommandShowTags(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandShowTags(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ctx.PrintContextDescription()
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -454,10 +454,10 @@ func CommandShowTags(repoPath string, ctx, cmdLine CmdLine) error {
 }
 
 // CommandShowTemplates ...
-func CommandShowTemplates(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandShowTemplates(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -472,9 +472,9 @@ func CommandShowTemplates(repoPath string, ctx, cmdLine CmdLine) error {
 	return nil
 }
 
-func CommandShowUnorganised(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandShowUnorganised(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -487,9 +487,9 @@ func CommandShowUnorganised(repoPath string, ctx, cmdLine CmdLine) error {
 }
 
 // CommandStart ...
-func CommandStart(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandStart(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -498,6 +498,7 @@ func CommandStart(repoPath string, ctx, cmdLine CmdLine) error {
 	if len(cmdLine.IDs) > 0 {
 		// start given tasks by IDs
 		for _, id := range cmdLine.IDs {
+			fmt.Println("trying to get ID", id)
 			task := ts.MustGetByID(id)
 			task.Status = STATUS_ACTIVE
 			if cmdLine.Text != "" {
@@ -506,7 +507,7 @@ func CommandStart(repoPath string, ctx, cmdLine CmdLine) error {
 			ts.MustUpdateTask(task)
 
 			ts.SavePendingChanges()
-			MustGitCommit("Started %s", task)
+			MustGitCommit(repoPath, "Started %s", task)
 
 			if task.Notes != "" {
 				fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m\n\n", task.ID, task.Notes)
@@ -526,16 +527,16 @@ func CommandStart(repoPath string, ctx, cmdLine CmdLine) error {
 		}
 		task = ts.LoadTask(task)
 		ts.SavePendingChanges()
-		MustGitCommit("Added and started %s", task)
+		MustGitCommit(repoPath, "Added and started %s", task)
 	}
 	return nil
 
 }
 
 // CommandStop...
-func CommandStop(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandStop(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -549,21 +550,21 @@ func CommandStop(repoPath string, ctx, cmdLine CmdLine) error {
 		}
 		ts.MustUpdateTask(task)
 		ts.SavePendingChanges()
-		MustGitCommit("Stopped %s", task)
+		MustGitCommit(repoPath, "Stopped %s", task)
 	}
 	return nil
 }
 
-func CommandSync(repoPath string) error {
+func CommandSync(repoPath, idsFilePath, stateFilePath string) error {
 	// TODO update repo w/ passed in path
-	Sync()
+	Sync(repoPath)
 	return nil
 }
 
 // CommandTemplate...
-func CommandTemplate(repoPath string, ctx, cmdLine CmdLine) error {
+func CommandTemplate(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
-		repoPath,
+		repoPath, idsFilePath, stateFilePath,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
 	if err != nil {
@@ -577,7 +578,7 @@ func CommandTemplate(repoPath string, ctx, cmdLine CmdLine) error {
 
 			ts.MustUpdateTask(task)
 			ts.SavePendingChanges()
-			MustGitCommit("Changed %s to Template", task)
+			MustGitCommit(repoPath, "Changed %s to Template", task)
 		}
 	} else if cmdLine.Text != "" {
 		ctx.PrintContextDescription()
@@ -593,14 +594,14 @@ func CommandTemplate(repoPath string, ctx, cmdLine CmdLine) error {
 		}
 		task = ts.LoadTask(task)
 		ts.SavePendingChanges()
-		MustGitCommit("Created Template %s", task)
+		MustGitCommit(repoPath, "Created Template %s", task)
 	}
 	return nil
 
 }
 
 // CommandUndo...
-func CommandUndo(repoPath string, args []string, ctx, cmdLine CmdLine) error {
+func CommandUndo(repoPath, idsFilePath, stateFilePath string, args []string, ctx, cmdLine CmdLine) error {
 	var err error
 	n := 1
 	if len(args) == 3 {
@@ -611,7 +612,7 @@ func CommandUndo(repoPath string, args []string, ctx, cmdLine CmdLine) error {
 		}
 	}
 
-	MustRunGitCmd("revert", "--no-gpg-sign", "--no-edit", "HEAD~"+strconv.Itoa(n)+"..")
+	MustRunGitCmd(repoPath, "revert", "--no-gpg-sign", "--no-edit", "HEAD~"+strconv.Itoa(n)+"..")
 
 	return nil
 }

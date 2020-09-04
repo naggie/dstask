@@ -7,14 +7,14 @@ import (
 )
 
 // RunGitCmd shells out to git in the context of the dstask repo.
-func RunGitCmd(args ...string) error {
-	args = append([]string{"-C", GIT_REPO}, args...)
+func RunGitCmd(repoPath string, args ...string) error {
+	args = append([]string{"-C", repoPath}, args...)
 	return RunCmd("git", args...)
 }
 
 // MustRunGitCmd delegates to RunGitCmd and exits the program on any error.
-func MustRunGitCmd(args ...string) {
-	err := RunGitCmd(args...)
+func MustRunGitCmd(repoPath string, args ...string) {
+	err := RunGitCmd(repoPath, args...)
 	if err != nil {
 		ExitFail("Failed to run git cmd.")
 	}
@@ -22,7 +22,7 @@ func MustRunGitCmd(args ...string) {
 
 // MustGitCommit stages changes in the dstask repository and commits them. If
 // any error is encountered, the program exits.
-func MustGitCommit(format string, a ...interface{}) {
+func MustGitCommit(repoPath, format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
 
 	// git add all changed/created files
@@ -30,22 +30,22 @@ func MustGitCommit(format string, a ...interface{}) {
 	// added/modified/deleted files -- only if slow.
 	fmt.Printf("\n%s\n", msg)
 	fmt.Printf("\033[38;5;245m")
-	MustRunGitCmd("add", ".")
+	MustRunGitCmd(repoPath, "add", ".")
 
 	// check for changes -- returns exit status 1 on change
-	if RunGitCmd("diff-index", "--quiet", "HEAD", "--") == nil {
+	if RunGitCmd(repoPath, "diff-index", "--quiet", "HEAD", "--") == nil {
 		fmt.Println("No changes detected")
 		return
 	}
 
-	MustRunGitCmd("commit", "--no-gpg-sign", "-m", msg)
+	MustRunGitCmd(repoPath, "commit", "--no-gpg-sign", "-m", msg)
 	fmt.Printf("\033[0m")
 }
 
 // MustGetRepoPath returns the full path to a file within the dstask git repo.
 // Pass file as an empty string to return the git repo directory itself.
-func MustGetRepoPath(directory, file string) string {
-	dir := path.Join(GIT_REPO, directory)
+func MustGetRepoPath(repoPath, directory, file string) string {
+	dir := path.Join(repoPath, directory)
 
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		err = os.Mkdir(dir, 0700)
@@ -69,7 +69,7 @@ func EnsureRepoExists(repoPath string) {
 
 // Sync performs a git pull, and then a git push. If any conflicts are encountered,
 // the user will need to resolve them.
-func Sync() {
-	MustRunGitCmd("pull", "--no-rebase", "--no-edit", "--commit", "origin", "master")
-	MustRunGitCmd("push", "origin", "master")
+func Sync(repoPath string) {
+	MustRunGitCmd(repoPath, "pull", "--no-rebase", "--no-edit", "--commit", "origin", "master")
+	MustRunGitCmd(repoPath, "push", "origin", "master")
 }

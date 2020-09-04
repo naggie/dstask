@@ -2,12 +2,13 @@ package dstask
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 )
 
 // Completions ...
-func Completions(args []string, ctx CmdLine) {
+func Completions(repoPath, idsFilePath, stateFilePath string, args []string, ctx CmdLine) {
 	// given the entire user's command line arguments as the arguments for
 	// this cmd, suggest possible candidates for the last arg.
 	// see the relevant shell completion bindings in this repository for
@@ -54,7 +55,15 @@ func Completions(args []string, ctx CmdLine) {
 		CMD_SHOW_RESOLVED,
 		CMD_SHOW_TEMPLATES,
 	}, cmdLine.Cmd) {
-		ts := LoadTasksFromDisk(NON_RESOLVED_STATUSES)
+		ts, err := NewTaskSet(
+			repoPath, idsFilePath, stateFilePath,
+			WithStatuses(NON_RESOLVED_STATUSES...),
+		)
+		if err != nil {
+			log.Printf("completions script error: %v\n", err)
+			return
+
+		}
 		// limit completions to available context, but not if the user is
 		// trying to change context, context ignore is on, or modify
 		// command is being completed

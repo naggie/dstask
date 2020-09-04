@@ -259,11 +259,11 @@ func (task *Task) Modify(cmdLine CmdLine) {
 	}
 }
 
-func (t *Task) SaveToDisk() {
+func (t *Task) SaveToDisk(repoPath string) {
 	// save should be idempotent
 	t.WritePending = false
 
-	filepath := MustGetRepoPath(t.Status, t.UUID+".yml")
+	filepath := MustGetRepoPath(repoPath, t.Status, t.UUID+".yml")
 
 	if t.Deleted {
 		// Task is marked deleted. Delete from its current status directory.
@@ -296,7 +296,7 @@ func (t *Task) SaveToDisk() {
 			continue
 		}
 
-		filepath := MustGetRepoPath(st, t.UUID+".yml")
+		filepath := MustGetRepoPath(repoPath, st, t.UUID+".yml")
 
 		if _, err := os.Stat(filepath); !os.IsNotExist(err) {
 			err := os.Remove(filepath)
