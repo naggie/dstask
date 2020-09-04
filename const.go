@@ -1,5 +1,13 @@
 package dstask
 
+import "os"
+
+func init() {
+	if os.Getenv("DSTASK_FAKE_PTY") == "1" {
+		FAKE_PTY = true
+	}
+}
+
 var (
 	// for CI testing
 	FAKE_PTY = false

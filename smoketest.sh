@@ -78,12 +78,12 @@ git -C $UPSTREAM_BARE_REPO init --bare
 ./dstask add task to copy
 ./dstask add template:2 +copiedTask
 ./dstask template 5
-## Task 5 should now be a template
+# Task 5 should now be a template
 ./dstask show-templates +copiedTask
-## copy Template with some modifications
+# copy Template with some modifications
 ./dstask add template:5 -copiedTask +copiedTemplate
 ./dstask show-open +copiedTemplate
-## Create new template from CMD line.
+# Create new template from CMD line.
 ./dstask template give me some things to do P1 +uniqueTag
 ./dstask show-templates +uniqueTag
 
