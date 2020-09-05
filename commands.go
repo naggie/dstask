@@ -74,7 +74,7 @@ func CommandAdd(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLin
 }
 
 // CommandContext ...
-func CommandContext(repoPath, idsFilePath, stateFilePath string, state State, ctx, cmdLine CmdLine) error {
+func CommandContext(stateFilePath string, state State, ctx, cmdLine CmdLine) error {
 	if len(os.Args) < 3 {
 		fmt.Printf("Current context: %s\n", ctx)
 	} else if os.Args[2] == "none" {
@@ -555,8 +555,7 @@ func CommandStop(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLi
 	return nil
 }
 
-func CommandSync(repoPath, idsFilePath, stateFilePath string) error {
-	// TODO update repo w/ passed in path
+func CommandSync(repoPath string) error {
 	Sync(repoPath)
 	return nil
 }

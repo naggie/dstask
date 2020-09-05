@@ -70,7 +70,7 @@ func main() {
 		}
 
 	case dstask.CMD_CONTEXT:
-		if err := dstask.CommandContext(repoPath, idsFilePath, stateFilePath, state, ctx, cmdLine); err != nil {
+		if err := dstask.CommandContext(stateFilePath, state, ctx, cmdLine); err != nil {
 			dstask.ExitFail(err.Error())
 		}
 
@@ -95,7 +95,7 @@ func main() {
 		}
 
 	case dstask.CMD_SYNC:
-		if err := dstask.CommandSync(repoPath, idsFilePath, stateFilePath); err != nil {
+		if err := dstask.CommandSync(repoPath); err != nil {
 			dstask.ExitFail(err.Error())
 		}
 
