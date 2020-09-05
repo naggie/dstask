@@ -11,7 +11,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-// CommandAdd ...
+// CommandAdd adds a new task to the task database.
 func CommandAdd(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath, idsFilePath, stateFilePath,
@@ -73,7 +73,7 @@ func CommandAdd(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLin
 	return nil
 }
 
-// CommandContext ...
+// CommandContext sets a global context for dstask.
 func CommandContext(stateFilePath string, state State, ctx, cmdLine CmdLine) error {
 	if len(os.Args) < 3 {
 		fmt.Printf("Current context: %s\n", ctx)
@@ -90,7 +90,7 @@ func CommandContext(stateFilePath string, state State, ctx, cmdLine CmdLine) err
 	return nil
 }
 
-// CommandDone ...
+// CommandDone marks a task as done.
 func CommandDone(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath, idsFilePath, stateFilePath,
@@ -112,7 +112,7 @@ func CommandDone(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLi
 	return nil
 }
 
-// CommandEdit ...
+// CommandEdit edits a task's metadata, such as status, projects, tags, etc.
 func CommandEdit(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath, idsFilePath, stateFilePath,
@@ -152,7 +152,7 @@ func CommandEdit(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLi
 	return nil
 }
 
-// CommandHelp ...
+// CommandHelp prints for a specific command or all commands.
 func CommandHelp(args []string) {
 	if len(os.Args) > 2 {
 		Help(os.Args[2])
@@ -161,7 +161,7 @@ func CommandHelp(args []string) {
 	}
 }
 
-// CommandImportTW ...
+// CommandImportTW imports a taskwarrior database.
 func CommandImportTW(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath, idsFilePath, stateFilePath,
@@ -176,7 +176,8 @@ func CommandImportTW(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine C
 	return nil
 }
 
-// CommandLog ...
+// CommandLog logs a completed task immediately. Useful for tracking tasks after
+// they're already completed.
 func CommandLog(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath, idsFilePath, stateFilePath,
@@ -205,6 +206,8 @@ func CommandLog(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLin
 
 	return nil
 }
+
+// CommandModify modifies a task.
 func CommandModify(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath, idsFilePath, stateFilePath,
@@ -259,7 +262,7 @@ func CommandNext(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLi
 	return nil
 }
 
-// CommandNote ...
+// CommandNote edits the markdown note associated with the task.
 func CommandNote(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath, idsFilePath, stateFilePath,
@@ -296,7 +299,7 @@ func CommandNote(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLi
 	return nil
 }
 
-// CommandOpen ...
+// CommandOpen opens a task URL in the browser, if the task has a URL.
 func CommandOpen(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath, idsFilePath, stateFilePath,
@@ -321,7 +324,7 @@ func CommandOpen(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLi
 	return nil
 }
 
-// CommandRemove ...
+// CommandRemove removes a task by ID from the database.
 func CommandRemove(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	if len(cmdLine.IDs) < 1 {
 		return errors.New("missing argument: id")
@@ -347,7 +350,7 @@ func CommandRemove(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine Cmd
 	return nil
 }
 
-// CommandShowActive ...
+// CommandShowActive prints a list of active tasks.
 func CommandShowActive(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ctx.PrintContextDescription()
 	ts, err := NewTaskSet(
@@ -366,7 +369,7 @@ func CommandShowActive(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine
 	return nil
 }
 
-// CommandShowProjects ...
+// CommandShowProjects prints a list of projects associated with all tasks.
 func CommandShowProjects(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ctx.PrintContextDescription()
 	ts, err := NewTaskSet(
@@ -382,7 +385,7 @@ func CommandShowProjects(repoPath, idsFilePath, stateFilePath string, ctx, cmdLi
 	return nil
 }
 
-// CommandShowOpen ...
+// CommandShowOpen prints a list of open tasks.
 func CommandShowOpen(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath, idsFilePath, stateFilePath,
@@ -400,6 +403,8 @@ func CommandShowOpen(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine C
 	ts.DisplayCriticalTaskWarning()
 	return nil
 }
+
+// CommandShowPaused prints a list of paused tasks.
 func CommandShowPaused(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ctx.PrintContextDescription()
 	ts, err := NewTaskSet(
@@ -417,7 +422,7 @@ func CommandShowPaused(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine
 	return nil
 }
 
-// CommandShowResolved ...
+// CommandShowResolved prints a list of resolved tasks.
 func CommandShowResolved(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath, idsFilePath, stateFilePath,
@@ -435,7 +440,7 @@ func CommandShowResolved(repoPath, idsFilePath, stateFilePath string, ctx, cmdLi
 	return nil
 }
 
-// CommandShowTags ...
+// CommandShowTags prints a list of all tags associated with non-resolved tasks.
 func CommandShowTags(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ctx.PrintContextDescription()
 	ts, err := NewTaskSet(
@@ -453,7 +458,7 @@ func CommandShowTags(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine C
 	return nil
 }
 
-// CommandShowTemplates ...
+// CommandShowTemplates show a list of task templates.
 func CommandShowTemplates(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 
 	ts, err := NewTaskSet(
@@ -472,6 +477,7 @@ func CommandShowTemplates(repoPath, idsFilePath, stateFilePath string, ctx, cmdL
 	return nil
 }
 
+// CommandShowUnorganised prints a list of tasks without tags or projects.
 func CommandShowUnorganised(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath, idsFilePath, stateFilePath,
@@ -486,7 +492,7 @@ func CommandShowUnorganised(repoPath, idsFilePath, stateFilePath string, ctx, cm
 	return nil
 }
 
-// CommandStart ...
+// CommandStart marks a task as started.
 func CommandStart(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath, idsFilePath, stateFilePath,
@@ -533,7 +539,7 @@ func CommandStart(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdL
 
 }
 
-// CommandStop...
+// CommandStop marks a task as stopped.
 func CommandStop(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath, idsFilePath, stateFilePath,
@@ -555,12 +561,13 @@ func CommandStop(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLi
 	return nil
 }
 
+// CommandSync pushes and pulls task database changes from the remote repository.
 func CommandSync(repoPath string) error {
 	Sync(repoPath)
 	return nil
 }
 
-// CommandTemplate...
+// CommandTemplate creates a new task from a template.
 func CommandTemplate(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		repoPath, idsFilePath, stateFilePath,
@@ -599,7 +606,7 @@ func CommandTemplate(repoPath, idsFilePath, stateFilePath string, ctx, cmdLine C
 
 }
 
-// CommandUndo...
+// CommandUndo performs undo with git revert.
 func CommandUndo(repoPath, idsFilePath, stateFilePath string, args []string, ctx, cmdLine CmdLine) error {
 	var err error
 	n := 1
@@ -616,6 +623,7 @@ func CommandUndo(repoPath, idsFilePath, stateFilePath string, args []string, ctx
 	return nil
 }
 
+// CommandVersion prints version information for the dstask binary.
 func CommandVersion() {
 	fmt.Printf(
 		"Version: %s\nGit commit: %s\nBuild date: %s\n",
