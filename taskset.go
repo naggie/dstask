@@ -105,7 +105,6 @@ type taskSetOpts struct {
 	withoutStatuses []string
 }
 
-// todo add test
 func filterStringSlice(with, without []string) []string {
 	var ret []string
 	for _, wanted := range with {
