@@ -3,7 +3,7 @@ package dstask
 import "os"
 
 func init() {
-	if os.Getenv("DSTASK_FAKE_PTY") == "1" {
+	if os.Getenv("DSTASK_FAKE_PTY") != "" {
 		FAKE_PTY = true
 	}
 }
