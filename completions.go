@@ -8,7 +8,7 @@ import (
 )
 
 // Completions ...
-func Completions(repoPath, idsFilePath, stateFilePath string, args []string, ctx CmdLine) {
+func Completions(conf Config, args []string, ctx CmdLine) {
 	// given the entire user's command line arguments as the arguments for
 	// this cmd, suggest possible candidates for the last arg.
 	// see the relevant shell completion bindings in this repository for
@@ -56,7 +56,7 @@ func Completions(repoPath, idsFilePath, stateFilePath string, args []string, ctx
 		CMD_SHOW_TEMPLATES,
 	}, cmdLine.Cmd) {
 		ts, err := NewTaskSet(
-			repoPath, idsFilePath, stateFilePath,
+			conf.Repo, conf.IDsFile, conf.StateFile,
 			WithStatuses(NON_RESOLVED_STATUSES...),
 		)
 		if err != nil {
