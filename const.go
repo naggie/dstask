@@ -1,18 +1,14 @@
 package dstask
 
-import (
-	"os"
-	"os/user"
-	"path"
-	"strings"
-)
+import "os"
+
+func init() {
+	if os.Getenv("DSTASK_FAKE_PTY") != "" {
+		FAKE_PTY = true
+	}
+}
 
 var (
-	GIT_REPO   = "~/.dstask/"
-	STATE_FILE = ""
-	// for locally consistent ID numbers. Separate from state so TaskSet can
-	// guarantee coherent save/load
-	IDS_FILE = ""
 	// for CI testing
 	FAKE_PTY = false
 	// populated by linker flags, see do-release.sh
@@ -70,7 +66,8 @@ const (
 	PRIORITY_NORMAL   = "P2"
 	PRIORITY_LOW      = "P3"
 
-	MAX_TASKS_OPEN = 10000
+	MAX_TASKS_OPEN    = 10000
+	TASK_FILENAME_LEN = 40
 
 	// if the terminal is too short, show this many tasks anyway
 	MIN_TASKS_SHOWN = 8
@@ -113,13 +110,13 @@ var ALL_STATUSES = []string{
 
 // incomplete until all statuses are implemented
 var VALID_STATUS_TRANSITIONS = [][]string{
-	[]string{STATUS_PENDING, STATUS_ACTIVE},
-	[]string{STATUS_ACTIVE, STATUS_PAUSED},
-	[]string{STATUS_PAUSED, STATUS_ACTIVE},
-	[]string{STATUS_PENDING, STATUS_RESOLVED},
-	[]string{STATUS_PAUSED, STATUS_RESOLVED},
-	[]string{STATUS_ACTIVE, STATUS_RESOLVED},
-	[]string{STATUS_PENDING, STATUS_TEMPLATE},
+	{STATUS_PENDING, STATUS_ACTIVE},
+	{STATUS_ACTIVE, STATUS_PAUSED},
+	{STATUS_PAUSED, STATUS_ACTIVE},
+	{STATUS_PENDING, STATUS_RESOLVED},
+	{STATUS_PAUSED, STATUS_RESOLVED},
+	{STATUS_ACTIVE, STATUS_RESOLVED},
+	{STATUS_PENDING, STATUS_TEMPLATE},
 }
 
 // for most operations, it's not necessary or desirable to load the expensive resolved tasks
@@ -166,40 +163,4 @@ var ALL_CMDS = []string{
 	CMD_COMPLETIONS,
 	CMD_HELP,
 	CMD_VERSION,
-}
-
-// mustExpandHome handles tilde ~ home dir expansion.
-func mustExpandHome(filepath string) string {
-	if strings.HasPrefix(filepath, "~/") {
-		usr, err := user.Current()
-		if err != nil {
-			panic(err)
-		}
-		return path.Join(usr.HomeDir, filepath[2:])
-	} else {
-		return filepath
-	}
-}
-
-// getenv returns an env var's value, or a default.
-func getenv(key string, _default string) string {
-	if val := os.Getenv(key); val != "" {
-		return val
-	}
-	return _default
-}
-
-// ParseConfig reads env vars and sets global program configuration.
-func ParseConfig() {
-	GIT_REPO = getenv("DSTASK_GIT_REPO", GIT_REPO)
-	GIT_REPO = mustExpandHome(GIT_REPO)
-
-	// might seem controversial, but this is a place coherent with the
-	// repository and not tracked by git
-	STATE_FILE = path.Join(GIT_REPO, ".git", "dstask", "state.bin")
-	IDS_FILE = path.Join(GIT_REPO, ".git", "dstask", "ids.bin")
-
-	if os.Getenv("DSTASK_FAKE_PTY") != "" {
-		FAKE_PTY = true
-	}
 }

@@ -21,7 +21,8 @@ type CmdLine struct {
 	Template      int
 	Text          string
 	IgnoreContext bool
-	IDsExhausted  bool
+	// IDsExhausted is required for shell completions
+	IDsExhausted bool
 	// any words after the note operator: /
 	Note string
 }
@@ -54,7 +55,7 @@ func (cmdLine CmdLine) String() string {
 	}
 
 	if cmdLine.Template > 0 {
-		args = append(args, "template:"+string(cmdLine.Template))
+		args = append(args, fmt.Sprintf("template:%v", cmdLine.Template))
 	}
 
 	if cmdLine.Text != "" {
@@ -90,7 +91,8 @@ func ParseCmdLine(args ...string) CmdLine {
 
 	for _, item := range args {
 		lcItem := strings.ToLower(item)
-		if !IDsExhausted && cmd == "" && StrSliceContains(ALL_CMDS, lcItem) {
+
+		if cmd == "" && StrSliceContains(ALL_CMDS, lcItem) {
 			cmd = lcItem
 			continue
 		}
@@ -100,12 +102,14 @@ func ParseCmdLine(args ...string) CmdLine {
 			continue
 		}
 
+		if item == IGNORE_CONTEXT_KEYWORD {
+			ignoreContext = true
+			continue
+		}
+
 		IDsExhausted = true
 
-		if item == IGNORE_CONTEXT_KEYWORD {
-			// must be checked before negated tags, as -- is otherwise a valid tag
-			ignoreContext = true
-		} else if item == NOTE_MODE_KEYWORD {
+		if item == NOTE_MODE_KEYWORD {
 			notesModeActivated = true
 		} else if strings.HasPrefix(lcItem, "project:") {
 			project = lcItem[8:]

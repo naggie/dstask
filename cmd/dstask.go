@@ -1,535 +1,168 @@
 package main
 
 import (
-	"fmt"
 	"os"
-	"strconv"
-	"strings"
-	"time"
 
-	"github.com/mvdan/xurls"
 	"github.com/naggie/dstask"
-	"gopkg.in/yaml.v2"
 )
 
 func main() {
-	// Sets globals: GIT_REPO, STATE_FILE, IDS_FILE
-	dstask.ParseConfig()
-	dstask.EnsureRepoExists(dstask.GIT_REPO)
-	// Load state for getting and setting context
-	state := dstask.LoadState()
-	context := state.Context
+
+	conf := dstask.NewConfig()
+
+	dstask.EnsureRepoExists(conf.Repo)
+	// Load state for getting and setting ctx
+	state := dstask.LoadState(conf.StateFile)
+	ctx := state.Context
 	cmdLine := dstask.ParseCmdLine(os.Args[1:]...)
 
 	if cmdLine.IgnoreContext {
-		context = dstask.CmdLine{}
+		ctx = dstask.CmdLine{}
 	}
 
 	switch cmdLine.Cmd {
-	// Empty string is interpreted as CMD_NEXT
+	// The default command
 	case "", dstask.CMD_NEXT:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
-		ts.Filter(cmdLine)
-		ts.FilterOutStatus(dstask.STATUS_TEMPLATE)
-		ts.SortByPriority()
-		context.PrintContextDescription()
-		ts.DisplayByNext(true)
-		ts.DisplayCriticalTaskWarning()
+		if err := dstask.CommandNext(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_SHOW_OPEN:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
-		ts.Filter(cmdLine)
-		ts.FilterOutStatus(dstask.STATUS_TEMPLATE)
-		ts.SortByPriority()
-		context.PrintContextDescription()
-		ts.DisplayByNext(false)
-		ts.DisplayCriticalTaskWarning()
+		if err := dstask.CommandShowOpen(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_ADD:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-
-		if cmdLine.Template > 0 {
-			var taskSummary string
-			tt := ts.MustGetByID(cmdLine.Template)
-			context.PrintContextDescription()
-			cmdLine.MergeContext(context)
-
-			if cmdLine.Text != "" {
-				taskSummary = cmdLine.Text
-			} else {
-				taskSummary = tt.Summary
-			}
-
-			// create task from template task tt
-			task := dstask.Task{
-				WritePending: true,
-				Status:       dstask.STATUS_PENDING,
-				Summary:      taskSummary,
-				Tags:         tt.Tags,
-				Project:      tt.Project,
-				Priority:     tt.Priority,
-				Notes:        tt.Notes,
-			}
-
-			// Modify the task with any tags/projects/antiProjects/priorities in cmdLine
-			task.Modify(cmdLine)
-
-			task = ts.LoadTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Added %s", task)
-			if tt.Status != dstask.STATUS_TEMPLATE {
-				// Insert Text Statement to inform user of real Templates
-				fmt.Print("\nYou've copied an open task!\nTo learn more about creating templates enter 'dstask help template'\n\n")
-			}
-		} else if cmdLine.Text != "" {
-			context.PrintContextDescription()
-			cmdLine.MergeContext(context)
-			task := dstask.Task{
-				WritePending: true,
-				Status:       dstask.STATUS_PENDING,
-				Summary:      cmdLine.Text,
-				Tags:         cmdLine.Tags,
-				Project:      cmdLine.Project,
-				Priority:     cmdLine.Priority,
-				Notes:        cmdLine.Note,
-			}
-			task = ts.LoadTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Added %s", task)
+		if err := dstask.CommandAdd(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_RM, dstask.CMD_REMOVE:
-		if len(cmdLine.IDs) < 1 {
-			dstask.ExitFail("%s", "missing argument: id")
-		}
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
-
-			// Mark our task for deletion
-			task.Deleted = true
-
-			// MustUpdateTask validates and normalises our task object
-			ts.MustUpdateTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Removed: %s", task)
+		if err := dstask.CommandRemove(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_TEMPLATE:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-
-		if len(cmdLine.IDs) > 0 {
-			for _, id := range cmdLine.IDs {
-				task := ts.MustGetByID(id)
-				task.Status = dstask.STATUS_TEMPLATE
-
-				ts.MustUpdateTask(task)
-				ts.SavePendingChanges()
-				dstask.MustGitCommit("Changed %s to Template", task)
-			}
-		} else if cmdLine.Text != "" {
-			context.PrintContextDescription()
-			cmdLine.MergeContext(context)
-			task := dstask.Task{
-				WritePending: true,
-				Status:       dstask.STATUS_TEMPLATE,
-				Summary:      cmdLine.Text,
-				Tags:         cmdLine.Tags,
-				Project:      cmdLine.Project,
-				Priority:     cmdLine.Priority,
-				Notes:        cmdLine.Note,
-			}
-			task = ts.LoadTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Created Template %s", task)
+		if err := dstask.CommandTemplate(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_LOG:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-
-		if cmdLine.Text != "" {
-			context.PrintContextDescription()
-			cmdLine.MergeContext(context)
-			task := dstask.Task{
-				WritePending: true,
-				Status:       dstask.STATUS_RESOLVED,
-				Summary:      cmdLine.Text,
-				Tags:         cmdLine.Tags,
-				Project:      cmdLine.Project,
-				Priority:     cmdLine.Priority,
-				Resolved:     time.Now(),
-			}
-			task = ts.LoadTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Logged %s", task)
+		if err := dstask.CommandLog(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_START:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		if len(cmdLine.IDs) > 0 {
-			// start given tasks by IDs
-			for _, id := range cmdLine.IDs {
-				task := ts.MustGetByID(id)
-				task.Status = dstask.STATUS_ACTIVE
-				if cmdLine.Text != "" {
-					task.Notes += "\n" + cmdLine.Text
-				}
-				ts.MustUpdateTask(task)
-
-				ts.SavePendingChanges()
-				dstask.MustGitCommit("Started %s", task)
-
-				if task.Notes != "" {
-					fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m\n\n", task.ID, task.Notes)
-				}
-			}
-		} else if cmdLine.Text != "" {
-			// create a new task that is already active (started)
-			cmdLine.MergeContext(context)
-			task := dstask.Task{
-				WritePending: true,
-				Status:       dstask.STATUS_ACTIVE,
-				Summary:      cmdLine.Text,
-				Tags:         cmdLine.Tags,
-				Project:      cmdLine.Project,
-				Priority:     cmdLine.Priority,
-				Notes:        cmdLine.Note,
-			}
-			task = ts.LoadTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Added and started %s", task)
+		if err := dstask.CommandStart(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_STOP:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
-			task.Status = dstask.STATUS_PAUSED
-			if cmdLine.Text != "" {
-				task.Notes += "\n" + cmdLine.Text
-			}
-			ts.MustUpdateTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Stopped %s", task)
+		if err := dstask.CommandStop(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_DONE, dstask.CMD_RESOLVE:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
-			task.Status = dstask.STATUS_RESOLVED
-			if cmdLine.Text != "" {
-				task.Notes += "\n" + cmdLine.Text
-			}
-			ts.MustUpdateTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Resolved %s", task)
+		if err := dstask.CommandDone(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_CONTEXT:
-		if len(os.Args) < 3 {
-			fmt.Printf("Current context: %s\n", context)
-		} else if os.Args[2] == "none" {
-			if err := state.SetContext(dstask.CmdLine{}); err != nil {
-				dstask.ExitFail(err.Error())
-			}
-		} else {
-			if err := state.SetContext(cmdLine); err != nil {
-				dstask.ExitFail(err.Error())
-			}
+		if err := dstask.CommandContext(conf, state, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
-		state.Save()
 
 	case dstask.CMD_MODIFY:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-
-		if len(cmdLine.IDs) == 0 {
-			ts.Filter(context)
-			dstask.ConfirmOrAbort("No IDs specified. Apply to all %d tasks in current context?", len(ts.Tasks()))
-
-			for _, task := range ts.Tasks() {
-				task.Modify(cmdLine)
-				ts.MustUpdateTask(task)
-				ts.SavePendingChanges()
-				dstask.MustGitCommit("Modified %s", task)
-			}
-			return
-		}
-
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
-			task.Modify(cmdLine)
-			ts.MustUpdateTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Modified %s", task)
+		if err := dstask.CommandModify(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_EDIT:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
-
-			// hide ID
-			task.ID = 0
-
-			data, err := yaml.Marshal(&task)
-			if err != nil {
-				// TODO present error to user, specific error message is important
-				dstask.ExitFail("Failed to marshal task %s", task)
-			}
-
-			data = dstask.MustEditBytes(data, "yml")
-
-			err = yaml.Unmarshal(data, &task)
-			if err != nil {
-				// TODO present error to user, specific error message is important
-				// TODO reattempt mechanism
-				dstask.ExitFail("Failed to unmarshal yml")
-			}
-
-			// re-add ID
-			task.ID = id
-
-			ts.MustUpdateTask(task)
-			ts.SavePendingChanges()
-			dstask.MustGitCommit("Edited %s", task)
+		if err := dstask.CommandEdit(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_NOTE, dstask.CMD_NOTES:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-
-		// If stdout is not a TTY, we simply write markdown notes to stdout
-		openEditor := dstask.IsTTY()
-
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
-			if openEditor {
-				if cmdLine.Text == "" {
-					task.Notes = string(dstask.MustEditBytes([]byte(task.Notes), "md"))
-				} else {
-					if task.Notes == "" {
-						task.Notes = cmdLine.Text
-					} else {
-						task.Notes += "\n" + cmdLine.Text
-					}
-				}
-				ts.MustUpdateTask(task)
-				ts.SavePendingChanges()
-				dstask.MustGitCommit("Edit note %s", task)
-			} else {
-				if err := dstask.WriteStdout([]byte(task.Notes)); err != nil {
-					dstask.ExitFail("Could not write to stdout: %v", err)
-				}
-			}
+		if err := dstask.CommandNote(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_UNDO:
-		var err error
-		n := 1
-		if len(os.Args) == 3 {
-			n, err = strconv.Atoi(os.Args[2])
-			if err != nil {
-				dstask.Help(dstask.CMD_UNDO)
-			}
+		if err := dstask.CommandUndo(conf, os.Args, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
-		dstask.MustRunGitCmd("revert", "--no-gpg-sign", "--no-edit", "HEAD~"+strconv.Itoa(n)+"..")
-
 	case dstask.CMD_SYNC:
-		dstask.Sync()
+		if err := dstask.CommandSync(conf.Repo); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_GIT:
-		dstask.MustRunGitCmd(os.Args[2:]...)
+		dstask.MustRunGitCmd(conf.Repo, os.Args[2:]...)
 
 	case dstask.CMD_SHOW_ACTIVE:
-		context.PrintContextDescription()
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
-		ts.Filter(cmdLine)
-		ts.FilterByStatus(dstask.STATUS_ACTIVE)
-		ts.SortByPriority()
-		ts.DisplayByNext(true)
+		if err := dstask.CommandShowActive(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_SHOW_PAUSED:
-		context.PrintContextDescription()
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
-		ts.Filter(cmdLine)
-		ts.FilterByStatus(dstask.STATUS_PAUSED)
-		ts.SortByPriority()
-		ts.DisplayByNext(true)
+		if err := dstask.CommandShowPaused(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_OPEN:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		for _, id := range cmdLine.IDs {
-			task := ts.MustGetByID(id)
-			urls := xurls.Relaxed.FindAllString(task.Summary+" "+task.Notes, -1)
-
-			if len(urls) == 0 {
-				dstask.ExitFail("No URLs found in task %v", task.ID)
-			}
-
-			for _, url := range urls {
-				dstask.MustOpenBrowser(url)
-			}
+		if err := dstask.CommandOpen(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_IMPORT_TW:
-		ts := dstask.LoadTasksFromDisk(dstask.ALL_STATUSES)
-		ts.ImportFromTaskwarrior()
-		ts.SavePendingChanges()
-		dstask.MustGitCommit("Import from taskwarrior")
+		if err := dstask.CommandImportTW(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_SHOW_PROJECTS:
-		context.PrintContextDescription()
-		ts := dstask.LoadTasksFromDisk(dstask.ALL_STATUSES)
-		cmdLine.MergeContext(context)
-		ts.Filter(context)
-		ts.DisplayProjects()
+		if err := dstask.CommandShowProjects(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_SHOW_TAGS:
-		context.PrintContextDescription()
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		cmdLine.MergeContext(context)
-		ts.Filter(context)
-		for tag := range ts.GetTags() {
-			fmt.Println(tag)
+		if err := dstask.CommandShowTags(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
 		}
 
 	case dstask.CMD_SHOW_TEMPLATES:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(context)
-		ts.Filter(cmdLine)
-		ts.FilterByStatus(dstask.STATUS_TEMPLATE)
-		ts.SortByPriority()
-		ts.DisplayByNext(false)
-		context.PrintContextDescription()
+		if err := dstask.CommandShowTemplates(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_SHOW_RESOLVED:
-		ts := dstask.LoadTasksFromDisk(dstask.ALL_STATUSES)
-		ts.Filter(context)
-		ts.Filter(cmdLine)
-		ts.FilterByStatus(dstask.STATUS_RESOLVED)
-		ts.SortByResolved()
-		ts.DisplayByWeek()
-		context.PrintContextDescription()
+		if err := dstask.CommandShowResolved(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_SHOW_UNORGANISED:
-		ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-		ts.Filter(cmdLine)
-		ts.FilterUnorganised()
-		ts.DisplayByNext(true)
+		if err := dstask.CommandShowUnorganised(conf, ctx, cmdLine); err != nil {
+			dstask.ExitFail(err.Error())
+		}
 
 	case dstask.CMD_HELP:
-		if len(os.Args) > 2 {
-			dstask.Help(os.Args[2])
-		} else {
-			dstask.Help("")
-		}
+		dstask.CommandHelp(os.Args)
 
 	case dstask.CMD_VERSION:
-		fmt.Printf(
-			"Version: %s\nGit commit: %s\nBuild date: %s\n",
-			dstask.VERSION,
-			dstask.GIT_COMMIT,
-			dstask.BUILD_DATE,
-		)
+		dstask.CommandVersion()
 
 	case dstask.CMD_COMPLETIONS:
-		// given the entire user's command line arguments as the arguments for
-		// this cmd, suggest possible candidates for the last arg.
-		// see the relevant shell completion bindings in this repository for
-		// integration. Note there are various idiosyncrasies with bash
-		// involving arg separation.
-		var completions []string
-		var originalArgs []string
-		var prefix string
+		dstask.Completions(conf, os.Args, ctx)
 
-		if len(os.Args) > 3 {
-			originalArgs = os.Args[3:]
-		}
-
-		// args are dstask _completions <user command line>
-		// parse command line as normal to set rules
-		cmdLine := dstask.ParseCmdLine(originalArgs...)
-
-		// no command specified, default given
-		if !cmdLine.IDsExhausted || cmdLine.Cmd == dstask.CMD_HELP || cmdLine.Cmd == "" {
-			for _, cmd := range dstask.ALL_CMDS {
-				if !strings.HasPrefix(cmd, "_") {
-					completions = append(completions, cmd)
-				}
-			}
-		}
-
-		if dstask.StrSliceContains([]string{
-			"",
-			dstask.CMD_NEXT,
-			dstask.CMD_ADD,
-			dstask.CMD_REMOVE,
-			dstask.CMD_LOG,
-			dstask.CMD_START,
-			dstask.CMD_STOP,
-			dstask.CMD_DONE,
-			dstask.CMD_RESOLVE,
-			dstask.CMD_CONTEXT,
-			dstask.CMD_MODIFY,
-			dstask.CMD_SHOW_NEXT,
-			dstask.CMD_SHOW_PROJECTS,
-			dstask.CMD_SHOW_ACTIVE,
-			dstask.CMD_SHOW_PAUSED,
-			dstask.CMD_SHOW_OPEN,
-			dstask.CMD_SHOW_RESOLVED,
-			dstask.CMD_SHOW_TEMPLATES,
-		}, cmdLine.Cmd) {
-			ts := dstask.LoadTasksFromDisk(dstask.NON_RESOLVED_STATUSES)
-			// limit completions to available context, but not if the user is
-			// trying to change context, context ignore is on, or modify
-			// command is being completed
-			if !cmdLine.IgnoreContext &&
-				cmdLine.Cmd != dstask.CMD_CONTEXT &&
-				cmdLine.Cmd != dstask.CMD_MODIFY {
-				ts.Filter(context)
-			}
-
-			// templates
-			if cmdLine.Cmd == dstask.CMD_ADD {
-				for _, task := range ts.Tasks() {
-					if task.Status == dstask.STATUS_TEMPLATE {
-						completions = append(completions, "template:"+strconv.Itoa(task.ID))
-					}
-				}
-			}
-
-			// priorities
-			completions = append(completions, dstask.PRIORITY_CRITICAL)
-			completions = append(completions, dstask.PRIORITY_HIGH)
-			completions = append(completions, dstask.PRIORITY_NORMAL)
-			completions = append(completions, dstask.PRIORITY_LOW)
-
-			// projects
-			for project := range ts.GetProjects() {
-				completions = append(completions, "project:"+project)
-				completions = append(completions, "-project:"+project)
-			}
-
-			// tags
-			for tag := range ts.GetTags() {
-				completions = append(completions, "+"+tag)
-				completions = append(completions, "-"+tag)
-			}
-		}
-
-		if len(originalArgs) > 0 {
-			prefix = originalArgs[len(originalArgs)-1]
-		}
-
-		for _, completion := range completions {
-			if strings.HasPrefix(completion, prefix) && !dstask.StrSliceContains(originalArgs, completion) {
-				fmt.Println(completion)
-			}
-		}
+	default:
+		panic("this should never happen?")
 	}
+}
+
+// getEnv returns an env var's value, or a default.
+func getEnv(key string, _default string) string {
+	if val := os.Getenv(key); val != "" {
+		return val
+	}
+	return _default
 }

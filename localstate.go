@@ -27,19 +27,19 @@ type State struct {
 type IdsMap map[string]int
 
 // Save serialises State to disk as gob binary data.
-func (state State) Save() {
-	os.MkdirAll(filepath.Dir(STATE_FILE), os.ModePerm)
-	mustWriteGob(STATE_FILE, &state)
+func (state State) Save(stateFilePath string) {
+	os.MkdirAll(filepath.Dir(stateFilePath), os.ModePerm)
+	mustWriteGob(stateFilePath, &state)
 }
 
 // LoadState reads the state file, if it exists. Otherwise a default State is returned.
-func LoadState() State {
-	if _, err := os.Stat(STATE_FILE); os.IsNotExist(err) {
+func LoadState(stateFilePath string) State {
+	if _, err := os.Stat(stateFilePath); os.IsNotExist(err) {
 		return State{}
 	}
 
 	state := State{}
-	mustReadGob(STATE_FILE, &state)
+	mustReadGob(stateFilePath, &state)
 	return state
 }
 
@@ -89,17 +89,17 @@ func mustReadGob(filePath string, object interface{}) {
 	}
 }
 
-func (ids *IdsMap) Save() {
-	os.MkdirAll(filepath.Dir(IDS_FILE), os.ModePerm)
-	mustWriteGob(IDS_FILE, &ids)
+func (ids *IdsMap) Save(idsFilePath string) {
+	os.MkdirAll(filepath.Dir(idsFilePath), os.ModePerm)
+	mustWriteGob(idsFilePath, &ids)
 }
 
-func LoadIds() IdsMap {
-	if _, err := os.Stat(IDS_FILE); os.IsNotExist(err) {
+func LoadIds(idsFilePath string) IdsMap {
+	if _, err := os.Stat(idsFilePath); os.IsNotExist(err) {
 		return make(IdsMap)
 	}
 
 	ids := make(IdsMap, 1000)
-	mustReadGob(IDS_FILE, &ids)
+	mustReadGob(idsFilePath, &ids)
 	return ids
 }

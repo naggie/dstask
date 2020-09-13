@@ -4,12 +4,12 @@ package dstask
 
 import (
 	"io/ioutil"
-	"path"
+	"log"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
-
-	yaml "gopkg.in/yaml.v2"
 )
 
 type TaskSet struct {
@@ -18,6 +18,11 @@ type TaskSet struct {
 	// indices
 	tasksByID   map[int]*Task
 	tasksByUUID map[string]*Task
+
+	// program metadata
+	idsFilePath   string
+	stateFilePath string
+	repoPath      string
 }
 
 type Project struct {
@@ -35,62 +40,85 @@ type Project struct {
 	Priority string
 }
 
-// LoadTasksFromDisk returns the TaskSet of our current tasks, filtered by status.
-func LoadTasksFromDisk(statuses []string) *TaskSet {
-	ts := &TaskSet{
-		tasksByID:   make(map[int]*Task),
-		tasksByUUID: make(map[string]*Task),
+// NewTaskSet constructs a TaskSet from a repo path and zero or more options.
+func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt) (*TaskSet, error) {
+
+	// Initialise an empty TaskSet
+	var ts TaskSet
+	ts.tasksByUUID = make(map[string]*Task)
+	ts.tasksByID = make(map[int]*Task)
+
+	ts.idsFilePath = idsFilePath
+	ts.stateFilePath = stateFilePath
+	ts.repoPath = repoPath
+
+	// Apply our options
+	var tso taskSetOpts
+	for _, opt := range opts {
+		opt(&tso)
 	}
+	ids := LoadIds(idsFilePath)
 
-	ids := LoadIds()
+	filteredStatuses := filterStringSlice(tso.statuses, tso.withoutStatuses)
 
-	for _, status := range statuses {
-		dir := MustGetRepoPath(status, "")
-
+	for _, status := range filteredStatuses {
+		dir := filepath.Join(repoPath, status)
 		files, err := ioutil.ReadDir(dir)
 		if err != nil {
-			ExitFail("Failed to read " + dir)
+			if os.IsNotExist(err) {
+				// Continuing here is necessary, because we do not guarantee
+				// that all status directories exist on program startup.
+				continue
+			}
+			return nil, err
 		}
-
-		for _, file := range files {
-			filepath := path.Join(dir, file.Name())
-
-			if len(file.Name()) != 40 {
-				// not <uuid4>.yml
+		for _, finfo := range files {
+			path := filepath.Join(dir, finfo.Name())
+			t, err := unmarshalTask(path, finfo, ids, status)
+			if err != nil {
+				log.Printf("error loading task: %v\n", err)
 				continue
 			}
-
-			uuid := file.Name()[0:36]
-
-			if !IsValidUUID4String(uuid) {
-				continue
-			}
-
-			t := Task{
-				UUID:   uuid,
-				Status: status,
-				ID:     ids[uuid],
-			}
-
-			data, err := ioutil.ReadFile(filepath)
-			if err != nil {
-				ExitFail("Failed to read %s", filepath)
-			}
-			err = yaml.Unmarshal(data, &t)
-			if err != nil {
-				// TODO present error to user, specific error message is important
-				ExitFail("Failed to unmarshal %s", filepath)
-			}
-
-			// trust subdirectory over status in yaml file (recently added to
-			// allow status change with task edit)
-			t.Status = status
-
 			ts.LoadTask(t)
 		}
 	}
 
-	return ts
+	return &ts, nil
+}
+
+type TaskSetOpt func(opts *taskSetOpts)
+
+func WithStatuses(statuses ...string) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.statuses = append(opts.statuses, statuses...)
+	}
+}
+
+func WithoutStatuses(statuses ...string) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.withoutStatuses = append(opts.withoutStatuses, statuses...)
+	}
+}
+
+type taskSetOpts struct {
+	statuses        []string
+	withoutStatuses []string
+}
+
+func filterStringSlice(with, without []string) []string {
+	var ret []string
+	for _, wanted := range with {
+		keep := true
+		for _, unwanted := range without {
+			if wanted == unwanted {
+				keep = false
+			}
+		}
+		if keep {
+			ret = append(ret, wanted)
+		}
+	}
+	return ret
 }
 
 func (ts *TaskSet) SortByPriority() {
@@ -102,7 +130,8 @@ func (ts *TaskSet) SortByResolved() {
 	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Resolved.Before(ts.tasks[j].Resolved) })
 }
 
-// add a task, but only if it has a new uuid or no uuid. Return annotated task.
+// LoadTask adds a task to the TaskSet, but only if it has a new uuid or no uuid.
+// Return annotated task.
 func (ts *TaskSet) LoadTask(task Task) Task {
 	task.Normalise()
 
@@ -315,7 +344,7 @@ func (ts *TaskSet) SavePendingChanges() {
 
 	for _, task := range ts.tasks {
 		if task.WritePending {
-			task.SaveToDisk()
+			task.SaveToDisk(ts.repoPath)
 		}
 
 		if task.ID > 0 {
@@ -330,5 +359,5 @@ func (ts *TaskSet) SavePendingChanges() {
 	// possible for every ID to change. Therefore, tasks must retain their IDs
 	// locally. This replaced a system where tasks recorded their IDs, which
 	// can create merge conflicts in some (uncommon) cases.
-	ids.Save()
+	ids.Save(ts.idsFilePath)
 }
