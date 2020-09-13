@@ -97,6 +97,22 @@ func TestParseCmdLine(t *testing.T) {
 				Note:          "",
 			},
 		},
+		{
+			[]string{"--", "show-resolved"},
+			CmdLine{
+				Cmd:           "show-resolved",
+				IDs:           nil,
+				Tags:          nil,
+				AntiTags:      nil,
+				Project:       "",
+				AntiProjects:  nil,
+				Template:      0,
+				Text:          "",
+				IgnoreContext: true,
+				IDsExhausted:  true,
+				Note:          "",
+			},
+		},
 	} // end test cases
 
 	for i, tc := range tests {
@@ -106,8 +122,8 @@ func TestParseCmdLine(t *testing.T) {
 		t.Run(fmt.Sprintf("test %v: %s", i, description), func(t *testing.T) {
 			t.Parallel()
 
-			parsed := ParseCmdLine(tc.input...)
-			assert.Equal(t, parsed, tc.expected)
+			actual := ParseCmdLine(tc.input...)
+			assert.Equal(t, tc.expected, actual)
 
 		})
 	}
