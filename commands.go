@@ -254,7 +254,6 @@ func CommandNext(conf Config, ctx, cmdLine CmdLine) error {
 	}
 	ts.Filter(ctx)
 	ts.Filter(cmdLine)
-	ts.SortByPriority()
 	ctx.PrintContextDescription()
 	ts.DisplayByNext(true)
 	ts.DisplayCriticalTaskWarning()
@@ -363,7 +362,6 @@ func CommandShowActive(conf Config, ctx, cmdLine CmdLine) error {
 	ts.Filter(ctx)
 	ts.Filter(cmdLine)
 	ts.FilterByStatus(STATUS_ACTIVE)
-	ts.SortByPriority()
 	ts.DisplayByNext(true)
 
 	return nil
@@ -397,7 +395,6 @@ func CommandShowOpen(conf Config, ctx, cmdLine CmdLine) error {
 	}
 	ts.Filter(ctx)
 	ts.Filter(cmdLine)
-	ts.SortByPriority()
 	ctx.PrintContextDescription()
 	ts.DisplayByNext(false)
 	ts.DisplayCriticalTaskWarning()
@@ -417,7 +414,6 @@ func CommandShowPaused(conf Config, ctx, cmdLine CmdLine) error {
 	ts.Filter(ctx)
 	ts.Filter(cmdLine)
 	ts.FilterByStatus(STATUS_PAUSED)
-	ts.SortByPriority()
 	ts.DisplayByNext(true)
 	return nil
 }
@@ -427,6 +423,7 @@ func CommandShowResolved(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(ALL_STATUSES...),
+		SortBy("resolved", Descending),
 	)
 	if err != nil {
 		return err
@@ -434,7 +431,6 @@ func CommandShowResolved(conf Config, ctx, cmdLine CmdLine) error {
 	ts.Filter(ctx)
 	ts.Filter(cmdLine)
 	ts.FilterByStatus(STATUS_RESOLVED)
-	ts.SortByResolved()
 	ts.DisplayByWeek()
 	ctx.PrintContextDescription()
 	return nil
@@ -471,7 +467,6 @@ func CommandShowTemplates(conf Config, ctx, cmdLine CmdLine) error {
 	ts.Filter(ctx)
 	ts.Filter(cmdLine)
 	ts.FilterByStatus(STATUS_TEMPLATE)
-	ts.SortByPriority()
 	ts.DisplayByNext(false)
 	ctx.PrintContextDescription()
 	return nil

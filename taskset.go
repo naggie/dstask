@@ -3,6 +3,7 @@ package dstask
 // main task data structures
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -52,15 +53,15 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 	ts.stateFilePath = stateFilePath
 	ts.repoPath = repoPath
 
-	// Apply our options
+	// Construct our options struct by calling our passed-in TaskSetOpt functions.
 	var tso taskSetOpts
 	for _, opt := range opts {
 		opt(&tso)
 	}
 	ids := LoadIds(idsFilePath)
 
+	// Read Tasks from disk, according to the options passed.
 	filteredStatuses := filterStringSlice(tso.statuses, tso.withoutStatuses)
-
 	for _, status := range filteredStatuses {
 		dir := filepath.Join(repoPath, status)
 		files, err := ioutil.ReadDir(dir)
@@ -83,10 +84,37 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 		}
 	}
 
+	// If no sorting options passed, apply our defaults. Highest priority first,
+	// then newest first.
+	if len(tso.sortOpts) == 0 {
+		SortBy("created", Descending)(&tso)
+		SortBy("priority", Ascending)(&tso)
+	}
+
+	// Apply our sorting options
+	for _, sortOpt := range tso.sortOpts {
+		switch sortOpt.taskAttribute {
+		case "created":
+			ts.sortByCreated(sortOpt.direction)
+		case "priority":
+			ts.sortByPriority(sortOpt.direction)
+		case "resolved":
+			ts.sortByResolved(sortOpt.direction)
+		default:
+			return nil, fmt.Errorf("Unknown SortBy attribute: %v\n", sortOpt.taskAttribute)
+		}
+	}
+
 	return &ts, nil
 }
 
 type TaskSetOpt func(opts *taskSetOpts)
+
+func SortBy(attr string, direction SortByDirection) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.sortOpts = append(opts.sortOpts, sortOpt{attr, direction})
+	}
+}
 
 func WithStatuses(statuses ...string) TaskSetOpt {
 	return func(opts *taskSetOpts) {
@@ -103,6 +131,12 @@ func WithoutStatuses(statuses ...string) TaskSetOpt {
 type taskSetOpts struct {
 	statuses        []string
 	withoutStatuses []string
+	sortOpts        []sortOpt
+}
+
+type sortOpt struct {
+	taskAttribute string
+	direction     SortByDirection
 }
 
 func filterStringSlice(with, without []string) []string {
@@ -121,13 +155,37 @@ func filterStringSlice(with, without []string) []string {
 	return ret
 }
 
-func (ts *TaskSet) SortByPriority() {
-	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.Before(ts.tasks[j].Created) })
-	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority < ts.tasks[j].Priority })
+func (ts *TaskSet) sortByCreated(dir SortByDirection) {
+	switch dir {
+	case Ascending:
+		// Oldest first
+		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.Before(ts.tasks[j].Created) })
+	case Descending:
+		// Newest first
+		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.After(ts.tasks[j].Created) })
+	}
 }
 
-func (ts *TaskSet) SortByResolved() {
-	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Resolved.Before(ts.tasks[j].Resolved) })
+func (ts *TaskSet) sortByPriority(dir SortByDirection) {
+	switch dir {
+	case Ascending:
+		// P1 first
+		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority < ts.tasks[j].Priority })
+	case Descending:
+		// P1 last
+		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority > ts.tasks[j].Priority })
+	}
+}
+
+func (ts *TaskSet) sortByResolved(dir SortByDirection) {
+	switch dir {
+	case Ascending:
+		// Oldest resolved first
+		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Resolved.Before(ts.tasks[j].Resolved) })
+	case Descending:
+		// Newest resolved first
+		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Resolved.After(ts.tasks[j].Resolved) })
+	}
 }
 
 // LoadTask adds a task to the TaskSet, but only if it has a new uuid or no uuid.
@@ -361,3 +419,10 @@ func (ts *TaskSet) SavePendingChanges() {
 	// can create merge conflicts in some (uncommon) cases.
 	ids.Save(ts.idsFilePath)
 }
+
+type SortByDirection string
+
+const (
+	Ascending  SortByDirection = "ascending"
+	Descending SortByDirection = "descending"
+)
