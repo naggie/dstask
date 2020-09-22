@@ -10,6 +10,7 @@ fi
 VERSION="$1"
 GIT_COMMIT=$(git rev-list -1 HEAD)
 BUILD_DATE=$(date)
+export CGO_ENABLED=0
 
 RELEASE_FILE=RELEASE.md
 
