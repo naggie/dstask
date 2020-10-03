@@ -61,7 +61,7 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 	ids := LoadIds(idsFilePath)
 
 	// Read Tasks from disk, according to the options passed.
-	filteredStatuses := filterStringSlice(tso.statuses, tso.withoutStatuses)
+	filteredStatuses := filterStringSlice(tso.withStatuses, tso.withoutStatuses)
 	for _, status := range filteredStatuses {
 		dir := filepath.Join(repoPath, status)
 		files, err := ioutil.ReadDir(dir)
@@ -105,6 +105,43 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 		}
 	}
 
+	// Apply our filter options
+	filteredProjects := filterStringSlice(tso.withProjects, tso.withoutProjects)
+	filteredTags := filterStringSlice(tso.withTags, tso.withoutTags)
+
+	for _, task := range ts.tasks {
+
+		// Is task in list of IDs explicitly passed?
+		for _, id := range tso.withIDs {
+			if id == task.ID {
+				task.filtered = false
+				break
+			} else {
+				task.filtered = true
+			}
+		}
+
+		// Does task project match one of the projects passed in?
+		for _, proj := range filteredProjects {
+			if proj == task.Project {
+				task.filtered = false
+				break
+			} else {
+				task.filtered = true
+			}
+		}
+
+		for _, tag := range filteredTags {
+			if StrSliceContains(task.Tags, tag) {
+				task.filtered = false
+				break
+			} else {
+				task.filtered = true
+			}
+		}
+
+	}
+
 	return &ts, nil
 }
 
@@ -136,7 +173,7 @@ func WithoutProjects(projects ...string) TaskSetOpt {
 
 func WithStatuses(statuses ...string) TaskSetOpt {
 	return func(opts *taskSetOpts) {
-		opts.statuses = append(opts.statuses, statuses...)
+		opts.withStatuses = append(opts.withStatuses, statuses...)
 	}
 }
 
@@ -160,8 +197,8 @@ func WithoutTags(tags ...string) TaskSetOpt {
 
 type taskSetOpts struct {
 	sortOpts        []sortOpt
-	statuses        []string
 	withIDs         []int
+	withStatuses    []string
 	withoutStatuses []string
 	withProjects    []string
 	withoutProjects []string
