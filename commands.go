@@ -209,16 +209,19 @@ func CommandLog(conf Config, ctx, cmdLine CmdLine) error {
 
 // CommandModify modifies a task.
 func CommandModify(conf Config, ctx, cmdLine CmdLine) error {
-	ts, err := NewTaskSet(
-		conf.Repo, conf.IDsFile, conf.StateFile,
-		WithStatuses(NON_RESOLVED_STATUSES...),
-	)
-	if err != nil {
-		return err
-	}
 
 	if len(cmdLine.IDs) == 0 {
-		ts.Filter(ctx)
+		ts, err := NewTaskSet(
+			conf.Repo, conf.IDsFile, conf.StateFile,
+			WithStatuses(NON_RESOLVED_STATUSES...),
+			WithProjects(ctx.Project, cmdLine.Project),
+			WithoutProjects(ctx.AntiProjects...),
+			WithTags(ctx.Tags...),
+			WithoutTags(ctx.AntiTags...),
+		)
+		if err != nil {
+			return err
+		}
 		if StdoutIsTTY() {
 			ConfirmOrAbort("No IDs specified. Apply to all %d tasks in current ctx?", len(ts.Tasks()))
 		}
@@ -230,14 +233,27 @@ func CommandModify(conf Config, ctx, cmdLine CmdLine) error {
 			MustGitCommit(conf.Repo, "Modified %s", task)
 		}
 		return nil
-	}
+	} else {
+		ts, err := NewTaskSet(
+			conf.Repo, conf.IDsFile, conf.StateFile,
+			WithStatuses(NON_RESOLVED_STATUSES...),
+			WithIDs(cmdLine.IDs...),
+			WithProjects(ctx.Project, cmdLine.Project),
+			WithoutProjects(ctx.AntiProjects...),
+			WithTags(ctx.Tags...),
+			WithoutTags(ctx.AntiTags...),
+		)
+		if err != nil {
+			return err
+		}
 
-	for _, id := range cmdLine.IDs {
-		task := ts.MustGetByID(id)
-		task.Modify(cmdLine)
-		ts.MustUpdateTask(task)
-		ts.SavePendingChanges()
-		MustGitCommit(conf.Repo, "Modified %s", task)
+		for _, task := range ts.Tasks() {
+			//task := ts.MustGetByID(id)
+			task.Modify(cmdLine)
+			ts.MustUpdateTask(task)
+			ts.SavePendingChanges()
+			MustGitCommit(conf.Repo, "Modified %s", task)
+		}
 	}
 
 	return nil
@@ -246,16 +262,23 @@ func CommandModify(conf Config, ctx, cmdLine CmdLine) error {
 // CommandNext prints the unresolved tasks associated with the current context.
 // This is the default command.
 func CommandNext(conf Config, ctx, cmdLine CmdLine) error {
+
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithoutStatuses(STATUS_TEMPLATE),
 		WithStatuses(NON_RESOLVED_STATUSES...),
+		WithIDs(cmdLine.IDs...),
+		WithProjects(ctx.Project, cmdLine.Project),
+		WithoutProjects(ctx.AntiProjects...),
+		WithoutProjects(cmdLine.AntiProjects...),
+		WithTags(ctx.Tags...),
+		WithTags(cmdLine.Tags...),
+		WithoutTags(ctx.AntiTags...),
+		WithoutTags(cmdLine.AntiTags...),
 	)
 	if err != nil {
 		return err
 	}
-	ts.Filter(ctx)
-	ts.Filter(cmdLine)
 	ts.DisplayByNext(ctx, true)
 
 	return nil
@@ -352,14 +375,19 @@ func CommandRemove(conf Config, ctx, cmdLine CmdLine) error {
 func CommandShowActive(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
-		WithStatuses(NON_RESOLVED_STATUSES...),
+		WithStatuses(STATUS_ACTIVE),
+		WithIDs(cmdLine.IDs...),
+		WithProjects(ctx.Project, cmdLine.Project),
+		WithoutProjects(ctx.AntiProjects...),
+		WithoutProjects(cmdLine.AntiProjects...),
+		WithTags(ctx.Tags...),
+		WithTags(cmdLine.Tags...),
+		WithoutTags(ctx.AntiTags...),
+		WithoutTags(cmdLine.AntiTags...),
 	)
 	if err != nil {
 		return err
 	}
-	ts.Filter(ctx)
-	ts.Filter(cmdLine)
-	ts.FilterByStatus(STATUS_ACTIVE)
 	ts.DisplayByNext(ctx, true)
 
 	return nil
@@ -370,12 +398,18 @@ func CommandShowProjects(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(ALL_STATUSES...),
+		WithIDs(cmdLine.IDs...),
+		WithProjects(ctx.Project, cmdLine.Project),
+		WithoutProjects(ctx.AntiProjects...),
+		WithoutProjects(cmdLine.AntiProjects...),
+		WithTags(ctx.Tags...),
+		WithTags(cmdLine.Tags...),
+		WithoutTags(ctx.AntiTags...),
+		WithoutTags(cmdLine.AntiTags...),
 	)
 	if err != nil {
 		return err
 	}
-	cmdLine.MergeContext(ctx)
-	ts.Filter(ctx)
 	ts.DisplayProjects()
 	return nil
 }
@@ -386,12 +420,18 @@ func CommandShowOpen(conf Config, ctx, cmdLine CmdLine) error {
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithoutStatuses(STATUS_TEMPLATE),
 		WithStatuses(NON_RESOLVED_STATUSES...),
+		WithIDs(cmdLine.IDs...),
+		WithProjects(ctx.Project, cmdLine.Project),
+		WithoutProjects(ctx.AntiProjects...),
+		WithoutProjects(cmdLine.AntiProjects...),
+		WithTags(ctx.Tags...),
+		WithTags(cmdLine.Tags...),
+		WithoutTags(ctx.AntiTags...),
+		WithoutTags(cmdLine.AntiTags...),
 	)
 	if err != nil {
 		return err
 	}
-	ts.Filter(ctx)
-	ts.Filter(cmdLine)
 	ts.DisplayByNext(ctx, false)
 	return nil
 }
@@ -400,14 +440,20 @@ func CommandShowOpen(conf Config, ctx, cmdLine CmdLine) error {
 func CommandShowPaused(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
-		WithStatuses(NON_RESOLVED_STATUSES...),
+		WithStatuses(STATUS_PAUSED),
+		WithoutStatuses(STATUS_RESOLVED),
+		WithIDs(cmdLine.IDs...),
+		WithProjects(ctx.Project, cmdLine.Project),
+		WithoutProjects(ctx.AntiProjects...),
+		WithoutProjects(cmdLine.AntiProjects...),
+		WithTags(ctx.Tags...),
+		WithTags(cmdLine.Tags...),
+		WithoutTags(ctx.AntiTags...),
+		WithoutTags(cmdLine.AntiTags...),
 	)
 	if err != nil {
 		return err
 	}
-	ts.Filter(ctx)
-	ts.Filter(cmdLine)
-	ts.FilterByStatus(STATUS_PAUSED)
 	ts.DisplayByNext(ctx, true)
 	return nil
 }
@@ -416,15 +462,20 @@ func CommandShowPaused(conf Config, ctx, cmdLine CmdLine) error {
 func CommandShowResolved(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
-		WithStatuses(ALL_STATUSES...),
+		WithStatuses(STATUS_RESOLVED),
+		WithIDs(cmdLine.IDs...),
+		WithProjects(ctx.Project, cmdLine.Project),
+		WithoutProjects(ctx.AntiProjects...),
+		WithoutProjects(cmdLine.AntiProjects...),
+		WithTags(ctx.Tags...),
+		WithTags(cmdLine.Tags...),
+		WithoutTags(ctx.AntiTags...),
+		WithoutTags(cmdLine.AntiTags...),
 		SortBy("resolved", Descending),
 	)
 	if err != nil {
 		return err
 	}
-	ts.Filter(ctx)
-	ts.Filter(cmdLine)
-	ts.FilterByStatus(STATUS_RESOLVED)
 	ts.DisplayByWeek()
 	return nil
 }
@@ -434,12 +485,18 @@ func CommandShowTags(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
+		WithIDs(cmdLine.IDs...),
+		WithProjects(ctx.Project, cmdLine.Project),
+		WithoutProjects(ctx.AntiProjects...),
+		WithoutProjects(cmdLine.AntiProjects...),
+		WithTags(ctx.Tags...),
+		WithTags(cmdLine.Tags...),
+		WithoutTags(ctx.AntiTags...),
+		WithoutTags(cmdLine.AntiTags...),
 	)
 	if err != nil {
 		return err
 	}
-	cmdLine.MergeContext(ctx)
-	ts.Filter(ctx)
 	for tag := range ts.GetTags() {
 		fmt.Println(tag)
 	}
@@ -451,14 +508,19 @@ func CommandShowTemplates(conf Config, ctx, cmdLine CmdLine) error {
 
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
-		WithStatuses(NON_RESOLVED_STATUSES...),
+		WithStatuses(STATUS_TEMPLATE),
+		WithIDs(cmdLine.IDs...),
+		WithProjects(ctx.Project, cmdLine.Project),
+		WithoutProjects(ctx.AntiProjects...),
+		WithoutProjects(cmdLine.AntiProjects...),
+		WithTags(ctx.Tags...),
+		WithTags(cmdLine.Tags...),
+		WithoutTags(ctx.AntiTags...),
+		WithoutTags(cmdLine.AntiTags...),
 	)
 	if err != nil {
 		return err
 	}
-	ts.Filter(ctx)
-	ts.Filter(cmdLine)
-	ts.FilterByStatus(STATUS_TEMPLATE)
 	ts.DisplayByNext(ctx, false)
 	return nil
 }
@@ -468,12 +530,15 @@ func CommandShowUnorganised(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
+		WithIDs(cmdLine.IDs...),
+		WithoutProjects(cmdLine.AntiProjects...),
+		WithTags(cmdLine.Tags...),
+		WithoutTags(cmdLine.AntiTags...),
+		WithUnorganised(),
 	)
 	if err != nil {
 		return err
 	}
-	ts.Filter(cmdLine)
-	ts.FilterUnorganised()
 	ts.DisplayByNext(ctx, true)
 	return nil
 }
