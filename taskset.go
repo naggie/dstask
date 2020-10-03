@@ -116,6 +116,24 @@ func SortBy(attr string, direction SortByDirection) TaskSetOpt {
 	}
 }
 
+func WithIDs(ids ...int) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.withIDs = append(opts.withIDs, ids...)
+	}
+}
+
+func WithProjects(projects ...string) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.withProjects = append(opts.withProjects, projects...)
+	}
+}
+
+func WithoutProjects(projects ...string) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.withoutProjects = append(opts.withoutProjects, projects...)
+	}
+}
+
 func WithStatuses(statuses ...string) TaskSetOpt {
 	return func(opts *taskSetOpts) {
 		opts.statuses = append(opts.statuses, statuses...)
@@ -128,10 +146,27 @@ func WithoutStatuses(statuses ...string) TaskSetOpt {
 	}
 }
 
+func WithTags(tags ...string) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.withTags = append(opts.withTags, tags...)
+	}
+}
+
+func WithoutTags(tags ...string) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.withoutTags = append(opts.withoutTags, tags...)
+	}
+}
+
 type taskSetOpts struct {
-	statuses        []string
-	withoutStatuses []string
 	sortOpts        []sortOpt
+	statuses        []string
+	withIDs         []int
+	withoutStatuses []string
+	withProjects    []string
+	withoutProjects []string
+	withTags        []string
+	withoutTags     []string
 }
 
 type sortOpt struct {
