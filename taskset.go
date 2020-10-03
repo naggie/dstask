@@ -105,24 +105,21 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 		}
 	}
 
-	// Apply our filter options
-	filteredProjects := filterStringSlice(tso.withProjects, tso.withoutProjects)
-	filteredTags := filterStringSlice(tso.withTags, tso.withoutTags)
-
+	// Apply our filter options. If the filtered attribute is set to true,
+	// the task will not be rendered to output.
 	for _, task := range ts.tasks {
+		task.filtered = false
 
-		// Is task in list of IDs explicitly passed?
 		for _, id := range tso.withIDs {
 			if id == task.ID {
 				task.filtered = false
-				break
+				continue
 			} else {
 				task.filtered = true
 			}
 		}
 
-		// Does task project match one of the projects passed in?
-		for _, proj := range filteredProjects {
+		for _, proj := range tso.withProjects {
 			if proj == task.Project {
 				task.filtered = false
 				break
@@ -131,13 +128,31 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 			}
 		}
 
-		for _, tag := range filteredTags {
+		for _, antiProject := range tso.withoutProjects {
+			if antiProject == task.Project {
+				task.filtered = true
+			}
+		}
+
+		for _, tag := range tso.withTags {
 			if StrSliceContains(task.Tags, tag) {
 				task.filtered = false
 				break
 			} else {
 				task.filtered = true
 			}
+		}
+
+		for _, antiTag := range tso.withoutTags {
+			if StrSliceContains(task.Tags, antiTag) {
+				task.filtered = true
+				break
+			}
+		}
+
+		// special case: look for unorganised
+		if tso.unorganised && len(task.Tags) < 1 && task.Project == "" {
+			task.filtered = true
 		}
 
 	}
@@ -161,7 +176,12 @@ func WithIDs(ids ...int) TaskSetOpt {
 
 func WithProjects(projects ...string) TaskSetOpt {
 	return func(opts *taskSetOpts) {
-		opts.withProjects = append(opts.withProjects, projects...)
+		for _, proj := range projects {
+			if proj == "" {
+				continue
+			}
+			opts.withProjects = append(opts.withProjects, proj)
+		}
 	}
 }
 
@@ -195,6 +215,12 @@ func WithoutTags(tags ...string) TaskSetOpt {
 	}
 }
 
+func WithUnorganised() TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.unorganised = true
+	}
+}
+
 type taskSetOpts struct {
 	sortOpts        []sortOpt
 	withIDs         []int
@@ -204,6 +230,7 @@ type taskSetOpts struct {
 	withoutProjects []string
 	withTags        []string
 	withoutTags     []string
+	unorganised     bool
 }
 
 type sortOpt struct {
@@ -347,33 +374,10 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 	*ts.tasksByUUID[task.UUID] = task
 }
 
+// Filter NOTE: only called in completions.go
 func (ts *TaskSet) Filter(cmdLine CmdLine) {
 	for _, task := range ts.tasks {
 		if !task.MatchesFilter(cmdLine) {
-			task.filtered = true
-		}
-	}
-}
-
-func (ts *TaskSet) FilterByStatus(status string) {
-	for _, task := range ts.tasks {
-		if task.Status != status {
-			task.filtered = true
-		}
-	}
-}
-
-func (ts *TaskSet) FilterOutStatus(status string) {
-	for _, task := range ts.tasks {
-		if task.Status == status {
-			task.filtered = true
-		}
-	}
-}
-
-func (ts *TaskSet) FilterUnorganised() {
-	for _, task := range ts.tasks {
-		if len(task.Tags) > 0 || task.Project != "" {
 			task.filtered = true
 		}
 	}
