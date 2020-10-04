@@ -256,8 +256,7 @@ func CommandNext(conf Config, ctx, cmdLine CmdLine) error {
 	ts.Filter(cmdLine)
 	ts.SortByPriority()
 	ctx.PrintContextDescription()
-	ts.DisplayByNext(true)
-	ts.DisplayCriticalTaskWarning()
+	ts.DisplayByNext(ctx, true)
 
 	return nil
 }
@@ -364,7 +363,7 @@ func CommandShowActive(conf Config, ctx, cmdLine CmdLine) error {
 	ts.Filter(cmdLine)
 	ts.FilterByStatus(STATUS_ACTIVE)
 	ts.SortByPriority()
-	ts.DisplayByNext(true)
+	ts.DisplayByNext(ctx, true)
 
 	return nil
 }
@@ -399,8 +398,7 @@ func CommandShowOpen(conf Config, ctx, cmdLine CmdLine) error {
 	ts.Filter(cmdLine)
 	ts.SortByPriority()
 	ctx.PrintContextDescription()
-	ts.DisplayByNext(false)
-	ts.DisplayCriticalTaskWarning()
+	ts.DisplayByNext(ctx, false)
 	return nil
 }
 
@@ -418,7 +416,7 @@ func CommandShowPaused(conf Config, ctx, cmdLine CmdLine) error {
 	ts.Filter(cmdLine)
 	ts.FilterByStatus(STATUS_PAUSED)
 	ts.SortByPriority()
-	ts.DisplayByNext(true)
+	ts.DisplayByNext(ctx, true)
 	return nil
 }
 
@@ -472,7 +470,7 @@ func CommandShowTemplates(conf Config, ctx, cmdLine CmdLine) error {
 	ts.Filter(cmdLine)
 	ts.FilterByStatus(STATUS_TEMPLATE)
 	ts.SortByPriority()
-	ts.DisplayByNext(false)
+	ts.DisplayByNext(ctx, false)
 	ctx.PrintContextDescription()
 	return nil
 }
@@ -488,7 +486,7 @@ func CommandShowUnorganised(conf Config, ctx, cmdLine CmdLine) error {
 	}
 	ts.Filter(cmdLine)
 	ts.FilterUnorganised()
-	ts.DisplayByNext(true)
+	ts.DisplayByNext(ctx, true)
 	return nil
 }
 

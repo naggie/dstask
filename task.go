@@ -19,42 +19,45 @@ type SubTask struct {
 	Resolved bool
 }
 
+// Task is our representation of tasks added at the command line and serialized
+// to the task database on disk. It is rendered in multiple ways by the TaskSet
+// to which it belongs.
 type Task struct {
 	// not stored in file -- rather filename and directory
-	UUID   string `yaml:"-"`
-	Status string `yaml:",omitempty"`
+	UUID   string `json:"uuid" yaml:"-"`
+	Status string `json:"status" yaml:",omitempty"`
 	// is new or has changed. Need to write to disk.
-	WritePending bool `yaml:"-"`
+	WritePending bool `json:"-" yaml:"-"`
 
 	// ephemeral, used to address tasks quickly. Non-resolved only. Populated
 	// from IDCache or on-the-fly.
-	ID int `yaml:"-"`
+	ID int `json:"id" yaml:"-"`
 
 	// Deleted, if true, marks this task for deletion
-	Deleted bool `yaml:"-"`
+	Deleted bool `json:"-" yaml:"-"`
 
 	// concise representation of task
-	Summary string
+	Summary string `json:"summary"`
 	// more detail, or information to remember to complete the task
-	Notes   string
-	Tags    []string
-	Project string
+	Notes   string   `json:"notes"`
+	Tags    []string `json:"tags"`
+	Project string   `json:"project"`
 	// see const.go for PRIORITY_ strings
-	Priority    string
-	DelegatedTo string
-	Subtasks    []SubTask
+	Priority    string    `json:"priority"`
+	DelegatedTo string    `json:"-"`
+	Subtasks    []SubTask `json:"-"`
 	// uuids of tasks that this task depends on
 	// blocked status can be derived.
 	// TODO possible filter: :blocked. Also, :overdue
-	Dependencies []string
+	Dependencies []string `json:"-"`
 
-	Created  time.Time
-	Resolved time.Time
-	Due      time.Time
+	Created  time.Time `json:"created"`
+	Resolved time.Time `json:"resolved"`
+	Due      time.Time `json:"due"`
 
 	// TaskSet uses this to indicate if a given task is excluded by a filter
 	// (context etc)
-	filtered bool
+	filtered bool `json:"-"`
 }
 
 // Unmarshal a Task from disk. We explicitly pass status, because the caller
