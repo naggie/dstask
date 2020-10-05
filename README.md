@@ -84,8 +84,9 @@ Requirements:
 
 
 There is also an unofficial
-[Nix](https://nixos.org/nixos/packages.html?attr=dstask&channel=nixpkgs-unstable&query=dstask)
-and [Arch AUR](https://aur.archlinux.org/packages/dstask/) package!
+[Nix](https://nixos.org/nixos/packages.html?attr=dstask&channel=nixpkgs-unstable&query=dstask),
+[Arch AUR](https://aur.archlinux.org/packages/dstask/)
+and [FreeBSD](https://www.freshports.org/deskutils/dstask/) package!
 
 # Moving from Taskwarrior
 

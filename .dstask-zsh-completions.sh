@@ -1,4 +1,4 @@
-#compdef pass
+#compdef dstask
 #autoload
 
 
