@@ -105,19 +105,17 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 		}
 	}
 
+	// If IDs were passed, they take precedence. Any other filtering options
+	// are ignored, and we return early.
+	if len(tso.withIDs) > 0 {
+		filterTasksByID(ts.tasks, &tso)
+		return &ts, nil
+	}
+
 	// Apply our filter options. If the filtered attribute is set to true,
 	// the task will not be rendered to output.
 	for _, task := range ts.tasks {
 		task.filtered = false
-
-		for _, id := range tso.withIDs {
-			if id == task.ID {
-				task.filtered = false
-				continue
-			} else {
-				task.filtered = true
-			}
-		}
 
 		for _, proj := range tso.withProjects {
 			if proj == task.Project {
@@ -252,6 +250,18 @@ func filterStringSlice(with, without []string) []string {
 		}
 	}
 	return ret
+}
+
+func filterTasksByID(tasks []*Task, tso *taskSetOpts) {
+	for _, task := range tasks {
+		task.filtered = true
+		for _, id := range tso.withIDs {
+			if id == task.ID {
+				// we have found a matching ID
+				task.filtered = false
+			}
+		}
+	}
 }
 
 func (ts *TaskSet) sortByCreated(dir SortByDirection) {
