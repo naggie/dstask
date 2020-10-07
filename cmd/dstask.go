@@ -16,6 +16,11 @@ func main() {
 	ctx := state.Context
 	cmdLine := dstask.ParseCmdLine(os.Args[1:]...)
 
+	if len(cmdLine.IDs) > 0 &&
+		(lenNotZero(cmdLine.Tags, cmdLine.AntiTags, cmdLine.AntiProjects) || cmdLine.Project != "") {
+		dstask.ExitFail("IDs cannot be combined with other attributes")
+	}
+
 	if cmdLine.IgnoreContext {
 		ctx = dstask.CmdLine{}
 	}
@@ -165,4 +170,13 @@ func getEnv(key string, _default string) string {
 		return val
 	}
 	return _default
+}
+
+func lenNotZero(arrays ...[]string) bool {
+	for _, arr := range arrays {
+		if len(arr) > 0 {
+			return true
+		}
+	}
+	return false
 }
