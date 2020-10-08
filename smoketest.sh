@@ -13,10 +13,6 @@ export DSTASK_GIT_REPO=$(mktemp -d)
 export UPSTREAM_BARE_REPO=$(mktemp -d)
 export DSTASK_FAKE_PTY=1
 
-if [[ -d "dstask" ]]; then
-    rm -r dstask
-fi
-
 cleanup() {
     set +x
     set +e
