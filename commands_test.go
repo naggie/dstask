@@ -34,7 +34,7 @@ func TestFilterTasksByID(t *testing.T) {
 		}
 		testTasks := makeTestTasks()
 		filterTasksByID(testTasks, &tso)
-		// every task should be filtered
+		// no tasks are filtered, since no ids were passed
 		assert.Equal(t, countFiltered(testTasks), len(testTasks))
 	})
 
@@ -44,7 +44,7 @@ func TestFilterTasksByID(t *testing.T) {
 		}
 		testTasks := makeTestTasks()
 		filterTasksByID(testTasks, &tso)
-		// every task should be filtered
+		// no tasks were filtered, since a non-existent ID was passed
 		assert.Equal(t, countFiltered(testTasks), len(testTasks))
 	})
 
