@@ -96,6 +96,7 @@ func makeDstaskRepo(t *testing.T) (string, func()) {
 }
 
 func assertProgramResult(t *testing.T, output []byte, exiterr *exec.ExitError, successExpected bool) {
+	t.Helper()
 	if exiterr != nil || !successExpected {
 		logFailure(t, output, exiterr)
 		t.Fatalf("%v", exiterr)

@@ -7,18 +7,17 @@ import (
 	"gotest.tools/assert"
 )
 
-func TestShowResolved(t *testing.T) {
+func TestLog(t *testing.T) {
 	t.Skip("skipping because show-resolved cannot be run non-interactively yet")
 	repo, cleanup := makeDstaskRepo(t)
 	defer cleanup()
 
 	program := testCmd(repo)
 
-	output, exiterr, success := program("add", "+one", "one")
+	output, exiterr, success := program("add", "one")
 	assertProgramResult(t, output, exiterr, success)
 
-	// "Paused" means tasks that were started, then stopped.
-	output, exiterr, success = program("1", "done")
+	output, exiterr, success = program("log", "two")
 	assertProgramResult(t, output, exiterr, success)
 
 	output, exiterr, success = program("show-resolved")
@@ -27,5 +26,5 @@ func TestShowResolved(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "one")
+	assert.Equal(t, tasks[0].Summary, "two", "task two should be resolved")
 }
