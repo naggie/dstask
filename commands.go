@@ -23,7 +23,6 @@ func CommandAdd(conf Config, ctx, cmdLine CmdLine) error {
 	if cmdLine.Template > 0 {
 		var taskSummary string
 		tt := ts.MustGetByID(cmdLine.Template)
-		// ctx.PrintContextDescription()
 		cmdLine.MergeContext(ctx)
 
 		if cmdLine.Text != "" {
@@ -256,7 +255,6 @@ func CommandNext(conf Config, ctx, cmdLine CmdLine) error {
 	ts.Filter(ctx)
 	ts.Filter(cmdLine)
 	ts.SortByPriority()
-	//ctx.PrintContextDescription()
 	ts.DisplayByNext(ctx, true)
 
 	return nil
@@ -352,7 +350,6 @@ func CommandRemove(conf Config, ctx, cmdLine CmdLine) error {
 
 // CommandShowActive prints a list of active tasks.
 func CommandShowActive(conf Config, ctx, cmdLine CmdLine) error {
-	// ctx.PrintContextDescription()
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
@@ -371,7 +368,6 @@ func CommandShowActive(conf Config, ctx, cmdLine CmdLine) error {
 
 // CommandShowProjects prints a list of projects associated with all tasks.
 func CommandShowProjects(conf Config, ctx, cmdLine CmdLine) error {
-	//ctx.PrintContextDescription()
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(ALL_STATUSES...),
@@ -398,14 +394,12 @@ func CommandShowOpen(conf Config, ctx, cmdLine CmdLine) error {
 	ts.Filter(ctx)
 	ts.Filter(cmdLine)
 	ts.SortByPriority()
-	// ctx.PrintContextDescription()
 	ts.DisplayByNext(ctx, false)
 	return nil
 }
 
 // CommandShowPaused prints a list of paused tasks.
 func CommandShowPaused(conf Config, ctx, cmdLine CmdLine) error {
-	//ctx.PrintContextDescription()
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
@@ -435,13 +429,11 @@ func CommandShowResolved(conf Config, ctx, cmdLine CmdLine) error {
 	ts.FilterByStatus(STATUS_RESOLVED)
 	ts.SortByResolved()
 	ts.DisplayByWeek()
-	// ctx.PrintContextDescription()
 	return nil
 }
 
 // CommandShowTags prints a list of all tags associated with non-resolved tasks.
 func CommandShowTags(conf Config, ctx, cmdLine CmdLine) error {
-	// ctx.PrintContextDescription()
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
@@ -472,7 +464,6 @@ func CommandShowTemplates(conf Config, ctx, cmdLine CmdLine) error {
 	ts.FilterByStatus(STATUS_TEMPLATE)
 	ts.SortByPriority()
 	ts.DisplayByNext(ctx, false)
-	// ctx.PrintContextDescription()
 	return nil
 }
 
@@ -586,7 +577,6 @@ func CommandTemplate(conf Config, ctx, cmdLine CmdLine) error {
 			MustGitCommit(conf.Repo, "Changed %s to Template", task)
 		}
 	} else if cmdLine.Text != "" {
-		// ctx.PrintContextDescription()
 		cmdLine.MergeContext(ctx)
 		task := Task{
 			WritePending: true,
