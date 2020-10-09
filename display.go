@@ -51,7 +51,8 @@ func (ts *TaskSet) DisplayByNext(ctx CmdLine, truncate bool) error {
 }
 
 func (ts *TaskSet) renderJSON() error {
-	data, err := json.MarshalIndent(ts.tasks, "", "  ")
+	unfilteredTasks := ts.Tasks()
+	data, err := json.MarshalIndent(unfilteredTasks, "", "  ")
 	if err != nil {
 		return err
 	}
