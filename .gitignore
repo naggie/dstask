@@ -3,3 +3,7 @@ RELEASE.md
 
 # make output
 dist
+
+# Editors and IDEs
+.vscode
+.idea
