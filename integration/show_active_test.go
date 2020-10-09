@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/naggie/dstask"
-	"gotest.tools/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestShowActive(t *testing.T) {
