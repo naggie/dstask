@@ -35,36 +35,6 @@ func compile() error {
 	return cmd.Run()
 }
 
-func TestNext(t *testing.T) {
-	repo, cleanup := makeDstaskRepo(t)
-	defer cleanup()
-
-	program := testCmd(repo)
-
-	output, exiterr, success := program("add", "+one", "one")
-	if exiterr != nil || !success {
-		logFailure(t, output, exiterr)
-		t.Fatalf("add one: %v", exiterr)
-	}
-
-	output, exiterr, success = program("add", "+two", "two")
-	if exiterr != nil || !success {
-		logFailure(t, output, exiterr)
-		t.Fatalf("add one: %v", exiterr)
-	}
-
-	output, exiterr, success = program("next", "+one")
-	if exiterr != nil || !success {
-		logFailure(t, output, exiterr)
-		t.Fatalf("add one: %v", exiterr)
-	}
-
-	tasks := unmarshalTaskArray(t, output)
-
-	assert.Equal(t, tasks[0].Summary, "one")
-
-}
-
 // create a callable closure that will run our test binary against a
 // particular repository path.
 func testCmd(repoPath string) func(args ...string) ([]byte, *exec.ExitError, bool) {
@@ -123,4 +93,11 @@ func makeDstaskRepo(t *testing.T) (string, func()) {
 		os.RemoveAll(dir)
 	}
 	return dir, cleanup
+}
+
+func assertProgramResult(t *testing.T, output []byte, exiterr *exec.ExitError, successExpected bool) {
+	if exiterr != nil || !successExpected {
+		logFailure(t, output, exiterr)
+		t.Fatalf("%v", exiterr)
+	}
 }

@@ -86,6 +86,8 @@ func CommandContext(conf Config, state State, ctx, cmdLine CmdLine) error {
 			ExitFail(err.Error())
 		}
 	}
+	fmt.Println("SAVING STATE", conf.StateFile)
+
 	state.Save(conf.StateFile)
 	return nil
 }

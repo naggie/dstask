@@ -7,6 +7,7 @@ package dstask
 import (
 	"encoding/gob"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -52,6 +53,7 @@ func (state *State) SetContext(context CmdLine) error {
 	if context.Text != "" {
 		return errors.New("Context cannot contain text")
 	}
+	fmt.Println("SETTING CONTEXT", context)
 
 	state.Context = context
 	return nil
