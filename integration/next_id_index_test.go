@@ -34,7 +34,7 @@ func TestNextByIDIndexOutsideContext(t *testing.T) {
 
 	program := testCmd(repo)
 
-	output, exiterr, success := program("add", "one")
+	output, exiterr, success := program("add", "one", "+one")
 	assertProgramResult(t, output, exiterr, success)
 
 	output, exiterr, success = program("add", "two", "+two")
@@ -50,4 +50,10 @@ func TestNextByIDIndexOutsideContext(t *testing.T) {
 
 	tasks = unmarshalTaskArray(t, output)
 	assert.Equal(t, tasks[0].Summary, "two", "find task 2 by ID outside current context")
+
+	output, exiterr, success = program("next")
+	assertProgramResult(t, output, exiterr, success)
+
+	tasks = unmarshalTaskArray(t, output)
+	assert.Equal(t, tasks[0].ID, 1, "1 is the only ID in our current context")
 }
