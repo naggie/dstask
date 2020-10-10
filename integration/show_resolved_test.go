@@ -17,7 +17,6 @@ func TestShowResolved(t *testing.T) {
 	output, exiterr, success := program("add", "+one", "one")
 	assertProgramResult(t, output, exiterr, success)
 
-	// "Paused" means tasks that were started, then stopped.
 	output, exiterr, success = program("1", "done")
 	assertProgramResult(t, output, exiterr, success)
 
