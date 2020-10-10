@@ -29,8 +29,8 @@ func TestMain(m *testing.M) {
 }
 
 func compile() error {
-	dir, _ := os.Getwd()
-	fmt.Println(dir)
+	// We expect to execute in the ./integration directory, and we will output
+	// our test binary there.
 	cmd := exec.Command("go", "build", "-mod=vendor", "-o", "./dstask", "../cmd/dstask.go")
 	return cmd.Run()
 }
