@@ -194,49 +194,55 @@ func (p *Project) Style() RowStyle {
 }
 
 func (ts TaskSet) DisplayByWeek() {
-	w, _ := MustGetTermSize()
-	var table *Table
-	var lastWeek int
-	tasks := ts.Tasks()
+	if isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd()) {
+		w, _ := MustGetTermSize()
+		var table *Table
+		var lastWeek int
 
-	for _, t := range tasks {
-		_, week := t.Resolved.ISOWeek()
+		tasks := ts.Tasks()
 
-		// guaranteed true for first iteration, ISOweek starts with 1.
-		if week != lastWeek {
-			if table != nil && len(table.Rows) > 0 {
-				table.Render()
+		for _, t := range tasks {
+			_, week := t.Resolved.ISOWeek()
+
+			// guaranteed true for first iteration, ISOweek starts with 1.
+			if week != lastWeek {
+				if table != nil && len(table.Rows) > 0 {
+					table.Render()
+				}
+				// insert gap
+				fmt.Printf("\n\n> Week %d, starting %s\n\n", week, t.Resolved.Format("Mon 2 Jan 2006"))
+				table = NewTable(
+					w,
+					"Resolved",
+					"Priority",
+					"Tags",
+					"Project",
+					"Summary",
+				)
 			}
-			// insert gap
-			fmt.Printf("\n\n> Week %d, starting %s\n\n", week, t.Resolved.Format("Mon 2 Jan 2006"))
-			table = NewTable(
-				w,
-				"Resolved",
-				"Priority",
-				"Tags",
-				"Project",
-				"Summary",
+
+			table.AddRow(
+				[]string{
+					t.Resolved.Format("Mon 2"),
+					t.Priority,
+					strings.Join(t.Tags, " "),
+					t.Project,
+					t.LongSummary(),
+				},
+				t.Style(),
 			)
+
+			_, lastWeek = t.Resolved.ISOWeek()
 		}
 
-		table.AddRow(
-			[]string{
-				t.Resolved.Format("Mon 2"),
-				t.Priority,
-				strings.Join(t.Tags, " "),
-				t.Project,
-				t.LongSummary(),
-			},
-			t.Style(),
-		)
-
-		_, lastWeek = t.Resolved.ISOWeek()
+		if table != nil {
+			table.Render()
+		}
+		fmt.Printf("%v tasks.\n", len(tasks))
+	} else {
+		// print json
+		ts.renderJSON()
 	}
-
-	if table != nil {
-		table.Render()
-	}
-	fmt.Printf("%v tasks.\n", len(tasks))
 }
 
 func (ts TaskSet) DisplayProjects() {

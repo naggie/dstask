@@ -8,7 +8,6 @@ import (
 )
 
 func TestLog(t *testing.T) {
-	t.Skip("skipping because show-resolved cannot be run non-interactively yet")
 	repo, cleanup := makeDstaskRepo(t)
 	defer cleanup()
 
