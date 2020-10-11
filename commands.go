@@ -557,7 +557,7 @@ func CommandSync(repoPath string) error {
 	return nil
 }
 
-// CommandTemplate creates a new task from a template.
+// CommandTemplate creates a new task template.
 func CommandTemplate(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
