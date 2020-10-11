@@ -4,11 +4,10 @@ import (
 	"testing"
 
 	"github.com/naggie/dstask"
-	"gotest.tools/assert"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestModify(t *testing.T) {
-	t.Skip("modify test TODO")
+func TestModifyTasksByID(t *testing.T) {
 
 	repo, cleanup := makeDstaskRepo(t)
 	defer cleanup()
@@ -24,11 +23,48 @@ func TestModify(t *testing.T) {
 	output, exiterr, success = program("add", "three", "+three")
 	assertProgramResult(t, output, exiterr, success)
 
-	output, exiterr, success = program("modify")
+	output, exiterr, success = program("modify", "2", "3", "+extra")
+	assertProgramResult(t, output, exiterr, success)
+
+	output, exiterr, success = program("next")
 	assertProgramResult(t, output, exiterr, success)
 
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "???", "???")
+	assert.ElementsMatch(t, tasks[0].Tags, []string{"one"}, "task 1 not modified")
+	assert.ElementsMatch(t, tasks[1].Tags, []string{"two", "extra"}, "extra tag added to task two")
+	assert.ElementsMatch(t, tasks[2].Tags, []string{"three", "extra"}, "extra tag added to task three")
+}
+
+func TestModifyTasksInContext(t *testing.T) {
+	t.Skip("non-interactive use of modify without setting explicit IDs is not yet implemented")
+
+	repo, cleanup := makeDstaskRepo(t)
+	defer cleanup()
+
+	program := testCmd(repo)
+
+	output, exiterr, success := program("add", "one", "+one")
+	assertProgramResult(t, output, exiterr, success)
+
+	output, exiterr, success = program("add", "two", "+two")
+	assertProgramResult(t, output, exiterr, success)
+
+	output, exiterr, success = program("add", "three", "+three")
+	assertProgramResult(t, output, exiterr, success)
+
+	output, exiterr, success = program("context", "+three")
+	assertProgramResult(t, output, exiterr, success)
+
+	output, exiterr, success = program("modify", "+extra")
+	assertProgramResult(t, output, exiterr, success)
+
+	output, exiterr, success = program("next")
+	assertProgramResult(t, output, exiterr, success)
+
+	var tasks []dstask.Task
+
+	tasks = unmarshalTaskArray(t, output)
+	assert.Equal(t, tasks[0].Tags, []string{"three", "extra"}, "???")
 }
