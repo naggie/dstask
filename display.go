@@ -1,14 +1,66 @@
 package dstask
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
+	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/mattn/go-isatty"
 )
 
-/// display list of filtered tasks with context and filter
-func (ts *TaskSet) DisplayByNext(truncate bool) {
+// DisplayByNext renders the TaskSet's array of tasks.
+func (ts *TaskSet) DisplayByNext(ctx CmdLine, truncate bool) error {
+	// is stdout a tty
+	if isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd()) {
+		ctx.PrintContextDescription()
+		err := ts.renderTable(truncate)
+		if err != nil {
+			return err
+		}
+		var critical int
+		var totalCritical int
+
+		for _, t := range ts.Tasks() {
+			if t.Priority == PRIORITY_CRITICAL {
+				critical++
+			}
+		}
+
+		for _, t := range ts.AllTasks() {
+			if t.Priority == PRIORITY_CRITICAL {
+				totalCritical++
+			}
+		}
+
+		if critical < totalCritical {
+			fmt.Printf(
+				"\033[38;5;%dm%v critical tasks outside this context! Use `dstask -- P0` to see them.\033[0m\n",
+				FG_PRIORITY_CRITICAL,
+				totalCritical-critical,
+			)
+		}
+		return nil
+	}
+	// stdout is not a tty
+	return ts.renderJSON()
+}
+
+func (ts *TaskSet) renderJSON() error {
+	unfilteredTasks := ts.Tasks()
+	data, err := json.MarshalIndent(unfilteredTasks, "", "  ")
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(os.Stdout, bytes.NewBuffer(data))
+	return err
+}
+
+func (ts *TaskSet) renderTable(truncate bool) error {
 	tasks := ts.Tasks()
 	total := len(tasks)
 	if ts.NumTotal() == 0 {
@@ -22,7 +74,7 @@ func (ts *TaskSet) DisplayByNext(truncate bool) {
 		if task.Notes != "" {
 			fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m\n\n", task.ID, task.Notes)
 		}
-		return
+		return nil
 	} else {
 		w, h := MustGetTermSize()
 
@@ -70,6 +122,7 @@ func (ts *TaskSet) DisplayByNext(truncate bool) {
 			fmt.Printf("\n%v tasks.\n", total)
 		}
 	}
+	return nil
 }
 
 func (task *Task) Display() {
@@ -141,49 +194,55 @@ func (p *Project) Style() RowStyle {
 }
 
 func (ts TaskSet) DisplayByWeek() {
-	w, _ := MustGetTermSize()
-	var table *Table
-	var lastWeek int
-	tasks := ts.Tasks()
+	if isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd()) {
+		w, _ := MustGetTermSize()
+		var table *Table
+		var lastWeek int
 
-	for _, t := range tasks {
-		_, week := t.Resolved.ISOWeek()
+		tasks := ts.Tasks()
 
-		// guaranteed true for first iteration, ISOweek starts with 1.
-		if week != lastWeek {
-			if table != nil && len(table.Rows) > 0 {
-				table.Render()
+		for _, t := range tasks {
+			_, week := t.Resolved.ISOWeek()
+
+			// guaranteed true for first iteration, ISOweek starts with 1.
+			if week != lastWeek {
+				if table != nil && len(table.Rows) > 0 {
+					table.Render()
+				}
+				// insert gap
+				fmt.Printf("\n\n> Week %d, starting %s\n\n", week, t.Resolved.Format("Mon 2 Jan 2006"))
+				table = NewTable(
+					w,
+					"Resolved",
+					"Priority",
+					"Tags",
+					"Project",
+					"Summary",
+				)
 			}
-			// insert gap
-			fmt.Printf("\n\n> Week %d, starting %s\n\n", week, t.Resolved.Format("Mon 2 Jan 2006"))
-			table = NewTable(
-				w,
-				"Resolved",
-				"Priority",
-				"Tags",
-				"Project",
-				"Summary",
+
+			table.AddRow(
+				[]string{
+					t.Resolved.Format("Mon 2"),
+					t.Priority,
+					strings.Join(t.Tags, " "),
+					t.Project,
+					t.LongSummary(),
+				},
+				t.Style(),
 			)
+
+			_, lastWeek = t.Resolved.ISOWeek()
 		}
 
-		table.AddRow(
-			[]string{
-				t.Resolved.Format("Mon 2"),
-				t.Priority,
-				strings.Join(t.Tags, " "),
-				t.Project,
-				t.LongSummary(),
-			},
-			t.Style(),
-		)
-
-		_, lastWeek = t.Resolved.ISOWeek()
+		if table != nil {
+			table.Render()
+		}
+		fmt.Printf("%v tasks.\n", len(tasks))
+	} else {
+		// print json
+		ts.renderJSON()
 	}
-
-	if table != nil {
-		table.Render()
-	}
-	fmt.Printf("%v tasks.\n", len(tasks))
 }
 
 func (ts TaskSet) DisplayProjects() {
@@ -212,29 +271,4 @@ func (ts TaskSet) DisplayProjects() {
 	}
 
 	table.Render()
-}
-
-func (ts TaskSet) DisplayCriticalTaskWarning() {
-	var critical int
-	var totalCritical int
-
-	for _, t := range ts.Tasks() {
-		if t.Priority == PRIORITY_CRITICAL {
-			critical += 1
-		}
-	}
-
-	for _, t := range ts.AllTasks() {
-		if t.Priority == PRIORITY_CRITICAL {
-			totalCritical += 1
-		}
-	}
-
-	if critical < totalCritical {
-		fmt.Printf(
-			"\033[38;5;%dm%v critical tasks outside this context! Use `dstask -- P0` to see them.\033[0m\n",
-			FG_PRIORITY_CRITICAL,
-			totalCritical-critical,
-		)
-	}
 }
