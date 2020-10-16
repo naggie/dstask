@@ -219,7 +219,9 @@ func CommandModify(conf Config, ctx, cmdLine CmdLine) error {
 
 	if len(cmdLine.IDs) == 0 {
 		ts.Filter(ctx)
-		ConfirmOrAbort("No IDs specified. Apply to all %d tasks in current ctx?", len(ts.Tasks()))
+		if StdoutIsTTY() {
+			ConfirmOrAbort("No IDs specified. Apply to all %d tasks in current ctx?", len(ts.Tasks()))
+		}
 
 		for _, task := range ts.Tasks() {
 			task.Modify(cmdLine)
@@ -270,12 +272,10 @@ func CommandNote(conf Config, ctx, cmdLine CmdLine) error {
 		return err
 	}
 
-	// If stdout is not a TTY, we simply write markdown notes to stdout
-	openEditor := IsTTY()
-
 	for _, id := range cmdLine.IDs {
 		task := ts.MustGetByID(id)
-		if openEditor {
+		// If stdout is a TTY, we open the editor
+		if StdoutIsTTY() {
 			if cmdLine.Text == "" {
 				task.Notes = string(MustEditBytes([]byte(task.Notes), "md"))
 			} else {
@@ -289,6 +289,7 @@ func CommandNote(conf Config, ctx, cmdLine CmdLine) error {
 			ts.SavePendingChanges()
 			MustGitCommit(conf.Repo, "Edit note %s", task)
 		} else {
+			// If stdout is not a TTY, we simply write markdown notes to stdout
 			if err := WriteStdout([]byte(task.Notes)); err != nil {
 				ExitFail("Could not write to stdout: %v", err)
 			}

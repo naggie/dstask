@@ -38,7 +38,6 @@ func TestModifyTasksByID(t *testing.T) {
 }
 
 func TestModifyTasksInContext(t *testing.T) {
-	t.Skip("non-interactive use of modify without setting explicit IDs is not yet implemented")
 
 	repo, cleanup := makeDstaskRepo(t)
 	defer cleanup()
@@ -66,5 +65,5 @@ func TestModifyTasksInContext(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Tags, []string{"three", "extra"}, "???")
+	assert.Equal(t, tasks[0].Tags, []string{"extra", "three"}, "tags should have been modified")
 }
