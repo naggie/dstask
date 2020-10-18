@@ -16,10 +16,10 @@ func main() {
 	ctx := state.Context
 	cmdLine := dstask.ParseCmdLine(os.Args[1:]...)
 
-	if len(cmdLine.IDs) > 0 &&
-		(lenNotZero(cmdLine.Tags, cmdLine.AntiTags, cmdLine.AntiProjects) || cmdLine.Project != "") {
-		dstask.ExitFail("IDs cannot be combined with other attributes")
-	}
+	//if len(cmdLine.IDs) > 0 &&
+	//	(lenNotZero(cmdLine.Tags, cmdLine.AntiTags, cmdLine.AntiProjects) || cmdLine.Project != "") {
+	//	dstask.ExitFail("IDs cannot be combined with other attributes")
+	//}
 
 	if cmdLine.IgnoreContext {
 		ctx = dstask.CmdLine{}

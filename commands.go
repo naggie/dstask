@@ -275,6 +275,7 @@ func CommandNext(conf Config, ctx, cmdLine CmdLine) error {
 		WithTags(cmdLine.Tags...),
 		WithoutTags(ctx.AntiTags...),
 		WithoutTags(cmdLine.AntiTags...),
+		WithText(cmdLine.Text),
 	)
 	if err != nil {
 		return err

@@ -11,3 +11,6 @@ clean:
 
 install:
 	cp dist/dstask /usr/local/bin
+
+test:
+	go test ./...

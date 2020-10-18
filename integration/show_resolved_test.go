@@ -34,10 +34,13 @@ func TestShowResolved(t *testing.T) {
 	assert.Equal(t, tasks[0].Summary, "one", "one should be resolved")
 
 	// Test the sorting of resolved tasks
-	output, exiterr, success = program("3", "done")
+	_, exiterr, success = program("3", "done")
 	assertProgramResult(t, output, exiterr, success)
 
-	output, exiterr, success = program("2", "done")
+	_, exiterr, success = program("2", "done")
+	assertProgramResult(t, output, exiterr, success)
+
+	output, exiterr, success = program("show-resolved")
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks = unmarshalTaskArray(t, output)

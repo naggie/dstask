@@ -117,6 +117,16 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 	for _, task := range ts.tasks {
 		task.filtered = false
 
+		// special case: look for unorganised
+		if tso.unorganised {
+			if len(task.Tags) < 1 && task.Project == "" {
+				task.filtered = false
+			} else {
+				task.filtered = true
+			}
+			continue
+		}
+
 		for _, proj := range tso.withProjects {
 			if proj == task.Project {
 				task.filtered = false
@@ -135,7 +145,7 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 		for _, tag := range tso.withTags {
 			if StrSliceContains(task.Tags, tag) {
 				task.filtered = false
-				break
+				break // TODO remove this?
 			} else {
 				task.filtered = true
 			}
@@ -148,9 +158,10 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 			}
 		}
 
-		// special case: look for unorganised
-		if tso.unorganised && len(task.Tags) < 1 && task.Project == "" {
-			task.filtered = true
+		if tso.text != "" {
+			if !strings.Contains(task.Summary, tso.text) && !strings.Contains(task.Notes, tso.text) {
+				task.filtered = true
+			}
 		}
 
 	}
@@ -219,8 +230,15 @@ func WithUnorganised() TaskSetOpt {
 	}
 }
 
+func WithText(text string) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.text = text
+	}
+}
+
 type taskSetOpts struct {
 	sortOpts        []sortOpt
+	text            string
 	withIDs         []int
 	withStatuses    []string
 	withoutStatuses []string
