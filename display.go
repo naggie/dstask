@@ -15,8 +15,8 @@ import (
 
 // DisplayByNext renders the TaskSet's array of tasks.
 func (ts *TaskSet) DisplayByNext(ctx CmdLine, truncate bool) error {
-	// is stdout a tty
-	if isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd()) {
+
+	if StdoutIsTTY() {
 		ctx.PrintContextDescription()
 		err := ts.renderTable(truncate)
 		if err != nil {

@@ -9,6 +9,7 @@ import (
 	"runtime"
 
 	"github.com/gofrs/uuid"
+	"github.com/mattn/go-isatty"
 	"golang.org/x/sys/unix"
 )
 
@@ -180,9 +181,9 @@ func MustGetTermSize() (int, int) {
 	return int(ws.Col), int(ws.Row)
 }
 
-func IsTTY() bool {
-	_, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
-	return err == nil || FAKE_PTY
+func StdoutIsTTY() bool {
+	isTTY := isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd())
+	return isTTY || FAKE_PTY
 }
 
 func WriteStdout(data []byte) error {
