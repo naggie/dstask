@@ -78,11 +78,11 @@ func CommandContext(conf Config, state State, ctx, cmdLine CmdLine) error {
 		fmt.Printf("Current context: %s\n", ctx)
 	} else if os.Args[2] == "none" {
 		if err := state.SetContext(CmdLine{}); err != nil {
-			ExitFail(err.Error())
+			return err
 		}
 	} else {
 		if err := state.SetContext(cmdLine); err != nil {
-			ExitFail(err.Error())
+			return err
 		}
 	}
 
@@ -95,12 +95,12 @@ func CommandDone(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
+		WithIDs(cmdLine.IDs...),
 	)
 	if err != nil {
 		return err
 	}
-	for _, id := range cmdLine.IDs {
-		task := ts.MustGetByID(id)
+	for _, task := range ts.Tasks() {
 		task.Status = STATUS_RESOLVED
 		if cmdLine.Text != "" {
 			task.Notes += "\n" + cmdLine.Text
@@ -117,33 +117,34 @@ func CommandEdit(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
+		WithIDs(cmdLine.IDs...),
 	)
 	if err != nil {
 		return err
 	}
-	for _, id := range cmdLine.IDs {
-		task := ts.MustGetByID(id)
+	for _, task := range ts.Tasks() {
 
 		// hide ID
+		originalID := task.ID
 		task.ID = 0
 
 		data, err := yaml.Marshal(&task)
 		if err != nil {
 			// TODO present error to user, specific error message is important
-			ExitFail("Failed to marshal task %s", task)
+			return fmt.Errorf("Failed to marshal task %s", task)
 		}
 
-		data = MustEditBytes(data, "yml")
+		edited := MustEditBytes(data, "yml")
 
-		err = yaml.Unmarshal(data, &task)
+		err = yaml.Unmarshal(edited, &task)
 		if err != nil {
 			// TODO present error to user, specific error message is important
 			// TODO reattempt mechanism
-			ExitFail("Failed to unmarshal yml")
+			return fmt.Errorf("Failed to unmarshal task %s", task)
 		}
 
 		// re-add ID
-		task.ID = id
+		task.ID = originalID
 
 		ts.MustUpdateTask(task)
 		ts.SavePendingChanges()
@@ -248,7 +249,6 @@ func CommandModify(conf Config, ctx, cmdLine CmdLine) error {
 		}
 
 		for _, task := range ts.Tasks() {
-			//task := ts.MustGetByID(id)
 			task.Modify(cmdLine)
 			ts.MustUpdateTask(task)
 			ts.SavePendingChanges()
@@ -285,18 +285,18 @@ func CommandNext(conf Config, ctx, cmdLine CmdLine) error {
 	return nil
 }
 
-// CommandNote edits the markdown note associated with the task.
+// CommandNote edits or prints the markdown note associated with the task.
 func CommandNote(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
+		WithIDs(cmdLine.IDs...),
 	)
 	if err != nil {
 		return err
 	}
 
-	for _, id := range cmdLine.IDs {
-		task := ts.MustGetByID(id)
+	for _, task := range ts.Tasks() {
 		// If stdout is a TTY, we open the editor
 		if StdoutIsTTY() {
 			if cmdLine.Text == "" {
@@ -326,18 +326,16 @@ func CommandOpen(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
+		WithIDs(cmdLine.IDs...),
 	)
 	if err != nil {
 		return err
 	}
-	for _, id := range cmdLine.IDs {
-		task := ts.MustGetByID(id)
+	for _, task := range ts.Tasks() {
 		urls := xurls.Relaxed.FindAllString(task.Summary+" "+task.Notes, -1)
-
 		if len(urls) == 0 {
 			return fmt.Errorf("No URLs found in task %v", task.ID)
 		}
-
 		for _, url := range urls {
 			MustOpenBrowser(url)
 		}
@@ -354,12 +352,12 @@ func CommandRemove(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
+		WithIDs(cmdLine.IDs...),
 	)
 	if err != nil {
 		return err
 	}
-	for _, id := range cmdLine.IDs {
-		task := ts.MustGetByID(id)
+	for _, task := range ts.Tasks() {
 
 		// Mark our task for deletion
 		task.Deleted = true
@@ -556,7 +554,6 @@ func CommandStart(conf Config, ctx, cmdLine CmdLine) error {
 	if len(cmdLine.IDs) > 0 {
 		// start given tasks by IDs
 		for _, id := range cmdLine.IDs {
-			fmt.Println("trying to get ID", id)
 			task := ts.MustGetByID(id)
 			task.Status = STATUS_ACTIVE
 			if cmdLine.Text != "" {
@@ -596,12 +593,12 @@ func CommandStop(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
+		WithIDs(cmdLine.IDs...),
 	)
 	if err != nil {
 		return err
 	}
-	for _, id := range cmdLine.IDs {
-		task := ts.MustGetByID(id)
+	for _, task := range ts.Tasks() {
 		task.Status = STATUS_PAUSED
 		if cmdLine.Text != "" {
 			task.Notes += "\n" + cmdLine.Text
@@ -615,6 +612,7 @@ func CommandStop(conf Config, ctx, cmdLine CmdLine) error {
 
 // CommandSync pushes and pulls task database changes from the remote repository.
 func CommandSync(repoPath string) error {
+	// TODO(dontlaugh) return error
 	Sync(repoPath)
 	return nil
 }
