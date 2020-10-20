@@ -11,7 +11,10 @@ set -e
 # isolated db locations (repo2 is used for a sync target)
 export DSTASK_GIT_REPO=$(mktemp -d)
 export UPSTREAM_BARE_REPO=$(mktemp -d)
-export DSTASK_FAKE_PTY=1
+
+if [[ -d "dstask" ]]; then
+    rm -r dstask
+fi
 
 cleanup() {
     set +x
@@ -53,7 +56,12 @@ git -C $UPSTREAM_BARE_REPO init --bare
 ./dstask next
 ./dstask 1 done
 ./dstask show-resolved
+
+# TODO we set FAKE_PTY because we do not have a non-tty
+# rendering scheme for show-projects
+export DSTASK_FAKE_PTY=1
 ./dstask show-projects
+unset DSTASK_FAKE_PTY
 
 # -- to remove current context which is +foo
 ./dstask add -- unorganised task

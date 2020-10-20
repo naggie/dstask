@@ -3,6 +3,7 @@ package dstask
 // main task data structures
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -52,15 +53,15 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 	ts.stateFilePath = stateFilePath
 	ts.repoPath = repoPath
 
-	// Apply our options
+	// Construct our options struct by calling our passed-in TaskSetOpt functions.
 	var tso taskSetOpts
 	for _, opt := range opts {
 		opt(&tso)
 	}
 	ids := LoadIds(idsFilePath)
 
-	filteredStatuses := filterStringSlice(tso.statuses, tso.withoutStatuses)
-
+	// Read Tasks from disk, according to the options passed.
+	filteredStatuses := filterStringSlice(tso.withStatuses, tso.withoutStatuses)
 	for _, status := range filteredStatuses {
 		dir := filepath.Join(repoPath, status)
 		files, err := ioutil.ReadDir(dir)
@@ -83,14 +84,125 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 		}
 	}
 
+	// If no sorting options passed, apply our defaults. Highest priority first,
+	// then newest first.
+	if len(tso.sortOpts) == 0 {
+		SortBy("created", Descending)(&tso)
+		SortBy("priority", Ascending)(&tso)
+	}
+
+	// Apply our sorting options
+	for _, sortOpt := range tso.sortOpts {
+		switch sortOpt.taskAttribute {
+		case "created":
+			ts.sortByCreated(sortOpt.direction)
+		case "priority":
+			ts.sortByPriority(sortOpt.direction)
+		case "resolved":
+			ts.sortByResolved(sortOpt.direction)
+		default:
+			return nil, fmt.Errorf("unknown sort by attribute: %v", sortOpt.taskAttribute)
+		}
+	}
+
+	// If IDs were passed, they take precedence. Any other filtering options
+	// are ignored, and we return early.
+	if len(tso.withIDs) > 0 {
+		filterTasksByID(ts.tasks, &tso)
+		return &ts, nil
+	}
+
+	// Apply our filter options. If the filtered attribute is set to true,
+	// the task will not be rendered to output.
+	for _, task := range ts.tasks {
+		task.filtered = false
+
+		// special case: look for unorganised
+		if tso.unorganised {
+			if len(task.Tags) < 1 && task.Project == "" {
+				task.filtered = false
+			} else {
+				task.filtered = true
+			}
+			continue
+		}
+
+		for _, proj := range tso.withProjects {
+			if proj == task.Project {
+				task.filtered = false
+				break
+			} else {
+				task.filtered = true
+			}
+		}
+
+		for _, antiProject := range tso.withoutProjects {
+			if antiProject == task.Project {
+				task.filtered = true
+			}
+		}
+
+		for _, tag := range tso.withTags {
+			if StrSliceContains(task.Tags, tag) {
+				task.filtered = false
+				break // TODO remove this?
+			} else {
+				task.filtered = true
+			}
+		}
+
+		for _, antiTag := range tso.withoutTags {
+			if StrSliceContains(task.Tags, antiTag) {
+				task.filtered = true
+				break
+			}
+		}
+
+		if tso.text != "" {
+			if !strings.Contains(task.Summary, tso.text) && !strings.Contains(task.Notes, tso.text) {
+				task.filtered = true
+			}
+		}
+
+	}
+
 	return &ts, nil
 }
 
 type TaskSetOpt func(opts *taskSetOpts)
 
+func SortBy(attr string, direction SortByDirection) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.sortOpts = append(opts.sortOpts, sortOpt{attr, direction})
+	}
+}
+
+func WithIDs(ids ...int) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.withIDs = append(opts.withIDs, ids...)
+	}
+}
+
+func WithProjects(projects ...string) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		for _, proj := range projects {
+			if proj == "" {
+				continue
+			}
+			opts.withProjects = append(opts.withProjects, proj)
+		}
+	}
+}
+
+func WithoutProjects(projects ...string) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.withoutProjects = append(opts.withoutProjects, projects...)
+	}
+}
+
 func WithStatuses(statuses ...string) TaskSetOpt {
 	return func(opts *taskSetOpts) {
-		opts.statuses = append(opts.statuses, statuses...)
+		opts.withStatuses = append(opts.withStatuses, statuses...)
 	}
 }
 
@@ -100,9 +212,46 @@ func WithoutStatuses(statuses ...string) TaskSetOpt {
 	}
 }
 
+func WithTags(tags ...string) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.withTags = append(opts.withTags, tags...)
+	}
+}
+
+func WithoutTags(tags ...string) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.withoutTags = append(opts.withoutTags, tags...)
+	}
+}
+
+func WithUnorganised() TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.unorganised = true
+	}
+}
+
+func WithText(text string) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		opts.text = text
+	}
+}
+
 type taskSetOpts struct {
-	statuses        []string
+	sortOpts        []sortOpt
+	text            string
+	withIDs         []int
+	withStatuses    []string
 	withoutStatuses []string
+	withProjects    []string
+	withoutProjects []string
+	withTags        []string
+	withoutTags     []string
+	unorganised     bool
+}
+
+type sortOpt struct {
+	taskAttribute string
+	direction     SortByDirection
 }
 
 func filterStringSlice(with, without []string) []string {
@@ -121,13 +270,49 @@ func filterStringSlice(with, without []string) []string {
 	return ret
 }
 
-func (ts *TaskSet) SortByPriority() {
-	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.Before(ts.tasks[j].Created) })
-	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority < ts.tasks[j].Priority })
+func filterTasksByID(tasks []*Task, tso *taskSetOpts) {
+	for _, task := range tasks {
+		task.filtered = true
+		for _, id := range tso.withIDs {
+			if id == task.ID {
+				// we have found a matching ID
+				task.filtered = false
+			}
+		}
+	}
 }
 
-func (ts *TaskSet) SortByResolved() {
-	sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Resolved.Before(ts.tasks[j].Resolved) })
+func (ts *TaskSet) sortByCreated(dir SortByDirection) {
+	switch dir {
+	case Ascending:
+		// Oldest first
+		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.Before(ts.tasks[j].Created) })
+	case Descending:
+		// Newest first
+		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.After(ts.tasks[j].Created) })
+	}
+}
+
+func (ts *TaskSet) sortByPriority(dir SortByDirection) {
+	switch dir {
+	case Ascending:
+		// P1 first
+		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority < ts.tasks[j].Priority })
+	case Descending:
+		// P1 last
+		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority > ts.tasks[j].Priority })
+	}
+}
+
+func (ts *TaskSet) sortByResolved(dir SortByDirection) {
+	switch dir {
+	case Ascending:
+		// Oldest resolved first
+		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Resolved.Before(ts.tasks[j].Resolved) })
+	case Descending:
+		// Newest resolved first
+		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Resolved.After(ts.tasks[j].Resolved) })
+	}
 }
 
 // LoadTask adds a task to the TaskSet, but only if it has a new uuid or no uuid.
@@ -217,33 +402,10 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 	*ts.tasksByUUID[task.UUID] = task
 }
 
+// Filter NOTE: only called in completions.go
 func (ts *TaskSet) Filter(cmdLine CmdLine) {
 	for _, task := range ts.tasks {
 		if !task.MatchesFilter(cmdLine) {
-			task.filtered = true
-		}
-	}
-}
-
-func (ts *TaskSet) FilterByStatus(status string) {
-	for _, task := range ts.tasks {
-		if task.Status != status {
-			task.filtered = true
-		}
-	}
-}
-
-func (ts *TaskSet) FilterOutStatus(status string) {
-	for _, task := range ts.tasks {
-		if task.Status == status {
-			task.filtered = true
-		}
-	}
-}
-
-func (ts *TaskSet) FilterUnorganised() {
-	for _, task := range ts.tasks {
-		if len(task.Tags) > 0 || task.Project != "" {
 			task.filtered = true
 		}
 	}
@@ -361,3 +523,10 @@ func (ts *TaskSet) SavePendingChanges() {
 	// can create merge conflicts in some (uncommon) cases.
 	ids.Save(ts.idsFilePath)
 }
+
+type SortByDirection string
+
+const (
+	Ascending  SortByDirection = "ascending"
+	Descending SortByDirection = "descending"
+)
