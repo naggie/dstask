@@ -3,7 +3,7 @@
 
 
 _dstask() {
-    compadd $(dstask _completions "${words[@]}")
+    compadd -- $(dstask _completions "${words[@]}")
 }
 
 compdef _dstask dstask
