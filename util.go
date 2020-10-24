@@ -125,6 +125,22 @@ func StrSliceContains(haystack []string, needle string) bool {
 	return false
 }
 
+func StrSliceContainsAll(subset, superset []string) bool {
+	for _, have := range subset {
+		foundInSuperset := false
+		for _, want := range superset {
+			if have == want {
+				foundInSuperset = true
+				break
+			}
+		}
+		if !foundInSuperset {
+			return false
+		}
+	}
+	return true
+}
+
 func IsValidStateTransition(from string, to string) bool {
 	for _, transition := range VALID_STATUS_TRANSITIONS {
 		if from == transition[0] && to == transition[1] {
