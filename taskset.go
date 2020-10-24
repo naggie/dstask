@@ -127,6 +127,8 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 			continue
 		}
 
+		// if a non-empty WithProjects option is passed, our task's
+		// project must be contained within it
 		for _, proj := range tso.withProjects {
 			if proj == task.Project {
 				task.filtered = false
@@ -136,21 +138,21 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 			}
 		}
 
+		// if a WithoutProjects option is passed, our task's project cannot
+		// be contained within it
 		for _, antiProject := range tso.withoutProjects {
 			if antiProject == task.Project {
 				task.filtered = true
 			}
 		}
 
-		for _, tag := range tso.withTags {
-			if StrSliceContains(task.Tags, tag) {
-				task.filtered = false
-				break // TODO remove this?
-			} else {
-				task.filtered = true
-			}
+		// every tag in withTags must be found in the task's Tags, otherwise
+		// filter this task
+		if !StrSliceContainsAll(tso.withTags, task.Tags) {
+			task.filtered = true
 		}
 
+		// if any antiTag is found in this task's Tags, filter this task
 		for _, antiTag := range tso.withoutTags {
 			if StrSliceContains(task.Tags, antiTag) {
 				task.filtered = true
@@ -158,6 +160,7 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 			}
 		}
 
+		// if we are passed text, we interpret it as a substring search
 		if tso.text != "" {
 			if !strings.Contains(task.Summary, tso.text) && !strings.Contains(task.Notes, tso.text) {
 				task.filtered = true
