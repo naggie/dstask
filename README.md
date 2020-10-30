@@ -23,9 +23,6 @@ Dstask is a personal task tracker designed to help you focus. It is similar to
 [taskwarrior](https://taskwarrior.org/) but uses git to synchronise instead of
 a proprietary protocol.
 
-Dstask is mature enough for daily use. I use dstask dozens of times a day,
-synchronised across 4 computers.
-
 Features:
 
  * Powerful context system (automatically applies filter/tags to queries and new tasks)
