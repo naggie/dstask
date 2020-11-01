@@ -19,8 +19,8 @@ func main() {
 
 	// Check if we have a context override.
 	if conf.CtxFromEnvVar != "" {
-		if cmdLine.Cmd == dstask.CMD_CONTEXT {
-			dstask.ExitFail("context command not allowed while DSTASK_CONTEXT is set")
+		if cmdLine.Cmd == dstask.CMD_CONTEXT && len(os.Args) >= 3 {
+			dstask.ExitFail("setting context not allowed while DSTASK_CONTEXT is set")
 		}
 		splitted := strings.Fields(conf.CtxFromEnvVar)
 		ctx = dstask.ParseCmdLine(splitted...)
