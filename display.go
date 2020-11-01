@@ -117,7 +117,7 @@ func (ts *TaskSet) renderTable(truncate bool) error {
 		table.Render()
 
 		if truncate && maxTasks < total {
-			fmt.Printf("\n%v tasks, truncated to %v lines.\n", total, h)
+			fmt.Printf("\n%v tasks, truncated to %v lines.\n", total, maxTasks)
 		} else {
 			fmt.Printf("\n%v tasks.\n", total)
 		}
