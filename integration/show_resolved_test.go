@@ -2,6 +2,7 @@ package integration
 
 import (
 	"testing"
+	"time"
 
 	"github.com/naggie/dstask"
 	"github.com/stretchr/testify/assert"
@@ -45,4 +46,8 @@ func TestShowResolved(t *testing.T) {
 
 	tasks = unmarshalTaskArray(t, output)
 	assert.Equal(t, tasks[0].Summary, "two", "two is the most-recently resolved")
+
+	var zeroValue time.Time
+	assert.True(t, tasks[0].Resolved.After(zeroValue), "resolved time should not be 0 value for time.Time")
+
 }
