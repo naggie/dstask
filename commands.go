@@ -102,6 +102,7 @@ func CommandDone(conf Config, ctx, cmdLine CmdLine) error {
 	}
 	for _, task := range ts.Tasks() {
 		task.Status = STATUS_RESOLVED
+		task.Resolved = time.Now()
 		if cmdLine.Text != "" {
 			task.Notes += "\n" + cmdLine.Text
 		}
