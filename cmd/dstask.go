@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 
 	"github.com/naggie/dstask"
 )
@@ -16,6 +17,16 @@ func main() {
 	ctx := state.Context
 	cmdLine := dstask.ParseCmdLine(os.Args[1:]...)
 
+	// Check if we have a context override.
+	if conf.CtxFromEnvVar != "" {
+		if cmdLine.Cmd == dstask.CMD_CONTEXT && len(os.Args) >= 3 {
+			dstask.ExitFail("setting context not allowed while DSTASK_CONTEXT is set")
+		}
+		splitted := strings.Fields(conf.CtxFromEnvVar)
+		ctx = dstask.ParseCmdLine(splitted...)
+	}
+
+	// Check if we ignore context with the "--" token
 	if cmdLine.IgnoreContext {
 		ctx = dstask.CmdLine{}
 	}

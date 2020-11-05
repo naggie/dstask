@@ -35,8 +35,9 @@ func compile() error {
 	return cmd.Run()
 }
 
-// create a callable closure that will run our test binary against a
-// particular repository path.
+// Create a callable closure that will run our test binary against a
+// particular repository path. Any variables set in the environment will be
+// passed to the test subprocess.
 func testCmd(repoPath string) func(args ...string) ([]byte, *exec.ExitError, bool) {
 	return func(args ...string) ([]byte, *exec.ExitError, bool) {
 		cmd := exec.Command("./dstask", args...)
@@ -51,6 +52,16 @@ func testCmd(repoPath string) func(args ...string) ([]byte, *exec.ExitError, boo
 			return output, nil, true
 		}
 		return output, exitErr, exitErr.Success()
+	}
+}
+
+// Sets an environment variable, and returns a callable closure to unset it.
+func setEnv(key, value string) func() {
+	if err := os.Setenv(key, value); err != nil {
+		panic(err)
+	}
+	return func() {
+		os.Unsetenv(key)
 	}
 }
 

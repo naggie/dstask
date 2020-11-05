@@ -4,6 +4,7 @@ package dstask
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -66,8 +67,12 @@ func (cmdLine CmdLine) String() string {
 }
 
 func (cmdLine CmdLine) PrintContextDescription() {
+	var envVarNotification string
+	if os.Getenv("DSTASK_CONTEXT") != "" {
+		envVarNotification = " (set by DSTASK_CONTEXT)"
+	}
 	if cmdLine.String() != "" {
-		fmt.Printf("\033[33mActive context: %s\033[0m\n", cmdLine)
+		fmt.Printf("\033[33mActive context%s: %s\033[0m\n", envVarNotification, cmdLine)
 	}
 }
 

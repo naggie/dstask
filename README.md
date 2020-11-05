@@ -178,6 +178,23 @@ version           : Show dstask version information
 | Paused   | Tasks that have been started but then stopped |
 | Resolved | Tasks that have been done/close/completed     |
 
+# Contexts
+
+When dstask runs, a context can be set to filter the task output. Run `dstask help context`
+for more examples. There are two ways to set a context.
+
+1. The `context` command, which sets a global context on disk.
+1. The `DSTASK_CONTEXT` environment variable. Contexts set by this environment
+   variable override the global context on disk.
+
+Use the `context` to set a context that will apply by default, no matter what
+terminal window you're using.
+
+Use the `DSTASK_CONTEXT` environment variable to override context in specific
+uses. For instance, a [direnv](https://direnv.net/) config can set a context for
+particular directories.
+
+Context is not synchronised between machines.
 
 # Dealing with merge conflicts
 
