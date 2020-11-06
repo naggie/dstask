@@ -224,6 +224,11 @@ func CommandLog(conf Config, ctx, cmdLine CmdLine) error {
 	return nil
 }
 
+// CommandMigrate runs migrations on the task database.
+func CommandMigrate(conf Config) error {
+	return RunMigrations(conf.Repo)
+}
+
 // CommandModify modifies a task.
 func CommandModify(conf Config, ctx, cmdLine CmdLine) error {
 

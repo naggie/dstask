@@ -1,4 +1,4 @@
-package migrations
+package dstask
 
 import (
 	"io/ioutil"
@@ -6,10 +6,14 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/naggie/dstask"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 )
+
+// RunMigrations executes migrations.
+func RunMigrations(repoPath string) error {
+	return migration001(repoPath)
+}
 
 // bugfix: https://github.com/naggie/dstask/issues/69
 func migration001(repoPath string) error {
@@ -29,7 +33,7 @@ func migration001(repoPath string) error {
 			return err
 		}
 
-		var t dstask.Task
+		var t Task
 		err = yaml.Unmarshal(data, &t)
 		if err != nil {
 			return errors.Wrapf(err, "malformed task file: %s", info.Name())
