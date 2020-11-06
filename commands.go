@@ -471,7 +471,7 @@ func CommandShowResolved(conf Config, ctx, cmdLine CmdLine) error {
 		WithTags(cmdLine.Tags...),
 		WithoutTags(ctx.AntiTags...),
 		WithoutTags(cmdLine.AntiTags...),
-		SortBy("resolved", Descending),
+		SortBy("resolved", Ascending),
 	)
 	if err != nil {
 		return err
