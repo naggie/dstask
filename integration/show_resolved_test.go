@@ -44,8 +44,10 @@ func TestShowResolved(t *testing.T) {
 	output, exiterr, success = program("show-resolved")
 	assertProgramResult(t, output, exiterr, success)
 
+	// sorting is ascending, so the most recently resolved tasks are shown last
+	// (visible in terminal)
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "two", "two is the most-recently resolved")
+	assert.Equal(t, tasks[0].Summary, "one", "one should be resolved")
 
 	var zeroValue time.Time
 	assert.True(t, tasks[0].Resolved.After(zeroValue), "resolved time should not be 0 value for time.Time")
