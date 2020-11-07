@@ -59,6 +59,7 @@ const (
 	CMD_IMPORT_TW        = "import-tw"
 	CMD_HELP             = "help"
 	CMD_VERSION          = "version"
+	CMD_MIGRATE          = "migrate"
 
 	// filter: P1 P2 etc
 	PRIORITY_CRITICAL = "P0"
@@ -163,4 +164,5 @@ var ALL_CMDS = []string{
 	CMD_COMPLETIONS,
 	CMD_HELP,
 	CMD_VERSION,
+	CMD_MIGRATE,
 }

@@ -63,6 +63,11 @@ func main() {
 			dstask.ExitFail(err.Error())
 		}
 
+	case dstask.CMD_MIGRATE:
+		if err := dstask.CommandMigrate(conf); err != nil {
+			dstask.ExitFail(err.Error())
+		}
+
 	case dstask.CMD_START:
 		if err := dstask.CommandStart(conf, ctx, cmdLine); err != nil {
 			dstask.ExitFail(err.Error())
