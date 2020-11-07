@@ -22,6 +22,7 @@ func migration001(repoPath string) error {
 
 	resolvedDir := filepath.Join(repoPath, "resolved")
 
+	// Perform the migration changes on disk.
 	err = filepath.Walk(resolvedDir, func(path string, info os.FileInfo, err error) error {
 
 		if info.IsDir() {
@@ -58,6 +59,19 @@ func migration001(repoPath string) error {
 	if err != nil {
 		return errors.Wrap(err, "error from filepath.Walk")
 	}
+
+	// If no errors occurred, commit the result.
+	commitMsg := `Database migration 001
+
+This is a fix for issue https://github.com/naggie/dstask/issues/69
+
+Tasks marked resolved were not getting their Resolved timestamp set.
+Resolved timestamps were incorrectly set to Go's time.Time zero value.
+This migration makes the assumption that the filesystem modtime is
+the resolved time, and sets it accordingly.
+`
+
+	MustGitCommit(repoPath, commitMsg)
 
 	return nil
 }
