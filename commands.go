@@ -398,14 +398,6 @@ func CommandShowProjects(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(ALL_STATUSES...),
-		WithIDs(cmdLine.IDs...),
-		WithProjects(ctx.Project, cmdLine.Project),
-		WithoutProjects(ctx.AntiProjects...),
-		WithoutProjects(cmdLine.AntiProjects...),
-		WithTags(ctx.Tags...),
-		WithTags(cmdLine.Tags...),
-		WithoutTags(ctx.AntiTags...),
-		WithoutTags(cmdLine.AntiTags...),
 	)
 	if err != nil {
 		return err
