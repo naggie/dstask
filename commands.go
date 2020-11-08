@@ -372,7 +372,13 @@ func CommandRemove(conf Config, ctx, cmdLine CmdLine) error {
 		// MustUpdateTask validates and normalises our task object
 		ts.MustUpdateTask(task)
 		ts.SavePendingChanges()
-		MustGitCommit(conf.Repo, "Removed: %s", task)
+
+		if cmdLine.Text != "" {
+			// commit comment, put in body
+			MustGitCommit(conf.Repo, "Removed: %s\n\n%s", task, cmdLine.Text)
+		} else {
+			MustGitCommit(conf.Repo, "Removed: %s", task)
+		}
 	}
 	return nil
 }
