@@ -358,8 +358,14 @@ func CommandRemove(conf Config, ctx, cmdLine CmdLine) error {
 	if err != nil {
 		return err
 	}
-	for _, task := range ts.Tasks() {
 
+	for _, task := range ts.Tasks() {
+		fmt.Println(task)
+	}
+
+	ConfirmOrAbort("\nThe above %d task(s) will be deleted without checking subtasks. Continue?", len(ts.Tasks()))
+
+	for _, task := range ts.Tasks() {
 		// Mark our task for deletion
 		task.Deleted = true
 
