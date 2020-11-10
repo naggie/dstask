@@ -97,6 +97,12 @@ func ParseCmdLine(args ...string) CmdLine {
 	for _, item := range args {
 		lcItem := strings.ToLower(item)
 
+		if notesModeActivated {
+			// no more parsing syntax
+			notes = append(notes, item)
+			continue
+		}
+
 		if cmd == "" && StrSliceContains(ALL_CMDS, lcItem) {
 			cmd = lcItem
 			continue
@@ -132,8 +138,6 @@ func ParseCmdLine(args ...string) CmdLine {
 			antiTags = append(antiTags, lcItem[1:])
 		} else if IsValidPriority(item) {
 			priority = item
-		} else if notesModeActivated {
-			notes = append(notes, item)
 		} else {
 			words = append(words, item)
 		}
