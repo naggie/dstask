@@ -115,12 +115,7 @@ func ParseCmdLine(args ...string) CmdLine {
 
 		if item == IGNORE_CONTEXT_KEYWORD {
 			ignoreContext = true
-			continue
-		}
-
-		IDsExhausted = true
-
-		if item == NOTE_MODE_KEYWORD {
+		} else if item == NOTE_MODE_KEYWORD {
 			notesModeActivated = true
 		} else if strings.HasPrefix(lcItem, "project:") {
 			project = lcItem[8:]
@@ -141,6 +136,8 @@ func ParseCmdLine(args ...string) CmdLine {
 		} else {
 			words = append(words, item)
 		}
+
+		IDsExhausted = true
 	}
 
 	return CmdLine{
