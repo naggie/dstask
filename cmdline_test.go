@@ -107,22 +107,6 @@ func TestParseCmdLine(t *testing.T) {
 				Note:          "",
 			},
 		},
-		// TODO(dontlaugh): fix this parsing scenario?
-		//{
-		//	[]string{"1", "2", "--", "3", "show-resolved"},
-		//	CmdLine{
-		//		Cmd:           "show-resolved",
-		//		IDs:           []int{1, 2, 3},
-		//		Tags:          nil,
-		//		AntiTags:      nil,
-		//		Project:       "",
-		//		AntiProjects:  nil,
-		//		Template:      0,
-		//		Text:          "",
-		//		IgnoreContext: true,
-		//		Note:          "",
-		//	},
-		//},
 	} // end test cases
 
 	for i, tc := range tests {
