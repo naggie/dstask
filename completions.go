@@ -18,6 +18,8 @@ func Completions(conf Config, args []string, ctx CmdLine) {
 	var originalArgs []string
 	var prefix string
 
+	// drop dstask _completions dstask to allow parsing what is on actual
+	// prompt
 	if len(args) > 3 {
 		originalArgs = args[3:]
 	}
@@ -26,8 +28,20 @@ func Completions(conf Config, args []string, ctx CmdLine) {
 	// parse command line as normal to set rules
 	cmdLine := ParseCmdLine(originalArgs...)
 
-	// no command specified, default given
-	if !cmdLine.IDsExhausted || cmdLine.Cmd == CMD_HELP || cmdLine.Cmd == "" {
+	// No command and OK to specify command (to run or help)
+	// Note that techically we should only specify commands as available
+	// completions if the last partial argument is a command substring.
+	// However, this is unnecessary as a general substring filter is used at
+	// the end of the func.
+	// This is exhaustive but the clearest way, IMO.
+	if len(cmdLine.AntiProjects) == 0 &&
+		cmdLine.Project == "" &&
+		len(cmdLine.Tags) == 0 &&
+		len(cmdLine.AntiTags) == 0 &&
+		cmdLine.Priority == "" &&
+		cmdLine.Template == 0 &&
+		cmdLine.IgnoreContext == false &&
+		(cmdLine.Cmd == CMD_HELP || cmdLine.Cmd == "") {
 		for _, cmd := range ALL_CMDS {
 			if !strings.HasPrefix(cmd, "_") {
 				completions = append(completions, cmd)

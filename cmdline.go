@@ -22,8 +22,6 @@ type CmdLine struct {
 	Template      int
 	Text          string
 	IgnoreContext bool
-	// IDsExhausted is required for shell completions
-	IDsExhausted bool
 	// any words after the note operator: /
 	Note string
 }
@@ -152,6 +150,5 @@ func ParseCmdLine(args ...string) CmdLine {
 		Text:          strings.Join(words, " "),
 		Note:          strings.Join(notes, " "),
 		IgnoreContext: ignoreContext,
-		IDsExhausted:  IDsExhausted,
 	}
 }
