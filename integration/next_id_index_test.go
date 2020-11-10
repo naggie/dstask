@@ -43,13 +43,13 @@ func TestNextByIDIndexOutsideContext(t *testing.T) {
 	output, exiterr, success = program("context", "+one")
 	assertProgramResult(t, output, exiterr, success)
 
-	output, exiterr, success = program("--", "2")
+	output, exiterr, success = program("2")
 	assertProgramResult(t, output, exiterr, success)
 
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "two", "find task 2 by ID outside current context")
+	assert.Equal(t, tasks[0].Summary, "two", "find task 2 by ID (context ignored with ID based addressing)")
 
 	output, exiterr, success = program("next")
 	assertProgramResult(t, output, exiterr, success)
