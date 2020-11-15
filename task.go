@@ -94,9 +94,8 @@ func unmarshalTask(path string, finfo os.FileInfo, ids IdsMap, status string) (T
 func (task Task) String() string {
 	if task.ID > 0 {
 		return fmt.Sprintf("%v: %s", task.ID, task.Summary)
-	} else {
-		return task.Summary
 	}
+	return task.Summary
 }
 
 // used for applying a context to a new task

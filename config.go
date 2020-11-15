@@ -23,12 +23,10 @@ func NewConfig() Config {
 
 	var conf Config
 
-	repoPath := getEnv("DSTASK_GIT_REPO", os.ExpandEnv("$HOME/.dstask"))
-
 	conf.CtxFromEnvVar = getEnv("DSTASK_CONTEXT", "")
-	conf.Repo = repoPath
-	conf.StateFile = path.Join(repoPath, ".git", "dstask", "state.bin")
-	conf.IDsFile = path.Join(repoPath, ".git", "dstask", "ids.bin")
+	conf.Repo = getEnv("DSTASK_GIT_REPO", os.ExpandEnv("$HOME/.dstask"))
+	conf.StateFile = path.Join(conf.Repo, ".git", "dstask", "state.bin")
+	conf.IDsFile = path.Join(conf.Repo, ".git", "dstask", "ids.bin")
 
 	return conf
 }

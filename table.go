@@ -31,7 +31,7 @@ func NewTable(w int, header ...string) *Table {
 		Header: header,
 		Width:  w,
 		RowStyles: []RowStyle{
-			RowStyle{
+			{
 				Mode: MODE_HEADER,
 			},
 		},
