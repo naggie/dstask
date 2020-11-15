@@ -263,7 +263,7 @@ Task table key:
 
 `
 	}
-	fmt.Fprintf(os.Stderr, helpStr)
+	fmt.Fprint(os.Stderr, helpStr)
 
 	colourPrintln(0, FG_PRIORITY_CRITICAL, BG_DEFAULT_2, "Critical priority")
 	colourPrintln(0, FG_PRIORITY_HIGH, BG_DEFAULT_2, "High priority")
