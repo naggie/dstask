@@ -59,11 +59,12 @@ func (state *State) SetContext(context CmdLine) error {
 
 func mustWriteGob(filePath string, object interface{}) {
 	file, err := os.Create(filePath)
-	defer file.Close()
 
 	if err != nil {
 		ExitFail("Failed to open %s for writing: ", filePath)
 	}
+
+	defer file.Close()
 
 	encoder := gob.NewEncoder(file)
 	err = encoder.Encode(object)
@@ -75,11 +76,12 @@ func mustWriteGob(filePath string, object interface{}) {
 
 func mustReadGob(filePath string, object interface{}) {
 	file, err := os.Open(filePath)
-	defer file.Close()
 
 	if err != nil {
 		ExitFail("Failed to open %s for reading: ", filePath)
 	}
+
+	defer file.Close()
 
 	decoder := gob.NewDecoder(file)
 	err = decoder.Decode(object)
