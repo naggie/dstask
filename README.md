@@ -210,15 +210,6 @@ equipped to handle automatically when the `sync` command runs.
 
 See [etc/PERFORMANCE.md](etc/PERFORMANCE.md)
 
-# Issues
-
-As you've probably noticed, I don't use the github issues. Currently I use
-dstask itself to track dstask bugs in my personal dstask repository. I've left
-the issues system enabled to allow people to report bugs or request features.
-As soon as dstask is used by more than a handful of people, I'll probably
-import the dstask issues to github.
-
-
 # General tips
 
 * Overwhelmed by tasks? Try focussing by prioritising (set priorities) or narrowing the context. The `show-tags` and `show-projects` commands are useful for creating a context.
