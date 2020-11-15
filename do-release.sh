@@ -35,15 +35,15 @@ mkdir -p dist
 # UPX is disabled due to 40ms overhead, plus:
 # see https://github.com/upx/upx/issues/222 -- UPX produces broken darwin executables.
 
-GOOS=linux GOARCH=arm GOARM=5 go build -mod=vendor -ldflags="$LDFLAGS" cmd/dstask.go
+GOOS=linux GOARCH=arm GOARM=5 go build -o dstask -mod=vendor -ldflags="$LDFLAGS" cmd/dstask/main.go
 # upx -q dstask
 mv dstask dist/dstask-linux-arm5
 
-GOOS=linux GOARCH=amd64 go build -mod=vendor -ldflags="$LDFLAGS" cmd/dstask.go
+GOOS=linux GOARCH=amd64 go build -o dstask -mod=vendor -ldflags="$LDFLAGS" cmd/dstask/main.go
 # upx -q dstask
 mv dstask dist/dstask-linux-amd64
 
-GOOS=darwin GOARCH=amd64 go build -mod=vendor -ldflags="$LDFLAGS" cmd/dstask.go
+GOOS=darwin GOARCH=amd64 go build -o dstask -mod=vendor -ldflags="$LDFLAGS" cmd/dstask/main.go
 #upx -q dstask
 mv dstask dist/dstask-darwin-amd64
 

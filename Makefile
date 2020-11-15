@@ -1,7 +1,6 @@
 .PHONY: release clean install
 dist/dstask: clean
-	mkdir -p dstask
-	go build -mod=vendor -o dist/dstask cmd/dstask.go
+	go build -mod=vendor -o dist/dstask cmd/dstask/main.go
 
 release:
 	./do-release.sh
