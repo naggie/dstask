@@ -155,6 +155,8 @@ func main() {
 		if err := dstask.CommandShowUnorganised(conf, ctx, cmdLine); err != nil {
 			dstask.ExitFail(err.Error())
 		}
+	case dstask.CMD_STATE:
+		dstask.CommandState(conf, state, ctx, cmdLine)
 
 	case dstask.CMD_HELP:
 		dstask.CommandHelp(os.Args)

@@ -255,6 +255,7 @@ show-open         : Show all non-resolved tasks (without truncation)
 show-resolved     : Show resolved tasks
 show-templates    : Show task templates
 show-unorganised  : Show untagged tasks with no projects (global context)
+state             : Print the contents of the state cache
 import-tw         : Import tasks from taskwarrior via stdin
 help              : Get help on any command or show this message
 version           : Show dstask version information

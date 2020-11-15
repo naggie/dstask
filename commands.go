@@ -549,6 +549,11 @@ func CommandShowUnorganised(conf Config, ctx, cmdLine CmdLine) error {
 	return nil
 }
 
+func CommandState(conf Config, state State, ctx, cmdLine CmdLine) {
+	fmt.Println("State:")
+	fmt.Printf(" - Context : cmd=%s %s ignoreContext=%t note=%q\n", state.Context.Cmd, state.Context.String(), state.Context.IgnoreContext, state.Context.Note)
+}
+
 // CommandStart marks a task as started.
 func CommandStart(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
