@@ -24,7 +24,7 @@ type SubTask struct {
 // to which it belongs.
 type Task struct {
 	// not stored in file -- rather filename and directory
-	UUID   string `json:"uuid" yaml:"-"`
+	UUID   string `json:"uuid" yaml:"-"` // TODO: use actual uuid.UUID type here
 	Status string `json:"status" yaml:",omitempty"`
 	// is new or has changed. Need to write to disk.
 	WritePending bool `json:"-" yaml:"-"`
