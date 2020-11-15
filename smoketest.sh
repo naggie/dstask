@@ -26,7 +26,7 @@ cleanup() {
 
 trap cleanup EXIT
 
-go build -mod=vendor cmd/dstask.go
+go build -o dstask -mod=vendor cmd/dstask/main.go
 
 # initialse git repo
 git -C $DSTASK_GIT_REPO init
