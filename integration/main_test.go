@@ -61,7 +61,9 @@ func setEnv(key, value string) func() {
 		panic(err)
 	}
 	return func() {
-		os.Unsetenv(key)
+		if err := os.Unsetenv(key); err != nil {
+			panic(err)
+		}
 	}
 }
 
