@@ -127,14 +127,13 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 			continue
 		}
 
-		// if a non-empty WithProjects option is passed, our task's
-		// project must be contained within it
+		// if a non-empty WithProjects option is passed, the project must
+		// match. This means if the context and the query contain different
+		// projects, nothing will be returned. Projects are effectively ANDed.
 		for _, proj := range tso.withProjects {
-			if proj == task.Project {
-				task.filtered = false
-				break
-			} else {
+			if proj != "" && proj != task.Project {
 				task.filtered = true
+				break
 			}
 		}
 
