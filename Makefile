@@ -13,3 +13,7 @@ install:
 
 test:
 	go test ./...
+
+update_deps:
+	go get -i
+	go mod vendor
