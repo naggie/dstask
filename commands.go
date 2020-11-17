@@ -11,6 +11,8 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+// mergedTaskSetOpts returns a TaskSetOpt that applies the various filters
+// that should be exerted by the ctx and cmdLine
 func mergedTaskSetOpts(ctx, cmdLine CmdLine) TaskSetOpt {
 	return func(opts *taskSetOpts) {
 		WithIDs(cmdLine.IDs...)(opts)
