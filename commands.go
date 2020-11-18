@@ -11,6 +11,19 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+func mergedTaskSetOpts(ctx, cmdLine CmdLine) TaskSetOpt {
+	return func(opts *taskSetOpts) {
+		WithIDs(cmdLine.IDs...)(opts)
+		WithProjects(ctx.Project, cmdLine.Project)(opts)
+		WithoutProjects(ctx.AntiProjects...)(opts)
+		WithoutProjects(cmdLine.AntiProjects...)(opts)
+		WithTags(ctx.Tags...)(opts)
+		WithTags(cmdLine.Tags...)(opts)
+		WithoutTags(ctx.AntiTags...)(opts)
+		WithoutTags(cmdLine.AntiTags...)(opts)
+	}
+}
+
 // CommandAdd adds a new task to the task database.
 func CommandAdd(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
@@ -268,15 +281,8 @@ func CommandNext(conf Config, ctx, cmdLine CmdLine) error {
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithoutStatuses(STATUS_TEMPLATE),
 		WithStatuses(NON_RESOLVED_STATUSES...),
-		WithIDs(cmdLine.IDs...),
-		WithProjects(ctx.Project, cmdLine.Project),
-		WithoutProjects(ctx.AntiProjects...),
-		WithoutProjects(cmdLine.AntiProjects...),
-		WithTags(ctx.Tags...),
-		WithTags(cmdLine.Tags...),
-		WithoutTags(ctx.AntiTags...),
-		WithoutTags(cmdLine.AntiTags...),
 		WithText(cmdLine.Text),
+		mergedTaskSetOpts(ctx, cmdLine),
 	)
 	if err != nil {
 		return err
@@ -390,14 +396,7 @@ func CommandShowActive(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(STATUS_ACTIVE),
-		WithIDs(cmdLine.IDs...),
-		WithProjects(ctx.Project, cmdLine.Project),
-		WithoutProjects(ctx.AntiProjects...),
-		WithoutProjects(cmdLine.AntiProjects...),
-		WithTags(ctx.Tags...),
-		WithTags(cmdLine.Tags...),
-		WithoutTags(ctx.AntiTags...),
-		WithoutTags(cmdLine.AntiTags...),
+		mergedTaskSetOpts(ctx, cmdLine),
 	)
 	if err != nil {
 		return err
@@ -426,14 +425,7 @@ func CommandShowOpen(conf Config, ctx, cmdLine CmdLine) error {
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithoutStatuses(STATUS_TEMPLATE),
 		WithStatuses(NON_RESOLVED_STATUSES...),
-		WithIDs(cmdLine.IDs...),
-		WithProjects(ctx.Project, cmdLine.Project),
-		WithoutProjects(ctx.AntiProjects...),
-		WithoutProjects(cmdLine.AntiProjects...),
-		WithTags(ctx.Tags...),
-		WithTags(cmdLine.Tags...),
-		WithoutTags(ctx.AntiTags...),
-		WithoutTags(cmdLine.AntiTags...),
+		mergedTaskSetOpts(ctx, cmdLine),
 	)
 	if err != nil {
 		return err
@@ -448,14 +440,7 @@ func CommandShowPaused(conf Config, ctx, cmdLine CmdLine) error {
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(STATUS_PAUSED),
 		WithoutStatuses(STATUS_RESOLVED),
-		WithIDs(cmdLine.IDs...),
-		WithProjects(ctx.Project, cmdLine.Project),
-		WithoutProjects(ctx.AntiProjects...),
-		WithoutProjects(cmdLine.AntiProjects...),
-		WithTags(ctx.Tags...),
-		WithTags(cmdLine.Tags...),
-		WithoutTags(ctx.AntiTags...),
-		WithoutTags(cmdLine.AntiTags...),
+		mergedTaskSetOpts(ctx, cmdLine),
 	)
 	if err != nil {
 		return err
@@ -469,14 +454,7 @@ func CommandShowResolved(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(STATUS_RESOLVED),
-		WithIDs(cmdLine.IDs...),
-		WithProjects(ctx.Project, cmdLine.Project),
-		WithoutProjects(ctx.AntiProjects...),
-		WithoutProjects(cmdLine.AntiProjects...),
-		WithTags(ctx.Tags...),
-		WithTags(cmdLine.Tags...),
-		WithoutTags(ctx.AntiTags...),
-		WithoutTags(cmdLine.AntiTags...),
+		mergedTaskSetOpts(ctx, cmdLine),
 		SortBy("resolved", Ascending),
 	)
 	if err != nil {
@@ -491,14 +469,7 @@ func CommandShowTags(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
-		WithIDs(cmdLine.IDs...),
-		WithProjects(ctx.Project, cmdLine.Project),
-		WithoutProjects(ctx.AntiProjects...),
-		WithoutProjects(cmdLine.AntiProjects...),
-		WithTags(ctx.Tags...),
-		WithTags(cmdLine.Tags...),
-		WithoutTags(ctx.AntiTags...),
-		WithoutTags(cmdLine.AntiTags...),
+		mergedTaskSetOpts(ctx, cmdLine),
 	)
 	if err != nil {
 		return err
@@ -515,14 +486,7 @@ func CommandShowTemplates(conf Config, ctx, cmdLine CmdLine) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(STATUS_TEMPLATE),
-		WithIDs(cmdLine.IDs...),
-		WithProjects(ctx.Project, cmdLine.Project),
-		WithoutProjects(ctx.AntiProjects...),
-		WithoutProjects(cmdLine.AntiProjects...),
-		WithTags(ctx.Tags...),
-		WithTags(cmdLine.Tags...),
-		WithoutTags(ctx.AntiTags...),
-		WithoutTags(cmdLine.AntiTags...),
+		mergedTaskSetOpts(ctx, cmdLine),
 	)
 	if err != nil {
 		return err
