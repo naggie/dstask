@@ -229,10 +229,7 @@ func CommandModify(conf Config, ctx, cmdLine CmdLine) error {
 		ts, err := NewTaskSet(
 			conf.Repo, conf.IDsFile, conf.StateFile,
 			WithStatuses(NON_RESOLVED_STATUSES...),
-			WithProjects(ctx.Project, cmdLine.Project),
-			WithoutProjects(ctx.AntiProjects...),
-			WithTags(ctx.Tags...),
-			WithoutTags(ctx.AntiTags...),
+			mergedTaskSetOpts(ctx, cmdLine),
 		)
 		if err != nil {
 			return err
@@ -253,10 +250,7 @@ func CommandModify(conf Config, ctx, cmdLine CmdLine) error {
 			conf.Repo, conf.IDsFile, conf.StateFile,
 			WithStatuses(NON_RESOLVED_STATUSES...),
 			WithIDs(cmdLine.IDs...),
-			WithProjects(ctx.Project, cmdLine.Project),
-			WithoutProjects(ctx.AntiProjects...),
-			WithTags(ctx.Tags...),
-			WithoutTags(ctx.AntiTags...),
+			mergedTaskSetOpts(ctx, cmdLine),
 		)
 		if err != nil {
 			return err
