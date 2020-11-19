@@ -26,7 +26,7 @@ func TestShowOpen(t *testing.T) {
 
 	// Newest tasks come first
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "two", "two should be sorted first")
+	assert.Equal(t, "two", tasks[0].Summary, "two should be sorted first")
 
 	output, exiterr, success = program("context", "-one")
 	assertProgramResult(t, output, exiterr, success)
@@ -35,7 +35,7 @@ func TestShowOpen(t *testing.T) {
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "two", "setting -one as a context")
+	assert.Equal(t, "two", tasks[0].Summary, "setting -one as a context")
 
 	output, exiterr, success = program("2", "done")
 	assertProgramResult(t, output, exiterr, success)
@@ -44,6 +44,6 @@ func TestShowOpen(t *testing.T) {
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, len(tasks), 0, "no tasks open in this context")
+	assert.Equal(t, 0, len(tasks), "no tasks open in this context")
 
 }

@@ -25,7 +25,7 @@ func TestShowActive(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "one", "one should be started")
+	assert.Equal(t, "one", tasks[0].Summary, "one should be started")
 
 	output, exiterr, success = program("stop", "1")
 	assertProgramResult(t, output, exiterr, success)
@@ -34,6 +34,6 @@ func TestShowActive(t *testing.T) {
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, len(tasks), 0, "no tasks should be active")
+	assert.Equal(t, 0, len(tasks), "no tasks should be active")
 
 }

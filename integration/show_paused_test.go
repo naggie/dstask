@@ -29,5 +29,5 @@ func TestShowPaused(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "one")
+	assert.Equal(t, "one", tasks[0].Summary)
 }

@@ -32,7 +32,7 @@ func TestSettingTagContext(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "two", "setting +two as a context")
+	assert.Equal(t, "two", tasks[0].Summary, "setting +two as a context")
 
 	output, exiterr, success = program("context", "-one")
 	assertProgramResult(t, output, exiterr, success)
@@ -41,7 +41,7 @@ func TestSettingTagContext(t *testing.T) {
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "two", "setting -one as a context")
+	assert.Equal(t, "two", tasks[0].Summary, "setting -one as a context")
 }
 
 func TestSettingTagAndProjectContext(t *testing.T) {
@@ -65,7 +65,7 @@ func TestSettingTagAndProjectContext(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "two", "setting project:beta as a context")
+	assert.Equal(t, "two", tasks[0].Summary, "setting project:beta as a context")
 
 	output, exiterr, success = program("context", "project:beta", "+one")
 	assertProgramResult(t, output, exiterr, success)
@@ -102,7 +102,7 @@ func TestContextFromEnvVar(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "one", "'+one +alpha' context set by DSTASK_CONTEXT ")
+	assert.Equal(t, "one", tasks[0].Summary, "'+one +alpha' context set by DSTASK_CONTEXT ")
 
 	// unset the context override, so we expect to use the on-disk context
 	unsetEnv()
@@ -111,5 +111,5 @@ func TestContextFromEnvVar(t *testing.T) {
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "two", "project:beta is on-disk context")
+	assert.Equal(t, "two", tasks[0].Summary, "project:beta is on-disk context")
 }
