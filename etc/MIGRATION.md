@@ -4,8 +4,10 @@ Before installing dstask, you may want to export your taskwarrior database:
 
     task export > taskwarrior.json
 
-After un-installing taskwarrior and installing dstask, to import the tasks to dstask:
+After un-installing taskwarrior and installing dstask, to import the tasks to
+dstask after initialising the dstask database with git:
 
+    mkdir ~/.dstask && git -C ~/.dstask init
     dstask import-tw < taskwarrior.json
 
 
@@ -17,3 +19,5 @@ Commands and syntax are deliberately very similar to taskwarrior. Here are the e
   * Contexts are defined on-the-fly, and are added to all new tasks if set. Use `--` to ignore current context in any command.
 
 [1]: https://github.com/naggie/dstask/releases/latest
+
+Note that the import process is lossy due to subtle differences between taskwarrior and dstask.
