@@ -25,5 +25,5 @@ func TestShowUnorganised(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "one", "task one has no tags or projects")
+	assert.Equal(t, "one", tasks[0].Summary, "task one has no tags or projects")
 }

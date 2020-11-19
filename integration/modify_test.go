@@ -32,9 +32,9 @@ func TestModifyTasksByID(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.ElementsMatch(t, tasks[0].Tags, []string{"three", "extra"}, "extra tag added to task three")
-	assert.ElementsMatch(t, tasks[1].Tags, []string{"two", "extra"}, "extra tag added to task two")
-	assert.ElementsMatch(t, tasks[2].Tags, []string{"one"}, "task 1 not modified")
+	assert.ElementsMatch(t, []string{"three", "extra"}, tasks[0].Tags, "extra tag added to task three")
+	assert.ElementsMatch(t, []string{"two", "extra"}, tasks[1].Tags, "extra tag added to task two")
+	assert.ElementsMatch(t, []string{"one"}, tasks[2].Tags, "task 1 not modified")
 }
 
 func TestModifyTasksInContext(t *testing.T) {
@@ -65,5 +65,5 @@ func TestModifyTasksInContext(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Tags, []string{"extra", "three"}, "tags should have been modified")
+	assert.Equal(t, []string{"extra", "three"}, tasks[0].Tags, "tags should have been modified")
 }

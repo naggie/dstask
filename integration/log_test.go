@@ -25,5 +25,5 @@ func TestLog(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "two", "task two should be resolved")
+	assert.Equal(t, "two", tasks[0].Summary, "task two should be resolved")
 }

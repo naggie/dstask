@@ -31,5 +31,5 @@ func TestTaskShowTemplates(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "template1", "should be a template")
+	assert.Equal(t, "template1", tasks[0].Summary, "should be a template")
 }

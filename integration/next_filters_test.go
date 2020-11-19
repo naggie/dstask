@@ -28,13 +28,13 @@ func TestNextTagFilter(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "one")
+	assert.Equal(t, "one", tasks[0].Summary)
 
 	output, exiterr, success = program("next", "+two")
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "two")
+	assert.Equal(t, "two", tasks[0].Summary)
 }
 
 func TestNextMultipleTagFilter(t *testing.T) {
@@ -58,8 +58,8 @@ func TestNextMultipleTagFilter(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "one-beta")
-	assert.Equal(t, len(tasks), 1)
+	assert.Equal(t, "one-beta", tasks[0].Summary)
+	assert.Equal(t, 1, len(tasks))
 }
 
 func TestNextProjectFilter(t *testing.T) {
@@ -80,17 +80,17 @@ func TestNextProjectFilter(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "two")
+	assert.Equal(t, "two", tasks[0].Summary)
 
 	output, exiterr, success = program("project:house")
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "two")
+	assert.Equal(t, "two", tasks[0].Summary)
 
 	output, exiterr, success = program("-project:house")
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "one")
+	assert.Equal(t, "one", tasks[0].Summary)
 }

@@ -25,7 +25,7 @@ func TestNextByIDIndex(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "one", "find task 1 by ID")
+	assert.Equal(t, "one", tasks[0].Summary, "find task 1 by ID")
 }
 
 func TestNextByIDIndexOutsideContext(t *testing.T) {
@@ -49,11 +49,11 @@ func TestNextByIDIndexOutsideContext(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].Summary, "two", "find task 2 by ID (context ignored with ID based addressing)")
+	assert.Equal(t, "two", tasks[0].Summary, "find task 2 by ID (context ignored with ID based addressing)")
 
 	output, exiterr, success = program("next")
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, tasks[0].ID, 1, "1 is the only ID in our current context")
+	assert.Equal(t, 1, tasks[0].ID, "1 is the only ID in our current context")
 }
