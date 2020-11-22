@@ -27,7 +27,7 @@ get_closed = true             # get closed tickets in addition to open ones?
 assignee = ""                 # if set, only import tickets that have this assignee
 milestone = ""                # if set, select only tickets that have this milestone
 labels = ""                   # if set, only select tickets that have these labels
-template = "default"          # must be set to a valid task file in ~/.dstask/templates-github/<filename>
+template = "default"          # template file: ~/.dstask/templates-github/<name>.yml -- see below for details
 ```
 
 Note:
