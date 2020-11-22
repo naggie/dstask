@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/naggie/dstask"
 	"github.com/naggie/dstask/pkg/sync"
 	"github.com/naggie/dstask/pkg/sync/config"
 	"github.com/naggie/dstask/pkg/sync/github"
@@ -56,4 +57,5 @@ func main() {
 			}
 		}
 	}
+	dstask.MustGitCommit(repo, "GitHub import")
 }
