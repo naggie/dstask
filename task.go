@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"reflect"
 	"sort"
 	"strings"
 	"time"
@@ -58,6 +59,45 @@ type Task struct {
 	// TaskSet uses this to indicate if a given task is excluded by a filter
 	// (context etc)
 	filtered bool `json:"-"`
+}
+
+// Equals returns whether t2 equals task.
+// for equality, we ignore "core properties", not WritePending, ID, Deleted and filtered
+func (t Task) Equals(t2 Task) bool {
+	if t2.UUID != t.UUID {
+		return false
+	}
+	if t2.Status != t.Status {
+		return false
+	}
+	if t2.Summary != t.Summary {
+		return false
+	}
+	if t2.Notes != t.Notes {
+		return false
+	}
+	if !reflect.DeepEqual(t.Tags, t2.Tags) {
+		return false
+	}
+	if t2.Project != t.Project {
+		return false
+	}
+	if t2.Priority != t.Priority {
+		return false
+	}
+	if t2.DelegatedTo != t.DelegatedTo {
+		return false
+	}
+	if !reflect.DeepEqual(t.Subtasks, t2.Subtasks) {
+		return false
+	}
+	if !reflect.DeepEqual(t.Dependencies, t2.Dependencies) {
+		return false
+	}
+	if !t2.Created.Equal(t.Created) || !t2.Resolved.Equal(t.Resolved) || !t2.Due.Equal(t.Due) {
+		return false
+	}
+	return true
 }
 
 // Unmarshal a Task from disk. We explicitly pass status, because the caller

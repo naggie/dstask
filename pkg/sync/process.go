@@ -10,10 +10,7 @@ import (
 )
 
 // ProcessTask handles a task that came in from a sync.Source (for now, that's only Github),
-// merging it with the local copy as needed
-// for now, we follow this simple rule:
-// * regarding notes, we honor whatever we have locally
-// * anything else, assume Github is the source of truth
+// merging it with the local copy as needed as defined in doc/dstask-sync.md
 func ProcessTask(repo string, task dstask.Task) error {
 
 	// note that locally, we may have the task as any state.
@@ -45,7 +42,12 @@ func ProcessTask(repo string, task dstask.Task) error {
 		break
 	}
 	if found {
-		task.Notes = localTask.Notes
+		if localTask.Notes != "" {
+			task.Notes = localTask.Notes
+		}
+		if task.Status == "pending" && (localTask.Status == "active" || localTask.Status == "paused") {
+			task.Status = localTask.Status
+		}
 	}
 	task.SaveToDisk(repo)
 	return nil

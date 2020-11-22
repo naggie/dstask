@@ -12,6 +12,14 @@ type Query struct {
 	} `graphql:"repository(owner: $owner, name: $name)"`
 }
 
+type QueryWithMilestone struct {
+	Repository struct {
+		Milestone struct {
+			IssueConnection IssueConnection `graphql:"issues(first: $count, after: $issueCursor, filterBy: $filterBy)"`
+		} `graphql:"milestone(number: $milestone)"`
+	} `graphql:"repository(owner: $owner, name: $name)"`
+}
+
 type IssueConnection struct {
 	Edges    []IssueEdge `graphql:"edges"`
 	PageInfo PageInfo    `graphql:"pageInfo"`
@@ -34,6 +42,7 @@ type Issue struct {
 	Body      string    `graphql:"body"`
 	Title     string    `graphql:"title"`
 	Author    Author    `graphql:"author"`
+	Url       string    `graphql:"url"`
 	CreatedAt time.Time `graphql:"createdAt"`
 	Milestone Milestone `graphql:"milestone"`
 	State     string    `graphql:"state"`
@@ -45,6 +54,24 @@ type Author struct {
 	Name string `graphql:"login"`
 }
 
+type MilestoneQuery struct {
+	Repository struct {
+		Milestones MilestoneConnection `graphql:"milestones(first: 100, query: $query)"`
+	} `graphql:"repository(owner: $owner, name: $name)"`
+}
+
+type MilestoneConnection struct {
+	Edges    []MilestoneEdge `graphql:"edges"`
+	PageInfo PageInfo        `graphql:"pageInfo"`
+}
+
+type MilestoneEdge struct {
+	Cursor string    `graphql:"cursor"`
+	Node   Milestone `graphql:"node"`
+}
+
 type Milestone struct {
-	Title string `graphql:"title"`
+	Description string
+	Number      int
+	Title       string
 }

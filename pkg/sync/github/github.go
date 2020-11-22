@@ -2,11 +2,10 @@ package github
 
 import (
 	"context"
-	"crypto/md5"
 	"fmt"
-	"io"
+	"strconv"
+	"text/template"
 
-	"github.com/gofrs/uuid"
 	"github.com/naggie/dstask"
 	"github.com/naggie/dstask/pkg/sync/config"
 	"github.com/shurcooL/githubv4"
@@ -18,21 +17,70 @@ type Github struct {
 	client *githubv4.Client
 	cfg    config.Github
 
-	cursor *githubv4.String
+	// options derived from config
+	milestone int // for filtering
+	templates Templates
+
+	// iterator state
 	done   bool
+	cursor *githubv4.String
+}
+
+type Templates struct {
+	Summary  *template.Template
+	Project  *template.Template
+	Priority *template.Template
+	Notes    *template.Template
+	Tags     []*template.Template
+}
+
+func ParseTemplates(task dstask.Task) Templates {
+	t := Templates{
+		Summary:  template.Must(template.New("summary").Parse(task.Summary)),
+		Project:  template.Must(template.New("project").Parse(task.Project)),
+		Priority: template.Must(template.New("priority").Parse(task.Priority)),
+		Notes:    template.Must(template.New("notes").Parse(task.Notes)),
+	}
+
+	for i, tag := range task.Tags {
+		t.Tags = append(t.Tags, template.Must(template.New("tag"+strconv.Itoa(i)).Parse(tag)))
+	}
+
+	return t
 }
 
 // NewClient creates a new Github client
-func NewClient(cfg config.Github) *Github {
+func NewClient(cfg config.Github) (*Github, error) {
 
 	httpClient := oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: cfg.Token},
 	))
 
-	return &Github{
+	g := Github{
 		client: githubv4.NewClient(httpClient),
 		cfg:    cfg,
 	}
+	if cfg.Milestone != "" {
+		// we first must figure out the id of the milestone
+
+		var mq MilestoneQuery
+		variables := map[string]interface{}{
+			"owner": githubv4.String(cfg.User),
+			"name":  githubv4.String(cfg.Repo),
+			"query": githubv4.String(cfg.Milestone),
+		}
+		err := g.client.Query(context.Background(), &mq, variables)
+		if err != nil {
+			return nil, fmt.Errorf("could execute lookup query for milestone %q: %s", cfg.Milestone, err.Error())
+		}
+		if len(mq.Repository.Milestones.Edges) != 1 {
+			return nil, fmt.Errorf("could not look up milestone %q: got %d results", cfg.Milestone, len(mq.Repository.Milestones.Edges))
+		}
+		g.milestone = mq.Repository.Milestones.Edges[0].Node.Number
+	}
+
+	g.templates = ParseTemplates(cfg.TemplateTask)
+	return &g, nil
 }
 
 // Next returns the next batch of issues from a given repository.
@@ -43,7 +91,6 @@ func (gh *Github) Next() ([]dstask.Task, error) {
 	}
 
 	var tasks []dstask.Task
-	var q Query
 
 	states := []githubv4.IssueState{githubv4.IssueStateOpen}
 
@@ -56,6 +103,22 @@ func (gh *Github) Next() ([]dstask.Task, error) {
 		f := githubv4.String(gh.cfg.Assignee)
 		filterBy.Assignee = &f
 	}
+	if len(gh.cfg.Labels) != 0 {
+		var labels []githubv4.String
+		for _, label := range gh.cfg.Labels {
+			labels = append(labels, githubv4.String(label))
+		}
+		filterBy.Labels = &labels
+	}
+
+	// you would think that filtering by milestone can be done by something like this:
+	//	if gh.cfg.Milestone != "" {
+	//		f := githubv4.String("33")             // either by id...
+	//              f := githubv4.String(gh.cfg.Milestone) // ... or by name
+	//		filterBy.Milestone = &f
+	//	}
+	// .... but neither of these seem to work.
+	// seems you need to first lookup the milestone ID and then use a different query type altogether.
 
 	variables := map[string]interface{}{
 		"owner":       githubv4.String(gh.cfg.User),
@@ -65,48 +128,44 @@ func (gh *Github) Next() ([]dstask.Task, error) {
 		"filterBy":    filterBy,
 	}
 
-	hash := md5.New() // to write key issue features into, to generate the UUID
+	var err error
+	var issues IssueConnection
 
-	err := gh.client.Query(context.Background(), &q, variables)
+	if gh.cfg.Milestone == "" {
+		var q Query
+		err = gh.client.Query(context.Background(), &q, variables)
+		issues = q.Repository.IssueConnection
+	} else {
+		var q QueryWithMilestone
+		variables["milestone"] = githubv4.Int(gh.milestone)
+		err = gh.client.Query(context.Background(), &q, variables)
+		issues = q.Repository.Milestone.IssueConnection
+	}
 	if err != nil {
 		return tasks, err
 	}
 
-	if len(q.Repository.IssueConnection.Edges) == 0 {
+	if len(issues.Edges) == 0 {
 		gh.done = true
 		return tasks, nil
 	}
 
-	for _, edge := range q.Repository.IssueConnection.Edges {
+	issueData := NewIssueData()
 
-		io.WriteString(hash, "GH")
-		io.WriteString(hash, "\x00")
-		io.WriteString(hash, gh.cfg.User)
-		io.WriteString(hash, "\x00")
-		io.WriteString(hash, gh.cfg.Repo)
-		io.WriteString(hash, "\x00")
-		io.WriteString(hash, fmt.Sprintf("%d", edge.Node.Number))
+	for _, edge := range issues.Edges {
 
-		var id uuid.UUID
-
-		task := dstask.Task{
-			Summary: fmt.Sprintf("GH/%s/%s/%d: %s", gh.cfg.User, gh.cfg.Repo, edge.Node.Number, edge.Node.Title),
-			Status:  dstask.STATUS_PENDING,
-			Created: edge.Node.CreatedAt,
+		issueData.Init(gh.cfg.User, gh.cfg.Repo, edge.Node)
+		task, err := issueData.ToTask(gh.templates)
+		if err != nil {
+			return tasks, err
 		}
-		hash.Sum(id[:0])
-		hash.Reset()
-		task.UUID = id.String()
 
-		if edge.Node.Closed {
-			task.Status = dstask.STATUS_RESOLVED
-			task.Resolved = edge.Node.ClosedAt
-		}
 		tasks = append(tasks, task)
+
 	}
 
-	if q.Repository.IssueConnection.PageInfo.HasNextPage {
-		gh.cursor = &q.Repository.IssueConnection.PageInfo.EndCursor
+	if issues.PageInfo.HasNextPage {
+		gh.cursor = &issues.PageInfo.EndCursor
 	} else {
 		gh.done = true
 	}
