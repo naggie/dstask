@@ -28,12 +28,12 @@ func main() {
 		logrus.Fatal(err.Error())
 	}
 
-	for _, cfgGithub := range cfg.Github {
+	for i, cfgGithub := range cfg.Github {
 		if cfgGithub.Token == "" {
-			logrus.Infof("GitHub config section %s/%s: skipping because no token configured", cfgGithub.User, cfgGithub.Repo)
+			logrus.Infof("GitHub config section %d (%v): skipping because no token configured", i, cfgGithub.Repos)
 			continue
 		}
-		logrus.Infof("GitHub config section %s/%s: processing", cfgGithub.User, cfgGithub.Repo)
+		logrus.Infof("GitHub config section %d (%v): processing", i, cfgGithub.Repos)
 		var src sync.Source
 		src, err := github.NewClient(cfgGithub)
 		if err != nil {

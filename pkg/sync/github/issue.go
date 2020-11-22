@@ -25,8 +25,8 @@ type IssueData struct {
 	UUID string
 
 	// populated from our scraping config
-	User string
-	Repo string
+	RepoOwner string
+	RepoName  string
 
 	// populated from the data GitHub returned to us
 	Author    string
@@ -49,8 +49,10 @@ func NewIssueData() *IssueData {
 	}
 }
 
-// Init sets all properties to match the given user, repo and Github data
-func (id *IssueData) Init(user, repo string, i Issue) {
+// Init sets all properties to match the given repo owner, name and Github data
+func (id *IssueData) Init(repoOwner, repoName string, i Issue) {
+	id.RepoOwner = repoOwner
+	id.RepoName = repoName
 	id.Author = i.Author.Name
 	id.Body = i.Body
 	id.ClosedAt = i.ClosedAt
@@ -58,18 +60,16 @@ func (id *IssueData) Init(user, repo string, i Issue) {
 	id.CreatedAt = i.CreatedAt
 	id.Milestone = i.Milestone.Title
 	id.Number = i.Number
-	id.Repo = repo
 	id.State = i.State
 	id.Title = i.Title
 	id.Url = i.Url
-	id.User = user
 
 	id.uuidHash.Reset()
 	io.WriteString(id.uuidHash, "GH")
 	io.WriteString(id.uuidHash, "\x00")
-	io.WriteString(id.uuidHash, user)
+	io.WriteString(id.uuidHash, repoOwner)
 	io.WriteString(id.uuidHash, "\x00")
-	io.WriteString(id.uuidHash, repo)
+	io.WriteString(id.uuidHash, repoName)
 	io.WriteString(id.uuidHash, "\x00")
 	io.WriteString(id.uuidHash, fmt.Sprintf("%d", i.Number))
 	id.uuidHash.Sum(id.uuid[:0])

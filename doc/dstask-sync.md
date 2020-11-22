@@ -22,8 +22,7 @@ Each section may look like this:
 ```
 [[github]]
 token = "<Github API token>"
-user = "<Github org/user>"
-repo = "<Github repository>"
+repo = ["naggie/dstask", "grafana/grafana"] # one or more "owner/repo" strings
 get_closed = true             # get closed tickets in addition to open ones?
 assignee = ""                 # if set, only import tickets that have this assignee
 milestone = ""                # if set, select only tickets that have this milestone
@@ -48,9 +47,9 @@ The 3rd column describes how each field of the synced task is set
 
 | Github properties | dstask properties                          | how the dstask properties are defined                          |
 |-------------------|--------------------------------------------|----------------------------------------------------------------|
-| org/user          |                                            |                                                                |
-| repo              |                                            |                                                                |
-| number            | uuid                                       | auto-generated based on org/user, repo and ticket number       |
+| repo owner        |                                            |                                                                |
+| repo name         |                                            |                                                                |
+| number            | uuid                                       | auto-generated based on repo (owner and name) and ticket number|
 | title             | summary                                    | summary: template expansion (see below)                        |
 | state open/closed | status (pending, active, paused, resolved) | if open in GH default to pending, but leave pre-existing active/paused status intact<br/>if closed in GH: resolved |
 | pr vs issue       | priority                                   | template expansion (see below)                                 | 
@@ -76,7 +75,7 @@ For the configured template name of "default" the filename would be `~/.dstask/t
 A good template file to start with is something like this:
 
 ```
-summary: "GH/{{.User}}/{{.Repo}}/{{.Number}}: {{.Title}}"
+summary: "GH/{{.RepoOwner}}/{{.RepoName}}/{{.Number}}: {{.Title}}"
 tags: ["{{.Milestone}}", "a-tag"]
 project: "some-project"
 priority: P2
@@ -88,6 +87,8 @@ The following variables are available for use in each template:
 ```
 | Name      | type      | info                       |
 |-----------|-----------|----------------------------|
+| RepoOwner | string    | user/org owning the repo   |
+| RepoName  | string    | name of the repository     |
 | Author    | string    | issue author name          |
 | Body      | string    | issue body text            |
 | ClosedAt  | time.Time | closed timestamp           |

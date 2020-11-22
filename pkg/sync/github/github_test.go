@@ -9,7 +9,7 @@ import (
 )
 
 // NOTE: not sure yet what is the best way to put newlines in actual task yaml files
-const tpl1 = `summary: "GH/{{.User}}/{{.Repo}}/{{.Number}}: {{.Title}}"
+const tpl1 = `summary: "GH/{{.RepoOwner}}/{{.RepoName}}/{{.Number}}: {{.Title}}"
 tags: ["{{.Milestone}}", "extraTag"]
 project: "some-project"
 priority: P2
@@ -18,7 +18,7 @@ notes: "state: {{.State}}\nurl: {{.Url}}\n opened on {{.CreatedAt}} by {{.Author
 func TestToTask(t *testing.T) {
 	type testCase struct {
 		tpl     string
-		user    string
+		owner   string
 		repo    string
 		issue   Issue
 		expErr  bool
@@ -26,9 +26,9 @@ func TestToTask(t *testing.T) {
 	}
 	cases := []testCase{
 		{
-			tpl:  tpl1,
-			user: "my_user",
-			repo: "my_repo",
+			tpl:   tpl1,
+			owner: "my_user",
+			repo:  "my_repo",
 			issue: Issue{
 				Number: 1234,
 				Body:   "body content of issue",
@@ -60,9 +60,9 @@ func TestToTask(t *testing.T) {
 			},
 		},
 		{
-			tpl:  tpl1,
-			user: "my_user",
-			repo: "my_repo",
+			tpl:   tpl1,
+			owner: "my_user",
+			repo:  "my_repo",
 			issue: Issue{
 				Number: 1234,
 				Body:   "body content of issue",
@@ -103,7 +103,7 @@ func TestToTask(t *testing.T) {
 			t.Fatalf("Failed to unmarshal template: %s", err.Error())
 		}
 
-		issueData.Init(c.user, c.repo, c.issue)
+		issueData.Init(c.owner, c.repo, c.issue)
 		templates := ParseTemplates(tplTask)
 		task, _ := issueData.ToTask(templates)
 		if !task.Equals(c.expTask) {

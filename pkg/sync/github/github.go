@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 	"text/template"
 
 	"github.com/naggie/dstask"
 	"github.com/naggie/dstask/pkg/sync/config"
 	"github.com/shurcooL/githubv4"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 )
 
@@ -18,12 +20,10 @@ type Github struct {
 	cfg    config.Github
 
 	// options derived from config
-	milestone int // for filtering
 	templates Templates
 
-	// iterator state
-	done   bool
-	cursor *githubv4.String
+	curRepo int // index of the repo from cfg.Repos we are currently iterating
+	curIter *RepoIter
 }
 
 type Templates struct {
@@ -57,55 +57,120 @@ func NewClient(cfg config.Github) (*Github, error) {
 	))
 
 	g := Github{
-		client: githubv4.NewClient(httpClient),
-		cfg:    cfg,
+		client:    githubv4.NewClient(httpClient),
+		cfg:       cfg,
+		templates: ParseTemplates(cfg.TemplateTask),
 	}
+	if len(cfg.Repos) != 0 {
+		iter, err := NewRepoIter(cfg, cfg.Repos[0], g.templates, g.client)
+		if err != nil {
+			return nil, err
+		}
+		g.curIter = iter
+	}
+	return &g, nil
+
+}
+
+// RepoIter iterates all the desired issues from a given repo
+type RepoIter struct {
+	client *githubv4.Client
+	cfg    config.Github
+
+	// options derived from config
+	repoOwner string
+	repoName  string
+	milestone int // for filtering
+	templates Templates
+
+	// iterator state
+	done   bool
+	cursor *githubv4.String
+}
+
+func NewRepoIter(cfg config.Github, repo string, templates Templates, client *githubv4.Client) (*RepoIter, error) {
+	repoSplit := strings.Split(repo, "/")
+	if len(repoSplit) != 2 || repoSplit[0] == "" || repoSplit[1] == "" {
+		return nil, fmt.Errorf("invalid repo %q", repo)
+	}
+
+	ri := RepoIter{
+		repoOwner: repoSplit[0],
+		repoName:  repoSplit[1],
+		client:    client,
+		cfg:       cfg,
+		templates: templates,
+	}
+
 	if cfg.Milestone != "" {
 		// we first must figure out the id of the milestone
 
 		var mq MilestoneQuery
 		variables := map[string]interface{}{
-			"owner": githubv4.String(cfg.User),
-			"name":  githubv4.String(cfg.Repo),
+			"owner": githubv4.String(ri.repoOwner),
+			"name":  githubv4.String(ri.repoName),
 			"query": githubv4.String(cfg.Milestone),
 		}
-		err := g.client.Query(context.Background(), &mq, variables)
+		err := client.Query(context.Background(), &mq, variables)
 		if err != nil {
 			return nil, fmt.Errorf("could execute lookup query for milestone %q: %s", cfg.Milestone, err.Error())
 		}
 		if len(mq.Repository.Milestones.Edges) != 1 {
 			return nil, fmt.Errorf("could not look up milestone %q: got %d results", cfg.Milestone, len(mq.Repository.Milestones.Edges))
 		}
-		g.milestone = mq.Repository.Milestones.Edges[0].Node.Number
+		ri.milestone = mq.Repository.Milestones.Edges[0].Node.Number
 	}
-
-	g.templates = ParseTemplates(cfg.TemplateTask)
-	return &g, nil
+	logrus.Infof("GitHub starting iteration for %s/%s", ri.repoOwner, ri.repoName)
+	return &ri, nil
 }
 
 // Next returns the next batch of issues from a given repository.
 func (gh *Github) Next() ([]dstask.Task, error) {
-
-	if gh.done {
+	if len(gh.cfg.Repos) == 0 {
 		return nil, nil
 	}
+	if gh.curIter.done {
+		if gh.curRepo == len(gh.cfg.Repos)-1 {
+			return nil, nil
+		}
+		gh.curRepo++
+		iter, err := NewRepoIter(gh.cfg, gh.cfg.Repos[gh.curRepo], gh.templates, gh.client)
+		if err != nil {
+			return nil, err
+		}
+		gh.curIter = iter
+	}
+	tasks, err := gh.curIter.next()
+	for len(tasks) == 0 && err == nil && gh.curRepo < len(gh.cfg.Repos)-1 {
+		gh.curRepo++
+		iter, err := NewRepoIter(gh.cfg, gh.cfg.Repos[gh.curRepo], gh.templates, gh.client)
+		if err != nil {
+			return nil, err
+		}
+		gh.curIter = iter
+		tasks, err = gh.curIter.next()
+	}
+	return tasks, err
+}
 
+// don't call this if state is done
+func (ri *RepoIter) next() ([]dstask.Task, error) {
 	var tasks []dstask.Task
 
 	states := []githubv4.IssueState{githubv4.IssueStateOpen}
 
-	if gh.cfg.GetClosed {
+	if ri.cfg.GetClosed {
 		states = append(states, githubv4.IssueStateClosed)
 	}
 	filterBy := githubv4.IssueFilters{States: &states}
 
-	if gh.cfg.Assignee != "" {
-		f := githubv4.String(gh.cfg.Assignee)
+	if ri.cfg.Assignee != "" {
+		f := githubv4.String(ri.cfg.Assignee)
 		filterBy.Assignee = &f
 	}
-	if len(gh.cfg.Labels) != 0 {
+	if len(ri.cfg.Labels) != 0 {
 		var labels []githubv4.String
-		for _, label := range gh.cfg.Labels {
+		for _, label := range ri.cfg.Labels {
 			labels = append(labels, githubv4.String(label))
 		}
 		filterBy.Labels = &labels
@@ -121,9 +186,9 @@ func (gh *Github) Next() ([]dstask.Task, error) {
 	// seems you need to first lookup the milestone ID and then use a different query type altogether.
 
 	variables := map[string]interface{}{
-		"owner":       githubv4.String(gh.cfg.User),
-		"name":        githubv4.String(gh.cfg.Repo),
-		"issueCursor": gh.cursor,
+		"owner":       githubv4.String(ri.repoOwner),
+		"name":        githubv4.String(ri.repoName),
+		"issueCursor": ri.cursor,
 		"count":       githubv4.Int(50),
 		"filterBy":    filterBy,
 	}
@@ -131,14 +196,14 @@ func (gh *Github) Next() ([]dstask.Task, error) {
 	var err error
 	var issues IssueConnection
 
-	if gh.cfg.Milestone == "" {
+	if ri.cfg.Milestone == "" {
 		var q Query
-		err = gh.client.Query(context.Background(), &q, variables)
+		err = ri.client.Query(context.Background(), &q, variables)
 		issues = q.Repository.IssueConnection
 	} else {
 		var q QueryWithMilestone
-		variables["milestone"] = githubv4.Int(gh.milestone)
-		err = gh.client.Query(context.Background(), &q, variables)
+		variables["milestone"] = githubv4.Int(ri.milestone)
+		err = ri.client.Query(context.Background(), &q, variables)
 		issues = q.Repository.Milestone.IssueConnection
 	}
 	if err != nil {
@@ -146,7 +211,7 @@ func (gh *Github) Next() ([]dstask.Task, error) {
 	}
 
 	if len(issues.Edges) == 0 {
-		gh.done = true
+		ri.done = true
 		return tasks, nil
 	}
 
@@ -154,20 +219,19 @@ func (gh *Github) Next() ([]dstask.Task, error) {
 
 	for _, edge := range issues.Edges {
 
-		issueData.Init(gh.cfg.User, gh.cfg.Repo, edge.Node)
-		task, err := issueData.ToTask(gh.templates)
+		issueData.Init(ri.repoOwner, ri.repoName, edge.Node)
+		task, err := issueData.ToTask(ri.templates)
 		if err != nil {
 			return tasks, err
 		}
 
 		tasks = append(tasks, task)
-
 	}
 
 	if issues.PageInfo.HasNextPage {
-		gh.cursor = &issues.PageInfo.EndCursor
+		ri.cursor = &issues.PageInfo.EndCursor
 	} else {
-		gh.done = true
+		ri.done = true
 	}
 
 	return tasks, nil

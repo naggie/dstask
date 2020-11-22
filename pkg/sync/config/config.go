@@ -16,8 +16,7 @@ type Config struct {
 
 type Github struct {
 	Token        string
-	User         string
-	Repo         string
+	Repos        []string
 	GetClosed    bool `toml:"get_closed"`
 	Assignee     string
 	Milestone    string
