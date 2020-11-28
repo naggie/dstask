@@ -12,6 +12,7 @@ Specifically:
 * The sync is one-way (from Github to dstask).
 * We only sync key properties (summary etc), not GH comments or dstask notes
 * You are expected to close issues in GitHub and then sync to get the task closed in dstask.
+* Pull Requests are currently not supported.
 
 ## Configuration
 
@@ -99,4 +100,7 @@ The following variables are available for use in each template:
 | Url       | string    | Github url of the issue    |
 ```
 
-Note that there is currently no access to the labels or project defined on the GitHub issue.
+Note:
+
+* there is currently no access to the labels or project defined on the GitHub issue.
+* if any tag were to expand to an empty string (e.g. when expanding a variable such as Milestone on an issue without milestone), it is omitted.
