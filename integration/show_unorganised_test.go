@@ -3,7 +3,6 @@ package integration
 import (
 	"testing"
 
-	"github.com/naggie/dstask"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,8 +21,6 @@ func TestShowUnorganised(t *testing.T) {
 	output, exiterr, success = program("show-unorganised")
 	assertProgramResult(t, output, exiterr, success)
 
-	var tasks []dstask.Task
-
-	tasks = unmarshalTaskArray(t, output)
+	tasks := unmarshalTaskArray(t, output)
 	assert.Equal(t, "one", tasks[0].Summary, "task one has no tags or projects")
 }

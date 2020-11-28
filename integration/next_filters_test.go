@@ -55,9 +55,7 @@ func TestNextMultipleTagFilter(t *testing.T) {
 	output, exiterr, success = program("next", "+one", "+beta")
 	assertProgramResult(t, output, exiterr, success)
 
-	var tasks []dstask.Task
-
-	tasks = unmarshalTaskArray(t, output)
+	tasks := unmarshalTaskArray(t, output)
 	assert.Equal(t, "one-beta", tasks[0].Summary)
 	assert.Equal(t, 1, len(tasks))
 }
@@ -77,9 +75,7 @@ func TestNextProjectFilter(t *testing.T) {
 	output, exiterr, success = program("next", "project:house")
 	assertProgramResult(t, output, exiterr, success)
 
-	var tasks []dstask.Task
-
-	tasks = unmarshalTaskArray(t, output)
+	tasks := unmarshalTaskArray(t, output)
 	assert.Equal(t, "two", tasks[0].Summary)
 
 	output, exiterr, success = program("project:house")

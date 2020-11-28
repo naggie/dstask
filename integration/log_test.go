@@ -3,7 +3,6 @@ package integration
 import (
 	"testing"
 
-	"github.com/naggie/dstask"
 	"gotest.tools/assert"
 )
 
@@ -22,8 +21,6 @@ func TestLog(t *testing.T) {
 	output, exiterr, success = program("show-resolved")
 	assertProgramResult(t, output, exiterr, success)
 
-	var tasks []dstask.Task
-
-	tasks = unmarshalTaskArray(t, output)
+	tasks := unmarshalTaskArray(t, output)
 	assert.Equal(t, "two", tasks[0].Summary, "task two should be resolved")
 }

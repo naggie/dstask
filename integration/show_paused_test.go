@@ -3,7 +3,6 @@ package integration
 import (
 	"testing"
 
-	"github.com/naggie/dstask"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,8 +25,6 @@ func TestShowPaused(t *testing.T) {
 	output, exiterr, success = program("show-paused")
 	assertProgramResult(t, output, exiterr, success)
 
-	var tasks []dstask.Task
-
-	tasks = unmarshalTaskArray(t, output)
+	tasks := unmarshalTaskArray(t, output)
 	assert.Equal(t, "one", tasks[0].Summary)
 }
