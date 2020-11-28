@@ -13,7 +13,7 @@ Specifically:
 * We only sync key properties (summary etc), not GH comments or dstask notes
 * You are expected to close issues in GitHub and then sync to get the task closed in dstask.
 
-## configuration
+## Configuration
 
 Create a file `$HOME/.dstask-sync.toml` with one or more github sections.
 Each section may look like this:
@@ -67,7 +67,7 @@ The 3rd column describes how each field of the synced task is set
 | comments          | notes                                      | template expansion (see below). local non-empty pre-existing notes are preserved               |
 
 
-## template expansion
+## Template expansion
 
 You may define one or more template files in `~/.dstask/templates-github`.
 For the configured template name of "default" the filename would be `~/.dstask/templates-github/default.yml`.
