@@ -16,6 +16,15 @@ Specifically:
 
 ## Configuration
 
+First you need to obtain a token. Go to [your token settings in Github](https://github.com/settings/tokens) and hit "Generate new token".
+
+If you only need to query public repositories you only need to enable "public_repo".
+![Github token public only](etc/dstask-import-token-public.png "Github token for public repos")
+
+If however you need to query private repositories then you need the full control option like so:
+![Github token for private repos](etc/dstask-import-token-private.png "Github token for private repos")
+
+
 Create a file `$HOME/.dstask-import.toml` with one or more github sections.
 Each section may look like this:
 
