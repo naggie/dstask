@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
-	"path"
 
 	"github.com/BurntSushi/toml"
 	"github.com/naggie/dstask"
@@ -21,7 +20,7 @@ type Github struct {
 	Assignee     string
 	Milestone    string
 	Labels       []string
-	Template     string
+	TemplateStr  string      `toml:"template_str"`
 	TemplateTask dstask.Task `toml:"-"`
 }
 
@@ -39,16 +38,9 @@ func Load(configFile, repo string) (Config, error) {
 	}
 
 	for i, gh := range config.Github {
-
-		tplFile := path.Join(repo, "templates-github", gh.Template+".yml")
-
-		data, err := ioutil.ReadFile(tplFile)
+		err = yaml.Unmarshal([]byte(gh.TemplateStr), &config.Github[i].TemplateTask)
 		if err != nil {
-			return config, fmt.Errorf("Failed to read %s: %s", tplFile, err.Error())
-		}
-		err = yaml.Unmarshal(data, &config.Github[i].TemplateTask)
-		if err != nil {
-			return config, fmt.Errorf("Failed to unmarshal %s: %s", tplFile, err.Error())
+			return config, fmt.Errorf("Failed to unmarshal template: %s", err.Error())
 		}
 	}
 

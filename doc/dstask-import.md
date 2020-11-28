@@ -27,7 +27,13 @@ get_closed = true             # get closed tickets in addition to open ones?
 assignee = ""                 # if set, only import tickets that have this assignee
 milestone = ""                # if set, select only tickets that have this milestone
 labels = ""                   # if set, only select tickets that have these labels
-template = "default"          # template file: ~/.dstask/templates-github/<name>.yml -- see below for details
+template_str = """
+summary: "GH/{{.RepoOwner}}/{{.RepoName}}/{{.Number}}: {{.Title}}"
+tags: ["{{.Milestone}}", "a-tag"]
+project: "some-project"
+priority: P2
+notes: "url: {{.Url}}"`
+"""
 ```
 
 Note:
@@ -69,18 +75,8 @@ The 3rd column describes how each field of the synced task is set
 
 ## Template expansion
 
-You may define one or more template files in `~/.dstask/templates-github`.
-For the configured template name of "default" the filename would be `~/.dstask/templates-github/default.yml`.
-
-A good template file to start with is something like this:
-
-```
-summary: "GH/{{.RepoOwner}}/{{.RepoName}}/{{.Number}}: {{.Title}}"
-tags: ["{{.Milestone}}", "a-tag"]
-project: "some-project"
-priority: P2
-notes: "url: {{.Url}}"`
-```
+As you saw above, each Github section declares a template.
+This template declares how certain fields get populated.
 
 The following variables are available for use in each template:
 
