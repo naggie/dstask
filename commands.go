@@ -147,7 +147,7 @@ func CommandEdit(conf Config, ctx, cmdLine CmdLine) error {
 		data, err := yaml.Marshal(&task)
 		if err != nil {
 			// TODO present error to user, specific error message is important
-			return fmt.Errorf("Failed to marshal task %s", task)
+			return fmt.Errorf("failed to marshal task %s", task)
 		}
 
 		edited := MustEditBytes(data, "yml")
@@ -156,7 +156,7 @@ func CommandEdit(conf Config, ctx, cmdLine CmdLine) error {
 		if err != nil {
 			// TODO present error to user, specific error message is important
 			// TODO reattempt mechanism
-			return fmt.Errorf("Failed to unmarshal task %s", task)
+			return fmt.Errorf("failed to unmarshal task %s", task)
 		}
 
 		// re-add ID
@@ -343,7 +343,7 @@ func CommandOpen(conf Config, ctx, cmdLine CmdLine) error {
 	for _, task := range ts.Tasks() {
 		urls := xurls.Relaxed.FindAllString(task.Summary+" "+task.Notes, -1)
 		if len(urls) == 0 {
-			return fmt.Errorf("No URLs found in task %v", task.ID)
+			return fmt.Errorf("no URLs found in task %v", task.ID)
 		}
 		for _, url := range urls {
 			MustOpenBrowser(url)
