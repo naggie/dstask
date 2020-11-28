@@ -22,7 +22,7 @@ Each section may look like this:
 ```
 [[github]]
 token = "<Github API token>"
-repo = ["naggie/dstask", "grafana/grafana"] # one or more "owner/repo" strings
+repos = ["naggie/dstask", "grafana/grafana"] # one or more "owner/repo" strings
 get_closed = true             # get closed tickets in addition to open ones?
 assignee = ""                 # if set, only import tickets that have this assignee
 milestone = ""                # if set, select only tickets that have this milestone
