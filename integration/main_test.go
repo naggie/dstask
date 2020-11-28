@@ -67,15 +67,6 @@ func setEnv(key, value string) func() {
 	}
 }
 
-func readFile(t *testing.T, path string) []byte {
-	t.Helper()
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return data
-}
-
 func logFailure(t *testing.T, output []byte, exiterr *exec.ExitError) {
 	t.Helper()
 	t.Logf("stdout: %s", string(output))
