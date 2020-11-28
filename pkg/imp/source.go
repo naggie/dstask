@@ -1,4 +1,4 @@
-package sync
+package imp
 
 import "github.com/naggie/dstask"
 

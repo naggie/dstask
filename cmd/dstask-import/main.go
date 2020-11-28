@@ -4,9 +4,9 @@ import (
 	"os"
 
 	"github.com/naggie/dstask"
-	"github.com/naggie/dstask/pkg/sync"
-	"github.com/naggie/dstask/pkg/sync/config"
-	"github.com/naggie/dstask/pkg/sync/github"
+	"github.com/naggie/dstask/pkg/imp"
+	"github.com/naggie/dstask/pkg/imp/config"
+	"github.com/naggie/dstask/pkg/imp/github"
 	"github.com/sirupsen/logrus"
 )
 
@@ -21,7 +21,7 @@ func getEnv(key string, _default string) string {
 func main() {
 
 	repo := getEnv("DSTASK_GIT_REPO", os.ExpandEnv("$HOME/.dstask"))
-	configFile := os.ExpandEnv("$HOME/.dstask-sync.toml")
+	configFile := os.ExpandEnv("$HOME/.dstask-import.toml")
 
 	cfg, err := config.Load(configFile, repo)
 	if err != nil {
@@ -34,7 +34,7 @@ func main() {
 			continue
 		}
 		logrus.Infof("GitHub config section %d (%v): processing", i, cfgGithub.Repos)
-		var src sync.Source
+		var src imp.Source
 		src, err := github.NewClient(cfgGithub)
 		if err != nil {
 			logrus.Fatal(err.Error())
@@ -50,7 +50,7 @@ func main() {
 			}
 
 			for _, t := range tasks {
-				err = sync.ProcessTask(repo, t)
+				err = imp.ProcessTask(repo, t)
 				if err != nil {
 					logrus.Fatal(err.Error())
 				}

@@ -8,7 +8,7 @@ import (
 	"text/template"
 
 	"github.com/naggie/dstask"
-	"github.com/naggie/dstask/pkg/sync/config"
+	"github.com/naggie/dstask/pkg/imp/config"
 	"github.com/shurcooL/githubv4"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"

@@ -1,6 +1,6 @@
-# dstask-sync
+# dstask-import
 
-dstask-sync is a tool to synchronize between external services and dstask.
+dstask-import is a tool to synchronize between external services and dstask.
 At this point it only supports syncing from GitHub.
 The goal currently is to have tasks in dstask that represent tasks in GitHub,
 such that a dstask-based workflow (tracking, managing and prioritizing tasks)
@@ -16,7 +16,7 @@ Specifically:
 
 ## Configuration
 
-Create a file `$HOME/.dstask-sync.toml` with one or more github sections.
+Create a file `$HOME/.dstask-import.toml` with one or more github sections.
 Each section may look like this:
 
 ```
