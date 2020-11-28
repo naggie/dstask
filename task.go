@@ -62,7 +62,7 @@ type Task struct {
 }
 
 // Equals returns whether t2 equals task.
-// for equality, we ignore "core properties", not WritePending, ID, Deleted and filtered
+// for equality, we only consider "core properties", we ignore WritePending, ID, Deleted and filtered
 func (t Task) Equals(t2 Task) bool {
 	if t2.UUID != t.UUID {
 		return false
