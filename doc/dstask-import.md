@@ -35,7 +35,7 @@ repos = ["naggie/dstask", "grafana/grafana"] # one or more "owner/repo" strings
 get_closed = true             # get closed tickets in addition to open ones?
 assignee = ""                 # if set, only import tickets that have this assignee
 milestone = ""                # if set, select only tickets that have this milestone
-labels = ""                   # if set, only select tickets that have these labels
+#labels = ["select", "label"] # if set, only select tickets that have these labels
 template_str = """
 summary: "GH/{{.RepoOwner}}/{{.RepoName}}/{{.Number}}: {{.Title}}"
 tags: ["{{.Milestone}}", "a-tag"]
