@@ -41,7 +41,7 @@ summary: "GH/{{.RepoOwner}}/{{.RepoName}}/{{.Number}}: {{.Title}}"
 tags: ["{{.Milestone}}", "a-tag"]
 project: "some-project"
 priority: P2
-notes: "url: {{.Url}}"`
+notes: "url: {{.Url}}"
 """
 ```
 
