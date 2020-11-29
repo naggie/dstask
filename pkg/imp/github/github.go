@@ -8,22 +8,91 @@ import (
 	"text/template"
 
 	"github.com/naggie/dstask"
+	"github.com/naggie/dstask/pkg/imp"
 	"github.com/naggie/dstask/pkg/imp/config"
 	"github.com/shurcooL/githubv4"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 )
 
-// Github is a client to fetch issues as tasks from GitHub
+// Do runs the Github import if the user requested it
+func Do(dstaskRepo string, cfg config.Config) error {
+	if len(cfg.Github) == 0 {
+		return nil
+	}
+
+	for i, cfgGithub := range cfg.Github {
+		if cfgGithub.Token == "" {
+			logrus.Infof("GitHub config section %d (%v): skipping because no token configured", i, cfgGithub.Repos)
+			continue
+		}
+		logrus.Infof("GitHub config section %d (%v): processing", i, cfgGithub.Repos)
+
+		gh, err := NewClient(cfgGithub)
+		if err != nil {
+			return err
+		}
+		err = gh.Run(dstaskRepo)
+		if err != nil {
+			return err
+		}
+	}
+	dstask.MustGitCommit(dstaskRepo, "GitHub import")
+	return nil
+}
+
+// Github is a client to process multiple repos with a given template
 type Github struct {
 	client *githubv4.Client
 	cfg    config.Github
 
 	// options derived from config
 	templates Templates
+}
 
-	curRepo int // index of the repo from cfg.Repos we are currently iterating
-	curIter *RepoIter
+// NewClient creates a new Github client
+func NewClient(cfg config.Github) (*Github, error) {
+
+	httpClient := oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: cfg.Token},
+	))
+
+	g := Github{
+		client:    githubv4.NewClient(httpClient),
+		cfg:       cfg,
+		templates: ParseTemplates(cfg.TemplateTask),
+	}
+	return &g, nil
+}
+
+// Run processes the issues from all requested repositories
+func (gh *Github) Run(dstaskRepo string) error {
+	for _, r := range gh.cfg.Repos {
+		iter, err := NewRepoIter(gh.cfg, r, gh.templates, gh.client)
+		if err != nil {
+			return err
+		}
+		logrus.Infof("GitHub starting iteration for %s", r)
+
+		for {
+			tasks, err := iter.Next()
+			if err != nil {
+				return err
+			}
+			if len(tasks) == 0 {
+				break
+			}
+
+			for _, t := range tasks {
+				err = imp.ProcessTask(dstaskRepo, t)
+				if err != nil {
+					return err
+				}
+			}
+		}
+
+	}
+	return nil
 }
 
 type Templates struct {
@@ -47,29 +116,6 @@ func ParseTemplates(task dstask.Task) Templates {
 	}
 
 	return t
-}
-
-// NewClient creates a new Github client
-func NewClient(cfg config.Github) (*Github, error) {
-
-	httpClient := oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: cfg.Token},
-	))
-
-	g := Github{
-		client:    githubv4.NewClient(httpClient),
-		cfg:       cfg,
-		templates: ParseTemplates(cfg.TemplateTask),
-	}
-	if len(cfg.Repos) != 0 {
-		iter, err := NewRepoIter(cfg, cfg.Repos[0], g.templates, g.client)
-		if err != nil {
-			return nil, err
-		}
-		g.curIter = iter
-	}
-	return &g, nil
-
 }
 
 // RepoIter iterates all the desired issues from a given repo
@@ -120,41 +166,14 @@ func NewRepoIter(cfg config.Github, repo string, templates Templates, client *gi
 		}
 		ri.milestone = mq.Repository.Milestones.Edges[0].Node.Number
 	}
-	logrus.Infof("GitHub starting iteration for %s/%s", ri.repoOwner, ri.repoName)
 	return &ri, nil
 }
 
-// Next returns the next batch of issues from a given repository.
-func (gh *Github) Next() ([]dstask.Task, error) {
-	if len(gh.cfg.Repos) == 0 {
+// Next returns the next batch of tasks, if there are any
+func (ri *RepoIter) Next() ([]dstask.Task, error) {
+	if ri.done {
 		return nil, nil
 	}
-	if gh.curIter.done {
-		if gh.curRepo == len(gh.cfg.Repos)-1 {
-			return nil, nil
-		}
-		gh.curRepo++
-		iter, err := NewRepoIter(gh.cfg, gh.cfg.Repos[gh.curRepo], gh.templates, gh.client)
-		if err != nil {
-			return nil, err
-		}
-		gh.curIter = iter
-	}
-	tasks, err := gh.curIter.next()
-	for len(tasks) == 0 && err == nil && gh.curRepo < len(gh.cfg.Repos)-1 {
-		gh.curRepo++
-		iter, err := NewRepoIter(gh.cfg, gh.cfg.Repos[gh.curRepo], gh.templates, gh.client)
-		if err != nil {
-			return nil, err
-		}
-		gh.curIter = iter
-		tasks, err = gh.curIter.next()
-	}
-	return tasks, err
-}
-
-// don't call this if state is done
-func (ri *RepoIter) next() ([]dstask.Task, error) {
 	var tasks []dstask.Task
 
 	states := []githubv4.IssueState{githubv4.IssueStateOpen}

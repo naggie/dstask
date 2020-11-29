@@ -3,8 +3,6 @@ package main
 import (
 	"os"
 
-	"github.com/naggie/dstask"
-	"github.com/naggie/dstask/pkg/imp"
 	"github.com/naggie/dstask/pkg/imp/config"
 	"github.com/naggie/dstask/pkg/imp/github"
 	"github.com/sirupsen/logrus"
@@ -28,34 +26,8 @@ func main() {
 		logrus.Fatal(err.Error())
 	}
 
-	for i, cfgGithub := range cfg.Github {
-		if cfgGithub.Token == "" {
-			logrus.Infof("GitHub config section %d (%v): skipping because no token configured", i, cfgGithub.Repos)
-			continue
-		}
-		logrus.Infof("GitHub config section %d (%v): processing", i, cfgGithub.Repos)
-		var src imp.Source
-		src, err := github.NewClient(cfgGithub)
-		if err != nil {
-			logrus.Fatal(err.Error())
-		}
-
-		for {
-			tasks, err := src.Next()
-			if err != nil {
-				logrus.Fatal(err.Error())
-			}
-			if len(tasks) == 0 {
-				break
-			}
-
-			for _, t := range tasks {
-				err = imp.ProcessTask(repo, t)
-				if err != nil {
-					logrus.Fatal(err.Error())
-				}
-			}
-		}
+	err = github.Do(repo, cfg)
+	if err != nil {
+		logrus.Fatal(err.Error())
 	}
-	dstask.MustGitCommit(repo, "GitHub import")
 }

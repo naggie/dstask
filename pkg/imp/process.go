@@ -9,8 +9,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// ProcessTask handles a task that came in from a sync.Source (for now, that's only Github),
-// merging it with the local copy as needed as defined in doc/dstask-import.md
+// ProcessTask imports a task into the local repository, merging it with a pre-existing task if necessary.
 func ProcessTask(repo string, task dstask.Task) error {
 
 	// note that locally, we may have the task as any state.
