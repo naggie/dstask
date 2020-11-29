@@ -46,11 +46,11 @@ func LoadState(stateFilePath string) State {
 // SetContext sets a context on State, with some validation.
 func (state *State) SetContext(context CmdLine) error {
 	if len(context.IDs) != 0 {
-		return errors.New("Context cannot contain IDs")
+		return errors.New("context cannot contain IDs")
 	}
 
 	if context.Text != "" {
-		return errors.New("Context cannot contain text")
+		return errors.New("context cannot contain text")
 	}
 
 	state.Context = context

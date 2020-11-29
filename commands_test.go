@@ -20,11 +20,11 @@ func TestFilterTasksByID(t *testing.T) {
 
 	makeTestTasks := func() []*Task {
 		return []*Task{
-			&Task{ID: 1},
-			&Task{ID: 2},
-			&Task{ID: 3},
-			&Task{ID: 200},
-			&Task{ID: 500},
+			{ID: 1},
+			{ID: 2},
+			{ID: 3},
+			{ID: 200},
+			{ID: 500},
 		}
 	}
 

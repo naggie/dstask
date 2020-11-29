@@ -40,7 +40,7 @@ func Completions(conf Config, args []string, ctx CmdLine) {
 		len(cmdLine.AntiTags) == 0 &&
 		cmdLine.Priority == "" &&
 		cmdLine.Template == 0 &&
-		cmdLine.IgnoreContext == false &&
+		!cmdLine.IgnoreContext &&
 		(cmdLine.Cmd == CMD_HELP || cmdLine.Cmd == "") {
 		for _, cmd := range ALL_CMDS {
 			if !strings.HasPrefix(cmd, "_") {

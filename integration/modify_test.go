@@ -3,7 +3,6 @@ package integration
 import (
 	"testing"
 
-	"github.com/naggie/dstask"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,9 +28,7 @@ func TestModifyTasksByID(t *testing.T) {
 	output, exiterr, success = program("next")
 	assertProgramResult(t, output, exiterr, success)
 
-	var tasks []dstask.Task
-
-	tasks = unmarshalTaskArray(t, output)
+	tasks := unmarshalTaskArray(t, output)
 	assert.ElementsMatch(t, []string{"three", "extra"}, tasks[0].Tags, "extra tag added to task three")
 	assert.ElementsMatch(t, []string{"two", "extra"}, tasks[1].Tags, "extra tag added to task two")
 	assert.ElementsMatch(t, []string{"one"}, tasks[2].Tags, "task 1 not modified")
@@ -62,8 +59,6 @@ func TestModifyTasksInContext(t *testing.T) {
 	output, exiterr, success = program("next")
 	assertProgramResult(t, output, exiterr, success)
 
-	var tasks []dstask.Task
-
-	tasks = unmarshalTaskArray(t, output)
+	tasks := unmarshalTaskArray(t, output)
 	assert.Equal(t, []string{"extra", "three"}, tasks[0].Tags, "tags should have been modified")
 }

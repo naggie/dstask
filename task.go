@@ -80,11 +80,11 @@ func unmarshalTask(path string, finfo os.FileInfo, ids IdsMap, status string) (T
 
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		return Task{}, fmt.Errorf("Failed to read %s", finfo.Name())
+		return Task{}, fmt.Errorf("failed to read %s", finfo.Name())
 	}
 	err = yaml.Unmarshal(data, &t)
 	if err != nil {
-		return Task{}, fmt.Errorf("Failed to unmarshal %s", finfo.Name())
+		return Task{}, fmt.Errorf("failed to unmarshal %s", finfo.Name())
 	}
 
 	t.Status = status
@@ -202,20 +202,20 @@ func (task *Task) Normalise() {
 // normalise the task before validating!
 func (task *Task) Validate() error {
 	if !IsValidUUID4String(task.UUID) {
-		return errors.New("Invalid task UUID4")
+		return errors.New("invalid task UUID4")
 	}
 
 	if !IsValidStatus(task.Status) {
-		return errors.New("Invalid status specified on task")
+		return errors.New("invalid status specified on task")
 	}
 
 	if !IsValidPriority(task.Priority) {
-		return errors.New("Invalid priority specified")
+		return errors.New("invalid priority specified")
 	}
 
 	for _, uuid := range task.Dependencies {
 		if !IsValidUUID4String(uuid) {
-			return errors.New("Invalid dependency UUID4")
+			return errors.New("invalid dependency UUID4")
 		}
 	}
 
