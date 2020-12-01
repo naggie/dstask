@@ -17,5 +17,6 @@ test:
 	go test ./...
 
 update_deps:
-	go get -i
+	go get
 	go mod vendor
+	git add -f vendor

@@ -12,3 +12,6 @@ steps:
     commands:
       - "go test -v -mod=vendor ./..."
       - "./smoketest.sh"
+      - "qa/misspell.sh"
+      - "qa/staticcheck.sh"
+      - "qa/gofmt.sh"

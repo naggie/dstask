@@ -3,7 +3,6 @@ package integration
 import (
 	"testing"
 
-	"github.com/naggie/dstask"
 	"gotest.tools/assert"
 )
 
@@ -28,8 +27,6 @@ func TestTaskShowTemplates(t *testing.T) {
 	output, exiterr, success = program("show-templates")
 	assertProgramResult(t, output, exiterr, success)
 
-	var tasks []dstask.Task
-
-	tasks = unmarshalTaskArray(t, output)
+	tasks := unmarshalTaskArray(t, output)
 	assert.Equal(t, "template1", tasks[0].Summary, "should be a template")
 }

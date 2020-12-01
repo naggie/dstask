@@ -12,6 +12,7 @@
 <a href="https://cloud.drone.io/naggie/dstask"><img src="https://cloud.drone.io/api/badges/naggie/dstask/status.svg" /></a>
 <a href="https://goreportcard.com/report/github.com/naggie/dstask"><img src="https://goreportcard.com/badge/github.com/naggie/dstask" /></a>
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-blue.svg" /></a>
+<a href="http://godoc.org/github.com/naggie/dstask"><img src="https://img.shields.io/badge/godoc-reference-blue.svg"/></a><Paste>
 </p>
 
 <br>

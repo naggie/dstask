@@ -169,11 +169,3 @@ func main() {
 		panic("this should never happen?")
 	}
 }
-
-// getEnv returns an env var's value, or a default.
-func getEnv(key string, _default string) string {
-	if val := os.Getenv(key); val != "" {
-		return val
-	}
-	return _default
-}
