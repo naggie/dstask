@@ -36,16 +36,22 @@ mkdir -p dist
 # see https://github.com/upx/upx/issues/222 -- UPX produces broken darwin executables.
 
 GOOS=linux GOARCH=arm GOARM=5 go build -o dstask -mod=vendor -ldflags="$LDFLAGS" cmd/dstask/main.go
+GOOS=linux GOARCH=arm GOARM=5 go build -o dstask-import -mod=vendor -ldflags="$LDFLAGS" cmd/dstask-import/main.go
 # upx -q dstask
 mv dstask dist/dstask-linux-arm5
+mv dstask-import dist/dstask-linux-arm5
 
 GOOS=linux GOARCH=amd64 go build -o dstask -mod=vendor -ldflags="$LDFLAGS" cmd/dstask/main.go
+GOOS=linux GOARCH=amd64 go build -o dstask-import -mod=vendor -ldflags="$LDFLAGS" cmd/dstask-import/main.go
 # upx -q dstask
 mv dstask dist/dstask-linux-amd64
+mv dstask-import dist/dstask-linux-amd64
 
 GOOS=darwin GOARCH=amd64 go build -o dstask -mod=vendor -ldflags="$LDFLAGS" cmd/dstask/main.go
+GOOS=darwin GOARCH=amd64 go build -o dstask-import -mod=vendor -ldflags="$LDFLAGS" cmd/dstask-import/main.go
 #upx -q dstask
 mv dstask dist/dstask-darwin-amd64
+mv dstask-import dist/dstask-darwin-amd64
 
 hub release create \
     --draft \
