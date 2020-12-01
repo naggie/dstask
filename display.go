@@ -14,7 +14,7 @@ import (
 )
 
 // DisplayByNext renders the TaskSet's array of tasks.
-func (ts *TaskSet) DisplayByNext(ctx CmdLine, truncate bool) error {
+func (ts *TaskSet) DisplayByNext(ctx Query, truncate bool) error {
 
 	if StdoutIsTTY() {
 		ctx.PrintContextDescription()

@@ -12,22 +12,22 @@ import (
 )
 
 // mergedTaskSetOpts returns a TaskSetOpt that applies the various filters
-// that should be exerted by the ctx and cmdLine
-func mergedTaskSetOpts(ctx, cmdLine CmdLine) TaskSetOpt {
+// that should be exerted by the ctx and query
+func mergedTaskSetOpts(ctx, query Query) TaskSetOpt {
 	return func(opts *taskSetOpts) {
-		WithIDs(cmdLine.IDs...)(opts)
-		WithProjects(ctx.Project, cmdLine.Project)(opts)
+		WithIDs(query.IDs...)(opts)
+		WithProjects(ctx.Project, query.Project)(opts)
 		WithoutProjects(ctx.AntiProjects...)(opts)
-		WithoutProjects(cmdLine.AntiProjects...)(opts)
+		WithoutProjects(query.AntiProjects...)(opts)
 		WithTags(ctx.Tags...)(opts)
-		WithTags(cmdLine.Tags...)(opts)
+		WithTags(query.Tags...)(opts)
 		WithoutTags(ctx.AntiTags...)(opts)
-		WithoutTags(cmdLine.AntiTags...)(opts)
+		WithoutTags(query.AntiTags...)(opts)
 	}
 }
 
 // CommandAdd adds a new task to the task database.
-func CommandAdd(conf Config, ctx, cmdLine CmdLine) error {
+func CommandAdd(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
@@ -35,13 +35,13 @@ func CommandAdd(conf Config, ctx, cmdLine CmdLine) error {
 	if err != nil {
 		return err
 	}
-	if cmdLine.Template > 0 {
+	if query.Template > 0 {
 		var taskSummary string
-		tt := ts.MustGetByID(cmdLine.Template)
-		cmdLine.MergeContext(ctx)
+		tt := ts.MustGetByID(query.Template)
+		query.MergeContext(ctx)
 
-		if cmdLine.Text != "" {
-			taskSummary = cmdLine.Text
+		if query.Text != "" {
+			taskSummary = query.Text
 		} else {
 			taskSummary = tt.Summary
 		}
@@ -57,8 +57,8 @@ func CommandAdd(conf Config, ctx, cmdLine CmdLine) error {
 			Notes:        tt.Notes,
 		}
 
-		// Modify the task with any tags/projects/antiProjects/priorities in cmdLine
-		task.Modify(cmdLine)
+		// Modify the task with any tags/projects/antiProjects/priorities in query
+		task.Modify(query)
 
 		task = ts.LoadTask(task)
 		ts.SavePendingChanges()
@@ -67,17 +67,17 @@ func CommandAdd(conf Config, ctx, cmdLine CmdLine) error {
 			// Insert Text Statement to inform user of real Templates
 			fmt.Print("\nYou've copied an open task!\nTo learn more about creating templates enter 'dstask help template'\n\n")
 		}
-	} else if cmdLine.Text != "" {
+	} else if query.Text != "" {
 		ctx.PrintContextDescription()
-		cmdLine.MergeContext(ctx)
+		query.MergeContext(ctx)
 		task := Task{
 			WritePending: true,
 			Status:       STATUS_PENDING,
-			Summary:      cmdLine.Text,
-			Tags:         cmdLine.Tags,
-			Project:      cmdLine.Project,
-			Priority:     cmdLine.Priority,
-			Notes:        cmdLine.Note,
+			Summary:      query.Text,
+			Tags:         query.Tags,
+			Project:      query.Project,
+			Priority:     query.Priority,
+			Notes:        query.Note,
 		}
 		task = ts.LoadTask(task)
 		ts.SavePendingChanges()
@@ -88,15 +88,15 @@ func CommandAdd(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandContext sets a global context for dstask.
-func CommandContext(conf Config, state State, ctx, cmdLine CmdLine) error {
+func CommandContext(conf Config, state State, ctx, query Query) error {
 	if len(os.Args) < 3 {
 		fmt.Printf("Current context: %s\n", ctx)
 	} else if os.Args[2] == "none" {
-		if err := state.SetContext(CmdLine{}); err != nil {
+		if err := state.SetContext(Query{}); err != nil {
 			return err
 		}
 	} else {
-		if err := state.SetContext(cmdLine); err != nil {
+		if err := state.SetContext(query); err != nil {
 			return err
 		}
 	}
@@ -106,11 +106,11 @@ func CommandContext(conf Config, state State, ctx, cmdLine CmdLine) error {
 }
 
 // CommandDone marks a task as done.
-func CommandDone(conf Config, ctx, cmdLine CmdLine) error {
+func CommandDone(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
-		WithIDs(cmdLine.IDs...),
+		WithIDs(query.IDs...),
 	)
 	if err != nil {
 		return err
@@ -118,8 +118,8 @@ func CommandDone(conf Config, ctx, cmdLine CmdLine) error {
 	for _, task := range ts.Tasks() {
 		task.Status = STATUS_RESOLVED
 		task.Resolved = time.Now()
-		if cmdLine.Text != "" {
-			task.Notes += "\n" + cmdLine.Text
+		if query.Text != "" {
+			task.Notes += "\n" + query.Text
 		}
 		ts.MustUpdateTask(task)
 		ts.SavePendingChanges()
@@ -129,11 +129,11 @@ func CommandDone(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandEdit edits a task's metadata, such as status, projects, tags, etc.
-func CommandEdit(conf Config, ctx, cmdLine CmdLine) error {
+func CommandEdit(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
-		WithIDs(cmdLine.IDs...),
+		WithIDs(query.IDs...),
 	)
 	if err != nil {
 		return err
@@ -179,7 +179,7 @@ func CommandHelp(args []string) {
 }
 
 // CommandImportTW imports a taskwarrior database.
-func CommandImportTW(conf Config, ctx, cmdLine CmdLine) error {
+func CommandImportTW(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(ALL_STATUSES...),
@@ -195,7 +195,7 @@ func CommandImportTW(conf Config, ctx, cmdLine CmdLine) error {
 
 // CommandLog logs a completed task immediately. Useful for tracking tasks after
 // they're already completed.
-func CommandLog(conf Config, ctx, cmdLine CmdLine) error {
+func CommandLog(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
@@ -204,16 +204,16 @@ func CommandLog(conf Config, ctx, cmdLine CmdLine) error {
 		return err
 	}
 
-	if cmdLine.Text != "" {
+	if query.Text != "" {
 		ctx.PrintContextDescription()
-		cmdLine.MergeContext(ctx)
+		query.MergeContext(ctx)
 		task := Task{
 			WritePending: true,
 			Status:       STATUS_RESOLVED,
-			Summary:      cmdLine.Text,
-			Tags:         cmdLine.Tags,
-			Project:      cmdLine.Project,
-			Priority:     cmdLine.Priority,
+			Summary:      query.Text,
+			Tags:         query.Tags,
+			Project:      query.Project,
+			Priority:     query.Priority,
 			Resolved:     time.Now(),
 		}
 		task = ts.LoadTask(task)
@@ -225,9 +225,9 @@ func CommandLog(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandModify modifies a task.
-func CommandModify(conf Config, ctx, cmdLine CmdLine) error {
+func CommandModify(conf Config, ctx, query Query) error {
 
-	if len(cmdLine.IDs) == 0 {
+	if len(query.IDs) == 0 {
 		ts, err := NewTaskSet(
 			conf.Repo, conf.IDsFile, conf.StateFile,
 			WithStatuses(NON_RESOLVED_STATUSES...),
@@ -244,7 +244,7 @@ func CommandModify(conf Config, ctx, cmdLine CmdLine) error {
 		}
 
 		for _, task := range ts.Tasks() {
-			task.Modify(cmdLine)
+			task.Modify(query)
 			ts.MustUpdateTask(task)
 			ts.SavePendingChanges()
 			MustGitCommit(conf.Repo, "Modified %s", task)
@@ -254,7 +254,7 @@ func CommandModify(conf Config, ctx, cmdLine CmdLine) error {
 		ts, err := NewTaskSet(
 			conf.Repo, conf.IDsFile, conf.StateFile,
 			WithStatuses(NON_RESOLVED_STATUSES...),
-			WithIDs(cmdLine.IDs...),
+			WithIDs(query.IDs...),
 			WithProjects(ctx.Project),
 			WithoutProjects(ctx.AntiProjects...),
 			WithTags(ctx.Tags...),
@@ -265,7 +265,7 @@ func CommandModify(conf Config, ctx, cmdLine CmdLine) error {
 		}
 
 		for _, task := range ts.Tasks() {
-			task.Modify(cmdLine)
+			task.Modify(query)
 			ts.MustUpdateTask(task)
 			ts.SavePendingChanges()
 			MustGitCommit(conf.Repo, "Modified %s", task)
@@ -277,14 +277,14 @@ func CommandModify(conf Config, ctx, cmdLine CmdLine) error {
 
 // CommandNext prints the unresolved tasks associated with the current context.
 // This is the default command.
-func CommandNext(conf Config, ctx, cmdLine CmdLine) error {
+func CommandNext(conf Config, ctx, query Query) error {
 
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithoutStatuses(STATUS_TEMPLATE),
 		WithStatuses(NON_RESOLVED_STATUSES...),
-		WithText(cmdLine.Text),
-		mergedTaskSetOpts(ctx, cmdLine),
+		WithText(query.Text),
+		mergedTaskSetOpts(ctx, query),
 	)
 	if err != nil {
 		return err
@@ -295,11 +295,11 @@ func CommandNext(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandNote edits or prints the markdown note associated with the task.
-func CommandNote(conf Config, ctx, cmdLine CmdLine) error {
+func CommandNote(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
-		WithIDs(cmdLine.IDs...),
+		WithIDs(query.IDs...),
 	)
 	if err != nil {
 		return err
@@ -308,13 +308,13 @@ func CommandNote(conf Config, ctx, cmdLine CmdLine) error {
 	for _, task := range ts.Tasks() {
 		// If stdout is a TTY, we open the editor
 		if StdoutIsTTY() {
-			if cmdLine.Text == "" {
+			if query.Text == "" {
 				task.Notes = string(MustEditBytes([]byte(task.Notes), "md"))
 			} else {
 				if task.Notes == "" {
-					task.Notes = cmdLine.Text
+					task.Notes = query.Text
 				} else {
-					task.Notes += "\n" + cmdLine.Text
+					task.Notes += "\n" + query.Text
 				}
 			}
 			ts.MustUpdateTask(task)
@@ -331,11 +331,11 @@ func CommandNote(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandOpen opens a task URL in the browser, if the task has a URL.
-func CommandOpen(conf Config, ctx, cmdLine CmdLine) error {
+func CommandOpen(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
-		WithIDs(cmdLine.IDs...),
+		WithIDs(query.IDs...),
 	)
 	if err != nil {
 		return err
@@ -354,14 +354,14 @@ func CommandOpen(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandRemove removes a task by ID from the database.
-func CommandRemove(conf Config, ctx, cmdLine CmdLine) error {
-	if len(cmdLine.IDs) < 1 {
+func CommandRemove(conf Config, ctx, query Query) error {
+	if len(query.IDs) < 1 {
 		return errors.New("missing argument: id")
 	}
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
-		WithIDs(cmdLine.IDs...),
+		WithIDs(query.IDs...),
 	)
 	if err != nil {
 		return err
@@ -383,9 +383,9 @@ func CommandRemove(conf Config, ctx, cmdLine CmdLine) error {
 		ts.MustUpdateTask(task)
 		ts.SavePendingChanges()
 
-		if cmdLine.Text != "" {
+		if query.Text != "" {
 			// commit comment, put in body
-			MustGitCommit(conf.Repo, "Removed: %s\n\n%s", task, cmdLine.Text)
+			MustGitCommit(conf.Repo, "Removed: %s\n\n%s", task, query.Text)
 		} else {
 			MustGitCommit(conf.Repo, "Removed: %s", task)
 		}
@@ -394,11 +394,11 @@ func CommandRemove(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandShowActive prints a list of active tasks.
-func CommandShowActive(conf Config, ctx, cmdLine CmdLine) error {
+func CommandShowActive(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(STATUS_ACTIVE),
-		mergedTaskSetOpts(ctx, cmdLine),
+		mergedTaskSetOpts(ctx, query),
 	)
 	if err != nil {
 		return err
@@ -409,7 +409,7 @@ func CommandShowActive(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandShowProjects prints a list of projects associated with all tasks.
-func CommandShowProjects(conf Config, ctx, cmdLine CmdLine) error {
+func CommandShowProjects(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(ALL_STATUSES...),
@@ -422,12 +422,12 @@ func CommandShowProjects(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandShowOpen prints a list of open tasks.
-func CommandShowOpen(conf Config, ctx, cmdLine CmdLine) error {
+func CommandShowOpen(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithoutStatuses(STATUS_TEMPLATE),
 		WithStatuses(NON_RESOLVED_STATUSES...),
-		mergedTaskSetOpts(ctx, cmdLine),
+		mergedTaskSetOpts(ctx, query),
 	)
 	if err != nil {
 		return err
@@ -437,12 +437,12 @@ func CommandShowOpen(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandShowPaused prints a list of paused tasks.
-func CommandShowPaused(conf Config, ctx, cmdLine CmdLine) error {
+func CommandShowPaused(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(STATUS_PAUSED),
 		WithoutStatuses(STATUS_RESOLVED),
-		mergedTaskSetOpts(ctx, cmdLine),
+		mergedTaskSetOpts(ctx, query),
 	)
 	if err != nil {
 		return err
@@ -452,11 +452,11 @@ func CommandShowPaused(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandShowResolved prints a list of resolved tasks.
-func CommandShowResolved(conf Config, ctx, cmdLine CmdLine) error {
+func CommandShowResolved(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(STATUS_RESOLVED),
-		mergedTaskSetOpts(ctx, cmdLine),
+		mergedTaskSetOpts(ctx, query),
 		SortBy("resolved", Ascending),
 	)
 	if err != nil {
@@ -467,11 +467,11 @@ func CommandShowResolved(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandShowTags prints a list of all tags associated with non-resolved tasks.
-func CommandShowTags(conf Config, ctx, cmdLine CmdLine) error {
+func CommandShowTags(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
-		mergedTaskSetOpts(ctx, cmdLine),
+		mergedTaskSetOpts(ctx, query),
 	)
 	if err != nil {
 		return err
@@ -483,12 +483,12 @@ func CommandShowTags(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandShowTemplates show a list of task templates.
-func CommandShowTemplates(conf Config, ctx, cmdLine CmdLine) error {
+func CommandShowTemplates(conf Config, ctx, query Query) error {
 
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(STATUS_TEMPLATE),
-		mergedTaskSetOpts(ctx, cmdLine),
+		mergedTaskSetOpts(ctx, query),
 	)
 	if err != nil {
 		return err
@@ -498,14 +498,14 @@ func CommandShowTemplates(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandShowUnorganised prints a list of tasks without tags or projects.
-func CommandShowUnorganised(conf Config, ctx, cmdLine CmdLine) error {
+func CommandShowUnorganised(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
-		WithIDs(cmdLine.IDs...),
-		WithoutProjects(cmdLine.AntiProjects...),
-		WithTags(cmdLine.Tags...),
-		WithoutTags(cmdLine.AntiTags...),
+		WithIDs(query.IDs...),
+		WithoutProjects(query.AntiProjects...),
+		WithTags(query.Tags...),
+		WithoutTags(query.AntiTags...),
 		WithUnorganised(),
 	)
 	if err != nil {
@@ -516,7 +516,7 @@ func CommandShowUnorganised(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandStart marks a task as started.
-func CommandStart(conf Config, ctx, cmdLine CmdLine) error {
+func CommandStart(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
@@ -524,13 +524,13 @@ func CommandStart(conf Config, ctx, cmdLine CmdLine) error {
 	if err != nil {
 		return err
 	}
-	if len(cmdLine.IDs) > 0 {
+	if len(query.IDs) > 0 {
 		// start given tasks by IDs
-		for _, id := range cmdLine.IDs {
+		for _, id := range query.IDs {
 			task := ts.MustGetByID(id)
 			task.Status = STATUS_ACTIVE
-			if cmdLine.Text != "" {
-				task.Notes += "\n" + cmdLine.Text
+			if query.Text != "" {
+				task.Notes += "\n" + query.Text
 			}
 			ts.MustUpdateTask(task)
 
@@ -541,17 +541,17 @@ func CommandStart(conf Config, ctx, cmdLine CmdLine) error {
 				fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m\n\n", task.ID, task.Notes)
 			}
 		}
-	} else if cmdLine.Text != "" {
+	} else if query.Text != "" {
 		// create a new task that is already active (started)
-		cmdLine.MergeContext(ctx)
+		query.MergeContext(ctx)
 		task := Task{
 			WritePending: true,
 			Status:       STATUS_ACTIVE,
-			Summary:      cmdLine.Text,
-			Tags:         cmdLine.Tags,
-			Project:      cmdLine.Project,
-			Priority:     cmdLine.Priority,
-			Notes:        cmdLine.Note,
+			Summary:      query.Text,
+			Tags:         query.Tags,
+			Project:      query.Project,
+			Priority:     query.Priority,
+			Notes:        query.Note,
 		}
 		task = ts.LoadTask(task)
 		ts.SavePendingChanges()
@@ -562,19 +562,19 @@ func CommandStart(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandStop marks a task as stopped.
-func CommandStop(conf Config, ctx, cmdLine CmdLine) error {
+func CommandStop(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
-		WithIDs(cmdLine.IDs...),
+		WithIDs(query.IDs...),
 	)
 	if err != nil {
 		return err
 	}
 	for _, task := range ts.Tasks() {
 		task.Status = STATUS_PAUSED
-		if cmdLine.Text != "" {
-			task.Notes += "\n" + cmdLine.Text
+		if query.Text != "" {
+			task.Notes += "\n" + query.Text
 		}
 		ts.MustUpdateTask(task)
 		ts.SavePendingChanges()
@@ -591,7 +591,7 @@ func CommandSync(repoPath string) error {
 }
 
 // CommandTemplate creates a new task template.
-func CommandTemplate(conf Config, ctx, cmdLine CmdLine) error {
+func CommandTemplate(conf Config, ctx, query Query) error {
 	ts, err := NewTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
@@ -600,8 +600,8 @@ func CommandTemplate(conf Config, ctx, cmdLine CmdLine) error {
 		return err
 	}
 
-	if len(cmdLine.IDs) > 0 {
-		for _, id := range cmdLine.IDs {
+	if len(query.IDs) > 0 {
+		for _, id := range query.IDs {
 			task := ts.MustGetByID(id)
 			task.Status = STATUS_TEMPLATE
 
@@ -609,16 +609,16 @@ func CommandTemplate(conf Config, ctx, cmdLine CmdLine) error {
 			ts.SavePendingChanges()
 			MustGitCommit(conf.Repo, "Changed %s to Template", task)
 		}
-	} else if cmdLine.Text != "" {
-		cmdLine.MergeContext(ctx)
+	} else if query.Text != "" {
+		query.MergeContext(ctx)
 		task := Task{
 			WritePending: true,
 			Status:       STATUS_TEMPLATE,
-			Summary:      cmdLine.Text,
-			Tags:         cmdLine.Tags,
-			Project:      cmdLine.Project,
-			Priority:     cmdLine.Priority,
-			Notes:        cmdLine.Note,
+			Summary:      query.Text,
+			Tags:         query.Tags,
+			Project:      query.Project,
+			Priority:     query.Priority,
+			Notes:        query.Note,
 		}
 		task = ts.LoadTask(task)
 		ts.SavePendingChanges()
@@ -629,7 +629,7 @@ func CommandTemplate(conf Config, ctx, cmdLine CmdLine) error {
 }
 
 // CommandUndo performs undo with git revert.
-func CommandUndo(conf Config, args []string, ctx, cmdLine CmdLine) error {
+func CommandUndo(conf Config, args []string, ctx, query Query) error {
 	var err error
 	n := 1
 	if len(args) == 3 {

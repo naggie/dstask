@@ -8,7 +8,7 @@ import (
 )
 
 // Completions ...
-func Completions(conf Config, args []string, ctx CmdLine) {
+func Completions(conf Config, args []string, ctx Query) {
 	// given the entire user's command line arguments as the arguments for
 	// this cmd, suggest possible candidates for the last arg.
 	// see the relevant shell completion bindings in this repository for
@@ -26,7 +26,7 @@ func Completions(conf Config, args []string, ctx CmdLine) {
 
 	// args are dstask _completions <user command line>
 	// parse command line as normal to set rules
-	cmdLine := ParseCmdLine(originalArgs...)
+	query := ParseQuery(originalArgs...)
 
 	// No command and OK to specify command (to run or help)
 	// Note that techically we should only specify commands as available
@@ -34,14 +34,14 @@ func Completions(conf Config, args []string, ctx CmdLine) {
 	// However, this is unnecessary as a general substring filter is used at
 	// the end of the func.
 	// This is exhaustive but the clearest way, IMO.
-	if len(cmdLine.AntiProjects) == 0 &&
-		cmdLine.Project == "" &&
-		len(cmdLine.Tags) == 0 &&
-		len(cmdLine.AntiTags) == 0 &&
-		cmdLine.Priority == "" &&
-		cmdLine.Template == 0 &&
-		!cmdLine.IgnoreContext &&
-		(cmdLine.Cmd == CMD_HELP || cmdLine.Cmd == "") {
+	if len(query.AntiProjects) == 0 &&
+		query.Project == "" &&
+		len(query.Tags) == 0 &&
+		len(query.AntiTags) == 0 &&
+		query.Priority == "" &&
+		query.Template == 0 &&
+		!query.IgnoreContext &&
+		(query.Cmd == CMD_HELP || query.Cmd == "") {
 		for _, cmd := range ALL_CMDS {
 			if !strings.HasPrefix(cmd, "_") {
 				completions = append(completions, cmd)
@@ -68,7 +68,7 @@ func Completions(conf Config, args []string, ctx CmdLine) {
 		CMD_SHOW_OPEN,
 		CMD_SHOW_RESOLVED,
 		CMD_SHOW_TEMPLATES,
-	}, cmdLine.Cmd) {
+	}, query.Cmd) {
 		ts, err := NewTaskSet(
 			conf.Repo, conf.IDsFile, conf.StateFile,
 			WithStatuses(NON_RESOLVED_STATUSES...),
@@ -81,14 +81,14 @@ func Completions(conf Config, args []string, ctx CmdLine) {
 		// limit completions to available context, but not if the user is
 		// trying to change context, context ignore is on, or modify
 		// command is being completed
-		if !cmdLine.IgnoreContext &&
-			cmdLine.Cmd != CMD_CONTEXT &&
-			cmdLine.Cmd != CMD_MODIFY {
+		if !query.IgnoreContext &&
+			query.Cmd != CMD_CONTEXT &&
+			query.Cmd != CMD_MODIFY {
 			ts.Filter(ctx)
 		}
 
 		// templates
-		if cmdLine.Cmd == CMD_ADD {
+		if query.Cmd == CMD_ADD {
 			for _, task := range ts.Tasks() {
 				if task.Status == STATUS_TEMPLATE {
 					completions = append(completions, "template:"+strconv.Itoa(task.ID))

@@ -8,17 +8,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParseCmdLine(t *testing.T) {
+func TestParseQuery(t *testing.T) {
 
 	type testCase struct {
 		input    []string
-		expected CmdLine
+		expected Query
 	}
 
 	var tests = []testCase{
 		{
 			[]string{"add", "have", "an", "adventure"},
-			CmdLine{
+			Query{
 				Cmd:           "add",
 				IDs:           nil,
 				Tags:          nil,
@@ -33,7 +33,7 @@ func TestParseCmdLine(t *testing.T) {
 		},
 		{
 			[]string{"add", "+x", "-y", "have", "an", "adventure"},
-			CmdLine{
+			Query{
 				Cmd:           "add",
 				IDs:           nil,
 				Tags:          []string{"x"},
@@ -48,7 +48,7 @@ func TestParseCmdLine(t *testing.T) {
 		},
 		{
 			[]string{"add", "smile", "/"},
-			CmdLine{
+			Query{
 				Cmd:           "add",
 				IDs:           nil,
 				Tags:          nil,
@@ -64,7 +64,7 @@ func TestParseCmdLine(t *testing.T) {
 
 		{
 			[]string{"add", "floss", "project:p", "+health", "/", "every  day"},
-			CmdLine{
+			Query{
 				Cmd:           "add",
 				IDs:           nil,
 				Tags:          []string{"health"},
@@ -79,7 +79,7 @@ func TestParseCmdLine(t *testing.T) {
 		},
 		{
 			[]string{"16", "modify", "+project:p", "-project:x", "-fun"},
-			CmdLine{
+			Query{
 				Cmd:           "modify",
 				IDs:           []int{16},
 				Tags:          nil,
@@ -94,7 +94,7 @@ func TestParseCmdLine(t *testing.T) {
 		},
 		{
 			[]string{"--", "show-resolved"},
-			CmdLine{
+			Query{
 				Cmd:           "show-resolved",
 				IDs:           nil,
 				Tags:          nil,
@@ -116,7 +116,7 @@ func TestParseCmdLine(t *testing.T) {
 		t.Run(fmt.Sprintf("test %v: %s", i, description), func(t *testing.T) {
 			t.Parallel()
 
-			actual := ParseCmdLine(tc.input...)
+			actual := ParseQuery(tc.input...)
 			assert.Equal(t, tc.expected, actual)
 
 		})

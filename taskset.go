@@ -405,9 +405,9 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 }
 
 // Filter NOTE: only called in completions.go
-func (ts *TaskSet) Filter(cmdLine CmdLine) {
+func (ts *TaskSet) Filter(query Query) {
 	for _, task := range ts.tasks {
-		if !task.MatchesFilter(cmdLine) {
+		if !task.MatchesFilter(query) {
 			task.filtered = true
 		}
 	}
