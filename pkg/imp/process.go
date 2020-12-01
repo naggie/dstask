@@ -31,7 +31,7 @@ func ProcessTask(repo string, task dstask.Task) error {
 		}
 		err = yaml.Unmarshal(data, &localTask)
 		if err != nil {
-			return fmt.Errorf("Failed to unmarshal %q: %s", filepath, err.Error())
+			return fmt.Errorf("failed to unmarshal %q: %s", filepath, err.Error())
 		}
 		found = true
 		err = os.Remove(filepath)

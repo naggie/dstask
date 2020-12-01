@@ -29,18 +29,18 @@ func Load(configFile, repo string) (Config, error) {
 
 	contents, err := ioutil.ReadFile(configFile)
 	if err != nil {
-		return config, fmt.Errorf("Couldn't read config file %q: %s", configFile, err.Error())
+		return config, fmt.Errorf("couldn't read config file %q: %s", configFile, err.Error())
 	}
 
 	_, err = toml.Decode(string(contents), &config)
 	if err != nil {
-		return config, fmt.Errorf("Invalid config file %q: %s", configFile, err.Error())
+		return config, fmt.Errorf("invalid config file %q: %s", configFile, err.Error())
 	}
 
 	for i, gh := range config.Github {
 		err = yaml.Unmarshal([]byte(gh.TemplateStr), &config.Github[i].TemplateTask)
 		if err != nil {
-			return config, fmt.Errorf("Failed to unmarshal template: %s", err.Error())
+			return config, fmt.Errorf("failed to unmarshal template: %s", err.Error())
 		}
 	}
 
