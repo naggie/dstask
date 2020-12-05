@@ -178,21 +178,6 @@ func CommandHelp(args []string) {
 	}
 }
 
-// CommandImportTW imports a taskwarrior database.
-func CommandImportTW(conf Config, ctx, cmdLine CmdLine) error {
-	ts, err := NewTaskSet(
-		conf.Repo, conf.IDsFile, conf.StateFile,
-		WithStatuses(ALL_STATUSES...),
-	)
-	if err != nil {
-		return err
-	}
-	ts.ImportFromTaskwarrior()
-	ts.SavePendingChanges()
-	MustGitCommit(conf.Repo, "Import from taskwarrior")
-	return nil
-}
-
 // CommandLog logs a completed task immediately. Useful for tracking tasks after
 // they're already completed.
 func CommandLog(conf Config, ctx, cmdLine CmdLine) error {

@@ -33,6 +33,7 @@ Features:
  * `open` command -- **open URLs found in specified task** (including notes) in the browser
  * zsh/bash completion for speed
  * A single statically-linked binary
+ * [import tool](doc/dstask-import.md) which can import GitHub issues or taskwarrior tasks.
 
 Non-features:
 
@@ -88,7 +89,7 @@ and [FreeBSD](https://www.freshports.org/deskutils/dstask/) package!
 
 # Moving from Taskwarrior
 
-See [etc/MIGRATION.md](etc/MIGRATION.md)
+We have a [migration guide](doc/taskwarrior-migration.md) to make the transition from taskwarrior to dstask a simple process.
 
 # Future of dstask
 
