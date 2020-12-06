@@ -56,7 +56,6 @@ const (
 	CMD_SHOW_TEMPLATES   = "show-templates"
 	CMD_SHOW_UNORGANISED = "show-unorganised"
 	CMD_COMPLETIONS      = "_completions"
-	CMD_IMPORT_TW        = "import-tw"
 	CMD_HELP             = "help"
 	CMD_VERSION          = "version"
 
@@ -159,7 +158,6 @@ var ALL_CMDS = []string{
 	CMD_SHOW_RESOLVED,
 	CMD_SHOW_TEMPLATES,
 	CMD_SHOW_UNORGANISED,
-	CMD_IMPORT_TW,
 	CMD_COMPLETIONS,
 	CMD_HELP,
 	CMD_VERSION,
