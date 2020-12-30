@@ -95,6 +95,7 @@ func (ts *TaskSet) renderTable(truncate bool) error {
 			"Tags",
 			"Project",
 			"Summary",
+			"Urgency",
 		)
 
 		for _, t := range tasks {
@@ -109,6 +110,7 @@ func (ts *TaskSet) renderTable(truncate bool) error {
 					strings.Join(t.Tags, " "),
 					t.Project,
 					t.LongSummary(),
+					strconv.Itoa(t.Urgency()),
 				},
 				style,
 			)

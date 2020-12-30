@@ -262,6 +262,37 @@ func (t *Task) Modify(query Query) {
 	}
 }
 
+func (task *Task) Urgency() int {
+	urgency := 1
+
+	priorityModifier := 5
+	switch task.Priority {
+	case PRIORITY_LOW:
+		urgency += priorityModifier * 1
+	case PRIORITY_NORMAL:
+		urgency += priorityModifier * 2
+	case PRIORITY_HIGH:
+		urgency += priorityModifier * 3
+	case PRIORITY_CRITICAL:
+		urgency += priorityModifier * 5
+	}
+
+	if len(task.Project) > 0 {
+		urgency += 3
+	}
+
+	if len(task.Tags) > 0 {
+		urgency += 3
+	}
+
+	ageModifier := 0.05
+	ageInDays := int(time.Now().Sub(task.Created).Hours() / 24)
+	fmt.Println("age in days for '", task.Summary, "' = ", ageInDays)
+	urgency += int(float64(ageInDays) * ageModifier)
+
+	return urgency
+}
+
 func (t *Task) SaveToDisk(repoPath string) {
 	// save should be idempotent
 	t.WritePending = false
