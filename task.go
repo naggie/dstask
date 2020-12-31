@@ -56,6 +56,9 @@ type Task struct {
 	Resolved time.Time `json:"resolved"`
 	Due      time.Time `json:"due"`
 
+	// Urgency is generated on the fly
+	Urgency int `json:"urgency" yaml:"-"`
+
 	// TaskSet uses this to indicate if a given task is excluded by a filter
 	// (context etc)
 	filtered bool `json:"-"`
@@ -128,6 +131,7 @@ func unmarshalTask(path string, finfo os.FileInfo, ids IdsMap, status string) (T
 	}
 
 	t.Status = status
+	t.Urgency = generateUrgency(t)
 	return t, nil
 }
 
@@ -262,7 +266,7 @@ func (t *Task) Modify(query Query) {
 	}
 }
 
-func (task *Task) Urgency() int {
+func generateUrgency(task Task) int {
 	urgency := 1
 
 	priorityModifier := 5

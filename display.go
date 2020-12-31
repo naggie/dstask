@@ -110,7 +110,7 @@ func (ts *TaskSet) renderTable(truncate bool) error {
 					strings.Join(t.Tags, " "),
 					t.Project,
 					t.LongSummary(),
-					strconv.Itoa(t.Urgency()),
+					strconv.Itoa(t.Urgency),
 				},
 				style,
 			)
