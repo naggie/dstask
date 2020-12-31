@@ -293,6 +293,10 @@ func generateUrgency(task Task) int {
 		urgency += priorityModifier * 5
 	}
 
+	if task.Status == STATUS_ACTIVE {
+		urgency += 5
+	}
+
 	if len(task.Project) > 0 {
 		urgency += 3
 	}
