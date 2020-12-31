@@ -266,8 +266,17 @@ func (t *Task) Modify(query Query) {
 	}
 }
 
+func (task *Task) IsResolved() bool {
+	for _, nonResolvedStatus := range NON_RESOLVED_STATUSES {
+		if task.Status == nonResolvedStatus {
+			return false
+		}
+	}
+	return true
+}
+
 func generateUrgency(task Task) int {
-	if task.Status == STATUS_RESOLVED || task.Status == STATUS_TEMPLATE {
+	if task.IsResolved() {
 		return 0
 	}
 	urgency := 1
