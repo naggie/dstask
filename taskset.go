@@ -150,6 +150,17 @@ func (ts *TaskSet) MustLoadTask(task Task) Task {
 	return newTask
 }
 
+func (ts *TaskSet) sortByUrgency(dir SortByDirection) {
+	switch dir {
+	case Ascending:
+		// Lowest Urgency First
+		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Urgency < ts.tasks[j].Urgency })
+	case Descending:
+		// Highest Urgency first
+		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Urgency > ts.tasks[j].Urgency })
+	}
+}
+
 // LoadTask adds a task to the TaskSet, but only if it has a new uuid or no uuid.
 // Return annotated task.
 func (ts *TaskSet) LoadTask(task Task) (Task, error) {
