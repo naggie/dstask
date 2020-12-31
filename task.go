@@ -267,6 +267,9 @@ func (t *Task) Modify(query Query) {
 }
 
 func generateUrgency(task Task) int {
+	if task.Status == STATUS_RESOLVED || task.Status == STATUS_TEMPLATE {
+		return 0
+	}
 	urgency := 1
 
 	priorityModifier := 5
