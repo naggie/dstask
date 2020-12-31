@@ -290,7 +290,7 @@ func generateUrgency(task Task) int {
 	}
 
 	ageModifier := 0.05
-	ageInDays := int(time.Now().Sub(task.Created).Hours() / 24)
+	ageInDays := int(time.Since(task.Created).Hours() / 24)
 	urgency += int(float64(ageInDays) * ageModifier)
 
 	return urgency
