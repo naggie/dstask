@@ -131,7 +131,7 @@ func unmarshalTask(path string, finfo os.FileInfo, ids IdsMap, status string) (T
 	}
 
 	t.Status = status
-	t.Urgency = generateUrgency(t)
+	t.Urgency = computeUrgency(t)
 	return t, nil
 }
 
@@ -275,10 +275,11 @@ func (task *Task) IsResolved() bool {
 	return true
 }
 
-func generateUrgency(task Task) int {
+func computeUrgency(task Task) int {
 	if task.IsResolved() {
 		return 0
 	}
+
 	urgency := 1
 
 	priorityModifier := 5
