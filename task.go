@@ -284,16 +284,16 @@ func computeUrgency(task Task) int {
 
 	urgency := 1
 
-	priorityModifier := 5
+	priorityMultiplier := 5
 	switch task.Priority {
 	case PRIORITY_LOW:
-		urgency += priorityModifier * 1
+		urgency += priorityMultiplier * 1
 	case PRIORITY_NORMAL:
-		urgency += priorityModifier * 2
+		urgency += priorityMultiplier * 2
 	case PRIORITY_HIGH:
-		urgency += priorityModifier * 3
+		urgency += priorityMultiplier * 3
 	case PRIORITY_CRITICAL:
-		urgency += priorityModifier * 5
+		urgency += priorityMultiplier * 5
 	}
 
 	if task.Status == STATUS_ACTIVE {
@@ -308,9 +308,9 @@ func computeUrgency(task Task) int {
 		urgency += 3
 	}
 
-	ageModifier := 0.05
+	ageMultiplier := 0.05
 	ageInDays := int(time.Since(task.Created).Hours() / 24)
-	urgency += int(float64(ageInDays) * ageModifier)
+	urgency += int(float64(ageInDays) * ageMultiplier)
 
 	return urgency
 }
