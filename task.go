@@ -275,6 +275,8 @@ func (task *Task) IsResolved() bool {
 	return true
 }
 
+// If you make changes to this function, make sure you update doc/urgency.md to
+// reflect the changes.
 func computeUrgency(task Task) int {
 	if task.IsResolved() {
 		return 0
