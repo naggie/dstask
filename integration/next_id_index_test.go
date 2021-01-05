@@ -52,3 +52,30 @@ func TestNextByIDIndexOutsideContext(t *testing.T) {
 	tasks = unmarshalTaskArray(t, output)
 	assert.Equal(t, 1, tasks[0].ID, "1 is the only ID in our current context")
 }
+
+func TestNextWithurgency(t *testing.T) {
+	repo, cleanup := makeDstaskRepo(t)
+	defer cleanup()
+
+	program := testCmd(repo)
+
+	output, exiterr, success := program("add", "one")
+	assertProgramResult(t, output, exiterr, success)
+
+	output, exiterr, success = program("add", "two", "+two", "project:two")
+	assertProgramResult(t, output, exiterr, success)
+
+	output, exiterr, success = program("add", "three", "P0")
+	assertProgramResult(t, output, exiterr, success)
+
+	output, exiterr, success = program("add", "four", "project:four")
+	assertProgramResult(t, output, exiterr, success)
+
+	output, exiterr, success = program("next")
+	assertProgramResult(t, output, exiterr, success)
+	tasks := unmarshalTaskArray(t, output)
+	assert.Equal(t, "three", tasks[0].Summary)
+	assert.Equal(t, "two", tasks[1].Summary)
+	assert.Equal(t, "four", tasks[2].Summary)
+	assert.Equal(t, "one", tasks[3].Summary)
+}
