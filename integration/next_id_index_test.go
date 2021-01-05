@@ -74,6 +74,12 @@ func TestNextWithurgency(t *testing.T) {
 	output, exiterr, success = program("next")
 	assertProgramResult(t, output, exiterr, success)
 	tasks := unmarshalTaskArray(t, output)
+
+	// This order is expected.
+	// - three is a P0 task
+	// - two has a project and a tag
+	// - four just has a project
+	// - one doesn't have a project or tag
 	assert.Equal(t, "three", tasks[0].Summary)
 	assert.Equal(t, "two", tasks[1].Summary)
 	assert.Equal(t, "four", tasks[2].Summary)
