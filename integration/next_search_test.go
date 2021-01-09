@@ -56,7 +56,7 @@ func TestNextSearchCaseInsensitive(t *testing.T) {
 	output, exiterr, success = program("add", "two")
 	assertProgramResult(t, output, exiterr, success)
 
-	// search something that doesn't exist
+	// search should be case insensitive
 	output, exiterr, success = program("TWO")
 	assertProgramResult(t, output, exiterr, success)
 
@@ -64,4 +64,12 @@ func TestNextSearchCaseInsensitive(t *testing.T) {
 
 	tasks = unmarshalTaskArray(t, output)
 	assert.Len(t, tasks, 1, `string "TWO" should find task summary containing "two"`)
+
+	// case insensitive searching of notes field should work
+	output, exiterr, success = program("ALPHA")
+	assertProgramResult(t, output, exiterr, success)
+
+	tasks = unmarshalTaskArray(t, output)
+	assert.Len(t, tasks, 1, `string "ALPHA" should find notes field containing "alpha"`)
+
 }
