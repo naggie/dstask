@@ -42,3 +42,26 @@ func TestNextSearchWord(t *testing.T) {
 	tasks = unmarshalTaskArray(t, output)
 	assert.Equal(t, "one", tasks[0].Summary, "string \"alpha\" is in a note for task one")
 }
+
+func TestNextSearchCaseInsensitive(t *testing.T) {
+
+	repo, cleanup := makeDstaskRepo(t)
+	defer cleanup()
+
+	program := testCmd(repo)
+
+	output, exiterr, success := program("add", "one", "/", "alpha")
+	assertProgramResult(t, output, exiterr, success)
+
+	output, exiterr, success = program("add", "two")
+	assertProgramResult(t, output, exiterr, success)
+
+	// search something that doesn't exist
+	output, exiterr, success = program("TWO")
+	assertProgramResult(t, output, exiterr, success)
+
+	var tasks []dstask.Task
+
+	tasks = unmarshalTaskArray(t, output)
+	assert.Len(t, tasks, 1, `string "TWO" should find task summary containing "two"`)
+}
