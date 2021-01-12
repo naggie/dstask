@@ -161,8 +161,8 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 
 		// if we are passed text, we interpret it as a substring search
 		if tso.text != "" {
-			if !strings.Contains(strings.ToLower(task.Summary), strings.ToLower(tso.text)) && 
-			!strings.Contains(strings.ToLower(task.Notes), strings.ToLower(tso.text)) {
+			if !strings.Contains(strings.ToLower(task.Summary), strings.ToLower(tso.text)) &&
+				!strings.Contains(strings.ToLower(task.Notes), strings.ToLower(tso.text)) {
 				task.filtered = true
 			}
 		}
