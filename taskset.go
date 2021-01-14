@@ -93,18 +93,6 @@ func LoadTaskSet(repoPath, idsFilePath, includeResolved bool) (*TaskSet, error) 
 	return &ts, nil
 }
 
-func filterTasksByID(tasks []*Task, tso *taskSetOpts) {
-	for _, task := range tasks {
-		task.filtered = true
-		for _, id := range tso.withIDs {
-			if id == task.ID {
-				// we have found a matching ID
-				task.filtered = false
-			}
-		}
-	}
-}
-
 func (ts *TaskSet) sortByCreated(dir SortByDirection) {
 	switch dir {
 	case Ascending:
@@ -225,7 +213,6 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 	*ts.tasksByUUID[task.UUID] = task
 }
 
-// Filter NOTE: only called in completions.go
 func (ts *TaskSet) Filter(query Query) {
 	for _, task := range ts.tasks {
 		if !task.MatchesFilter(query) {

@@ -171,14 +171,15 @@ func (query *Query) MergeContext(context Query) {
 }
 
 func (task *Task) MatchesFilter(query Query) bool {
+	matchingIdFound = false
+
+	// If an ID is specified, OR logic is used
 	for _, id := range query.IDs {
 		if id == task.ID {
-			return true
+			// one or more ID specified and match found, continue filtering
+			break
 		}
-	}
-
-	// IDs were specified but no match
-	if len(query.IDs) > 0 {
+		// IDs were specified but no match
 		return false
 	}
 
