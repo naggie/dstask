@@ -42,7 +42,7 @@ type Project struct {
 }
 
 // LoadTaskSet constructs a TaskSet from a repo path and zero or more options.
-func LoadTaskSet(repoPath, idsFilePath, stateFilePath string, includeResolved bool) (*TaskSet, error) {
+func LoadTaskSet(repoPath, idsFilePath, includeResolved bool) (*TaskSet, error) {
 
 	// Initialise an empty TaskSet
 	var ts TaskSet
@@ -50,7 +50,6 @@ func LoadTaskSet(repoPath, idsFilePath, stateFilePath string, includeResolved bo
 	ts.tasksByID = make(map[int]*Task)
 
 	ts.idsFilePath = idsFilePath
-	ts.stateFilePath = stateFilePath
 	ts.repoPath = repoPath
 
 	// Construct our options struct by calling our passed-in TaskSetOpt functions.
