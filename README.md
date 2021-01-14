@@ -214,13 +214,14 @@ See [etc/PERFORMANCE.md](etc/PERFORMANCE.md)
 # General tips
 
 * Overwhelmed by tasks? Try focussing by prioritising (set priorities) or narrowing the context. The `show-tags` and `show-projects` commands are useful for creating a context.
-* Use dstask to track things you might forget, rather than everything. SNR is important. Don't track tasks for the sake of it.
+* Use dstask to track things you might forget, rather than everything. SNR is important. Don't track tasks for the sake of it, and don't track _ideas_. Track ideas separately.
 * Spend regular time reviewing tasks. You'll probably find some you've already resolved, and many you've forgotten. The `show-unorganised` command is good for this.
 * Try to work through tasks from the top of the list. Dstask sorts by priority then creation date -- the most important tasks are at the top.
 * Use `start`/`stop` to mark what you're genuinely working on right now; it makes resuming work faster. Paused tasks will be slightly highlighted, so you won't lose track of them. `show-paused` helps if they start to pile up.
 * Keep a [github-style check list](https://help.github.com/en/articles/about-task-lists) in the markdown note of complex or procedural tasks
 * Failing to get started working? Start with the smallest task
 * Record only required tasks. Track ideas separately, else your task list will grow unboundedly! I keep an `ideas.md` for various projects for this reason.
+* Use a `today` tag/context to get a lot of small things done in one day
 
 # Database
 
