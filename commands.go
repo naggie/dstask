@@ -11,24 +11,9 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-// mergedTaskSetOpts returns a TaskSetOpt that applies the various filters
-// that should be exerted by the ctx and query
-func mergedTaskSetOpts(ctx, query Query) TaskSetOpt {
-	return func(opts *taskSetOpts) {
-		WithIDs(query.IDs...)(opts)
-		WithProjects(ctx.Project, query.Project)(opts)
-		WithoutProjects(ctx.AntiProjects...)(opts)
-		WithoutProjects(query.AntiProjects...)(opts)
-		WithTags(ctx.Tags...)(opts)
-		WithTags(query.Tags...)(opts)
-		WithoutTags(ctx.AntiTags...)(opts)
-		WithoutTags(query.AntiTags...)(opts)
-	}
-}
-
 // CommandAdd adds a new task to the task database.
 func CommandAdd(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
@@ -107,10 +92,9 @@ func CommandContext(conf Config, state State, ctx, query Query) error {
 
 // CommandDone marks a task as done.
 func CommandDone(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
-		WithStatuses(NON_RESOLVED_STATUSES...),
-		WithIDs(query.IDs...),
+		true,
 	)
 	if err != nil {
 		return err
@@ -130,7 +114,7 @@ func CommandDone(conf Config, ctx, query Query) error {
 
 // CommandEdit edits a task's metadata, such as status, projects, tags, etc.
 func CommandEdit(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 		WithIDs(query.IDs...),
@@ -180,7 +164,7 @@ func CommandHelp(args []string) {
 
 // CommandImportTW imports a taskwarrior database.
 func CommandImportTW(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(ALL_STATUSES...),
 	)
@@ -196,7 +180,7 @@ func CommandImportTW(conf Config, ctx, query Query) error {
 // CommandLog logs a completed task immediately. Useful for tracking tasks after
 // they're already completed.
 func CommandLog(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
@@ -228,7 +212,7 @@ func CommandLog(conf Config, ctx, query Query) error {
 func CommandModify(conf Config, ctx, query Query) error {
 
 	if len(query.IDs) == 0 {
-		ts, err := NewTaskSet(
+		ts, err := LoadTaskSet(
 			conf.Repo, conf.IDsFile, conf.StateFile,
 			WithStatuses(NON_RESOLVED_STATUSES...),
 			WithProjects(ctx.Project),
@@ -251,7 +235,7 @@ func CommandModify(conf Config, ctx, query Query) error {
 		}
 		return nil
 	} else {
-		ts, err := NewTaskSet(
+		ts, err := LoadTaskSet(
 			conf.Repo, conf.IDsFile, conf.StateFile,
 			WithStatuses(NON_RESOLVED_STATUSES...),
 			WithIDs(query.IDs...),
@@ -279,7 +263,7 @@ func CommandModify(conf Config, ctx, query Query) error {
 // This is the default command.
 func CommandNext(conf Config, ctx, query Query) error {
 
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithoutStatuses(STATUS_TEMPLATE),
 		WithStatuses(NON_RESOLVED_STATUSES...),
@@ -296,7 +280,7 @@ func CommandNext(conf Config, ctx, query Query) error {
 
 // CommandNote edits or prints the markdown note associated with the task.
 func CommandNote(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 		WithIDs(query.IDs...),
@@ -332,7 +316,7 @@ func CommandNote(conf Config, ctx, query Query) error {
 
 // CommandOpen opens a task URL in the browser, if the task has a URL.
 func CommandOpen(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 		WithIDs(query.IDs...),
@@ -358,7 +342,7 @@ func CommandRemove(conf Config, ctx, query Query) error {
 	if len(query.IDs) < 1 {
 		return errors.New("missing argument: id")
 	}
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 		WithIDs(query.IDs...),
@@ -395,7 +379,7 @@ func CommandRemove(conf Config, ctx, query Query) error {
 
 // CommandShowActive prints a list of active tasks.
 func CommandShowActive(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(STATUS_ACTIVE),
 		mergedTaskSetOpts(ctx, query),
@@ -410,7 +394,7 @@ func CommandShowActive(conf Config, ctx, query Query) error {
 
 // CommandShowProjects prints a list of projects associated with all tasks.
 func CommandShowProjects(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(ALL_STATUSES...),
 	)
@@ -423,7 +407,7 @@ func CommandShowProjects(conf Config, ctx, query Query) error {
 
 // CommandShowOpen prints a list of open tasks.
 func CommandShowOpen(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithoutStatuses(STATUS_TEMPLATE),
 		WithStatuses(NON_RESOLVED_STATUSES...),
@@ -438,7 +422,7 @@ func CommandShowOpen(conf Config, ctx, query Query) error {
 
 // CommandShowPaused prints a list of paused tasks.
 func CommandShowPaused(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(STATUS_PAUSED),
 		WithoutStatuses(STATUS_RESOLVED),
@@ -453,7 +437,7 @@ func CommandShowPaused(conf Config, ctx, query Query) error {
 
 // CommandShowResolved prints a list of resolved tasks.
 func CommandShowResolved(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(STATUS_RESOLVED),
 		mergedTaskSetOpts(ctx, query),
@@ -468,7 +452,7 @@ func CommandShowResolved(conf Config, ctx, query Query) error {
 
 // CommandShowTags prints a list of all tags associated with non-resolved tasks.
 func CommandShowTags(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 		mergedTaskSetOpts(ctx, query),
@@ -485,7 +469,7 @@ func CommandShowTags(conf Config, ctx, query Query) error {
 // CommandShowTemplates show a list of task templates.
 func CommandShowTemplates(conf Config, ctx, query Query) error {
 
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(STATUS_TEMPLATE),
 		mergedTaskSetOpts(ctx, query),
@@ -499,7 +483,7 @@ func CommandShowTemplates(conf Config, ctx, query Query) error {
 
 // CommandShowUnorganised prints a list of tasks without tags or projects.
 func CommandShowUnorganised(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 		WithIDs(query.IDs...),
@@ -517,7 +501,7 @@ func CommandShowUnorganised(conf Config, ctx, query Query) error {
 
 // CommandStart marks a task as started.
 func CommandStart(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
@@ -563,7 +547,7 @@ func CommandStart(conf Config, ctx, query Query) error {
 
 // CommandStop marks a task as stopped.
 func CommandStop(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 		WithIDs(query.IDs...),
@@ -592,7 +576,7 @@ func CommandSync(repoPath string) error {
 
 // CommandTemplate creates a new task template.
 func CommandTemplate(conf Config, ctx, query Query) error {
-	ts, err := NewTaskSet(
+	ts, err := LoadTaskSet(
 		conf.Repo, conf.IDsFile, conf.StateFile,
 		WithStatuses(NON_RESOLVED_STATUSES...),
 	)
