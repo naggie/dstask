@@ -82,10 +82,11 @@ Requirements:
 1. Create or clone a ~/.dstask git repository for the data, if you haven't already: `mkdir ~/.dstask && git -C ~/.dstask init`.
 
 
-There is also an unofficial
-[Nix](https://nixos.org/nixos/packages.html?attr=dstask&channel=nixpkgs-unstable&query=dstask),
-[Arch AUR](https://aur.archlinux.org/packages/dstask/)
-and [FreeBSD](https://www.freshports.org/deskutils/dstask/) package!
+There are also unofficial packages for:
+* [Nix](https://nixos.org/nixos/packages.html?attr=dstask&channel=nixpkgs-unstable&query=dstask),
+* [Arch AUR](https://aur.archlinux.org/packages/dstask/)
+* [FreeBSD](https://www.freshports.org/deskutils/dstask/)
+* [Homebrew](https://formulae.brew.sh/formula/dstask)
 
 # Moving from Taskwarrior
 
