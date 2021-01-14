@@ -83,8 +83,8 @@ Requirements:
 
 
 There are also unofficial packages for:
-* [Nix](https://nixos.org/nixos/packages.html?attr=dstask&channel=nixpkgs-unstable&query=dstask),
-* [Arch AUR](https://aur.archlinux.org/packages/dstask/)
+* [Nix](https://nixos.org/nixos/packages.html?attr=dstask&channel=nixpkgs-unstable&query=dstask)
+* [Arch (AUR)](https://aur.archlinux.org/packages/dstask/)
 * [FreeBSD](https://www.freshports.org/deskutils/dstask/)
 * [Homebrew](https://formulae.brew.sh/formula/dstask)
 
