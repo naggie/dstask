@@ -220,6 +220,14 @@ func (ts *TaskSet) Filter(query Query) {
 	}
 }
 
+func (ts *TaskSet) FilterByStatus(status string) {
+	for _, task := range ts.tasks {
+		if task.Status != status {
+			task.filtered = true
+		}
+	}
+}
+
 func (ts *TaskSet) MustGetByID(id int) Task {
 	if ts.tasksByID[id] == nil {
 		ExitFail("No open task with ID %v exists.", id)

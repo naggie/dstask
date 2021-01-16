@@ -390,12 +390,17 @@ func CommandShowActive(conf Config, ctx, query Query) error {
 	if err != nil {
 		return err
 	}
+
+	query = query.Merge(ctx)
+	ts.Filter(query)
+	ts.FilterByStatus(STATUS_ACTIVE)
 	ts.DisplayByNext(ctx, true)
 
 	return nil
 }
 
-// CommandShowProjects prints a list of projects associated with all tasks.
+// CommandShowProjects prints a list of projects associated with all tasks,
+// ignoring context
 func CommandShowProjects(conf Config, ctx, query Query) error {
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
@@ -405,13 +410,17 @@ func CommandShowProjects(conf Config, ctx, query Query) error {
 	return nil
 }
 
-// CommandShowOpen prints a list of open tasks.
+// CommandShowOpen prints a list of open tasks without truncation
 func CommandShowOpen(conf Config, ctx, query Query) error {
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
 		return err
 	}
+
+	query = query.Merge(ctx)
+	ts.Filter(query)
 	ts.DisplayByNext(ctx, false)
+
 	return nil
 }
 
@@ -421,7 +430,12 @@ func CommandShowPaused(conf Config, ctx, query Query) error {
 	if err != nil {
 		return err
 	}
+
+	query = query.Merge(ctx)
+	ts.Filter(query)
+	ts.FilterByStatus(STATUS_PAUSED)
 	ts.DisplayByNext(ctx, true)
+
 	return nil
 }
 
@@ -431,7 +445,12 @@ func CommandShowResolved(conf Config, ctx, query Query) error {
 	if err != nil {
 		return err
 	}
+
+	query = query.Merge(ctx)
+	ts.Filter(query)
+	ts.FilterByStatus(STATUS_RESOLVED)
 	ts.DisplayByWeek()
+
 	return nil
 }
 
