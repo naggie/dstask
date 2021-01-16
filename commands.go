@@ -90,12 +90,16 @@ func CommandContext(conf Config, state State, ctx, query Query) error {
 // CommandDone marks a task as done.
 func CommandDone(conf Config, ctx, query Query) error {
 	if query.HasOperators() {
-		return errors.New("Operators not valid in this context. Specify ID(s) plus optional closing note.")
+		return errors.New("Operators not valid in this context.")
 	}
 
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
 		return err
+	}
+
+	if len(query.IDs) == 0 {
+		return errors.New("No ID(s) specified")
 	}
 
 	// iterate over IDs instead of filtering; it's clearer and enables us to
