@@ -121,16 +121,20 @@ func CommandDone(conf Config, ctx, query Query) error {
 
 // CommandEdit edits a task's metadata, such as status, projects, tags, etc.
 func CommandEdit(conf Config, ctx, query Query) error {
+	if query.HasOperators() {
+		return errors.New("Operators not valid in this context.")
+	}
+
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
 		return err
 	}
+
+	if len(query.IDs) == 0 {
+		return errors.New("No ID(s) specified")
+	}
+
 	for _, task := range ts.Tasks() {
-
-		// hide ID
-		originalID := task.ID
-		task.ID = 0
-
 		data, err := yaml.Marshal(&task)
 		if err != nil {
 			// TODO present error to user, specific error message is important
@@ -145,9 +149,6 @@ func CommandEdit(conf Config, ctx, query Query) error {
 			// TODO reattempt mechanism
 			return fmt.Errorf("failed to unmarshal task %s", task)
 		}
-
-		// re-add ID
-		task.ID = originalID
 
 		ts.MustUpdateTask(task)
 		ts.SavePendingChanges()
