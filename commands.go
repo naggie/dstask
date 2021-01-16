@@ -315,7 +315,17 @@ func CommandOpen(conf Config, ctx, query Query) error {
 	if err != nil {
 		return err
 	}
-	for _, task := range ts.Tasks() {
+
+	if len(query.IDs) == 0 {
+		return errors.New("No ID(s) specified")
+	}
+
+	if query.HasOperators() {
+		return errors.New("Operators not valid in this context.")
+	}
+
+	for _, id := range query.IDs {
+		task := ts.MustGetByID(id)
 		urls := xurls.Relaxed.FindAllString(task.Summary+" "+task.Notes, -1)
 		if len(urls) == 0 {
 			return fmt.Errorf("no URLs found in task %v", task.ID)
