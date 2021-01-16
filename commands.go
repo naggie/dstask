@@ -141,13 +141,16 @@ func CommandEdit(conf Config, ctx, query Query) error {
 			return fmt.Errorf("failed to marshal task %s", task)
 		}
 
-		edited := MustEditBytes(data, "yml")
-
-		err = yaml.Unmarshal(edited, &task)
-		if err != nil {
-			// TODO present error to user, specific error message is important
-			// TODO reattempt mechanism
-			return fmt.Errorf("failed to unmarshal task %s", task)
+		for {
+			edited := MustEditBytes(data, "yml")
+			err = yaml.Unmarshal(edited, &task)
+			if err == nil {
+				break
+			} else {
+				// edit is a special case that won't be used as part of an API,
+				// so it's OK to exit
+				ConfirmOrAbort("Failed to unmarshal %s\nTry again?", err)
+			}
 		}
 
 		ts.MustUpdateTask(task)
