@@ -215,14 +215,17 @@ func CommandLog(conf Config, ctx, query Query) error {
 	return nil
 }
 
-// CommandModify modifies a task.
+// CommandModify applies a change to tasks specified by ID, or all tasks in
+// current context
 func CommandModify(conf Config, ctx, query Query) error {
+	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
+	if err != nil {
+		return err
+	}
 
 	if len(query.IDs) == 0 {
-		ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
-		if err != nil {
-			return err
-		}
+		ts.Filter(ctx)
+
 		if StdoutIsTTY() {
 			ConfirmOrAbort("No IDs specified. Apply to all %d tasks in current ctx?", len(ts.Tasks()))
 		}
@@ -233,14 +236,9 @@ func CommandModify(conf Config, ctx, query Query) error {
 			ts.SavePendingChanges()
 			MustGitCommit(conf.Repo, "Modified %s", task)
 		}
-		return nil
 	} else {
-		ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
-		if err != nil {
-			return err
-		}
-
-		for _, task := range ts.Tasks() {
+		for _, id := range query.IDs {
+			task := ts.MustGetByID(id)
 			task.Modify(query)
 			ts.MustUpdateTask(task)
 			ts.SavePendingChanges()
