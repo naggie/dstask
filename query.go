@@ -165,34 +165,38 @@ func ParseQuery(args ...string) Query {
 	}
 }
 
-// used for applying a context to a new task
-func (query *Query) Merge(context Query) {
-	for _, tag := range context.Tags {
-		if !StrSliceContains(query.Tags, tag) {
-			query.Tags = append(query.Tags, tag)
+// used for applying a context to a new task. returns new Query, does not mutate.
+func (query *Query) Merge(q2 Query) Query {
+	// dereference to make a copy of this query
+	q := *query
+
+	for _, tag := range q2.Tags {
+		if !StrSliceContains(q.Tags, tag) {
+			q.Tags = append(q.Tags, tag)
 		}
 	}
 
-	for _, tag := range context.AntiTags {
-		if !StrSliceContains(query.AntiTags, tag) {
-			query.AntiTags = append(query.AntiTags, tag)
+	for _, tag := range q2.AntiTags {
+		if !StrSliceContains(q.AntiTags, tag) {
+			q.AntiTags = append(q.AntiTags, tag)
 		}
 	}
 
-	// TODO same for antitags
-	if context.Project != "" {
-		if query.Project != "" && query.Project != context.Project {
-			ExitFail("Could not apply context, project conflict")
+	if q2.Project != "" {
+		if q.Project != "" && q.Project != q2.Project {
+			ExitFail("Could not apply q2, project conflict")
 		} else {
-			query.Project = context.Project
+			q.Project = q2.Project
 		}
 	}
 
-	if context.Priority != "" {
-		if query.Priority != "" {
-			ExitFail("Could not apply context, priority conflict")
+	if q2.Priority != "" {
+		if q.Priority != "" {
+			ExitFail("Could not apply q2, priority conflict")
 		} else {
-			query.Priority = context.Priority
+			q.Priority = q2.Priority
 		}
 	}
+
+	return q
 }
