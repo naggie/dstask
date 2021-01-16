@@ -77,13 +77,13 @@ func (query Query) PrintContextDescription() {
 // returns true if the query has positive or negative projects/tags,
 // priorities, template
 func (query Query) HasOperators() bool {
-	return
-	len(query.Tags) > 0 ||
+	return (
+		len(query.Tags) > 0 ||
 		len(query.AntiTags) > 0 ||
 		query.Project != "" ||
 		len(query.AntiProjects) > 0 ||
 		query.Priority != "" ||
-		query.Template > 0
+		query.Template > 0 )
 }
 
 // ParseQuery parses the raw command line typed by the user.
@@ -168,31 +168,31 @@ func ParseQuery(args ...string) Query {
 // used for applying a context to a new task
 func (query *Query) Merge(context Query) {
 	for _, tag := range context.Tags {
-		if !StrSliceContains(cmdLine.Tags, tag) {
-			cmdLine.Tags = append(cmdLine.Tags, tag)
+		if !StrSliceContains(query.Tags, tag) {
+			query.Tags = append(query.Tags, tag)
 		}
 	}
 
 	for _, tag := range context.AntiTags {
-		if !StrSliceContains(cmdLine.AntiTags, tag) {
-			cmdLine.AntiTags = append(cmdLine.AntiTags, tag)
+		if !StrSliceContains(query.AntiTags, tag) {
+			query.AntiTags = append(query.AntiTags, tag)
 		}
 	}
 
 	// TODO same for antitags
 	if context.Project != "" {
-		if cmdLine.Project != "" && cmdLine.Project != context.Project {
+		if query.Project != "" && query.Project != context.Project {
 			ExitFail("Could not apply context, project conflict")
 		} else {
-			cmdLine.Project = context.Project
+			query.Project = context.Project
 		}
 	}
 
 	if context.Priority != "" {
-		if cmdLine.Priority != "" {
+		if query.Priority != "" {
 			ExitFail("Could not apply context, priority conflict")
 		} else {
-			cmdLine.Priority = context.Priority
+			query.Priority = context.Priority
 		}
 	}
 }

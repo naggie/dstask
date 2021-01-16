@@ -69,12 +69,9 @@ func Completions(conf Config, args []string, ctx Query) {
 		CMD_SHOW_RESOLVED,
 		CMD_SHOW_TEMPLATES,
 	}, query.Cmd) {
-		ts, err := NewTaskSet(
-			conf.Repo, conf.IDsFile, conf.StateFile,
-			WithStatuses(NON_RESOLVED_STATUSES...),
-		)
+		ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 		if err != nil {
-			log.Printf("completions script error: %v\n", err)
+			log.Printf("completions error: %v\n", err)
 			return
 
 		}
