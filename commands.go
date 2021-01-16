@@ -89,11 +89,19 @@ func CommandContext(conf Config, state State, ctx, query Query) error {
 
 // CommandDone marks a task as done.
 func CommandDone(conf Config, ctx, query Query) error {
+	if query.HasOperators() {
+		return errors.New("Operators not valid in this context. Specify ID(s) plus optional closing note.")
+	}
+
 	ts, err := LoadTaskSet( conf.Repo, conf.IDsFile, false)
 	if err != nil {
 		return err
 	}
-	for _, task := range ts.Tasks() {
+
+	// iterate over IDs instead of filtering; it's clearer and enables us to
+	// test each ID exists.
+	for _, id := range query.IDs {
+		task := ts.MustGetByID(id)
 		task.Status = STATUS_RESOLVED
 		task.Resolved = time.Now()
 		if query.Text != "" {
@@ -103,6 +111,7 @@ func CommandDone(conf Config, ctx, query Query) error {
 		ts.SavePendingChanges()
 		MustGitCommit(conf.Repo, "Resolved %s", task)
 	}
+
 	return nil
 }
 
