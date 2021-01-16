@@ -340,15 +340,21 @@ func CommandOpen(conf Config, ctx, query Query) error {
 
 // CommandRemove removes a task by ID from the database.
 func CommandRemove(conf Config, ctx, query Query) error {
-	if len(query.IDs) < 1 {
-		return errors.New("missing argument: id")
-	}
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
 		return err
 	}
 
-	for _, task := range ts.Tasks() {
+	if len(query.IDs) == 0 {
+		return errors.New("No ID(s) specified")
+	}
+
+	if query.HasOperators() {
+		return errors.New("Operators not valid in this context.")
+	}
+
+	for _, id := range query.IDs {
+		task := ts.MustGetByID(id)
 		fmt.Println(task)
 	}
 
@@ -356,7 +362,8 @@ func CommandRemove(conf Config, ctx, query Query) error {
 		ConfirmOrAbort("\nThe above %d task(s) will be deleted without checking subtasks. Continue?", len(ts.Tasks()))
 	}
 
-	for _, task := range ts.Tasks() {
+	for _, id := range query.IDs {
+		task := ts.MustGetByID(id)
 		// Mark our task for deletion
 		task.Deleted = true
 
