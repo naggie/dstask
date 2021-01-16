@@ -191,22 +191,26 @@ func CommandLog(conf Config, ctx, query Query) error {
 		return err
 	}
 
-	if query.Text != "" {
-		ctx.PrintContextDescription()
-		query.MergeContext(ctx)
-		task := Task{
-			WritePending: true,
-			Status:       STATUS_RESOLVED,
-			Summary:      query.Text,
-			Tags:         query.Tags,
-			Project:      query.Project,
-			Priority:     query.Priority,
-			Resolved:     time.Now(),
-		}
-		task = ts.LoadTask(task)
-		ts.SavePendingChanges()
-		MustGitCommit(conf.Repo, "Logged %s", task)
+	query = query.Merge(ctx)
+
+	if query.Text == "" {
+		return errors.New("Task description required")
 	}
+
+	ctx.PrintContextDescription()
+	query.MergeContext(ctx)
+	task := Task{
+		WritePending: true,
+		Status:       STATUS_RESOLVED,
+		Summary:      query.Text,
+		Tags:         query.Tags,
+		Project:      query.Project,
+		Priority:     query.Priority,
+		Resolved:     time.Now(),
+	}
+	task = ts.LoadTask(task)
+	ts.SavePendingChanges()
+	MustGitCommit(conf.Repo, "Logged %s", task)
 
 	return nil
 }
