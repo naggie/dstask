@@ -223,6 +223,10 @@ func CommandModify(conf Config, ctx, query Query) error {
 		return err
 	}
 
+	if !query.HasOperators() {
+		return errors.New("No operations specified")
+	}
+
 	if len(query.IDs) == 0 {
 		ts.Filter(ctx)
 
