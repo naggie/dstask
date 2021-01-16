@@ -13,6 +13,10 @@ import (
 
 // CommandAdd adds a new task to the task database.
 func CommandAdd(conf Config, ctx, query Query) error {
+	if query.Text == "" && query.Template == 0 {
+		return errors.New("Task description or template required")
+	}
+
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
 		return err
