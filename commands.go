@@ -275,8 +275,17 @@ func CommandNote(conf Config, ctx, query Query) error {
 		return err
 	}
 
-	for _, task := range ts.Tasks() {
-		// If stdout is a TTY, we open the editor
+	if len(query.IDs) == 0 {
+		return errors.New("No ID(s) specified")
+	}
+
+	if query.HasOperators() {
+		return errors.New("Operators not valid in this context.")
+	}
+
+	for _, id := range query.IDs {
+		task := ts.MustGetByID(id)
+		// If stdout is a TTY, we may open the editor
 		if StdoutIsTTY() {
 			if query.Text == "" {
 				task.Notes = string(MustEditBytes([]byte(task.Notes), "md"))
