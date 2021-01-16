@@ -134,7 +134,8 @@ func CommandEdit(conf Config, ctx, query Query) error {
 		return errors.New("No ID(s) specified")
 	}
 
-	for _, task := range ts.Tasks() {
+	for _, id := range query.IDs {
+		task := ts.MustGetByID(id)
 		data, err := yaml.Marshal(&task)
 		if err != nil {
 			// TODO present error to user, specific error message is important
