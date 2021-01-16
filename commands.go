@@ -257,10 +257,12 @@ func CommandModify(conf Config, ctx, query Query) error {
 // This is the default command.
 func CommandNext(conf Config, ctx, query Query) error {
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
-
 	if err != nil {
 		return err
 	}
+
+	query = query.Merge(ctx)
+	ts.Filter(query)
 	ts.DisplayByNext(ctx, true)
 
 	return nil
