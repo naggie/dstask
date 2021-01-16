@@ -93,13 +93,13 @@ func CommandDone(conf Config, ctx, query Query) error {
 		return errors.New("Operators not valid in this context.")
 	}
 
+	if len(query.IDs) == 0 {
+		return errors.New("No ID(s) specified")
+	}
+
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
 		return err
-	}
-
-	if len(query.IDs) == 0 {
-		return errors.New("No ID(s) specified")
 	}
 
 	// iterate over IDs instead of filtering; it's clearer and enables us to
@@ -125,13 +125,13 @@ func CommandEdit(conf Config, ctx, query Query) error {
 		return errors.New("Operators not valid in this context.")
 	}
 
+	if len(query.IDs) == 0 {
+		return errors.New("No ID(s) specified")
+	}
+
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
 		return err
-	}
-
-	if len(query.IDs) == 0 {
-		return errors.New("No ID(s) specified")
 	}
 
 	for _, id := range query.IDs {
@@ -185,17 +185,16 @@ func CommandImportTW(conf Config, ctx, query Query) error {
 // CommandLog logs a completed task immediately. Useful for tracking tasks after
 // they're already completed.
 func CommandLog(conf Config, ctx, query Query) error {
-	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
+	if query.Text == "" {
+		return errors.New("Task description required")
+	}
 
+	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
 		return err
 	}
 
 	query = query.Merge(ctx)
-
-	if query.Text == "" {
-		return errors.New("Task description required")
-	}
 
 	ctx.PrintContextDescription()
 	query.MergeContext(ctx)
@@ -218,13 +217,13 @@ func CommandLog(conf Config, ctx, query Query) error {
 // CommandModify applies a change to tasks specified by ID, or all tasks in
 // current context
 func CommandModify(conf Config, ctx, query Query) error {
+	if !query.HasOperators() {
+		return errors.New("No operations specified")
+	}
+
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
 		return err
-	}
-
-	if !query.HasOperators() {
-		return errors.New("No operations specified")
 	}
 
 	if len(query.IDs) == 0 {
@@ -270,17 +269,17 @@ func CommandNext(conf Config, ctx, query Query) error {
 
 // CommandNote edits or prints the markdown note associated with the task.
 func CommandNote(conf Config, ctx, query Query) error {
-	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
-	if err != nil {
-		return err
-	}
-
 	if len(query.IDs) == 0 {
 		return errors.New("No ID(s) specified")
 	}
 
 	if query.HasOperators() {
 		return errors.New("Operators not valid in this context.")
+	}
+
+	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
+	if err != nil {
+		return err
 	}
 
 	for _, id := range query.IDs {
@@ -311,17 +310,17 @@ func CommandNote(conf Config, ctx, query Query) error {
 
 // CommandOpen opens a task URL in the browser, if the task has a URL.
 func CommandOpen(conf Config, ctx, query Query) error {
-	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
-	if err != nil {
-		return err
-	}
-
 	if len(query.IDs) == 0 {
 		return errors.New("No ID(s) specified")
 	}
 
 	if query.HasOperators() {
 		return errors.New("Operators not valid in this context.")
+	}
+
+	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
+	if err != nil {
+		return err
 	}
 
 	for _, id := range query.IDs {
@@ -340,17 +339,17 @@ func CommandOpen(conf Config, ctx, query Query) error {
 
 // CommandRemove removes a task by ID from the database.
 func CommandRemove(conf Config, ctx, query Query) error {
-	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
-	if err != nil {
-		return err
-	}
-
 	if len(query.IDs) == 0 {
 		return errors.New("No ID(s) specified")
 	}
 
 	if query.HasOperators() {
 		return errors.New("Operators not valid in this context.")
+	}
+
+	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
+	if err != nil {
+		return err
 	}
 
 	for _, id := range query.IDs {
