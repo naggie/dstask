@@ -76,9 +76,9 @@ func (query Query) PrintContextDescription() {
 
 // returns true if the query has positive or negative projects/tags,
 // priorities, template
-func (query Query) HasOperators bool {
-	return \
-		len(query.Tags) > 0 ||
+func (query Query) HasOperators() bool {
+	return
+	len(query.Tags) > 0 ||
 		len(query.AntiTags) > 0 ||
 		query.Project != "" ||
 		len(query.AntiProjects) > 0 ||
