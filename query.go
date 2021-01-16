@@ -164,3 +164,35 @@ func ParseQuery(args ...string) Query {
 		IgnoreContext: ignoreContext,
 	}
 }
+
+// used for applying a context to a new task
+func (query *Query) Merge(context Query) {
+	for _, tag := range context.Tags {
+		if !StrSliceContains(cmdLine.Tags, tag) {
+			cmdLine.Tags = append(cmdLine.Tags, tag)
+		}
+	}
+
+	for _, tag := range context.AntiTags {
+		if !StrSliceContains(cmdLine.AntiTags, tag) {
+			cmdLine.AntiTags = append(cmdLine.AntiTags, tag)
+		}
+	}
+
+	// TODO same for antitags
+	if context.Project != "" {
+		if cmdLine.Project != "" && cmdLine.Project != context.Project {
+			ExitFail("Could not apply context, project conflict")
+		} else {
+			cmdLine.Project = context.Project
+		}
+	}
+
+	if context.Priority != "" {
+		if cmdLine.Priority != "" {
+			ExitFail("Could not apply context, priority conflict")
+		} else {
+			cmdLine.Priority = context.Priority
+		}
+	}
+}
