@@ -21,7 +21,6 @@ type TaskSet struct {
 
 	// program metadata
 	idsFilePath   string
-	stateFilePath string
 	repoPath      string
 }
 
