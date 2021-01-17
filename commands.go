@@ -449,6 +449,7 @@ func CommandShowResolved(conf Config, ctx, query Query) error {
 	}
 
 	query = query.Merge(ctx)
+	ts.UnHide()
 	ts.Filter(query)
 	ts.FilterByStatus(STATUS_RESOLVED)
 	ts.DisplayByWeek()
