@@ -125,6 +125,17 @@ func StrSliceContains(haystack []string, needle string) bool {
 	return false
 }
 
+// generics pls...
+func IntSliceContains(haystack []int, needle int) bool {
+	for _, item := range haystack {
+		if item == needle {
+			return true
+		}
+	}
+
+	return false
+}
+
 func StrSliceContainsAll(subset, superset []string) bool {
 	for _, have := range subset {
 		foundInSuperset := false

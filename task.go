@@ -139,13 +139,8 @@ func (task Task) String() string {
 }
 
 func (task *Task) MatchesFilter(query Query) bool {
-	// If an ID is specified, OR logic is used
-	for _, id := range query.IDs {
-		if id == task.ID {
-			// one or more ID specified and match found, continue filtering
-			break
-		}
-		// IDs were specified but no match
+	// IDs were specified but none match (OR logic)
+	if ! IntSliceContains(query.IDs, task.ID) {
 		return false
 	}
 
