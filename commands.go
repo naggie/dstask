@@ -399,9 +399,13 @@ func CommandShowActive(conf Config, ctx, query Query) error {
 	return nil
 }
 
-// CommandShowProjects prints a list of projects associated with all tasks,
-// ignoring context
+// CommandShowProjects prints a list of projects associated with all tasks.
+// Ignores context/query for valid output
 func CommandShowProjects(conf Config, ctx, query Query) error {
+	if len(query.IDs) > 0 || query.HasOperators() {
+		return errors.New("Query/context not supported for show-projects")
+	}
+
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
 		return err
@@ -461,6 +465,10 @@ func CommandShowTags(conf Config, ctx, query Query) error {
 	if err != nil {
 		return err
 	}
+
+	query = query.Merge(ctx)
+	ts.Filter(query)
+
 	for tag := range ts.GetTags() {
 		fmt.Println(tag)
 	}
