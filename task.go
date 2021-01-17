@@ -140,7 +140,7 @@ func (task Task) String() string {
 
 func (task *Task) MatchesFilter(query Query) bool {
 	// IDs were specified but none match (OR logic)
-	if ! IntSliceContains(query.IDs, task.ID) {
+	if len(query.IDs) > 0 && !IntSliceContains(query.IDs, task.ID) {
 		return false
 	}
 
