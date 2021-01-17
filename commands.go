@@ -512,7 +512,7 @@ func CommandStart(conf Config, ctx, query Query) error {
 		return err
 	}
 
-	if query.Templates > 0 {
+	if query.Template > 0 {
 		return errors.New("templates not yet supported for start command")
 	}
 
