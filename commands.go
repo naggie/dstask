@@ -94,11 +94,11 @@ func CommandContext(conf Config, state State, ctx, query Query) error {
 // CommandDone marks a task as done.
 func CommandDone(conf Config, ctx, query Query) error {
 	if query.HasOperators() {
-		return errors.New("Operators not valid in this context.")
+		return errors.New("operators not valid in this context")
 	}
 
 	if len(query.IDs) == 0 {
-		return errors.New("No ID(s) specified")
+		return errors.New("no ID(s) specified")
 	}
 
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
@@ -126,11 +126,11 @@ func CommandDone(conf Config, ctx, query Query) error {
 // CommandEdit edits a task's metadata, such as status, projects, tags, etc.
 func CommandEdit(conf Config, ctx, query Query) error {
 	if query.HasOperators() {
-		return errors.New("Operators not valid in this context.")
+		return errors.New("operators not valid in this context")
 	}
 
 	if len(query.IDs) == 0 {
-		return errors.New("No ID(s) specified")
+		return errors.New("no ID(s) specified")
 	}
 
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
@@ -220,7 +220,7 @@ func CommandLog(conf Config, ctx, query Query) error {
 // current context
 func CommandModify(conf Config, ctx, query Query) error {
 	if !query.HasOperators() {
-		return errors.New("No operations specified")
+		return errors.New("no operations specified")
 	}
 
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
@@ -232,7 +232,7 @@ func CommandModify(conf Config, ctx, query Query) error {
 		ts.Filter(ctx)
 
 		if StdoutIsTTY() {
-			ConfirmOrAbort("No IDs specified. Apply to all %d tasks in current ctx?", len(ts.Tasks()))
+			ConfirmOrAbort("no IDs specified. Apply to all %d tasks in current ctx?", len(ts.Tasks()))
 		}
 
 		for _, task := range ts.Tasks() {
@@ -265,7 +265,7 @@ func CommandNext(conf Config, ctx, query Query) error {
 	if len(query.IDs) > 0 {
 		// addressing task by ID, ignores context
 		if query.HasOperators() {
-			return errors.New("Operators not valid when addressing task by ID")
+			return errors.New("operators not valid when addressing task by ID")
 		}
 	} else {
 		// apply context
@@ -280,11 +280,11 @@ func CommandNext(conf Config, ctx, query Query) error {
 // CommandNote edits or prints the markdown note associated with the task.
 func CommandNote(conf Config, ctx, query Query) error {
 	if len(query.IDs) == 0 {
-		return errors.New("No ID(s) specified")
+		return errors.New("no ID(s) specified")
 	}
 
 	if query.HasOperators() {
-		return errors.New("Operators not valid in this context.")
+		return errors.New("operators not valid in this context")
 	}
 
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
@@ -321,11 +321,11 @@ func CommandNote(conf Config, ctx, query Query) error {
 // CommandOpen opens a task URL in the browser, if the task has a URL.
 func CommandOpen(conf Config, ctx, query Query) error {
 	if len(query.IDs) == 0 {
-		return errors.New("No ID(s) specified")
+		return errors.New("no ID(s) specified")
 	}
 
 	if query.HasOperators() {
-		return errors.New("Operators not valid in this context.")
+		return errors.New("operators not valid in this context")
 	}
 
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
@@ -350,11 +350,11 @@ func CommandOpen(conf Config, ctx, query Query) error {
 // CommandRemove removes a task by ID from the database.
 func CommandRemove(conf Config, ctx, query Query) error {
 	if len(query.IDs) == 0 {
-		return errors.New("No ID(s) specified")
+		return errors.New("no ID(s) specified")
 	}
 
 	if query.HasOperators() {
-		return errors.New("Operators not valid in this context.")
+		return errors.New("operators not valid in this context")
 	}
 
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
@@ -409,7 +409,7 @@ func CommandShowActive(conf Config, ctx, query Query) error {
 // Ignores context/query for valid output
 func CommandShowProjects(conf Config, ctx, query Query) error {
 	if len(query.IDs) > 0 || query.HasOperators() {
-		return errors.New("Query/context not supported for show-projects")
+		return errors.New("query/context not supported for show-projects")
 	}
 
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
@@ -502,7 +502,7 @@ func CommandShowTemplates(conf Config, ctx, query Query) error {
 // no context / query valid
 func CommandShowUnorganised(conf Config, ctx, query Query) error {
 	if len(query.IDs) > 0 || query.HasOperators() {
-		return errors.New("Query/context not used for show-unorganised")
+		return errors.New("query/context not used for show-unorganised")
 	}
 
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
@@ -560,7 +560,7 @@ func CommandStart(conf Config, ctx, query Query) error {
 		ts.SavePendingChanges()
 		MustGitCommit(conf.Repo, "Added and started %s", task)
 	} else {
-		return errors.New("Nothing to do. Specify an ID or describe a task")
+		return errors.New("nothing to do -- specify an ID or describe a task")
 	}
 	return nil
 
@@ -574,11 +574,11 @@ func CommandStop(conf Config, ctx, query Query) error {
 	}
 
 	if query.HasOperators() {
-		return errors.New("Operators not valid in this context.")
+		return errors.New("operators not valid in this context")
 	}
 
 	if len(query.IDs) == 0 {
-		return errors.New("No ID(s) specified")
+		return errors.New("no ID(s) specified")
 	}
 
 	for _, id := range query.IDs {
