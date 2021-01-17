@@ -89,7 +89,24 @@ func LoadTaskSet(repoPath, idsFilePath string, includeResolved bool) (*TaskSet, 
 		}
 	}
 
+	// hide some tasks by default. This is useful for things like templates and
+	// recurring tasks which are shown either directly or with show- commands
+	for _, task := range ts.tasks {
+		if StrSliceContains(HIDDEN_STATUSES, task.Status) {
+			task.filtered = true
+		}
+	}
+
 	return &ts, nil
+}
+
+
+func (ts *TaskSet) UnHide() {
+	for _, task := range ts.tasks {
+		if StrSliceContains(HIDDEN_STATUSES, task.Status) {
+			task.filtered = false
+		}
+	}
 }
 
 func (ts *TaskSet) sortByCreated(dir SortByDirection) {

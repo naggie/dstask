@@ -483,12 +483,21 @@ func CommandShowTemplates(conf Config, ctx, query Query) error {
 		return err
 	}
 
+	ts.UnHide()
+	ts.FilterByStatus(STATUS_TEMPLATE)
+	query = query.Merge(ctx)
+	ts.Filter(query)
 	ts.DisplayByNext(ctx, false)
 	return nil
 }
 
 // CommandShowUnorganised prints a list of tasks without tags or projects.
+// no context / query valid
 func CommandShowUnorganised(conf Config, ctx, query Query) error {
+	if len(query.IDs) > 0 || query.HasOperators() {
+		return errors.New("Query/context not used for show-unorganised")
+	}
+
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
 		return err
