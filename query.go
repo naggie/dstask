@@ -77,13 +77,12 @@ func (query Query) PrintContextDescription() {
 // returns true if the query has positive or negative projects/tags,
 // priorities, template
 func (query Query) HasOperators() bool {
-	return (
-		len(query.Tags) > 0 ||
+	return (len(query.Tags) > 0 ||
 		len(query.AntiTags) > 0 ||
 		query.Project != "" ||
 		len(query.AntiProjects) > 0 ||
 		query.Priority != "" ||
-		query.Template > 0 )
+		query.Template > 0)
 }
 
 // ParseQuery parses the raw command line typed by the user.

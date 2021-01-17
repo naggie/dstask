@@ -100,7 +100,6 @@ func LoadTaskSet(repoPath, idsFilePath string, includeResolved bool) (*TaskSet, 
 	return &ts, nil
 }
 
-
 func (ts *TaskSet) UnHide() {
 	for _, task := range ts.tasks {
 		if StrSliceContains(HIDDEN_STATUSES, task.Status) {
