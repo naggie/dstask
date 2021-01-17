@@ -24,7 +24,7 @@ func CommandAdd(conf Config, ctx, query Query) error {
 	if query.Template > 0 {
 		var taskSummary string
 		tt := ts.MustGetByID(query.Template)
-		query.MergeContext(ctx)
+		query = query.Merge(ctx)
 
 		if query.Text != "" {
 			taskSummary = query.Text
@@ -55,7 +55,7 @@ func CommandAdd(conf Config, ctx, query Query) error {
 		}
 	} else if query.Text != "" {
 		ctx.PrintContextDescription()
-		query.MergeContext(ctx)
+		query = query.Merge(ctx)
 		task := Task{
 			WritePending: true,
 			Status:       STATUS_PENDING,
@@ -198,10 +198,8 @@ func CommandLog(conf Config, ctx, query Query) error {
 		return err
 	}
 
-	query = query.Merge(ctx)
-
 	ctx.PrintContextDescription()
-	query.MergeContext(ctx)
+	query = query.Merge(ctx)
 	task := Task{
 		WritePending: true,
 		Status:       STATUS_RESOLVED,
@@ -506,7 +504,8 @@ func CommandShowUnorganised(conf Config, ctx, query Query) error {
 	return nil
 }
 
-// CommandStart marks a task as started.
+// CommandStart marks an existing task as started, by ID. If no ID is
+// specified, it creates a new task and starts it.
 func CommandStart(conf Config, ctx, query Query) error {
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
@@ -531,7 +530,7 @@ func CommandStart(conf Config, ctx, query Query) error {
 		}
 	} else if query.Text != "" {
 		// create a new task that is already active (started)
-		query.MergeContext(ctx)
+		query = query.Merge(ctx)
 		task := Task{
 			WritePending: true,
 			Status:       STATUS_ACTIVE,
@@ -591,7 +590,7 @@ func CommandTemplate(conf Config, ctx, query Query) error {
 			MustGitCommit(conf.Repo, "Changed %s to Template", task)
 		}
 	} else if query.Text != "" {
-		query.MergeContext(ctx)
+		query = query.Merge(ctx)
 		task := Task{
 			WritePending: true,
 			Status:       STATUS_TEMPLATE,

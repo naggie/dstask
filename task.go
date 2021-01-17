@@ -138,38 +138,6 @@ func (task Task) String() string {
 	return task.Summary
 }
 
-// used for applying a context to a new task
-func (query *Query) MergeContext(context Query) {
-	for _, tag := range context.Tags {
-		if !StrSliceContains(query.Tags, tag) {
-			query.Tags = append(query.Tags, tag)
-		}
-	}
-
-	for _, tag := range context.AntiTags {
-		if !StrSliceContains(query.AntiTags, tag) {
-			query.AntiTags = append(query.AntiTags, tag)
-		}
-	}
-
-	// TODO same for antitags
-	if context.Project != "" {
-		if query.Project != "" && query.Project != context.Project {
-			ExitFail("Could not apply context, project conflict")
-		} else {
-			query.Project = context.Project
-		}
-	}
-
-	if context.Priority != "" {
-		if query.Priority != "" {
-			ExitFail("Could not apply context, priority conflict")
-		} else {
-			query.Priority = context.Priority
-		}
-	}
-}
-
 func (task *Task) MatchesFilter(query Query) bool {
 	// If an ID is specified, OR logic is used
 	for _, id := range query.IDs {
