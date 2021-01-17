@@ -14,7 +14,7 @@ install:
 	cp dist/dstask-import /usr/local/bin
 
 test:
-	go test ./...
+	go test -mod=vendor ./...
 
 update_deps:
 	go get
