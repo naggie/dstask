@@ -195,7 +195,7 @@ func (p *Project) Style() RowStyle {
 }
 
 func (ts TaskSet) DisplayByWeek() {
-	ts.SortByResolved(Descending)
+	ts.SortByResolved(Ascending)
 
 	if isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd()) {
 		w, _ := MustGetTermSize()
