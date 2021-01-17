@@ -20,8 +20,8 @@ type TaskSet struct {
 	tasksByUUID map[string]*Task
 
 	// program metadata
-	idsFilePath   string
-	repoPath      string
+	idsFilePath string
+	repoPath    string
 }
 
 type Project struct {
