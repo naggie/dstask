@@ -107,7 +107,7 @@ func CommandDone(conf Config, ctx, query Query) error {
 	}
 
 	// iterate over IDs instead of filtering; it's clearer and enables us to
-	// test each ID exists.
+	// test each ID exists, and ignore context/operators
 	for _, id := range query.IDs {
 		task := ts.MustGetByID(id)
 		task.Status = STATUS_RESOLVED
@@ -511,6 +511,11 @@ func CommandStart(conf Config, ctx, query Query) error {
 	if err != nil {
 		return err
 	}
+
+	if query.Templates > 0 {
+		return errors.New("templates not yet supported for start command")
+	}
+
 	if len(query.IDs) > 0 {
 		// start given tasks by IDs
 		for _, id := range query.IDs {
@@ -543,6 +548,8 @@ func CommandStart(conf Config, ctx, query Query) error {
 		task = ts.LoadTask(task)
 		ts.SavePendingChanges()
 		MustGitCommit(conf.Repo, "Added and started %s", task)
+	} else {
+		return errors.New("Nothing to do. Specify an ID or describe a task")
 	}
 	return nil
 
@@ -554,7 +561,17 @@ func CommandStop(conf Config, ctx, query Query) error {
 	if err != nil {
 		return err
 	}
-	for _, task := range ts.Tasks() {
+
+	if query.HasOperators() {
+		return errors.New("Operators not valid in this context.")
+	}
+
+	if len(query.IDs) == 0 {
+		return errors.New("No ID(s) specified")
+	}
+
+	for _, id := range query.IDs {
+		task := ts.MustGetByID(id)
 		task.Status = STATUS_PAUSED
 		if query.Text != "" {
 			task.Notes += "\n" + query.Text
