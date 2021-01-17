@@ -108,6 +108,14 @@ var ALL_STATUSES = []string{
 	STATUS_TEMPLATE,
 }
 
+// statuses which are hidden by default (direct addressing or show- commands
+// needed to see them)
+var HIDDEN_STATUSES = []string{
+	STATUS_RECURRING,
+	STATUS_RESOLVED,
+	STATUS_TEMPLATE,
+}
+
 // incomplete until all statuses are implemented
 var VALID_STATUS_TRANSITIONS = [][]string{
 	{STATUS_PENDING, STATUS_ACTIVE},
