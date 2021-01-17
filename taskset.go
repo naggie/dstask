@@ -244,6 +244,14 @@ func (ts *TaskSet) FilterByStatus(status string) {
 	}
 }
 
+func (ts *TaskSet) FilterOrganised() {
+	for _, task := range ts.tasks {
+		if len(task.Tags) > 0 || task.Project != "" {
+			task.filtered = true
+		}
+	}
+}
+
 func (ts *TaskSet) MustGetByID(id int) Task {
 	if ts.tasksByID[id] == nil {
 		ExitFail("No open task with ID %v exists.", id)

@@ -509,6 +509,8 @@ func CommandShowUnorganised(conf Config, ctx, query Query) error {
 	if err != nil {
 		return err
 	}
+
+	ts.FilterOrganised()
 	ts.DisplayByNext(ctx, true)
 	return nil
 }
