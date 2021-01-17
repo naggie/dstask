@@ -126,11 +126,6 @@ func main() {
 			dstask.ExitFail(err.Error())
 		}
 
-	case dstask.CMD_IMPORT_TW:
-		if err := dstask.CommandImportTW(conf, ctx, query); err != nil {
-			dstask.ExitFail(err.Error())
-		}
-
 	case dstask.CMD_SHOW_PROJECTS:
 		if err := dstask.CommandShowProjects(conf, ctx, query); err != nil {
 			dstask.ExitFail(err.Error())

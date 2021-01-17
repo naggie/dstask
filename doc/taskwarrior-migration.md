@@ -1,15 +1,10 @@
 # Moving from Taskwarrior
 
-Before installing dstask, you may want to export your taskwarrior database:
+## Importing data
 
-    task export > taskwarrior.json
+Please see the [dstask-import tw instructions](doc/dstask-import.md#taskwarrior) to import taskwarrior tasks.
 
-After un-installing taskwarrior and installing dstask, to import the tasks to
-dstask after initialising the dstask database with git:
-
-    mkdir ~/.dstask && git -C ~/.dstask init
-    dstask import-tw < taskwarrior.json
-
+## Using dstask
 
 Commands and syntax are deliberately very similar to taskwarrior. Here are the exceptions:
 
@@ -20,4 +15,3 @@ Commands and syntax are deliberately very similar to taskwarrior. Here are the e
 
 [1]: https://github.com/naggie/dstask/releases/latest
 
-Note that the import process is lossy due to subtle differences between taskwarrior and dstask.

@@ -206,12 +206,6 @@ this command.
 
 Show a breakdown of projects with progress information
 `
-	case CMD_IMPORT_TW:
-		helpStr = `Usage: cat export.json | task import-tw
-
-Import tasks from a taskwarrior json dump. The "task export" taskwarrior
-command can be used for this.
-`
 	default:
 		helpStr = `Usage: dstask [id...] <cmd> [task summary/filter]
 

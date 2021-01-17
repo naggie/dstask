@@ -33,6 +33,7 @@ Features:
  * `open` command -- **open URLs found in specified task** (including notes) in the browser
  * zsh/bash completion for speed
  * A single statically-linked binary
+ * [import tool](doc/dstask-import.md) which can import GitHub issues or taskwarrior tasks.
 
 Non-features:
 
@@ -81,14 +82,15 @@ Requirements:
 1. Create or clone a ~/.dstask git repository for the data, if you haven't already: `mkdir ~/.dstask && git -C ~/.dstask init`.
 
 
-There is also an unofficial
-[Nix](https://nixos.org/nixos/packages.html?attr=dstask&channel=nixpkgs-unstable&query=dstask),
-[Arch AUR](https://aur.archlinux.org/packages/dstask/)
-and [FreeBSD](https://www.freshports.org/deskutils/dstask/) package!
+There are also unofficial packages for:
+* [Nix](https://nixos.org/nixos/packages.html?attr=dstask&channel=nixpkgs-unstable&query=dstask)
+* [Arch (AUR)](https://aur.archlinux.org/packages/dstask/)
+* [FreeBSD](https://www.freshports.org/deskutils/dstask/)
+* [Homebrew](https://formulae.brew.sh/formula/dstask)
 
 # Moving from Taskwarrior
 
-See [etc/MIGRATION.md](etc/MIGRATION.md)
+We have a [migration guide](doc/taskwarrior-migration.md) to make the transition from taskwarrior to dstask a simple process.
 
 # Future of dstask
 

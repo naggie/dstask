@@ -1,7 +1,33 @@
 # dstask-import
 
-dstask-import is a tool to synchronize between external services and dstask.
-At this point it only supports syncing from GitHub.
+usage: `dstask-import github|tw`
+
+dstask-import is a tool to synchronize between external services or tools, and dstask.
+At this point it supports importing from:
+
+* taskwarrior
+* GitHub
+
+See below for details on each
+
+# Taskwarrior
+
+The import functionality is designed to aid with the transition from using taskwarrior to dstask.
+
+Before installing dstask, you may want to export your taskwarrior database:
+
+    task export > taskwarrior.json
+
+After un-installing taskwarrior and installing dstask, to import the tasks to
+dstask after initialising the dstask database with git:
+
+    mkdir ~/.dstask && git -C ~/.dstask init
+    dstask-import tw < taskwarrior.json
+
+Note that the import process is lossy due to subtle differences between taskwarrior and dstask.
+
+## GitHub
+
 The goal currently is to have tasks in dstask that represent tasks in GitHub,
 such that a dstask-based workflow (tracking, managing and prioritizing tasks)
 can take into account work that is defined in GitHub, although the goal is not to "replace" GitHub,
@@ -14,7 +40,7 @@ Specifically:
 * You are expected to close issues in GitHub and then sync to get the task closed in dstask.
 * Pull Requests are currently not supported.
 
-## Configuration
+### Configuration
 
 First you need to obtain a token. Go to [your token settings in Github](https://github.com/settings/tokens) and hit "Generate new token".
 
@@ -55,7 +81,7 @@ Note:
 For templates expansion see templates section below.
 
 
-## Properties mapping in detail
+### Properties mapping in detail
 
 As a reminder, here are how issues/PR's and tasks are modeled on Github and within dstask respectively.
 The 3rd column describes how each field of the synced task is set
@@ -82,7 +108,7 @@ The 3rd column describes how each field of the synced task is set
 | comments          | notes                                      | template expansion (see below). local non-empty pre-existing notes are preserved               |
 
 
-## Template expansion
+### Template expansion
 
 As you saw above, each Github section declares a template.
 This template declares how certain fields get populated.
