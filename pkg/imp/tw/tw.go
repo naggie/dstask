@@ -15,10 +15,7 @@ import (
 
 // Do imports a taskwarrior database.
 func Do(conf dstask.Config) error {
-	ts, err := dstask.NewTaskSet(
-		conf.Repo, conf.IDsFile, conf.StateFile,
-		dstask.WithStatuses(dstask.ALL_STATUSES...),
-	)
+	ts, err := dstask.LoadTaskSet(conf.Repo, conf.IDsFile, true)
 	if err != nil {
 		return err
 	}
