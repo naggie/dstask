@@ -51,7 +51,6 @@ git -C $UPSTREAM_BARE_REPO init --bare
 ./dstask log something
 ./dstask +foo
 ./dstask note 1 this is a note
-./dstask note > /dev/null
 ./dstask context +foo
 ./dstask next
 ./dstask 1 done
