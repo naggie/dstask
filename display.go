@@ -15,8 +15,8 @@ import (
 
 // DisplayByNext renders the TaskSet's array of tasks.
 func (ts *TaskSet) DisplayByNext(ctx Query, truncate bool) error {
-	ts.sortByCreated(Descending)
-	ts.sortByPriority(Ascending)
+	ts.SortByCreated(Descending)
+	ts.SortByPriority(Ascending)
 	if StdoutIsTTY() {
 		ctx.PrintContextDescription()
 		err := ts.renderTable(truncate)
@@ -195,7 +195,7 @@ func (p *Project) Style() RowStyle {
 }
 
 func (ts TaskSet) DisplayByWeek() {
-	ts.sortByResolved(Descending)
+	ts.SortByResolved(Descending)
 
 	if isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd()) {
 		w, _ := MustGetTermSize()

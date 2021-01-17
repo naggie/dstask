@@ -109,7 +109,7 @@ func (ts *TaskSet) UnHide() {
 	}
 }
 
-func (ts *TaskSet) sortByCreated(dir SortByDirection) {
+func (ts *TaskSet) SortByCreated(dir SortByDirection) {
 	switch dir {
 	case Ascending:
 		// Oldest first
@@ -120,7 +120,7 @@ func (ts *TaskSet) sortByCreated(dir SortByDirection) {
 	}
 }
 
-func (ts *TaskSet) sortByPriority(dir SortByDirection) {
+func (ts *TaskSet) SortByPriority(dir SortByDirection) {
 	switch dir {
 	case Ascending:
 		// P1 first
@@ -131,7 +131,7 @@ func (ts *TaskSet) sortByPriority(dir SortByDirection) {
 	}
 }
 
-func (ts *TaskSet) sortByResolved(dir SortByDirection) {
+func (ts *TaskSet) SortByResolved(dir SortByDirection) {
 	switch dir {
 	case Ascending:
 		// Oldest resolved first
