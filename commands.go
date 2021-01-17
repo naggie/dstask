@@ -262,7 +262,15 @@ func CommandNext(conf Config, ctx, query Query) error {
 		return err
 	}
 
-	query = query.Merge(ctx)
+	if len(query.IDs) > 0 {
+		// addressing task by ID, ignores context
+		if query.HasOperators() {
+			return errors.New("Operators not valid when addressing task by ID")
+		}
+	} else {
+		// apply context
+		query = query.Merge(ctx)
+	}
 	ts.Filter(query)
 	ts.DisplayByNext(ctx, true)
 
