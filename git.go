@@ -2,10 +2,10 @@ package dstask
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
-	"io/ioutil"
 )
 
 // RunGitCmd shells out to git in the context of the dstask repo.
@@ -34,7 +34,7 @@ func MustGitCommit(repoPath, format string, a ...interface{}) {
 	fmt.Printf("\033[38;5;245m")
 
 	// needed before add cmd, see diff-index command
-	bins, _ := ioutil.ReadDir(path.Join(repoPath, ".git/objects"));
+	bins, _ := ioutil.ReadDir(path.Join(repoPath, ".git/objects"))
 	brandNew := len(bins) <= 2
 
 	// tell git to stage (all) changes
@@ -79,7 +79,7 @@ func EnsureRepoExists(repoPath string) {
 		ConfirmOrAbort("Could not find dstask repository at ~/.dstask -- create?")
 		MustRunGitCmd(repoPath, "init")
 		fmt.Println("\nAdd a remote repository with:\n\n\tdstask git remote add origin <repo>")
-		fmt.Println()  // must be a separate call else compiler complains of redundant \n
+		fmt.Println() // must be a separate call else compiler complains of redundant \n
 	}
 }
 
