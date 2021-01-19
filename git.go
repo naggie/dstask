@@ -3,8 +3,8 @@ package dstask
 import (
 	"fmt"
 	"os"
-	"path"
 	"os/exec"
+	"path"
 )
 
 // RunGitCmd shells out to git in the context of the dstask repo.
@@ -70,7 +70,7 @@ func EnsureRepoExists(repoPath string) {
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
 		ConfirmOrAbort("Could not find dstask repository at ~/.dstask -- create?")
 		MustRunGitCmd(repoPath, "init")
-		fmt.Println("\nAdd a remote repository with:\n\n\tdstask git remote add origin <repo>\n")
+		fmt.Println("\nAdd a remote repository with:\n\n\tdstask git remote add origin <repo>")
 	}
 }
 
