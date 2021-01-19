@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"os/exec"
 )
 
 // RunGitCmd shells out to git in the context of the dstask repo.
@@ -59,7 +60,11 @@ func MustGetRepoPath(repoPath, directory, file string) string {
 
 // EnsureRepoExists checks for the existence of a dstask repository, or exits the program.
 func EnsureRepoExists(repoPath string) {
-	// TODO make sure git is installed
+	_, err := exec.LookPath("git")
+	if err != nil {
+		ExitFail("git required, please install")
+	}
+
 	gitDotGitLocation := path.Join(repoPath, ".git")
 
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
