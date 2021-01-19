@@ -29,7 +29,7 @@ Features:
  * Powerful context system (automatically applies filter/tags to queries and new tasks)
  * **Git powered sync**/undo/resolve (passwordstore.org style) which means no need to set up a sync server, and sync between devices is easy!
  * Task listing won't break with long task text ([unlike taskwarrior, currently](https://github.com/GothenburgBitFactory/taskwarrior/issues/2023))
- * `note` command -- edit a **full markdown note** for each task. Checklists are useful here.
+ * `note` command -- edit a **full markdown note** for each task. **Checklists are useful here.**
  * `open` command -- **open URLs found in specified task** (including notes) in the browser
  * zsh/bash completion for speed
  * A single statically-linked binary
@@ -240,7 +240,8 @@ Alternatives listed must be capable of running in the terminal.
 * [Taskwarrior](https://taskwarrior.org/) -- the closest analogue
 * [Taskbook](https://github.com/klaussinani/taskbook) -- board metaphor, note support
 * [todo.txt-cli](https://github.com/todotxt/todo.txt-cli)
-* [etm](https://github.com/dagraham/etm-dgraham) event and task manager
+* [etm](https://github.com/dagraham/etm-dgraham) -- event and task manager
+* [t](https://github.com/sjl/t) -- a minimal todo list with an amusing philosophy
 
 
 # FAQ
