@@ -65,8 +65,7 @@ func (ts *TaskSet) renderTable(truncate bool) error {
 	tasks := ts.Tasks()
 	total := len(tasks)
 	if ts.NumTotal() == 0 {
-		fmt.Println("\033[31mNo tasks found. Showing help.\033[0m")
-		Help("")
+		fmt.Println("No tasks found. Run `dstask help` for instructions.")
 	} else if len(tasks) == 0 {
 		ExitFail("No matching tasks in given context or filter.")
 	} else if len(tasks) == 1 {
