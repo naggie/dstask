@@ -39,7 +39,7 @@ type Project struct {
 	Priority string
 }
 
-// LoadTaskSet constructs a TaskSet from a repo path and zero or more options.
+// LoadTaskSet constructs a TaskSet from a repo path..
 func LoadTaskSet(repoPath, idsFilePath string, includeResolved bool) (*TaskSet, error) {
 
 	// Initialise an empty TaskSet
