@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"io/ioutil"
 )
 
 // RunGitCmd shells out to git in the context of the dstask repo.
@@ -31,10 +32,17 @@ func MustGitCommit(repoPath, format string, a ...interface{}) {
 	// added/modified/deleted files -- only if slow.
 	fmt.Printf("\n%s\n", msg)
 	fmt.Printf("\033[38;5;245m")
+
+	// needed before add cmd, see diff-index command
+	bins, _ := ioutil.ReadDir(path.Join(repoPath, ".git/objects"));
+	brandNew := len(bins) <= 2
+
+	// tell git to stage (all) changes
 	MustRunGitCmd(repoPath, "add", ".")
 
-	// check for changes -- returns exit status 1 on change
-	if RunGitCmd(repoPath, "diff-index", "--quiet", "HEAD", "--") == nil {
+	// check for changes -- returns exit status 1 on change. Make sure git repo
+	// has commits first, to avoid missing HEAD error.
+	if !brandNew && RunGitCmd(repoPath, "diff-index", "--quiet", "HEAD", "--") == nil {
 		fmt.Println("No changes detected")
 		return
 	}
