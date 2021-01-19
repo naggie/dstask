@@ -68,7 +68,8 @@ func EnsureRepoExists(repoPath string) {
 	gitDotGitLocation := path.Join(repoPath, ".git")
 
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
-		ExitFail("Could not find git repository at " + repoPath + ", please clone or create. Try `dstask help` for more information.")
+		ConfirmOrAbort("Could not find dstask repository at ~/.dstask -- create?")
+		MustRunGitCmd(repoPath, "init")
 	}
 }
 
