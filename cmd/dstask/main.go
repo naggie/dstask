@@ -8,10 +8,16 @@ import (
 )
 
 func main() {
+	// special case: allow users to run the help command without requiring
+	// initialisation. Other commands are handled in the below switch statement
+	// after initialisation.
+	if len(os.Args) > 1 && os.Args[1] == dstask.CMD_HELP {
+		dstask.CommandHelp(os.Args)
+	}
 
 	conf := dstask.NewConfig()
-
 	dstask.EnsureRepoExists(conf.Repo)
+
 	// Load state for getting and setting ctx
 	state := dstask.LoadState(conf.StateFile)
 	ctx := state.Context
@@ -150,9 +156,6 @@ func main() {
 		if err := dstask.CommandShowUnorganised(conf, ctx, query); err != nil {
 			dstask.ExitFail(err.Error())
 		}
-
-	case dstask.CMD_HELP:
-		dstask.CommandHelp(os.Args)
 
 	case dstask.CMD_VERSION:
 		dstask.CommandVersion()
