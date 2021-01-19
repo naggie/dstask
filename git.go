@@ -70,6 +70,7 @@ func EnsureRepoExists(repoPath string) {
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
 		ConfirmOrAbort("Could not find dstask repository at ~/.dstask -- create?")
 		MustRunGitCmd(repoPath, "init")
+		fmt.Println("\nAdd a remote repository with:\n\n\tdstask git remote add origin <repo>\n")
 	}
 }
 
