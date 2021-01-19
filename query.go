@@ -164,7 +164,7 @@ func ParseQuery(args ...string) Query {
 	}
 }
 
-// used for applying a context to a new task. returns new Query, does not mutate.
+// Merge applies a context to a new task. Returns new Query, does not mutate.
 func (query *Query) Merge(q2 Query) Query {
 	// dereference to make a copy of this query
 	q := *query
