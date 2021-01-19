@@ -17,5 +17,5 @@ require (
 	golang.org/x/sys v0.0.0-20201117222635-ba5294a509c7
 	gopkg.in/yaml.v2 v2.3.0
 	gotest.tools v2.2.0+incompatible
-	honnef.co/go/tools v0.0.1-2020.1.6 // indirect
+	honnef.co/go/tools v0.1.0 // indirect
 )

@@ -11,7 +11,7 @@ import (
 
 // when referring to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
 // even if the filter is set to show issues that have only some statuses.
-type CmdLine struct {
+type Query struct {
 	Cmd           string
 	IDs           []int
 	Tags          []string
@@ -27,55 +27,66 @@ type CmdLine struct {
 }
 
 // reconstruct args string
-func (cmdLine CmdLine) String() string {
+func (query Query) String() string {
 	var args []string
 
-	for _, id := range cmdLine.IDs {
+	for _, id := range query.IDs {
 		args = append(args, strconv.Itoa(id))
 	}
 
-	for _, tag := range cmdLine.Tags {
+	for _, tag := range query.Tags {
 		args = append(args, "+"+tag)
 	}
-	for _, tag := range cmdLine.AntiTags {
+	for _, tag := range query.AntiTags {
 		args = append(args, "-"+tag)
 	}
 
-	if cmdLine.Project != "" {
-		args = append(args, "project:"+cmdLine.Project)
+	if query.Project != "" {
+		args = append(args, "project:"+query.Project)
 	}
 
-	for _, project := range cmdLine.AntiProjects {
+	for _, project := range query.AntiProjects {
 		args = append(args, "-project:"+project)
 	}
 
-	if cmdLine.Priority != "" {
-		args = append(args, cmdLine.Priority)
+	if query.Priority != "" {
+		args = append(args, query.Priority)
 	}
 
-	if cmdLine.Template > 0 {
-		args = append(args, fmt.Sprintf("template:%v", cmdLine.Template))
+	if query.Template > 0 {
+		args = append(args, fmt.Sprintf("template:%v", query.Template))
 	}
 
-	if cmdLine.Text != "" {
-		args = append(args, "\""+cmdLine.Text+"\"")
+	if query.Text != "" {
+		args = append(args, "\""+query.Text+"\"")
 	}
 
 	return strings.Join(args, " ")
 }
 
-func (cmdLine CmdLine) PrintContextDescription() {
+func (query Query) PrintContextDescription() {
 	var envVarNotification string
 	if os.Getenv("DSTASK_CONTEXT") != "" {
 		envVarNotification = " (set by DSTASK_CONTEXT)"
 	}
-	if cmdLine.String() != "" {
-		fmt.Printf("\033[33mActive context%s: %s\033[0m\n", envVarNotification, cmdLine)
+	if query.String() != "" {
+		fmt.Printf("\033[33mActive context%s: %s\033[0m\n", envVarNotification, query)
 	}
 }
 
-// ParseCmdLine parses the raw command line typed by the user.
-func ParseCmdLine(args ...string) CmdLine {
+// HasOperators returns true if the query has positive or negative projects/tags,
+// priorities, template
+func (query Query) HasOperators() bool {
+	return (len(query.Tags) > 0 ||
+		len(query.AntiTags) > 0 ||
+		query.Project != "" ||
+		len(query.AntiProjects) > 0 ||
+		query.Priority != "" ||
+		query.Template > 0)
+}
+
+// ParseQuery parses the raw command line typed by the user.
+func ParseQuery(args ...string) Query {
 	var cmd string
 	var ids []int
 	var tags []string
@@ -138,7 +149,7 @@ func ParseCmdLine(args ...string) CmdLine {
 		IDsExhausted = true
 	}
 
-	return CmdLine{
+	return Query{
 		Cmd:           cmd,
 		IDs:           ids,
 		Tags:          tags,
@@ -151,4 +162,40 @@ func ParseCmdLine(args ...string) CmdLine {
 		Note:          strings.Join(notes, " "),
 		IgnoreContext: ignoreContext,
 	}
+}
+
+// Merge applies a context to a new task. Returns new Query, does not mutate.
+func (query *Query) Merge(q2 Query) Query {
+	// dereference to make a copy of this query
+	q := *query
+
+	for _, tag := range q2.Tags {
+		if !StrSliceContains(q.Tags, tag) {
+			q.Tags = append(q.Tags, tag)
+		}
+	}
+
+	for _, tag := range q2.AntiTags {
+		if !StrSliceContains(q.AntiTags, tag) {
+			q.AntiTags = append(q.AntiTags, tag)
+		}
+	}
+
+	if q2.Project != "" {
+		if q.Project != "" && q.Project != q2.Project {
+			ExitFail("Could not apply q2, project conflict")
+		} else {
+			q.Project = q2.Project
+		}
+	}
+
+	if q2.Priority != "" {
+		if q.Priority != "" {
+			ExitFail("Could not apply q2, priority conflict")
+		} else {
+			q.Priority = q2.Priority
+		}
+	}
+
+	return q
 }

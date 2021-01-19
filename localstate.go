@@ -16,7 +16,7 @@ import (
 type State struct {
 	// Context is an implicit command line that changes the behavior or display
 	// of some commands.
-	Context CmdLine
+	Context Query
 }
 
 // Persistent DB of UUID -> ID to ensure that tasks have a persistent ID
@@ -44,7 +44,7 @@ func LoadState(stateFilePath string) State {
 }
 
 // SetContext sets a context on State, with some validation.
-func (state *State) SetContext(context CmdLine) error {
+func (state *State) SetContext(context Query) error {
 	if len(context.IDs) != 0 {
 		return errors.New("context cannot contain IDs")
 	}

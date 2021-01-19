@@ -120,7 +120,7 @@ may be added, which will be appended to the note.
 	case CMD_RESOLVE:
 		fallthrough
 	case CMD_DONE:
-		helpStr = `Usage: dstask <id...> done [text]
+		helpStr = `Usage: dstask <id...> done [closing note]
 Example: dstask 15 done
 Example: dstask 15 done replaced some hardware
 

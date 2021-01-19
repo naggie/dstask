@@ -138,75 +138,37 @@ func (task Task) String() string {
 	return task.Summary
 }
 
-// used for applying a context to a new task
-func (cmdLine *CmdLine) MergeContext(context CmdLine) {
-	for _, tag := range context.Tags {
-		if !StrSliceContains(cmdLine.Tags, tag) {
-			cmdLine.Tags = append(cmdLine.Tags, tag)
-		}
-	}
-
-	for _, tag := range context.AntiTags {
-		if !StrSliceContains(cmdLine.AntiTags, tag) {
-			cmdLine.AntiTags = append(cmdLine.AntiTags, tag)
-		}
-	}
-
-	// TODO same for antitags
-	if context.Project != "" {
-		if cmdLine.Project != "" && cmdLine.Project != context.Project {
-			ExitFail("Could not apply context, project conflict")
-		} else {
-			cmdLine.Project = context.Project
-		}
-	}
-
-	if context.Priority != "" {
-		if cmdLine.Priority != "" {
-			ExitFail("Could not apply context, priority conflict")
-		} else {
-			cmdLine.Priority = context.Priority
-		}
-	}
-}
-
-func (task *Task) MatchesFilter(cmdLine CmdLine) bool {
-	for _, id := range cmdLine.IDs {
-		if id == task.ID {
-			return true
-		}
-	}
-
-	// IDs were specified but no match
-	if len(cmdLine.IDs) > 0 {
+func (task *Task) MatchesFilter(query Query) bool {
+	// IDs were specified but none match (OR logic)
+	if len(query.IDs) > 0 && !IntSliceContains(query.IDs, task.ID) {
 		return false
 	}
 
-	for _, tag := range cmdLine.Tags {
+	for _, tag := range query.Tags {
 		if !StrSliceContains(task.Tags, tag) {
 			return false
 		}
 	}
 
-	for _, tag := range cmdLine.AntiTags {
+	for _, tag := range query.AntiTags {
 		if StrSliceContains(task.Tags, tag) {
 			return false
 		}
 	}
 
-	if StrSliceContains(cmdLine.AntiProjects, task.Project) {
+	if StrSliceContains(query.AntiProjects, task.Project) {
 		return false
 	}
 
-	if cmdLine.Project != "" && task.Project != cmdLine.Project {
+	if query.Project != "" && task.Project != query.Project {
 		return false
 	}
 
-	if cmdLine.Priority != "" && task.Priority != cmdLine.Priority {
+	if query.Priority != "" && task.Priority != query.Priority {
 		return false
 	}
 
-	if cmdLine.Text != "" && !strings.Contains(strings.ToLower(task.Summary+task.Notes), strings.ToLower(cmdLine.Text)) {
+	if query.Text != "" && !strings.Contains(strings.ToLower(task.Summary+task.Notes), strings.ToLower(query.Text)) {
 		return false
 	}
 
@@ -274,30 +236,30 @@ func (task *Task) LongSummary() string {
 	}
 }
 
-func (task *Task) Modify(cmdLine CmdLine) {
-	for _, tag := range cmdLine.Tags {
+func (task *Task) Modify(query Query) {
+	for _, tag := range query.Tags {
 		if !StrSliceContains(task.Tags, tag) {
 			task.Tags = append(task.Tags, tag)
 		}
 	}
 
 	for i, tag := range task.Tags {
-		if StrSliceContains(cmdLine.AntiTags, tag) {
+		if StrSliceContains(query.AntiTags, tag) {
 			// delete item
 			task.Tags = append(task.Tags[:i], task.Tags[i+1:]...)
 		}
 	}
 
-	if cmdLine.Project != "" {
-		task.Project = cmdLine.Project
+	if query.Project != "" {
+		task.Project = query.Project
 	}
 
-	if StrSliceContains(cmdLine.AntiProjects, task.Project) {
+	if StrSliceContains(query.AntiProjects, task.Project) {
 		task.Project = ""
 	}
 
-	if cmdLine.Priority != "" {
-		task.Priority = cmdLine.Priority
+	if query.Priority != "" {
+		task.Priority = query.Priority
 	}
 }
 

@@ -3,7 +3,6 @@ package dstask
 // main task data structures
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -21,9 +20,8 @@ type TaskSet struct {
 	tasksByUUID map[string]*Task
 
 	// program metadata
-	idsFilePath   string
-	stateFilePath string
-	repoPath      string
+	idsFilePath string
+	repoPath    string
 }
 
 type Project struct {
@@ -41,8 +39,8 @@ type Project struct {
 	Priority string
 }
 
-// NewTaskSet constructs a TaskSet from a repo path and zero or more options.
-func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt) (*TaskSet, error) {
+// LoadTaskSet constructs a TaskSet from a repo path..
+func LoadTaskSet(repoPath, idsFilePath string, includeResolved bool) (*TaskSet, error) {
 
 	// Initialise an empty TaskSet
 	var ts TaskSet
@@ -50,19 +48,25 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 	ts.tasksByID = make(map[int]*Task)
 
 	ts.idsFilePath = idsFilePath
-	ts.stateFilePath = stateFilePath
 	ts.repoPath = repoPath
 
 	// Construct our options struct by calling our passed-in TaskSetOpt functions.
-	var tso taskSetOpts
-	for _, opt := range opts {
-		opt(&tso)
-	}
 	ids := LoadIds(idsFilePath)
 
-	// Read Tasks from disk, according to the options passed.
-	filteredStatuses := filterStringSlice(tso.withStatuses, tso.withoutStatuses)
-	for _, status := range filteredStatuses {
+	var statuses []string
+
+	if includeResolved {
+		// expensive to load -- resolved tasks are unbounded
+		statuses = ALL_STATUSES
+	} else {
+		// non-resolved tasks are bounded, so it's OK to load them even if
+		// some are redundant due to query. It's also important to load all
+		// non-resolved tasks at once for consistent IDs in case
+		// SavePendingChanges is not called...!
+		statuses = NON_RESOLVED_STATUSES
+	}
+
+	for _, status := range statuses {
 		dir := filepath.Join(repoPath, status)
 		files, err := ioutil.ReadDir(dir)
 		if err != nil {
@@ -84,208 +88,26 @@ func NewTaskSet(repoPath, idsFilePath, stateFilePath string, opts ...TaskSetOpt)
 		}
 	}
 
-	// If no sorting options passed, apply our defaults. Highest priority first,
-	// then newest first.
-	if len(tso.sortOpts) == 0 {
-		SortBy("created", Descending)(&tso)
-		SortBy("priority", Ascending)(&tso)
-	}
-
-	// Apply our sorting options
-	for _, sortOpt := range tso.sortOpts {
-		switch sortOpt.taskAttribute {
-		case "created":
-			ts.sortByCreated(sortOpt.direction)
-		case "priority":
-			ts.sortByPriority(sortOpt.direction)
-		case "resolved":
-			ts.sortByResolved(sortOpt.direction)
-		default:
-			return nil, fmt.Errorf("unknown sort by attribute: %v", sortOpt.taskAttribute)
-		}
-	}
-
-	// If IDs were passed, they take precedence. Any other filtering options
-	// are ignored, and we return early.
-	if len(tso.withIDs) > 0 {
-		filterTasksByID(ts.tasks, &tso)
-		return &ts, nil
-	}
-
-	// Apply our filter options. If the filtered attribute is set to true,
-	// the task will not be rendered to output.
+	// hide some tasks by default. This is useful for things like templates and
+	// recurring tasks which are shown either directly or with show- commands
 	for _, task := range ts.tasks {
-		task.filtered = false
-
-		// special case: look for unorganised
-		if tso.unorganised {
-			if len(task.Tags) < 1 && task.Project == "" {
-				task.filtered = false
-			} else {
-				task.filtered = true
-			}
-			continue
-		}
-
-		// if a non-empty WithProjects option is passed, the project must
-		// match. This means if the context and the query contain different
-		// projects, nothing will be returned. Projects are effectively ANDed.
-		for _, proj := range tso.withProjects {
-			if proj != "" && proj != task.Project {
-				task.filtered = true
-				break
-			}
-		}
-
-		// if a WithoutProjects option is passed, our task's project cannot
-		// be contained within it
-		for _, antiProject := range tso.withoutProjects {
-			if antiProject == task.Project {
-				task.filtered = true
-			}
-		}
-
-		// every tag in withTags must be found in the task's Tags, otherwise
-		// filter this task
-		if !StrSliceContainsAll(tso.withTags, task.Tags) {
+		if StrSliceContains(HIDDEN_STATUSES, task.Status) {
 			task.filtered = true
 		}
-
-		// if any antiTag is found in this task's Tags, filter this task
-		for _, antiTag := range tso.withoutTags {
-			if StrSliceContains(task.Tags, antiTag) {
-				task.filtered = true
-				break
-			}
-		}
-
-		// if we are passed text, we interpret it as a substring search
-		if tso.text != "" {
-			if !strings.Contains(strings.ToLower(task.Summary), strings.ToLower(tso.text)) &&
-				!strings.Contains(strings.ToLower(task.Notes), strings.ToLower(tso.text)) {
-				task.filtered = true
-			}
-		}
-
 	}
 
 	return &ts, nil
 }
 
-type TaskSetOpt func(opts *taskSetOpts)
-
-func SortBy(attr string, direction SortByDirection) TaskSetOpt {
-	return func(opts *taskSetOpts) {
-		opts.sortOpts = append(opts.sortOpts, sortOpt{attr, direction})
-	}
-}
-
-func WithIDs(ids ...int) TaskSetOpt {
-	return func(opts *taskSetOpts) {
-		opts.withIDs = append(opts.withIDs, ids...)
-	}
-}
-
-func WithProjects(projects ...string) TaskSetOpt {
-	return func(opts *taskSetOpts) {
-		for _, proj := range projects {
-			if proj == "" {
-				continue
-			}
-			opts.withProjects = append(opts.withProjects, proj)
+func (ts *TaskSet) UnHide() {
+	for _, task := range ts.tasks {
+		if StrSliceContains(HIDDEN_STATUSES, task.Status) {
+			task.filtered = false
 		}
 	}
 }
 
-func WithoutProjects(projects ...string) TaskSetOpt {
-	return func(opts *taskSetOpts) {
-		opts.withoutProjects = append(opts.withoutProjects, projects...)
-	}
-}
-
-func WithStatuses(statuses ...string) TaskSetOpt {
-	return func(opts *taskSetOpts) {
-		opts.withStatuses = append(opts.withStatuses, statuses...)
-	}
-}
-
-func WithoutStatuses(statuses ...string) TaskSetOpt {
-	return func(opts *taskSetOpts) {
-		opts.withoutStatuses = append(opts.withoutStatuses, statuses...)
-	}
-}
-
-func WithTags(tags ...string) TaskSetOpt {
-	return func(opts *taskSetOpts) {
-		opts.withTags = append(opts.withTags, tags...)
-	}
-}
-
-func WithoutTags(tags ...string) TaskSetOpt {
-	return func(opts *taskSetOpts) {
-		opts.withoutTags = append(opts.withoutTags, tags...)
-	}
-}
-
-func WithUnorganised() TaskSetOpt {
-	return func(opts *taskSetOpts) {
-		opts.unorganised = true
-	}
-}
-
-func WithText(text string) TaskSetOpt {
-	return func(opts *taskSetOpts) {
-		opts.text = text
-	}
-}
-
-type taskSetOpts struct {
-	sortOpts        []sortOpt
-	text            string
-	withIDs         []int
-	withStatuses    []string
-	withoutStatuses []string
-	withProjects    []string
-	withoutProjects []string
-	withTags        []string
-	withoutTags     []string
-	unorganised     bool
-}
-
-type sortOpt struct {
-	taskAttribute string
-	direction     SortByDirection
-}
-
-func filterStringSlice(with, without []string) []string {
-	var ret []string
-	for _, wanted := range with {
-		keep := true
-		for _, unwanted := range without {
-			if wanted == unwanted {
-				keep = false
-			}
-		}
-		if keep {
-			ret = append(ret, wanted)
-		}
-	}
-	return ret
-}
-
-func filterTasksByID(tasks []*Task, tso *taskSetOpts) {
-	for _, task := range tasks {
-		task.filtered = true
-		for _, id := range tso.withIDs {
-			if id == task.ID {
-				// we have found a matching ID
-				task.filtered = false
-			}
-		}
-	}
-}
-
-func (ts *TaskSet) sortByCreated(dir SortByDirection) {
+func (ts *TaskSet) SortByCreated(dir SortByDirection) {
 	switch dir {
 	case Ascending:
 		// Oldest first
@@ -296,7 +118,7 @@ func (ts *TaskSet) sortByCreated(dir SortByDirection) {
 	}
 }
 
-func (ts *TaskSet) sortByPriority(dir SortByDirection) {
+func (ts *TaskSet) SortByPriority(dir SortByDirection) {
 	switch dir {
 	case Ascending:
 		// P1 first
@@ -307,7 +129,7 @@ func (ts *TaskSet) sortByPriority(dir SortByDirection) {
 	}
 }
 
-func (ts *TaskSet) sortByResolved(dir SortByDirection) {
+func (ts *TaskSet) SortByResolved(dir SortByDirection) {
 	switch dir {
 	case Ascending:
 		// Oldest resolved first
@@ -405,10 +227,25 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 	*ts.tasksByUUID[task.UUID] = task
 }
 
-// Filter NOTE: only called in completions.go
-func (ts *TaskSet) Filter(cmdLine CmdLine) {
+func (ts *TaskSet) Filter(query Query) {
 	for _, task := range ts.tasks {
-		if !task.MatchesFilter(cmdLine) {
+		if !task.MatchesFilter(query) {
+			task.filtered = true
+		}
+	}
+}
+
+func (ts *TaskSet) FilterByStatus(status string) {
+	for _, task := range ts.tasks {
+		if task.Status != status {
+			task.filtered = true
+		}
+	}
+}
+
+func (ts *TaskSet) FilterOrganised() {
+	for _, task := range ts.tasks {
+		if len(task.Tags) > 0 || task.Project != "" {
 			task.filtered = true
 		}
 	}
