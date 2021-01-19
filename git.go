@@ -71,6 +71,7 @@ func EnsureRepoExists(repoPath string) {
 		ConfirmOrAbort("Could not find dstask repository at ~/.dstask -- create?")
 		MustRunGitCmd(repoPath, "init")
 		fmt.Println("\nAdd a remote repository with:\n\n\tdstask git remote add origin <repo>")
+		fmt.Println()  // must be a separate call else compiler complains of redundant \n
 	}
 }
 
