@@ -17,7 +17,4 @@ steps:
     image: golang:1.13
     commands:
       - "go test -v -mod=vendor ./..."
-      - "./smoketest.sh"
-      - "qa/misspell.sh"
-      - "qa/staticcheck.sh"
-      - "qa/gofmt.sh"
+      - "./integrationtest.sh"
