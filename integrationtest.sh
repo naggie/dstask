@@ -4,13 +4,15 @@
 # This script should only test commands work without crashing. Behavioural
 # tests should use the go test system.
 
+# pipe into cat to disable tty
+
 # exit on error and print commands
 set -x
 set -e
 
 # isolated db locations (repo2 is used for a sync target)
-export DSTASK_GIT_REPO=$(mktemp -d)
-export UPSTREAM_BARE_REPO=$(mktemp -d)
+export DSTASK_GIT_REPO=$(mktemp --directory)
+export UPSTREAM_BARE_REPO=$(mktemp --directory)
 
 if [[ -d "dstask" ]]; then
     rm -r dstask
@@ -126,3 +128,10 @@ test -z "$(git -C $DSTASK_GIT_REPO ls-files --others)"
 
 # regression test: nil pointer dereference when showing by-week tables of zero length
 ./dstask show-resolved project:doesnotexist
+
+# dstask should be able to create a git repo if it does not exist before
+# executing commmand. Also help should work before initialisation (and should
+# not init)
+export DSTASK_GIT_REPO=$(mktemp --directory --dry-run)
+./dstask help
+./dstask add test
