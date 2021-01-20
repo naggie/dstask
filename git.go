@@ -76,7 +76,11 @@ func EnsureRepoExists(repoPath string) {
 	gitDotGitLocation := path.Join(repoPath, ".git")
 
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
-		ConfirmOrAbort("Could not find dstask repository at ~/.dstask -- create?")
+		ConfirmOrAbort("Could not find dstask repository at %s -- create?", repoPath)
+		err = os.Mkdir(repoPath, 0700)
+		if err != nil {
+			ExitFail("Failed to create directory in git repository")
+		}
 		MustRunGitCmd(repoPath, "init")
 		fmt.Println("\nAdd a remote repository with:\n\n\tdstask git remote add origin <repo>")
 		fmt.Println() // must be a separate call else compiler complains of redundant \n
