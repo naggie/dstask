@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -258,17 +257,7 @@ func (ts TaskSet) DisplayProjects() {
 		"Created",
 	)
 
-	// collect keys to produce ordered output (rather than randomised)
-	names := make([]string, 0, len(projects))
-
-	for name := range projects {
-		names = append(names, name)
-	}
-
-	sort.Strings(names)
-
-	for _, name := range names {
-		project := projects[name]
+	for _, project := range projects {
 		if project.TasksResolved < project.Tasks {
 
 			table.AddRow(

@@ -100,9 +100,9 @@ func Completions(conf Config, args []string, ctx Query) {
 		completions = append(completions, PRIORITY_LOW)
 
 		// projects
-		for project := range ts.GetProjects() {
-			completions = append(completions, "project:"+project)
-			completions = append(completions, "-project:"+project)
+		for _, project := range ts.GetProjects() {
+			completions = append(completions, "project:"+project.Name)
+			completions = append(completions, "-project:"+project.Name)
 		}
 
 		// tags

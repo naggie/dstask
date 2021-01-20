@@ -289,8 +289,8 @@ func (ts *TaskSet) GetTags() map[string]bool {
 	return tagset
 }
 
-func (ts *TaskSet) GetProjects() map[string]*Project {
-	projects := make(map[string]*Project)
+func (ts *TaskSet) GetProjects() []*Project {
+	projectsMap := make(map[string]*Project)
 
 	for _, task := range ts.Tasks() {
 		name := task.Project
@@ -299,14 +299,14 @@ func (ts *TaskSet) GetProjects() map[string]*Project {
 			continue
 		}
 
-		if projects[name] == nil {
-			projects[name] = &Project{
+		if projectsMap[name] == nil {
+			projectsMap[name] = &Project{
 				Name:     name,
 				Priority: PRIORITY_LOW,
 			}
 		}
 
-		project := projects[name]
+		project := projectsMap[name]
 
 		project.Tasks += 1
 
@@ -329,6 +329,20 @@ func (ts *TaskSet) GetProjects() map[string]*Project {
 		if task.Status != STATUS_RESOLVED && task.Priority < project.Priority {
 			project.Priority = task.Priority
 		}
+	}
+
+	// collect keys to produce ordered output (rather than randomised)
+	names := make([]string, 0, len(projectsMap))
+	projects := make([]*Project, 0, len(projectsMap))
+
+	for name := range projectsMap {
+		names = append(names, name)
+	}
+
+	sort.Strings(names)
+
+	for _, name := range names {
+		projects = append(projects, projectsMap[name])
 	}
 
 	return projects
