@@ -39,24 +39,27 @@ GOOS=linux GOARCH=arm GOARM=5 go build -o dstask -mod=vendor -ldflags="$LDFLAGS"
 GOOS=linux GOARCH=arm GOARM=5 go build -o dstask-import -mod=vendor -ldflags="$LDFLAGS" cmd/dstask-import/main.go
 # upx -q dstask
 mv dstask dist/dstask-linux-arm5
-mv dstask-import dist/dstask-linux-arm5
+mv dstask-import dist/dstask-import-linux-arm5
 
 GOOS=linux GOARCH=amd64 go build -o dstask -mod=vendor -ldflags="$LDFLAGS" cmd/dstask/main.go
 GOOS=linux GOARCH=amd64 go build -o dstask-import -mod=vendor -ldflags="$LDFLAGS" cmd/dstask-import/main.go
 # upx -q dstask
 mv dstask dist/dstask-linux-amd64
-mv dstask-import dist/dstask-linux-amd64
+mv dstask-import dist/dstask-import-linux-amd64
 
 GOOS=darwin GOARCH=amd64 go build -o dstask -mod=vendor -ldflags="$LDFLAGS" cmd/dstask/main.go
 GOOS=darwin GOARCH=amd64 go build -o dstask-import -mod=vendor -ldflags="$LDFLAGS" cmd/dstask-import/main.go
 #upx -q dstask
 mv dstask dist/dstask-darwin-amd64
-mv dstask-import dist/dstask-darwin-amd64
+mv dstask-import dist/dstask-import-darwin-amd64
 
 hub release create \
     --draft \
     -a dist/dstask-linux-arm5#"dstask linux-arm5" \
+    -a dist/dstask-import-linux-arm5#"dstask linux-arm5" \
     -a dist/dstask-linux-amd64#"dstask linux-amd64" \
+    -a dist/dstask-import-linux-amd64#"dstask linux-amd64" \
     -a dist/dstask-darwin-amd64#"dstask darwin-amd64" \
+    -a dist/dstask-import-darwin-amd64#"dstask darwin-amd64" \
     -F $RELEASE_FILE \
     $1
