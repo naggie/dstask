@@ -68,21 +68,21 @@ func MustGetRepoPath(repoPath, directory, file string) string {
 
 // EnsureRepoExists checks for the existence of a dstask repository, or exits the program.
 func EnsureRepoExists(repoPath string) {
-  _, err := exec.LookPath("git")
+	_, err := exec.LookPath("git")
 	if err != nil {
 		ExitFail("git required, please install")
 	}
-  
-  if StdoutIsTTY() {
-    ConfirmOrAbort("Could not find dstask repository at %s -- create?", repoPath)
-  }
-  
+
+	if StdoutIsTTY() {
+		ConfirmOrAbort("Could not find dstask repository at %s -- create?", repoPath)
+	}
+
 	gitDotGitLocation := path.Join(repoPath, ".git")
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
 		err = os.Mkdir(repoPath, 0700)
 		if err != nil {
 			ExitFail("Failed to create directory in git repository")
-    }
+		}
 		MustRunGitCmd(repoPath, "init")
 		fmt.Println("\nAdd a remote repository with:\n\n\tdstask git remote add origin <repo>")
 		fmt.Println() // must be a separate call else compiler complains of redundant \n
