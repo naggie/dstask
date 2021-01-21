@@ -15,6 +15,7 @@ install:
 
 test:
 	go test -v -mod=vendor ./...
+	./integrationtest.sh | cat  # cat -- no tty, no confirmations
 
 update_deps:
 	go get
