@@ -7,6 +7,7 @@ import (
 
 func Help(cmd string) {
 	var helpStr string
+	showKey := false
 
 	switch cmd {
 	case CMD_NEXT:
@@ -18,7 +19,10 @@ Display list of non-resolved tasks in the current context, most recent last,
 optional filter. It is the default command, so "next" is unnecessary.
 
 Bypass the current context with --.
+
+Colour key:
 `
+		showKey = true
 	case CMD_ADD:
 		helpStr = `Usage: dstask add [template:<id>] [task summary] [--]
 Example: dstask add Fix main web page 500 error +bug P1 project:website
@@ -253,18 +257,21 @@ import-tw         : Import tasks from taskwarrior via stdin
 help              : Get help on any command or show this message
 version           : Show dstask version information
 
-Task table key:
+Colour Key:
 
 `
+		showKey = true
 	}
 	fmt.Fprint(os.Stderr, helpStr)
 
-	colourPrintln(0, FG_PRIORITY_CRITICAL, BG_DEFAULT_2, "Critical priority")
-	colourPrintln(0, FG_PRIORITY_HIGH, BG_DEFAULT_2, "High priority")
-	colourPrintln(0, FG_DEFAULT, BG_DEFAULT_1, "Normal priority")
-	colourPrintln(0, FG_PRIORITY_LOW, BG_DEFAULT_2, "Low priority")
-	colourPrintln(0, FG_ACTIVE, BG_ACTIVE, "Active")
-	colourPrintln(0, FG_DEFAULT, BG_PAUSED, "Paused")
+	if showKey {
+		colourPrintln(0, FG_PRIORITY_CRITICAL, BG_DEFAULT_2, "Critical priority")
+		colourPrintln(0, FG_PRIORITY_HIGH, BG_DEFAULT_2, "High priority")
+		colourPrintln(0, FG_DEFAULT, BG_DEFAULT_1, "Normal priority")
+		colourPrintln(0, FG_PRIORITY_LOW, BG_DEFAULT_2, "Low priority")
+		colourPrintln(0, FG_ACTIVE, BG_ACTIVE, "Active")
+		colourPrintln(0, FG_DEFAULT, BG_PAUSED, "Paused")
+	}
 
 	os.Exit(0)
 }
