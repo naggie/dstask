@@ -130,7 +130,7 @@ test -z "$(git -C $DSTASK_GIT_REPO ls-files --others)"
 ./dstask show-resolved project:doesnotexist
 
 # dstask should be able to create a git repo if it does not exist before
-# executing commmand. Also help should work before initialisation (and should
+# executing command. Also help should work before initialisation (and should
 # not init)
 export DSTASK_GIT_REPO=$(mktemp --directory --dry-run)
 ./dstask help
