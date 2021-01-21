@@ -73,12 +73,12 @@ func EnsureRepoExists(repoPath string) {
 		ExitFail("git required, please install")
 	}
 
-	if StdoutIsTTY() {
-		ConfirmOrAbort("Could not find dstask repository at %s -- create?", repoPath)
-	}
-
 	gitDotGitLocation := path.Join(repoPath, ".git")
 	if _, err := os.Stat(gitDotGitLocation); os.IsNotExist(err) {
+		if StdoutIsTTY() {
+			ConfirmOrAbort("Could not find dstask repository at %s -- create?", repoPath)
+		}
+
 		err = os.Mkdir(repoPath, 0700)
 		if err != nil {
 			ExitFail("Failed to create directory in git repository")
