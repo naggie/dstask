@@ -356,7 +356,7 @@ func CommandRemove(conf Config, ctx, query Query) error {
 	}
 
 	if StdoutIsTTY() {
-		ConfirmOrAbort("\nThe above %d task(s) will be deleted without checking subtasks. Continue?", len(ts.Tasks()))
+		ConfirmOrAbort("\nThe above %d task(s) will be deleted without checking subtasks. Continue?", len(query.IDs))
 	}
 
 	for _, id := range query.IDs {
