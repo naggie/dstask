@@ -26,6 +26,10 @@ a special protocol.
 
 Features:
 
+<a href="https://repology.org/project/dstask/versions">
+    <img src="https://repology.org/badge/vertical-allrepos/dstask.svg" alt="Packaging status" align="right">
+</a>
+
  * Powerful context system (automatically applies filter/tags to queries and new tasks)
  * **Git powered sync**/undo/resolve (passwordstore.org style) which means no need to set up a sync server, and sync between devices is easy!
  * Task listing won't break with long task text ([unlike taskwarrior, currently](https://github.com/GothenburgBitFactory/taskwarrior/issues/2023))
