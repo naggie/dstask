@@ -30,8 +30,10 @@ trap cleanup EXIT
 
 go build -o dstask -mod=vendor cmd/dstask/main.go
 
-# initialse git repo
+# initialise git repo
+BRANCH="branch_${RANDOM}"
 git -C $DSTASK_GIT_REPO init
+git -C $DSTASK_GIT_REPO checkout -b $BRANCH
 git -C $DSTASK_GIT_REPO config user.email "you@example.com"
 git -C $DSTASK_GIT_REPO config user.name "Test user"
 git -C $UPSTREAM_BARE_REPO init --bare
@@ -105,8 +107,8 @@ unset DSTASK_FAKE_PTY
 
 # set the bare repository as upstream origin to test sync against, and then push to it
 git -C $DSTASK_GIT_REPO remote add origin $UPSTREAM_BARE_REPO
-git -C $DSTASK_GIT_REPO push origin master
-git -C $DSTASK_GIT_REPO branch --set-upstream-to=origin/master master
+git -C $DSTASK_GIT_REPO push origin $BRANCH
+git -C $DSTASK_GIT_REPO branch --set-upstream-to=origin/$BRANCH $BRANCH
 ./dstask sync
 
 # cause independent changes (could be from separate downstream repositories,
