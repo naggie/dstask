@@ -111,5 +111,5 @@ func EnsureRepoExists(repoPath string) {
 // the user will need to resolve them.
 func Sync(repoPath string) {
 	MustRunGitCmd(repoPath, "pull", "--no-rebase", "--no-edit", "--commit", "origin")
-	MustRunGitCmd(repoPath, "push", "origin", "master")
+	MustRunGitCmd(repoPath, "push", "origin")
 }
