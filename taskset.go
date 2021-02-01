@@ -150,7 +150,7 @@ func (ts *TaskSet) MustLoadTask(task Task) Task {
 	return newTask
 }
 
-func (ts *TaskSet) sortByUrgency(dir SortByDirection) {
+func (ts *TaskSet) SortByUrgency(dir SortByDirection) {
 	switch dir {
 	case Ascending:
 		// Lowest Urgency First
