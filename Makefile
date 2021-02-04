@@ -14,6 +14,9 @@ install:
 	cp dist/dstask-import /usr/local/bin
 
 test:
+	qa/misspell.sh
+	qa/staticcheck.sh
+	qa/gofmt.sh
 	go test -v -mod=vendor ./...
 	./integrationtest.sh | cat  # cat -- no tty, no confirmations
 
