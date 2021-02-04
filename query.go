@@ -126,9 +126,11 @@ func ParseQuery(args ...string) Query {
 			ignoreContext = true
 		} else if item == NOTE_MODE_KEYWORD {
 			notesModeActivated = true
-		} else if strings.HasPrefix(lcItem, "project:") {
+		} else if project == "" && strings.HasPrefix(lcItem, "project:") {
 			project = lcItem[8:]
-		} else if strings.HasPrefix(lcItem, "+project:") {
+		// invalid project filter, but a common mistake and it's obvious what
+		// the user really means.
+		} else if project == "" && strings.HasPrefix(lcItem, "+project:") {
 			project = lcItem[9:]
 		} else if strings.HasPrefix(lcItem, "-project:") {
 			antiProjects = append(antiProjects, lcItem[9:])
@@ -140,7 +142,7 @@ func ParseQuery(args ...string) Query {
 			tags = append(tags, lcItem[1:])
 		} else if len(item) > 1 && lcItem[0:1] == "-" {
 			antiTags = append(antiTags, lcItem[1:])
-		} else if IsValidPriority(item) && priority == "" {
+		} else if priority == "" && IsValidPriority(item) {
 			priority = item
 		} else {
 			words = append(words, item)
