@@ -128,8 +128,8 @@ func ParseQuery(args ...string) Query {
 			notesModeActivated = true
 		} else if project == "" && strings.HasPrefix(lcItem, "project:") {
 			project = lcItem[8:]
-		// invalid project filter, but a common mistake and it's obvious what
-		// the user really means.
+			// invalid project filter, but a common mistake and it's obvious what
+			// the user really means.
 		} else if project == "" && strings.HasPrefix(lcItem, "+project:") {
 			project = lcItem[9:]
 		} else if strings.HasPrefix(lcItem, "-project:") {
