@@ -107,6 +107,25 @@ func TestParseQuery(t *testing.T) {
 				Note:          "",
 			},
 		},
+		// first priority should have precedence, subsequent priorities should
+		// just be part of the description
+		// see https://github.com/naggie/dstask/issues/120 for context
+		{
+			[]string{"add", "P1", "P2", "P3"},
+			Query{
+				Cmd:           "add",
+				IDs:           nil,
+				Tags:          nil,
+				AntiTags:      nil,
+				Project:       "",
+				AntiProjects:  nil,
+				Priority:      PRIORITY_HIGH,
+				Template:      0,
+				Text:          "P2 P3",
+				IgnoreContext: false,
+				Note:          "",
+			},
+		},
 	} // end test cases
 
 	for i, tc := range tests {

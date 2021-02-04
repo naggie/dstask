@@ -140,7 +140,7 @@ func ParseQuery(args ...string) Query {
 			tags = append(tags, lcItem[1:])
 		} else if len(item) > 1 && lcItem[0:1] == "-" {
 			antiTags = append(antiTags, lcItem[1:])
-		} else if IsValidPriority(item) {
+		} else if IsValidPriority(item) && priority == "" {
 			priority = item
 		} else {
 			words = append(words, item)
