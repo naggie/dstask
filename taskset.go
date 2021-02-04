@@ -140,9 +140,18 @@ func (ts *TaskSet) SortByResolved(dir SortByDirection) {
 	}
 }
 
+// MustLoadTask is the same as LoadTask, except it exits on error.
+func (ts *TaskSet) MustLoadTask(task Task) Task {
+	newTask, err := ts.LoadTask(task)
+	if err != nil {
+		ExitFail("%s, task %s", err, task.UUID)
+	}
+	return *newTask
+}
+
 // LoadTask adds a task to the TaskSet, but only if it has a new uuid or no uuid.
 // Return annotated task.
-func (ts *TaskSet) LoadTask(task Task) Task {
+func (ts *TaskSet) LoadTask(task Task) (*Task, error) {
 	task.Normalise()
 
 	if task.UUID == "" {
@@ -150,13 +159,13 @@ func (ts *TaskSet) LoadTask(task Task) Task {
 	}
 
 	if err := task.Validate(); err != nil {
-		ExitFail("%s, task %s", err, task.UUID)
+		return nil, err
 	}
 
 	if ts.tasksByUUID[task.UUID] != nil {
 		// load tasks, do not overwrite
 		// TODO ??? (maybe return a nil pointer instead?)
-		return Task{}
+		return &Task{}, nil
 	}
 
 	// remove ID if already taken
@@ -183,7 +192,7 @@ func (ts *TaskSet) LoadTask(task Task) Task {
 	ts.tasksByUUID[task.UUID] = &task
 	ts.tasksByID[task.ID] = &task
 
-	return task
+	return &task, nil
 }
 
 // TODO maybe this is the place to check for invalid state transitions instead
