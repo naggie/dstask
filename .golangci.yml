@@ -1,0 +1,26 @@
+output:
+  format: line-number
+
+linters:
+  enable:
+    - goimports
+    - golint
+    - gofmt
+    - misspell
+    - deadcode
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unused
+    - varcheck
+    - gochecknoinits
+    - unconvert
+    - unparam
+    - scopelint
+
+run:
+  timeout: 2m
