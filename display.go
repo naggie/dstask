@@ -104,7 +104,7 @@ func (ts *TaskSet) renderTable(truncate bool) error {
 				[]string{
 					// id should be at least 2 chars wide to match column header
 					// (headers can be truncated)
-					fmt.Sprintf("%-2d", t.ID),
+					t.Id(),
 					t.Priority,
 					strings.Join(t.Tags, " "),
 					t.Project,

@@ -175,6 +175,13 @@ func (t *Task) MatchesFilter(query Query) bool {
 	return true
 }
 
+func (task *Task) Id() string {
+	if task.Status == STATUS_TEMPLATE {
+		return task.UUID[0:8]
+	}
+	return fmt.Sprintf("%-2d", task.ID)
+}
+
 // Normalise mutates and sorts some of a task object's fields into a consistent
 // format. This should make git diffs more useful.
 func (t *Task) Normalise() {
