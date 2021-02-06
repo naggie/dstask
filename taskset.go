@@ -84,7 +84,7 @@ func LoadTaskSet(repoPath, idsFilePath string, includeResolved bool) (*TaskSet, 
 				log.Printf("error loading task: %v\n", err)
 				continue
 			}
-			ts.LoadTask(t)
+			ts.LoadTask(&t)
 		}
 	}
 
@@ -141,7 +141,7 @@ func (ts *TaskSet) SortByResolved(dir SortByDirection) {
 }
 
 // MustLoadTask is the same as LoadTask, except it exits on error.
-func (ts *TaskSet) MustLoadTask(task Task) Task {
+func (ts *TaskSet) MustLoadTask(task *Task) Task {
 	newTask, err := ts.LoadTask(task)
 	if err != nil {
 		ExitFail("%s, task %s", err, task.UUID)
@@ -151,7 +151,7 @@ func (ts *TaskSet) MustLoadTask(task Task) Task {
 
 // LoadTask adds a task to the TaskSet, but only if it has a new uuid or no uuid.
 // Return annotated task.
-func (ts *TaskSet) LoadTask(task Task) (*Task, error) {
+func (ts *TaskSet) LoadTask(task *Task) (*Task, error) {
 	task.Normalise()
 
 	if task.UUID == "" {
@@ -188,11 +188,11 @@ func (ts *TaskSet) LoadTask(task Task) (*Task, error) {
 		task.WritePending = true
 	}
 
-	ts.tasks = append(ts.tasks, &task)
-	ts.tasksByUUID[task.UUID] = &task
-	ts.tasksByID[task.ID] = &task
+	ts.tasks = append(ts.tasks, task)
+	ts.tasksByUUID[task.UUID] = task
+	ts.tasksByID[task.ID] = task
 
-	return &task, nil
+	return task, nil
 }
 
 // TODO maybe this is the place to check for invalid state transitions instead

@@ -46,7 +46,7 @@ func CommandAdd(conf Config, ctx, query Query) error {
 		// Modify the task with any tags/projects/antiProjects/priorities in query
 		task.Modify(query)
 
-		task = ts.MustLoadTask(task)
+		task = ts.MustLoadTask(&task)
 		ts.SavePendingChanges()
 		MustGitCommit(conf.Repo, "Added %s", task)
 		if tt.Status != STATUS_TEMPLATE {
@@ -65,7 +65,7 @@ func CommandAdd(conf Config, ctx, query Query) error {
 			Priority:     query.Priority,
 			Notes:        query.Note,
 		}
-		task = ts.MustLoadTask(task)
+		task = ts.MustLoadTask(&task)
 		ts.SavePendingChanges()
 		MustGitCommit(conf.Repo, "Added %s", task)
 	}
@@ -543,7 +543,7 @@ func CommandStart(conf Config, ctx, query Query) error {
 			Priority:     query.Priority,
 			Notes:        query.Note,
 		}
-		task = ts.MustLoadTask(task)
+		task = ts.MustLoadTask(&task)
 		ts.SavePendingChanges()
 		MustGitCommit(conf.Repo, "Added and started %s", task)
 	} else {
@@ -615,7 +615,7 @@ func CommandTemplate(conf Config, ctx, query Query) error {
 			Priority:     query.Priority,
 			Notes:        query.Note,
 		}
-		task = ts.MustLoadTask(task)
+		task = ts.MustLoadTask(&task)
 		ts.SavePendingChanges()
 		MustGitCommit(conf.Repo, "Created Template %s", task)
 	}

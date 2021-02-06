@@ -29,7 +29,7 @@ func Do(conf dstask.Config) error {
 	}
 
 	for _, twTask := range twtasks {
-		ts.LoadTask(dstask.Task{
+		ts.LoadTask(&dstask.Task{
 			UUID:         twTask.UUID,
 			Status:       twTask.ConvertStatus(),
 			WritePending: true,
