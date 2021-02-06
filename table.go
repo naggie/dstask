@@ -43,9 +43,8 @@ func FixStr(text string, width int) string {
 	text = strings.Split(text, "\n")[0]
 	if len(text) <= width {
 		return fmt.Sprintf("%-"+strconv.Itoa(width)+"v", text)
-	} else {
-		return text[:width]
 	}
+	return text[:width]
 }
 
 func (t *Table) AddRow(row []string, style RowStyle) {

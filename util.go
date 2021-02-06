@@ -30,9 +30,8 @@ func ConfirmOrAbort(format string, a ...interface{}) {
 
 	if input == "y\n" {
 		return
-	} else {
-		ExitFail("Aborted.")
 	}
+	ExitFail("Aborted.")
 }
 
 func MustGetUUID4String() string {
