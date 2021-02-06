@@ -13,7 +13,7 @@ const tpl1 = `summary: "GH/{{.RepoOwner}}/{{.RepoName}}/{{.Number}}: {{.Title}}"
 tags: ["{{.Milestone}}", "extraTag"]
 project: "some-project"
 priority: P2
-notes: "state: {{.State}}\nurl: {{.Url}}\n opened on {{.CreatedAt}} by {{.Author}}\n{{.Body}}"`
+notes: "state: {{.State}}\nurl: {{.URL}}\n opened on {{.CreatedAt}} by {{.Author}}\n{{.Body}}"`
 
 func TestToTask(t *testing.T) {
 	type testCase struct {
@@ -21,7 +21,6 @@ func TestToTask(t *testing.T) {
 		owner   string
 		repo    string
 		issue   Issue
-		expErr  bool
 		expTask dstask.Task
 	}
 	cases := []testCase{
@@ -36,7 +35,7 @@ func TestToTask(t *testing.T) {
 				Author: Author{
 					Name: "author-name",
 				},
-				Url:       "http://github.com/my_user/my_repo/1234",
+				URL:       "http://github.com/my_user/my_repo/1234",
 				CreatedAt: time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
 				Milestone: Milestone{
 					Description: "some milestone description", // we ignore this, can't use this in templates
@@ -46,7 +45,6 @@ func TestToTask(t *testing.T) {
 				State:  "OPEN",
 				Closed: false,
 			},
-			expErr: false,
 			expTask: dstask.Task{
 				UUID:        "e09f6975-8a79-133d-78f8-837b85a1754c",
 				Status:      "pending",
@@ -70,14 +68,13 @@ func TestToTask(t *testing.T) {
 				Author: Author{
 					Name: "author-name",
 				},
-				Url:       "http://github.com/my_user/my_repo/1234",
+				URL:       "http://github.com/my_user/my_repo/1234",
 				CreatedAt: time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
 				Milestone: Milestone{},
 				State:     "CLOSED",
 				Closed:    true,
 				ClosedAt:  time.Date(2020, time.January, 10, 23, 0, 0, 0, time.UTC),
 			},
-			expErr: false,
 			expTask: dstask.Task{
 				UUID:        "e09f6975-8a79-133d-78f8-837b85a1754c",
 				Status:      "resolved",

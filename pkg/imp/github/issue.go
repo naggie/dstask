@@ -38,7 +38,7 @@ type IssueData struct {
 	Number    int
 	State     string
 	Title     string
-	Url       string
+	URL       string
 }
 
 func NewIssueData() *IssueData {
@@ -62,16 +62,16 @@ func (id *IssueData) Init(repoOwner, repoName string, i Issue) {
 	id.Number = i.Number
 	id.State = i.State
 	id.Title = i.Title
-	id.Url = i.Url
+	id.URL = i.URL
 
 	id.uuidHash.Reset()
-	io.WriteString(id.uuidHash, "GH")
-	io.WriteString(id.uuidHash, "\x00")
-	io.WriteString(id.uuidHash, repoOwner)
-	io.WriteString(id.uuidHash, "\x00")
-	io.WriteString(id.uuidHash, repoName)
-	io.WriteString(id.uuidHash, "\x00")
-	io.WriteString(id.uuidHash, fmt.Sprintf("%d", i.Number))
+	_, _ = io.WriteString(id.uuidHash, "GH")
+	_, _ = io.WriteString(id.uuidHash, "\x00")
+	_, _ = io.WriteString(id.uuidHash, repoOwner)
+	_, _ = io.WriteString(id.uuidHash, "\x00")
+	_, _ = io.WriteString(id.uuidHash, repoName)
+	_, _ = io.WriteString(id.uuidHash, "\x00")
+	_, _ = io.WriteString(id.uuidHash, fmt.Sprintf("%d", i.Number))
 	id.uuidHash.Sum(id.uuid[:0])
 	id.UUID = id.uuid.String()
 }

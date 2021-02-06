@@ -308,7 +308,7 @@ func (ts *TaskSet) GetProjects() []*Project {
 
 		project := projectsMap[name]
 
-		project.Tasks += 1
+		project.Tasks++
 
 		if project.Created.IsZero() || task.Created.Before(project.Created) {
 			project.Created = task.Created
@@ -319,7 +319,7 @@ func (ts *TaskSet) GetProjects() []*Project {
 		}
 
 		if task.Status == STATUS_RESOLVED {
-			project.TasksResolved += 1
+			project.TasksResolved++
 		}
 
 		if task.Status == STATUS_ACTIVE {
