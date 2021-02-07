@@ -131,44 +131,44 @@ func unmarshalTask(path string, finfo os.FileInfo, ids IdsMap, status string) (T
 	return t, nil
 }
 
-func (task Task) String() string {
-	if task.ID > 0 {
-		return fmt.Sprintf("%v: %s", task.ID, task.Summary)
+func (t Task) String() string {
+	if t.ID > 0 {
+		return fmt.Sprintf("%v: %s", t.ID, t.Summary)
 	}
-	return task.Summary
+	return t.Summary
 }
 
-func (task *Task) MatchesFilter(query Query) bool {
+func (t *Task) MatchesFilter(query Query) bool {
 	// IDs were specified but none match (OR logic)
-	if len(query.IDs) > 0 && !IntSliceContains(query.IDs, task.ID) {
+	if len(query.IDs) > 0 && !IntSliceContains(query.IDs, t.ID) {
 		return false
 	}
 
 	for _, tag := range query.Tags {
-		if !StrSliceContains(task.Tags, tag) {
+		if !StrSliceContains(t.Tags, tag) {
 			return false
 		}
 	}
 
 	for _, tag := range query.AntiTags {
-		if StrSliceContains(task.Tags, tag) {
+		if StrSliceContains(t.Tags, tag) {
 			return false
 		}
 	}
 
-	if StrSliceContains(query.AntiProjects, task.Project) {
+	if StrSliceContains(query.AntiProjects, t.Project) {
 		return false
 	}
 
-	if query.Project != "" && task.Project != query.Project {
+	if query.Project != "" && t.Project != query.Project {
 		return false
 	}
 
-	if query.Priority != "" && task.Priority != query.Priority {
+	if query.Priority != "" && t.Priority != query.Priority {
 		return false
 	}
 
-	if query.Text != "" && !strings.Contains(strings.ToLower(task.Summary+task.Notes), strings.ToLower(query.Text)) {
+	if query.Text != "" && !strings.Contains(strings.ToLower(t.Summary+t.Notes), strings.ToLower(query.Text)) {
 		return false
 	}
 
@@ -177,45 +177,45 @@ func (task *Task) MatchesFilter(query Query) bool {
 
 // Normalise mutates and sorts some of a task object's fields into a consistent
 // format. This should make git diffs more useful.
-func (task *Task) Normalise() {
-	task.Project = strings.ToLower(task.Project)
+func (t *Task) Normalise() {
+	t.Project = strings.ToLower(t.Project)
 
 	// tags must be lowercase
-	for i, tag := range task.Tags {
-		task.Tags[i] = strings.ToLower(tag)
+	for i, tag := range t.Tags {
+		t.Tags[i] = strings.ToLower(tag)
 	}
 
 	// tags must be sorted
-	sort.Strings(task.Tags)
+	sort.Strings(t.Tags)
 
 	// tags must be unique
-	task.Tags = DeduplicateStrings(task.Tags)
+	t.Tags = DeduplicateStrings(t.Tags)
 
-	if task.Status == STATUS_RESOLVED {
+	if t.Status == STATUS_RESOLVED {
 		// resolved task should not have ID as it's meaningless
-		task.ID = 0
+		t.ID = 0
 	}
 
-	if task.Priority == "" {
-		task.Priority = PRIORITY_NORMAL
+	if t.Priority == "" {
+		t.Priority = PRIORITY_NORMAL
 	}
 }
 
 // normalise the task before validating!
-func (task *Task) Validate() error {
-	if !IsValidUUID4String(task.UUID) {
+func (t *Task) Validate() error {
+	if !IsValidUUID4String(t.UUID) {
 		return errors.New("invalid task UUID4")
 	}
 
-	if !IsValidStatus(task.Status) {
+	if !IsValidStatus(t.Status) {
 		return errors.New("invalid status specified on task")
 	}
 
-	if !IsValidPriority(task.Priority) {
+	if !IsValidPriority(t.Priority) {
 		return errors.New("invalid priority specified")
 	}
 
-	for _, uuid := range task.Dependencies {
+	for _, uuid := range t.Dependencies {
 		if !IsValidUUID4String(uuid) {
 			return errors.New("invalid dependency UUID4")
 		}
@@ -225,41 +225,40 @@ func (task *Task) Validate() error {
 }
 
 // provides Summary + Last note if available
-func (task *Task) LongSummary() string {
-	noteLines := strings.Split(task.Notes, "\n")
+func (t *Task) LongSummary() string {
+	noteLines := strings.Split(t.Notes, "\n")
 	lastNote := noteLines[len(noteLines)-1]
 
 	if len(lastNote) > 0 {
-		return task.Summary + " " + NOTE_MODE_KEYWORD + " " + lastNote
-	} else {
-		return task.Summary
+		return t.Summary + " " + NOTE_MODE_KEYWORD + " " + lastNote
 	}
+	return t.Summary
 }
 
-func (task *Task) Modify(query Query) {
+func (t *Task) Modify(query Query) {
 	for _, tag := range query.Tags {
-		if !StrSliceContains(task.Tags, tag) {
-			task.Tags = append(task.Tags, tag)
+		if !StrSliceContains(t.Tags, tag) {
+			t.Tags = append(t.Tags, tag)
 		}
 	}
 
-	for i, tag := range task.Tags {
+	for i, tag := range t.Tags {
 		if StrSliceContains(query.AntiTags, tag) {
 			// delete item
-			task.Tags = append(task.Tags[:i], task.Tags[i+1:]...)
+			t.Tags = append(t.Tags[:i], t.Tags[i+1:]...)
 		}
 	}
 
 	if query.Project != "" {
-		task.Project = query.Project
+		t.Project = query.Project
 	}
 
-	if StrSliceContains(query.AntiProjects, task.Project) {
-		task.Project = ""
+	if StrSliceContains(query.AntiProjects, t.Project) {
+		t.Project = ""
 	}
 
 	if query.Priority != "" {
-		task.Priority = query.Priority
+		t.Priority = query.Priority
 	}
 }
 

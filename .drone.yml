@@ -10,9 +10,7 @@ steps:
   - name: lint
     image: golang:1.13
     commands:
-      - "qa/misspell.sh"
-      - "qa/staticcheck.sh"
-      - "qa/gofmt.sh"
+      - make lint
   - name: test
     image: golang:1.13
     commands:

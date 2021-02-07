@@ -84,7 +84,7 @@ func (tt *TwTime) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-type TwAnnotation struct {
+type Annotation struct {
 	Description string
 	Entry       string
 }
@@ -102,7 +102,7 @@ type TwTask struct {
 	Depends     string
 	Tags        []string
 	UUID        string
-	Annotations []TwAnnotation
+	Annotations []Annotation
 }
 
 var priorityMap = map[string]string{
@@ -148,7 +148,6 @@ func (t *TwTask) ConvertStatus() string {
 func (t *TwTask) GetResolvedTime() time.Time {
 	if t.Status == "completed" {
 		return t.Modified.Time
-	} else {
-		return time.Time{}
 	}
+	return time.Time{}
 }

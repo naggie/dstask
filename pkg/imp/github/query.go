@@ -42,7 +42,7 @@ type Issue struct {
 	Body      string    `graphql:"body"`
 	Title     string    `graphql:"title"`
 	Author    Author    `graphql:"author"`
-	Url       string    `graphql:"url"`
+	URL       string    `graphql:"url"`
 	CreatedAt time.Time `graphql:"createdAt"`
 	Milestone Milestone `graphql:"milestone"`
 	State     string    `graphql:"state"`

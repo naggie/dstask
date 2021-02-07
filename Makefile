@@ -19,6 +19,8 @@ test:
 	qa/gofmt.sh
 	go test -v -mod=vendor ./...
 	./integrationtest.sh | cat  # cat -- no tty, no confirmations
+lint:
+	"qa/lint.sh"
 
 update_deps:
 	go get
