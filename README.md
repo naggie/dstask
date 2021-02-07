@@ -273,3 +273,10 @@ modifying by listing all tasks in the current context first, instead of
 potentially operating blindly by matching tags or numbers.
 
 You can also specify multiple task numbers at one time, as with any other command.
+
+> Is there a GUI or web interface?
+
+Not as part of dstask itself. However, dstask can be used as a library -- @botto
+has started developing a web GUI, specifically to allow task management on-the-go
+via a smartphone: https://github.com/botto/dstask-gui . It's in early stages but
+is meaningful as having no smartphone-based control is a blocker for a lot of people.
