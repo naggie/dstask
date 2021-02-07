@@ -20,7 +20,7 @@ linters:
     - gochecknoinits
     - unconvert
     - unparam
-    - scopelint
+    - exportloopref
 
 run:
   timeout: 2m
