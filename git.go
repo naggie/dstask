@@ -22,33 +22,50 @@ func MustRunGitCmd(repoPath string, args ...string) {
 	}
 }
 
-// MustGitCommit stages changes in the dstask repository and commits them. If
-// any error is encountered, the program exits.
+// MustGitCommit is like GitCommit, except if any error is
+// encountered, the program exits.
 func MustGitCommit(repoPath, format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
+
+	fmt.Printf("\n%s\n", msg)
+	fmt.Printf("\033[38;5;245m")
+
+	if err := GitCommit(repoPath, format, a...); err != nil {
+		ExitFail("error: %s", err)
+	}
+
+	fmt.Printf("\033[0m")
+}
+
+// GitCommit stages changes in the dstask repository and commits them.
+func GitCommit(repoPath, format string, a ...interface{}) error {
+	msg := fmt.Sprintf(format, a...)
+
+	// needed before add cmd, see diff-index command
+	bins, err := ioutil.ReadDir(path.Join(repoPath, ".git/objects"))
+	if err != nil {
+		return fmt.Errorf("failed to run git commit: %s", err)
+	}
+	brandNew := len(bins) <= 2
 
 	// git add all changed/created files
 	// could optimise this to be given an explicit list of
 	// added/modified/deleted files -- only if slow.
-	fmt.Printf("\n%s\n", msg)
-	fmt.Printf("\033[38;5;245m")
-
-	// needed before add cmd, see diff-index command
-	bins, _ := ioutil.ReadDir(path.Join(repoPath, ".git/objects"))
-	brandNew := len(bins) <= 2
-
 	// tell git to stage (all) changes
-	MustRunGitCmd(repoPath, "add", ".")
+	if err = RunGitCmd(repoPath, "add", "."); err != nil {
+		return fmt.Errorf("failed to add changes to repo: %s", err)
+	}
 
 	// check for changes -- returns exit status 1 on change. Make sure git repo
 	// has commits first, to avoid missing HEAD error.
 	if !brandNew && RunGitCmd(repoPath, "diff-index", "--quiet", "HEAD", "--") == nil {
-		fmt.Println("No changes detected")
-		return
+		return fmt.Errorf("no changes detected")
 	}
 
-	MustRunGitCmd(repoPath, "commit", "--no-gpg-sign", "-m", msg)
-	fmt.Printf("\033[0m")
+	if err = RunGitCmd(repoPath, "commit", "--no-gpg-sign", "-m", msg); err != nil {
+		return fmt.Errorf("failed to commit changes: %s", err)
+	}
+	return nil
 }
 
 // MustGetRepoPath returns the full path to a file within the dstask git repo.
