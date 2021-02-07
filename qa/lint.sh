@@ -13,4 +13,4 @@ if ! which golangci-lint &>/dev/null; then
     cd -
 fi
 
-exec golangci-lint run
+exec golangci-lint run --new-from-rev=490e2450418f2d55f0e912d548cbae3b1fbc8e83
