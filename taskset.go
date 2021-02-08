@@ -3,6 +3,7 @@ package dstask
 // main task data structures
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -199,28 +200,34 @@ func (ts *TaskSet) LoadTask(task *Task) (*Task, error) {
 // of the main switch statement. Though, a future 3rdparty sync system could
 // need this to work regardless.
 func (ts *TaskSet) MustUpdateTask(task Task) {
+	if err := ts.UpdateTask(task); err != nil {
+		ExitFail(err.Error())
+	}
+}
+
+func (ts *TaskSet) UpdateTask(task Task) error {
 	task.Normalise()
 
 	if err := task.Validate(); err != nil {
-		ExitFail("%s, task %s", err, task.UUID)
+		return fmt.Errorf("%s, task %s", err, task.UUID)
 	}
 
 	if ts.tasksByUUID[task.UUID] == nil {
-		ExitFail("Could not find given task to update by UUID")
+		return fmt.Errorf("Could not find given task to update by UUID")
 	}
 
 	if !IsValidPriority(task.Priority) {
-		ExitFail("Invalid priority specified")
+		return fmt.Errorf("Invalid priority specified")
 	}
 
 	old := ts.tasksByUUID[task.UUID]
 
 	if old.Status != task.Status && !IsValidStateTransition(old.Status, task.Status) {
-		ExitFail("Invalid state transition: %s -> %s", old.Status, task.Status)
+		return fmt.Errorf("Invalid state transition: %s -> %s", old.Status, task.Status)
 	}
 
 	if old.Status != task.Status && task.Status == STATUS_RESOLVED && strings.Contains(task.Notes, "- [ ] ") {
-		ExitFail("Refusing to resolve task with incomplete tasklist")
+		return fmt.Errorf("Refusing to resolve task with incomplete tasklist")
 	}
 
 	if task.Status == STATUS_RESOLVED {
@@ -234,6 +241,7 @@ func (ts *TaskSet) MustUpdateTask(task Task) {
 	task.WritePending = true
 	// existing pointer must point to address of new task copied
 	*ts.tasksByUUID[task.UUID] = task
+	return nil
 }
 
 func (ts *TaskSet) Filter(query Query) {
