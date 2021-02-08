@@ -269,11 +269,19 @@ func (ts *TaskSet) FilterOrganised() {
 }
 
 func (ts *TaskSet) MustGetByID(id int) Task {
+	task, err := ts.GetByID(id)
+	if err != nil {
+		ExitFail(err.Error())
+	}
+	return *task
+}
+
+func (ts *TaskSet) GetByID(id int) (*Task, error) {
 	if ts.tasksByID[id] == nil {
-		ExitFail("No open task with ID %v exists.", id)
+		return nil, fmt.Errorf("no open task with ID %v exists.", id)
 	}
 
-	return *ts.tasksByID[id]
+	return ts.tasksByID[id], nil
 }
 
 func (ts *TaskSet) Tasks() []Task {
