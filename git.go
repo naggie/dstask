@@ -59,7 +59,8 @@ func GitCommit(repoPath, format string, a ...interface{}) error {
 	// check for changes -- returns exit status 1 on change. Make sure git repo
 	// has commits first, to avoid missing HEAD error.
 	if !brandNew && RunGitCmd(repoPath, "diff-index", "--quiet", "HEAD", "--") == nil {
-		return fmt.Errorf("no changes detected")
+		fmt.Println("No changes detected")
+		return nil
 	}
 
 	if err = RunGitCmd(repoPath, "commit", "--no-gpg-sign", "-m", msg); err != nil {
