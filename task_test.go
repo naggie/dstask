@@ -60,7 +60,7 @@ func TestModifyChangesProperties(t *testing.T) {
 				Project: "myproject",
 			},
 			Query{
-				AntiProjects: "myproject",
+				AntiProjects: []string{"myproject"},
 			},
 			Task{},
 		},
