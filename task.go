@@ -262,7 +262,10 @@ func (t *Task) Modify(query Query) {
 	}
 
 	if query.Note != "" {
-		t.Notes += "\n" + query.Note
+		if t.Notes != "" {
+			t.Notes += "\n"
+		}
+		t.Notes += query.Note
 	}
 }
 
