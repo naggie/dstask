@@ -62,6 +62,10 @@ func IsValidStatus(status string) bool {
 	return StrSliceContains(ALL_STATUSES, status)
 }
 
+func IsNonResolvedStatus(status string) bool {
+	return StrSliceContains(NON_RESOLVED_STATUSES, status)
+}
+
 func SumInts(vals ...int) int {
 	var total int
 

@@ -67,3 +67,49 @@ func TestStrSliceContainsAll(t *testing.T) {
 	}
 
 }
+
+func TestIsNonResolvedStatus(t *testing.T) {
+	type testCase struct {
+		status   string
+		expected bool
+	}
+
+	var testCases = []testCase{
+		{
+			STATUS_RESOLVED,
+			false,
+		},
+		{
+			STATUS_PENDING,
+			true,
+		},
+		{
+			STATUS_ACTIVE,
+			true,
+		},
+		{
+			STATUS_DELEGATED,
+			true,
+		},
+		{
+			STATUS_DEFERRED,
+			true,
+		},
+		{
+			STATUS_PAUSED,
+			true,
+		},
+		{
+			STATUS_RECURRING,
+			true,
+		},
+		{
+			STATUS_TEMPLATE,
+			true,
+		},
+	}
+
+	for _, tc := range testCases {
+		assert.Equal(t, tc.expected, IsNonResolvedStatus(tc.status))
+	}
+}

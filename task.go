@@ -176,7 +176,7 @@ func (t *Task) MatchesFilter(query Query) bool {
 }
 
 func (task *Task) Id() string {
-	if task.Status == STATUS_TEMPLATE {
+	if !IsNonResolvedStatus(task.Status) || task.Status == STATUS_TEMPLATE {
 		return task.UUID[0:8]
 	}
 	return fmt.Sprintf("%-2d", task.ID)
