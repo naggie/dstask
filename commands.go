@@ -249,7 +249,7 @@ func CommandNext(conf Config, ctx, query Query) error {
 		return err
 	}
 
-	if len(query.IDs) > 0 {
+	if len(query.IDs) > 0 || len(query.UUIDs) > 0 {
 		// addressing task by ID, ignores context
 		if query.HasOperators() {
 			return errors.New("operators not valid when addressing task by ID")

@@ -144,6 +144,11 @@ func (t *Task) MatchesFilter(query Query) bool {
 		return false
 	}
 
+	// UUID doesn't match what was specifie
+	if len(query.UUIDs) > 0 && !StrSliceContains(query.UUIDs, t.UUId()) {
+		return false
+	}
+
 	for _, tag := range query.Tags {
 		if !StrSliceContains(t.Tags, tag) {
 			return false
