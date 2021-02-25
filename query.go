@@ -5,6 +5,7 @@ package dstask
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -14,6 +15,7 @@ import (
 type Query struct {
 	Cmd           string
 	IDs           []int
+	UUIDs         []string
 	Tags          []string
 	AntiTags      []string
 	Project       string
@@ -89,6 +91,7 @@ func (query Query) HasOperators() bool {
 func ParseQuery(args ...string) Query {
 	var cmd string
 	var ids []int
+	var uuids []string
 	var tags []string
 	var antiTags []string
 	var project string
@@ -99,6 +102,8 @@ func ParseQuery(args ...string) Query {
 	var notesModeActivated bool
 	var notes []string
 	var ignoreContext bool
+
+	uuidRegex := regexp.MustCompile("[a-f0-9]{8}")
 
 	// something other than an ID has been parsed -- accept no more IDs
 	var IDsExhausted bool
@@ -144,6 +149,8 @@ func ParseQuery(args ...string) Query {
 			antiTags = append(antiTags, lcItem[1:])
 		} else if priority == "" && IsValidPriority(item) {
 			priority = item
+		} else if uuidRegex.MatchString(item) {
+			uuids = append(uuids, item)
 		} else {
 			words = append(words, item)
 		}
@@ -154,6 +161,7 @@ func ParseQuery(args ...string) Query {
 	return Query{
 		Cmd:           cmd,
 		IDs:           ids,
+		UUIDs:         uuids,
 		Tags:          tags,
 		AntiTags:      antiTags,
 		Project:       project,

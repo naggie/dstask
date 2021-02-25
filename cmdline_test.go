@@ -142,6 +142,12 @@ func TestParseQuery(t *testing.T) {
 				Note:          "",
 			},
 		},
+		{
+			[]string{"abc12312"},
+			Query{
+				UUIDs: []string{"abc12312"},
+			},
+		},
 	} // end test cases
 
 	for i, tc := range tests {
