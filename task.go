@@ -177,9 +177,13 @@ func (t *Task) MatchesFilter(query Query) bool {
 
 func (task *Task) Id() string {
 	if !IsNonResolvedStatus(task.Status) || task.Status == STATUS_TEMPLATE {
-		return task.UUID[0:8]
+		return task.UUId()
 	}
 	return fmt.Sprintf("%-2d", task.ID)
+}
+
+func (task *Task) UUId() string {
+	return task.UUID[0:8]
 }
 
 // Normalise mutates and sorts some of a task object's fields into a consistent
