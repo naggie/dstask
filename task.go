@@ -261,12 +261,10 @@ func (t *Task) Modify(query Query) {
 		t.Priority = query.Priority
 	}
 
-	if query.Note != "" {
-		if t.Notes != "" {
-			t.Notes += "\n"
-		}
-		t.Notes += query.Note
+	if t.Notes != "" {
+		t.Notes += "\n"
 	}
+	t.Notes += query.Note
 }
 
 func (t *Task) SaveToDisk(repoPath string) {
