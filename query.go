@@ -175,11 +175,9 @@ func loadAllCommands() []string {
 	for _, curpath := range paths {
 		currentPath := curpath + string(os.PathSeparator)
 		found, _ := filepath.Glob(currentPath + "dstask-*")
-		if found != nil {
-			for _, foundPath := range found {
-				cmd := strings.Replace(foundPath, currentPath+"dstask-", "", -1)
-				allCommands = append(allCommands, cmd)
-			}
+		for _, foundPath := range found {
+			cmd := strings.Replace(foundPath, currentPath+"dstask-", "", -1)
+			allCommands = append(allCommands, cmd)
 		}
 	}
 
