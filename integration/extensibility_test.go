@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -19,11 +18,16 @@ func TestExtensibility(t *testing.T) {
 	originalPath := os.Getenv("PATH")
 	newPath := originalPath + string(os.PathListSeparator) + workingDirectory
 	os.Setenv("PATH", newPath)
-	err = os.WriteFile("dstask-extensibility", []byte("#!/usr/bin/env bash\necho \"Extensibility Test\""), 0777)
+
+	f, err := os.OpenFile("dstask-extensibility", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0777)
 	if err != nil {
-		fmt.Println("Unable to write the extensibility test script", err)
-		t.Fail()
+		t.Fatal("Failed to open extensibility script", err)
 	}
+
+	if _, err := f.Write([]byte("#!/usr/bin/env bash\necho \"Extensibility Test\"")); err != nil {
+		t.Fatal("Failed to write extensibility script", err)
+	}
+
 	cleanup = func() {
 		os.Remove("dstask-extensibility")
 		os.Setenv("PATH", originalPath)
