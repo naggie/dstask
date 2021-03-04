@@ -5,6 +5,7 @@ package dstask
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -112,7 +113,8 @@ func ParseQuery(args ...string) Query {
 			continue
 		}
 
-		if cmd == "" && StrSliceContains(ALL_CMDS, lcItem) {
+		allCommands := loadAllCommands()
+		if cmd == "" && StrSliceContains(allCommands, lcItem) {
 			cmd = lcItem
 			continue
 		}
@@ -164,6 +166,24 @@ func ParseQuery(args ...string) Query {
 		Note:          strings.Join(notes, " "),
 		IgnoreContext: ignoreContext,
 	}
+}
+
+func loadAllCommands() []string {
+	allCommands := ALL_CMDS
+	envPath := os.Getenv("PATH")
+	paths := strings.Split(envPath, string(os.PathListSeparator))
+	for _, curpath := range paths {
+		currentPath := curpath + string(os.PathSeparator)
+		found, _ := filepath.Glob(currentPath + "dstask-*")
+		if found != nil {
+			for _, foundPath := range found {
+				cmd := strings.Replace(foundPath, currentPath+"dstask-", "", -1)
+				allCommands = append(allCommands, cmd)
+			}
+		}
+	}
+
+	return allCommands
 }
 
 // Merge applies a context to a new task. Returns new Query, does not mutate.
