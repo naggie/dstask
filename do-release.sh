@@ -56,10 +56,10 @@ mv dstask-import dist/dstask-import-darwin-amd64
 hub release create \
     --draft \
     -a dist/dstask-linux-arm5#"dstask linux-arm5" \
-    -a dist/dstask-import-linux-arm5#"dstask linux-arm5" \
     -a dist/dstask-linux-amd64#"dstask linux-amd64" \
-    -a dist/dstask-import-linux-amd64#"dstask linux-amd64" \
     -a dist/dstask-darwin-amd64#"dstask darwin-amd64" \
-    -a dist/dstask-import-darwin-amd64#"dstask darwin-amd64" \
+    -a dist/dstask-import-linux-arm5#"dstask-import linux-arm5" \
+    -a dist/dstask-import-linux-amd64#"dstask-import linux-amd64" \
+    -a dist/dstask-import-darwin-amd64#"dstask-import darwin-amd64" \
     -F $RELEASE_FILE \
     $1
