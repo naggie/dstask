@@ -8,11 +8,11 @@ clone:
 
 steps:
   - name: lint
-    image: golang:1.13
+    image: golang:1.15
     commands:
       - make lint
   - name: test
-    image: golang:1.13
+    image: golang:1.15
     commands:
       - "go test -v -mod=vendor ./..."
       - "./integrationtest.sh"
