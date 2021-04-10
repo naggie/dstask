@@ -296,3 +296,7 @@ Not as part of dstask itself. However, dstask can be used as a library -- @botto
 has started developing a web GUI, specifically to allow task management on-the-go
 via a smartphone: https://github.com/botto/dstask-gui . It's in early stages but
 is meaningful as having no smartphone-based control is a blocker for a lot of people.
+
+> Has dstask been featured in a magazine?
+
+Yes! <https://www.linux-magazine.com/Issues/2021/246/dstask>  :-)
