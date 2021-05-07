@@ -2,7 +2,7 @@
 
 ## Importing data
 
-Please see the [dstask-import tw instructions](doc/dstask-import.md#taskwarrior) to import taskwarrior tasks.
+Please see the [dstask-import tw instructions](dstask-import.md#taskwarrior) to import taskwarrior tasks.
 
 ## Using dstask
 
