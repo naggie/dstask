@@ -111,7 +111,7 @@ func (ts *TaskSet) renderTable(truncate bool) error {
 					strings.Join(t.Tags, " "),
 					t.Project,
 					t.LongSummary(),
-					strconv.Itoa(t.Urgency),
+					strconv.FormatFloat(t.Urgency, 'f', 2, 64),
 				},
 				style,
 			)
@@ -145,6 +145,7 @@ func (task *Task) Display() {
 	table.AddRow([]string{"Tags", strings.Join(task.Tags, ", ")}, RowStyle{})
 	table.AddRow([]string{"UUID", task.UUID}, RowStyle{})
 	table.AddRow([]string{"Created", task.Created.String()}, RowStyle{})
+	table.AddRow([]string{"Urgency", strconv.FormatFloat(task.Urgency, 'f', 2, 64)}, RowStyle{})
 	if !task.Resolved.IsZero() {
 		table.AddRow([]string{"Resolved", task.Resolved.String()}, RowStyle{})
 	}
@@ -152,6 +153,24 @@ func (task *Task) Display() {
 		table.AddRow([]string{"Due", task.Due.String()}, RowStyle{})
 	}
 	table.Render()
+
+	fmt.Println("")
+
+	urgency := NewTable(
+		w,
+		"Urgency",
+		"Total",
+	)
+	totalUrgency := float64(0)
+	for _, modifier := range task.UrgencyModifiers {
+		modifierTotal := modifier.Amount * modifier.Modifier
+		urgency.AddRow([]string{modifier.Description, strconv.FormatFloat(modifierTotal, 'f', 2, 64)}, RowStyle{})
+		totalUrgency += modifierTotal
+	}
+	urgency.AddRow([]string{"Total Urgency", strconv.FormatFloat(totalUrgency, 'f', 2, 64)}, RowStyle{Fg: FG_ACTIVE, Bg: BG_ACTIVE})
+
+	urgency.Render()
+
 }
 
 func (t *Task) Style() RowStyle {
