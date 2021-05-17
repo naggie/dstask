@@ -20,6 +20,12 @@ type SubTask struct {
 	Resolved bool
 }
 
+type UrgencyModifier struct {
+	Description string
+	Modifier    float64
+	Amount      float64
+}
+
 // Task is our representation of tasks added at the command line and serialized
 // to the task database on disk. It is rendered in multiple ways by the TaskSet
 // to which it belongs.
@@ -57,11 +63,13 @@ type Task struct {
 	Due      time.Time `json:"due"`
 
 	// Urgency is generated on the fly
-	Urgency int `json:"urgency" yaml:"-"`
+	Urgency float64 `json:"urgency" yaml:"-"`
 
 	// TaskSet uses this to indicate if a given task is excluded by a filter
 	// (context etc)
 	filtered bool `json:"-"`
+
+	UrgencyModifiers []UrgencyModifier `json:"-"`
 }
 
 // Equals returns whether t2 equals task.
@@ -131,7 +139,12 @@ func unmarshalTask(path string, finfo os.FileInfo, ids IdsMap, status string) (T
 	}
 
 	t.Status = status
-	t.Urgency = computeUrgency(t)
+	t.UrgencyModifiers = computeUrgency(t)
+	urgency := float64(0)
+	for _, modifier := range t.UrgencyModifiers {
+		urgency += modifier.Amount * modifier.Modifier
+	}
+	t.Urgency = urgency
 	return t, nil
 }
 
@@ -275,44 +288,64 @@ func (task *Task) IsResolved() bool {
 	return true
 }
 
+func NewUrgencyModifier(description string, modifier float64, amount float64) UrgencyModifier {
+	return UrgencyModifier{
+		Description: description,
+		Modifier:    modifier,
+		Amount:      amount,
+	}
+}
+
 // If you make changes to this function, make sure you update doc/urgency.md to
 // reflect the changes.
-func computeUrgency(task Task) int {
+func computeUrgency(task Task) []UrgencyModifier {
+	var urgencyModifiers = []UrgencyModifier{}
+
 	if task.IsResolved() {
-		return 0
+		return urgencyModifiers
 	}
 
-	urgency := 1
+	defaultUrgency := NewUrgencyModifier("Open Issue", 1, 1)
 
-	priorityMultiplier := 5
+	priorityUrgency := NewUrgencyModifier("", 5, 0)
+
 	switch task.Priority {
 	case PRIORITY_LOW:
-		urgency += priorityMultiplier * 1
+		priorityUrgency.Amount = 1
+		priorityUrgency.Description = "Low Priority"
 	case PRIORITY_NORMAL:
-		urgency += priorityMultiplier * 2
+		priorityUrgency.Amount = 2
+		priorityUrgency.Description = "Normal Priority"
 	case PRIORITY_HIGH:
-		urgency += priorityMultiplier * 3
+		priorityUrgency.Amount = 3
+		priorityUrgency.Description = "High Priority"
 	case PRIORITY_CRITICAL:
-		urgency += priorityMultiplier * 5
+		priorityUrgency.Amount = 5
+		priorityUrgency.Description = "Critical Priority"
 	}
 
+	statusUrgency := NewUrgencyModifier("InactiveTask", 1, 0)
 	if task.Status == STATUS_ACTIVE {
-		urgency += 5
+		statusUrgency.Description = "Active Task"
+		statusUrgency.Amount = 5
 	}
 
+	projectUrgency := NewUrgencyModifier("Project", 1, 0)
 	if len(task.Project) > 0 {
-		urgency += 3
+		projectUrgency.Amount = 3
 	}
 
+	tagUrgency := NewUrgencyModifier("Tags", 1, 0)
 	if len(task.Tags) > 0 {
-		urgency += 3
+		tagUrgency.Amount = 3
 	}
 
-	ageMultiplier := 0.05
-	ageInDays := int(time.Since(task.Created).Hours() / 24)
-	urgency += int(float64(ageInDays) * ageMultiplier)
+	ageInDays := time.Since(task.Created).Hours() / 24
+	ageUrgency := NewUrgencyModifier("Age", 0.05, ageInDays)
 
-	return urgency
+	urgencyModifiers = append(urgencyModifiers, defaultUrgency, priorityUrgency, statusUrgency, projectUrgency, tagUrgency, ageUrgency)
+
+	return urgencyModifiers
 }
 
 func (t *Task) SaveToDisk(repoPath string) {
