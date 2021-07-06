@@ -279,9 +279,9 @@ func (t *Task) Modify(query Query) {
 	}
 }
 
-func (task *Task) IsResolved() bool {
+func (t *Task) IsResolved() bool {
 	for _, nonResolvedStatus := range NON_RESOLVED_STATUSES {
-		if task.Status == nonResolvedStatus {
+		if t.Status == nonResolvedStatus {
 			return false
 		}
 	}
