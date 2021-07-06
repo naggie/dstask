@@ -324,7 +324,7 @@ func computeUrgency(task Task) []UrgencyModifier {
 		priorityUrgency.Description = "Critical Priority"
 	}
 
-	statusUrgency := NewUrgencyModifier("InactiveTask", 1, 0)
+	statusUrgency := NewUrgencyModifier("Inactive Task", 1, 0)
 	if task.Status == STATUS_ACTIVE {
 		statusUrgency.Description = "Active Task"
 		statusUrgency.Amount = 5
@@ -341,7 +341,7 @@ func computeUrgency(task Task) []UrgencyModifier {
 	}
 
 	ageInDays := time.Since(task.Created).Hours() / 24
-	ageUrgency := NewUrgencyModifier("Age", 0.05, ageInDays)
+	ageUrgency := NewUrgencyModifier(fmt.Sprintf("Age (%d days)", int(ageInDays)), 0.05, ageInDays)
 
 	urgencyModifiers = append(urgencyModifiers, defaultUrgency, priorityUrgency, statusUrgency, projectUrgency, tagUrgency, ageUrgency)
 
