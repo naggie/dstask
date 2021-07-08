@@ -26,7 +26,7 @@ func TestShowOpen(t *testing.T) {
 
 	// Newest tasks come first
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, "two", tasks[0].Summary, "two should be sorted first")
+	assert.Equal(t, "one", tasks[0].Summary, "one should be sorted first because it is older")
 
 	output, exiterr, success = program("context", "-one")
 	assertProgramResult(t, output, exiterr, success)
