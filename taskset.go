@@ -317,7 +317,7 @@ func (ts *TaskSet) GetTags() map[string]bool {
 func (ts *TaskSet) GetProjects() []*Project {
 	projectsMap := make(map[string]*Project)
 
-	for _, task := range ts.Tasks() {
+	for _, task := range ts.AllTasks() {
 		name := task.Project
 
 		if name == "" {

@@ -399,7 +399,7 @@ func CommandShowProjects(conf Config, ctx, query Query) error {
 		return errors.New("query/context not supported for show-projects")
 	}
 
-	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
+	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, true)
 	if err != nil {
 		return err
 	}
