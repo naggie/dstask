@@ -1,6 +1,6 @@
 module github.com/naggie/dstask
 
-go 1.13
+go 1.15
 
 require (
 	github.com/BurntSushi/toml v0.3.1
@@ -13,9 +13,9 @@ require (
 	github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/testify v1.6.1
+	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
 	golang.org/x/oauth2 v0.0.0-20201109201403-9fd604954f58
 	golang.org/x/sys v0.0.0-20210119212857-b64e53b001e4
 	gopkg.in/yaml.v2 v2.3.0
 	gotest.tools v2.2.0+incompatible
-	honnef.co/go/tools v0.1.1 // indirect
 )
