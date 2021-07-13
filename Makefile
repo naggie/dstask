@@ -19,6 +19,10 @@ test:
 lint:
 	"qa/lint.sh"
 
+coverage:
+	go test -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out
+
 update_deps:
 	go get
 	go mod vendor
