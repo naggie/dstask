@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/naggie/dstask"
@@ -164,6 +165,11 @@ func main() {
 		dstask.Completions(conf, os.Args, ctx)
 
 	default:
-		panic("this should never happen?")
+		cmd := exec.Command("dstask-"+query.Cmd, os.Args[2:]...)
+		cmd.Stdout = os.Stdout
+		err := cmd.Run()
+		if err != nil {
+			panic(err)
+		}
 	}
 }
