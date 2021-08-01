@@ -247,7 +247,24 @@ func (ts TaskSet) DisplayByWeek() {
 	}
 }
 
-func (ts TaskSet) DisplayProjects() {
+func (ts TaskSet) DisplayProjects() error {
+	if StdoutIsTTY() {
+		ts.renderProjectsTable()
+		return nil
+	}
+	return ts.renderProjectsJSON()
+}
+
+func (ts TaskSet) renderProjectsJSON() error {
+	data, err := json.MarshalIndent(ts.GetProjects(), "", "  ")
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(os.Stdout, bytes.NewBuffer(data))
+	return err
+}
+
+func (ts TaskSet) renderProjectsTable() {
 	projects := ts.GetProjects()
 	w, _ := MustGetTermSize()
 	table := NewTable(

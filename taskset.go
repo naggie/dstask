@@ -26,18 +26,18 @@ type TaskSet struct {
 }
 
 type Project struct {
-	Name          string
-	Tasks         int
-	TasksResolved int
+	Name          string `json:"name"`
+	Tasks         int    `json:"taskCount"`
+	TasksResolved int    `json:"resolvedCount"`
 	// if any task is in the active state
-	Active bool
+	Active bool `json:"active"`
 	// first task created
-	Created time.Time
+	Created time.Time `json:"created"`
 	// last task resolved
-	Resolved time.Time
+	Resolved time.Time `json:"resolved"`
 
 	// highest non-resolved priority within project
-	Priority string
+	Priority string `json:"priority"`
 }
 
 // LoadTaskSet constructs a TaskSet from a repo path..
@@ -317,7 +317,7 @@ func (ts *TaskSet) GetTags() map[string]bool {
 func (ts *TaskSet) GetProjects() []*Project {
 	projectsMap := make(map[string]*Project)
 
-	for _, task := range ts.Tasks() {
+	for _, task := range ts.AllTasks() {
 		name := task.Project
 
 		if name == "" {
