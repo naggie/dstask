@@ -22,7 +22,7 @@
 
 
 Dstask is a personal task tracker designed to help you focus. It is similar to
-[taskwarrior](https://taskwarrior.org/) but uses git to synchronise instead of
+[Taskwarrior](https://taskwarrior.org/) but uses git to synchronise instead of
 a special protocol.
 
 Features:
@@ -32,7 +32,7 @@ Features:
 </a>
 
  * Powerful context system (automatically applies filter/tags to queries and new tasks)
- * **Git powered sync**/undo/resolve (passwordstore.org style) which means no need to set up a sync server, and sync between devices is easy!
+ * **Git powered sync**/undo/resolve ([passwordstore.org](https://www.passwordstore.org/) style) which means no need to set up a sync server, and syncing between devices is easy!
  * Task listing won't break with long task text ([unlike taskwarrior, currently](https://github.com/GothenburgBitFactory/taskwarrior/issues/2023))
  * `note` command -- edit a **full markdown note** for each task. **Checklists are useful here.**
  * `open` command -- **open URLs found in specified task** (including notes) in the browser
@@ -97,7 +97,7 @@ Requirements:
 
 # Installation
 
-1. Copy the executable (from the [releases page][1]) to somewhere in your path, named `dstask` and mark it executable. `/usr/local/bin/` is suggested.
+1. Copy the executable (from the [releases page][releases]) to somewhere in your path, named `dstask` and mark it executable. `/usr/local/bin/` is suggested.
 1. Enable bash completions by copying `.bash-completion.sh` into your home directory and sourcing it from your `.bashrc`. There's also a zsh completion script.
 1. Set up an alias in your `.bashrc`: `alias task=dstask` or `alias t=dstask` to make task management slightly faster.
 1. Create or clone a ~/.dstask git repository for the data, if you haven't already: `mkdir ~/.dstask && git -C ~/.dstask init`.
@@ -300,3 +300,6 @@ is meaningful as having no smartphone-based control is a blocker for a lot of pe
 > Has dstask been featured in a magazine?
 
 Yes! <https://www.linux-magazine.com/Issues/2021/246/dstask>  :-)
+
+
+[releases]: https://github.com/naggie/dstask/releases
