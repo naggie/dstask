@@ -15,8 +15,8 @@ import (
 
 // DisplayByNext renders the TaskSet's array of tasks.
 func (ts *TaskSet) DisplayByNext(ctx Query, truncate bool) error {
-	ts.SortByCreated(Descending)
-	ts.SortByPriority(Ascending)
+	ts.SortByCreated(Ascending)    // older tasks first (from top) like a FIFO queue
+	ts.SortByPriority(Ascending)   // high priority tasks first, of course
 	if StdoutIsTTY() {
 		ctx.PrintContextDescription()
 		err := ts.renderTable(truncate)
