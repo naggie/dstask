@@ -30,14 +30,16 @@ trap cleanup EXIT
 
 go build -o dstask -mod=vendor cmd/dstask/main.go
 
-# initialise git repo
+# Create a random branch name, and configure dstask to use it
 BRANCH="branch_${RANDOM}"
+export DSTASK_BRANCH=$BRANCH
+
+# initialise git repo
 git -C $DSTASK_GIT_REPO init
 git -C $DSTASK_GIT_REPO checkout -b $BRANCH
 git -C $DSTASK_GIT_REPO config user.email "you@example.com"
 git -C $DSTASK_GIT_REPO config user.name "Test user"
 git -C $UPSTREAM_BARE_REPO init --bare
-
 
 # general task state management and commands
 ./dstask help
