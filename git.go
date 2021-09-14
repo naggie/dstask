@@ -109,7 +109,7 @@ func EnsureRepoExists(repoPath string) {
 
 // Sync performs a git pull, and then a git push. If any conflicts are encountered,
 // the user will need to resolve them.
-func Sync(repoPath string) {
-	MustRunGitCmd(repoPath, "pull", "--no-rebase", "--no-edit", "--commit", "origin")
-	MustRunGitCmd(repoPath, "push", "origin")
+func Sync(repoPath, branch string) {
+	MustRunGitCmd(repoPath, "pull", "--no-rebase", "--no-edit", "--commit", "origin", branch)
+	MustRunGitCmd(repoPath, "push", "origin", branch)
 }

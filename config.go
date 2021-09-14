@@ -8,6 +8,8 @@ import (
 // Config models the dstask application's required configuration. All paths
 // are absolute.
 type Config struct {
+	// Branch to use when pushing and pulling to git remote
+	Branch string
 	// Path to the git repository
 	Repo string
 	// Path to the dstask local state file. State will differ between machines
@@ -23,6 +25,7 @@ func NewConfig() Config {
 
 	var conf Config
 
+	conf.Branch = getEnv("DSTASK_BRANCH", "master")
 	conf.CtxFromEnvVar = getEnv("DSTASK_CONTEXT", "")
 	conf.Repo = getEnv("DSTASK_GIT_REPO", os.ExpandEnv("$HOME/.dstask"))
 	conf.StateFile = path.Join(conf.Repo, ".git", "dstask", "state.bin")

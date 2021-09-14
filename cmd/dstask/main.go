@@ -110,7 +110,7 @@ func main() {
 		}
 
 	case dstask.CMD_SYNC:
-		if err := dstask.CommandSync(conf.Repo); err != nil {
+		if err := dstask.CommandSync(conf); err != nil {
 			dstask.ExitFail(err.Error())
 		}
 

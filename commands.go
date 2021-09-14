@@ -582,9 +582,9 @@ func CommandStop(conf Config, ctx, query Query) error {
 }
 
 // CommandSync pushes and pulls task database changes from the remote repository.
-func CommandSync(repoPath string) error {
+func CommandSync(conf Config) error {
 	// TODO(dontlaugh) return error
-	Sync(repoPath)
+	Sync(conf.Repo, conf.Branch)
 	return nil
 }
 
