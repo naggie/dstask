@@ -253,6 +253,11 @@ See [etc/DATABASE_FORMAT.md](etc/DATABASE_FORMAT.md)
 The default database location is `~/.dstask/`, but can be configured by the
 environment variable `DSTASK_GIT_REPO`.
 
+# Configure the Default Git Branch
+
+Dstask will push and pull from the **master** branch by default. An alternative
+branch can be set with the `DSTASK_BRANCH` environment variable.
+
 # Alternatives
 
 Alternatives listed must be capable of running in the terminal.
