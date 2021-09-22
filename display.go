@@ -32,15 +32,17 @@ func (ts *TaskSet) DisplayByNext(ctx Query, truncate bool) error {
 			}
 		}
 
+		// search outside current filter in taskset
 		for _, t := range ts.AllTasks() {
-			if t.Priority == PRIORITY_CRITICAL {
+			if t.Priority == PRIORITY_CRITICAL && !StrSliceContains(HIDDEN_STATUSES, t.Status) {
+				t.Display()
 				totalCritical++
 			}
 		}
 
 		if critical < totalCritical {
 			fmt.Printf(
-				"\033[38;5;%dm%v critical tasks outside this context! Use `dstask -- P0` to see them.\033[0m\n",
+				"\033[38;5;%dm%v critical task(s) outside this context! Use `dstask -- P0` to see them.\033[0m\n",
 				FG_PRIORITY_CRITICAL,
 				totalCritical-critical,
 			)
