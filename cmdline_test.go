@@ -142,6 +142,21 @@ func TestParseQuery(t *testing.T) {
 				Note:          "",
 			},
 		},
+		{
+			[]string{"add", "My", "Task", "template:1", "/", "Test", "Note"},
+			Query{
+				Cmd:           "add",
+				IDs:           nil,
+				Tags:          nil,
+				AntiTags:      nil,
+				Project:       "",
+				AntiProjects:  nil,
+				Template:      1,
+				Text:          "My Task",
+				IgnoreContext: false,
+				Note:          "Test Note",
+			},
+		},
 	} // end test cases
 
 	for i, tc := range tests {

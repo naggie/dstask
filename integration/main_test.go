@@ -81,6 +81,14 @@ func unmarshalTaskArray(t *testing.T, data []byte) []dstask.Task {
 	return tasks
 }
 
+func unmarshalProjectArray(t *testing.T, data []byte) []dstask.Project {
+	t.Helper()
+	var projects []dstask.Project
+	err := json.Unmarshal(data, &projects)
+	assert.NilError(t, err)
+	return projects
+}
+
 func makeDstaskRepo(t *testing.T) (string, func()) {
 	t.Helper()
 	dir, err := ioutil.TempDir("", "dstask")

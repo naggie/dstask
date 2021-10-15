@@ -15,9 +15,9 @@ import (
 
 // DisplayByNext renders the TaskSet's array of tasks.
 func (ts *TaskSet) DisplayByNext(ctx Query, truncate bool) error {
-	ts.SortByCreated(Descending)
-	ts.SortByUrgency(Descending)
-	ts.SortByPriority(Ascending)
+	ts.SortByCreated(Ascending)  // older tasks first (from top) like a FIFO queue
+  ts.SortByUrgency(Descending)
+	ts.SortByPriority(Ascending) // high priority tasks first, of course
 	if StdoutIsTTY() {
 		ctx.PrintContextDescription()
 		err := ts.renderTable(truncate)
@@ -269,7 +269,24 @@ func (ts TaskSet) DisplayByWeek() {
 	}
 }
 
-func (ts TaskSet) DisplayProjects() {
+func (ts TaskSet) DisplayProjects() error {
+	if StdoutIsTTY() {
+		ts.renderProjectsTable()
+		return nil
+	}
+	return ts.renderProjectsJSON()
+}
+
+func (ts TaskSet) renderProjectsJSON() error {
+	data, err := json.MarshalIndent(ts.GetProjects(), "", "  ")
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(os.Stdout, bytes.NewBuffer(data))
+	return err
+}
+
+func (ts TaskSet) renderProjectsTable() {
 	projects := ts.GetProjects()
 	w, _ := MustGetTermSize()
 	table := NewTable(
