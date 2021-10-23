@@ -7,6 +7,9 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/gofrs/uuid"
 	"github.com/mattn/go-isatty"
@@ -80,14 +83,48 @@ func RunCmd(name string, args ...string) error {
 	return cmd.Run()
 }
 
-func MustEditBytes(data []byte, ext string) []byte {
+// MakeTempFilename encodes the task ID and a truncated portion of a task
+// summary into a string suitable for passing to ioutil.TempFile.
+func MakeTempFilename(id int, summary, ext string) string {
+	truncated := make([]rune, utf8.RuneCountInString(summary))
+	i := 0
+	for _, r := range summary {
+
+		// If our utf8 grapheme cannot be encoded in a single byte, skip.
+		if utf8.RuneLen(r) != 1 {
+			continue // 👋
+		}
+
+		if unicode.IsPunct(r) {
+			continue
+		}
+
+		// If we're not a letter, number, or even printable, or we're
+		// a space char, convert to hyphen.
+		if (!unicode.IsLetter(r) && !unicode.IsNumber(r)) || unicode.IsSpace(r) {
+			r = rune('-')
+		}
+
+		truncated[i] = r
+		if i > 20 {
+			break
+		}
+		i++
+	}
+	truncated = truncated[:i]
+
+	loweredWithID := strings.ToLower(fmt.Sprintf("%v-%s", id, string(truncated)))
+
+	return fmt.Sprintf("dstask.*.%s.%s", loweredWithID, ext)
+}
+
+func MustEditBytes(data []byte, tmpFilename string) []byte {
 	editor := os.Getenv("EDITOR")
 
 	if editor == "" {
 		editor = "vim"
 	}
-
-	tmpfile, err := ioutil.TempFile("", "dstask.*."+ext)
+	tmpfile, err := ioutil.TempFile("", tmpFilename)
 	if err != nil {
 		ExitFail("Could not create temporary file to edit")
 	}
