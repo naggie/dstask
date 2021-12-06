@@ -36,7 +36,7 @@ Features:
  * Task listing won't break with long task text ([unlike taskwarrior, currently](https://github.com/GothenburgBitFactory/taskwarrior/issues/2023))
  * `note` command -- edit a **full markdown note** for each task. **Checklists are useful here.**
  * `open` command -- **open URLs found in specified task** (including notes) in the browser
- * zsh/bash completion for speed
+ * zsh/bash completion (including tags and projects in current context) for speed
  * A single statically-linked binary
  * [import tool](doc/dstask-import.md) which can import GitHub issues or taskwarrior tasks.
 
@@ -243,7 +243,7 @@ See [etc/PERFORMANCE.md](etc/PERFORMANCE.md)
 * Keep a [github-style check list](https://help.github.com/en/articles/about-task-lists) in the markdown note of complex or procedural tasks
 * Failing to get started working? Start with the smallest task
 * Record only required tasks. Track ideas separately, else your task list will grow unboundedly! I keep an `ideas.md` for various projects for this reason.
-* Use a `today` tag/context to get a lot of small things done in one day
+* set `DSTASK_CONTEXT` in a `.envrc` per-project repository. With direnv, this allows you to automatically switch context
 
 # Database
 
