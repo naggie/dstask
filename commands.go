@@ -75,7 +75,7 @@ func CommandAdd(conf Config, ctx, query Query) error {
 // CommandContext sets a global context for dstask.
 func CommandContext(conf Config, state State, ctx, query Query) error {
 	if len(os.Args) < 3 {
-		fmt.Printf("Current context: %s\n", ctx)
+		fmt.Println(ctx)
 	} else if os.Args[2] == "none" {
 		if err := state.SetContext(Query{}); err != nil {
 			return err
