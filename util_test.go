@@ -16,14 +16,19 @@ func TestMakeTempFilename(t *testing.T) {
 	}
 	var testCases = []testCase{
 		{
+			1,
+			`& &`,
+			`dstask.*.1-.md`,
+		},
+		{
 			2147483647, // max int32
 			`J's $100, != €100`,
-			`dstask.*.2147483647-js--100---100.md`,
+			`dstask.*.2147483647-js-100-100.md`,
 		},
 		{
 			-2147483648, // min int32
 			`J's $100, != €100`,
-			`dstask.*.-2147483648-js--100---100.md`,
+			`dstask.*.-2147483648-js-100-100.md`,
 		},
 		{
 			99,
@@ -33,7 +38,7 @@ func TestMakeTempFilename(t *testing.T) {
 		{
 			1,
 			`& that's that.`,
-			`dstask.*.1--thats-that.md`,
+			`dstask.*.1-thats-that.md`,
 		},
 	}
 

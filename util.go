@@ -103,6 +103,14 @@ func MakeTempFilename(id int, summary, ext string) string {
 		// a space char, convert to hyphen.
 		if (!unicode.IsLetter(r) && !unicode.IsNumber(r)) || unicode.IsSpace(r) {
 			r = rune('-')
+			// Do not allow two "-" hyphens in a row
+			if i > 0 {
+				if truncated[i-1] == rune('-') {
+					continue
+				}
+			} else {
+				continue
+			}
 		}
 
 		truncated[i] = r
