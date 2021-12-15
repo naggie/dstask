@@ -146,7 +146,7 @@ func CommandEdit(conf Config, ctx, query Query) error {
 		}
 
 		for {
-			edited := MustEditBytes(data, "yml")
+			edited := MustEditBytes(data, MakeTempFilename(task.ID, task.Summary, "yml"))
 			err = yaml.Unmarshal(edited, &task)
 			if err == nil {
 				break
@@ -284,7 +284,7 @@ func CommandNote(conf Config, ctx, query Query) error {
 		// If stdout is a TTY, we may open the editor
 		if StdoutIsTTY() {
 			if query.Text == "" {
-				task.Notes = string(MustEditBytes([]byte(task.Notes), "md"))
+				task.Notes = string(MustEditBytes([]byte(task.Notes), MakeTempFilename(task.ID, task.Summary, "md")))
 			} else {
 				if task.Notes == "" {
 					task.Notes = query.Text
