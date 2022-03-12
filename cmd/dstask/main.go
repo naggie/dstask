@@ -39,7 +39,7 @@ func main() {
 
 	switch query.Cmd {
 	// The default command
-	case "", dstask.CMD_NEXT:
+	case "", dstask.CMD_NEXT, dstask.CMD_SHOW_NEXT:
 		if err := dstask.CommandNext(conf, ctx, query); err != nil {
 			dstask.ExitFail(err.Error())
 		}
