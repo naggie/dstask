@@ -59,6 +59,9 @@ const (
 	CMD_HELP             = "help"
 	CMD_VERSION          = "version"
 
+	CMD_PRINT_ZSH_COMPLETION = "zsh-completion"
+	CMD_PRINT_BASH_COMPLETION = "bash-completion"
+
 	// filter: P1 P2 etc
 	PRIORITY_CRITICAL = "P0"
 	PRIORITY_HIGH     = "P1"
@@ -167,6 +170,8 @@ var ALL_CMDS = []string{
 	CMD_SHOW_TEMPLATES,
 	CMD_SHOW_UNORGANISED,
 	CMD_COMPLETIONS,
+	CMD_PRINT_BASH_COMPLETION,
+	CMD_PRINT_ZSH_COMPLETION,
 	CMD_HELP,
 	CMD_VERSION,
 }
