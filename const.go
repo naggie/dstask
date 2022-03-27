@@ -59,7 +59,9 @@ const (
 	CMD_HELP             = "help"
 	CMD_VERSION          = "version"
 
+	//nolint
 	CMD_PRINT_ZSH_COMPLETION = "zsh-completion"
+	//nolint
 	CMD_PRINT_BASH_COMPLETION = "bash-completion"
 
 	// filter: P1 P2 etc

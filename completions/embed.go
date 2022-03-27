@@ -1,5 +1,6 @@
 package completions
 
+//nolint
 import _ "embed"
 
 //go:embed zsh.sh
