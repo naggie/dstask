@@ -210,6 +210,15 @@ this command.
 
 Show a breakdown of projects with progress information
 `
+
+	case CMD_PRINT_BASH_COMPLETION, CMD_PRINT_ZSH_COMPLETION:
+		helpStr = `Usage: dstask [bash|zsh]-completion
+
+Print a shell completion script to stdout. The script can be sourced from
+a user's .bashrc or .zshrc like so:
+
+    source <(dstask bash-completion)
+`
 	default:
 		helpStr = `Usage: dstask [id...] <cmd> [task summary/filter]
 
@@ -253,12 +262,14 @@ show-open         : Show all non-resolved tasks (without truncation)
 show-resolved     : Show resolved tasks
 show-templates    : Show task templates
 show-unorganised  : Show untagged tasks with no projects (global context)
+bash-completion   : Print bash completion script to stdout
+zsh-completion    : Print zsh completion script to stdout
 help              : Get help on any command or show this message
 version           : Show dstask version information
 
 Colour Key:
-
 `
+
 		showKey = true
 	}
 	fmt.Fprint(os.Stderr, helpStr)
