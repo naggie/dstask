@@ -98,7 +98,7 @@ Requirements:
 # Installation
 
 1. Copy the executable (from the [releases page][releases]) to somewhere in your path, named `dstask` and mark it executable. `/usr/local/bin/` is suggested.
-1. Enable bash completions by copying `.bash-completion.sh` into your home directory and sourcing it from your `.bashrc`. There's also a zsh completion script.
+1. Enable bash completions by copying `source <(dstask bash-completion)` into your `.bashrc`. There's also a `zsh-completion` subcommand.
 1. Set up an alias in your `.bashrc`: `alias task=dstask` or `alias t=dstask` to make task management slightly faster.
 1. Create or clone a ~/.dstask git repository for the data, if you haven't already: `mkdir ~/.dstask && git -C ~/.dstask init`.
 
@@ -162,6 +162,8 @@ show-open         : Show all non-resolved tasks (without truncation)
 show-resolved     : Show resolved tasks
 show-templates    : Show task templates
 show-unorganised  : Show untagged tasks with no projects (global context)
+bash-completion   : Print bash completion script to stdout
+zsh-completion    : Print zsh completion script to stdout
 help              : Get help on any command or show this message
 version           : Show dstask version information
 ```

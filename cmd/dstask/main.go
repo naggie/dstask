@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
 	"github.com/naggie/dstask"
+	"github.com/naggie/dstask/completions"
 )
 
 func main() {
@@ -161,8 +163,13 @@ func main() {
 		dstask.CommandVersion()
 
 	case dstask.CMD_COMPLETIONS:
-		dstask.Completions(conf, os.Args, ctx)
+		completions.Completions(conf, os.Args, ctx)
 
+	case dstask.CMD_PRINT_BASH_COMPLETION:
+		fmt.Printf(completions.Bash)
+
+	case dstask.CMD_PRINT_ZSH_COMPLETION:
+		fmt.Printf(completions.Zsh)
 	default:
 		panic("this should never happen?")
 	}
