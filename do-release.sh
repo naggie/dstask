@@ -20,15 +20,6 @@ LDFLAGS="-s -w \
     -X \"github.com/naggie/dstask.BUILD_DATE=$BUILD_DATE\"\
 "
 
-# get release information
-if ! test -f $RELEASE_FILE || head -n 1 $RELEASE_FILE | grep -vq $VERSION; then
-    # file doesn't exist or is for old version, replace
-    printf "$VERSION\n\n\n" > $RELEASE_FILE
-fi
-
-vim "+ normal G $" $RELEASE_FILE
-
-
 # build
 mkdir -p dist
 
@@ -53,13 +44,17 @@ GOOS=darwin GOARCH=amd64 go build -o dstask-import -mod=vendor -ldflags="$LDFLAG
 mv dstask dist/dstask-darwin-amd64
 mv dstask-import dist/dstask-import-darwin-amd64
 
-hub release create \
+# github.com/cli/cli
+# https://github.com/cli/cli/releases/download/v2.15.0/gh_2.15.0_linux_amd64.deb
+# do: gh auth login
+gh release create \
+    --title $VERSION \
+    --notes-file $RELEASE_FILE \
     --draft \
-    -a dist/dstask-linux-arm5#"dstask linux-arm5" \
-    -a dist/dstask-linux-amd64#"dstask linux-amd64" \
-    -a dist/dstask-darwin-amd64#"dstask darwin-amd64" \
-    -a dist/dstask-import-linux-arm5#"dstask-import linux-arm5" \
-    -a dist/dstask-import-linux-amd64#"dstask-import linux-amd64" \
-    -a dist/dstask-import-darwin-amd64#"dstask-import darwin-amd64" \
-    -F $RELEASE_FILE \
-    $1
+    $VERSION \
+    dist/dstask-linux-arm5#"dstask linux-arm5" \
+    dist/dstask-linux-amd64#"dstask linux-amd64" \
+    dist/dstask-darwin-amd64#"dstask darwin-amd64" \
+    dist/dstask-import-linux-arm5#"dstask-import linux-arm5" \
+    dist/dstask-import-linux-amd64#"dstask-import linux-amd64" \
+    dist/dstask-import-darwin-amd64#"dstask-import darwin-amd64" \
