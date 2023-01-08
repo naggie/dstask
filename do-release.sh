@@ -44,6 +44,12 @@ GOOS=darwin GOARCH=amd64 go build -o dstask-import -mod=vendor -ldflags="$LDFLAG
 mv dstask dist/dstask-darwin-amd64
 mv dstask-import dist/dstask-import-darwin-amd64
 
+GOOS=darwin GOARCH=arm64 go build -o dstask -mod=vendor -ldflags="$LDFLAGS" cmd/dstask/main.go
+GOOS=darwin GOARCH=arm64 go build -o dstask-import -mod=vendor -ldflags="$LDFLAGS" cmd/dstask-import/main.go
+#upx -q dstask
+mv dstask dist/dstask-darwin-arm64
+mv dstask-import dist/dstask-import-darwin-arm64
+
 # github.com/cli/cli
 # https://github.com/cli/cli/releases/download/v2.15.0/gh_2.15.0_linux_amd64.deb
 # do: gh auth login
@@ -55,6 +61,8 @@ gh release create \
     dist/dstask-linux-arm5#"dstask linux-arm5" \
     dist/dstask-linux-amd64#"dstask linux-amd64" \
     dist/dstask-darwin-amd64#"dstask darwin-amd64" \
+    dist/dstask-darwin-arm64#"dstask darwin-arm64" \
     dist/dstask-import-linux-arm5#"dstask-import linux-arm5" \
     dist/dstask-import-linux-amd64#"dstask-import linux-amd64" \
     dist/dstask-import-darwin-amd64#"dstask-import darwin-amd64" \
+    dist/dstask-import-darwin-arm64#"dstask-import darwin-arm64" \
