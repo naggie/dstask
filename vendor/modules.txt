@@ -40,7 +40,7 @@ github.com/sirupsen/logrus
 # github.com/stretchr/testify v1.6.1
 ## explicit
 github.com/stretchr/testify/assert
-# golang.org/x/net v0.0.0-20201021035429-f5854403a974
+# golang.org/x/net v0.7.0
 ## explicit
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
@@ -48,7 +48,7 @@ golang.org/x/net/context/ctxhttp
 ## explicit
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20210119212857-b64e53b001e4
+# golang.org/x/sys v0.5.0
 ## explicit
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
