@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mvdan/xurls"
 	yaml "gopkg.in/yaml.v2"
+	"mvdan.cc/xurls/v2"
 )
 
 // CommandAdd adds a new task to the task database.
@@ -322,7 +322,7 @@ func CommandOpen(conf Config, ctx, query Query) error {
 
 	for _, id := range query.IDs {
 		task := ts.MustGetByID(id)
-		urls := xurls.Relaxed.FindAllString(task.Summary+" "+task.Notes, -1)
+		urls := xurls.Relaxed().FindAllString(task.Summary+" "+task.Notes, -1)
 		if len(urls) == 0 {
 			return fmt.Errorf("no URLs found in task %v", task.ID)
 		}

@@ -18,9 +18,6 @@ github.com/google/go-cmp/cmp/internal/value
 # github.com/mattn/go-isatty v0.0.12
 ## explicit
 github.com/mattn/go-isatty
-# github.com/mvdan/xurls v1.1.0
-## explicit
-github.com/mvdan/xurls
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
@@ -100,3 +97,6 @@ gotest.tools/assert/cmp
 gotest.tools/internal/difflib
 gotest.tools/internal/format
 gotest.tools/internal/source
+# mvdan.cc/xurls/v2 v2.4.0
+## explicit
+mvdan.cc/xurls/v2
