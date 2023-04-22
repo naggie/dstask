@@ -21,5 +21,5 @@ lint:
 
 update_deps:
 	go get
-	go mod vendor
-	git add -f vendor
+	#go mod vendor
+	#git add -f vendor
