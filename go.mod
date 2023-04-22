@@ -7,7 +7,6 @@ require (
 	github.com/gofrs/uuid v3.3.0+incompatible
 	github.com/google/go-cmp v0.5.2 // indirect
 	github.com/mattn/go-isatty v0.0.12
-	github.com/mvdan/xurls v1.1.0
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/shurcooL/githubv4 v0.0.0-20200928013246-d292edc3691b
 	github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a // indirect
@@ -18,4 +17,5 @@ require (
 	golang.org/x/sys v0.0.0-20210119212857-b64e53b001e4
 	gopkg.in/yaml.v2 v2.3.0
 	gotest.tools v2.2.0+incompatible
+	mvdan.cc/xurls/v2 v2.4.0
 )
