@@ -226,7 +226,8 @@ func (t *Task) Validate() error {
 
 // provides Summary + Last note if available
 func (t *Task) LongSummary() string {
-	noteLines := strings.Split(t.Notes, "\n")
+	notes := strings.TrimSpace(t.Notes)
+	noteLines := strings.Split(notes, "\n")
 	lastNote := noteLines[len(noteLines)-1]
 
 	if len(lastNote) > 0 {
