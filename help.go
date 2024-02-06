@@ -265,6 +265,7 @@ show-resolved     : Show resolved tasks
 show-templates    : Show task templates
 show-unorganised  : Show untagged tasks with no projects (global context)
 bash-completion   : Print bash completion script to stdout
+fish-completion   : Print fish completion script to stdout
 zsh-completion    : Print zsh completion script to stdout
 help              : Get help on any command or show this message
 version           : Show dstask version information
