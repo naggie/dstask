@@ -10,3 +10,7 @@ var Zsh string
 // Bash completion script
 //go:embed bash.sh
 var Bash string
+
+// Fish completion script
+//go:embed completions.fish
+var Fish string

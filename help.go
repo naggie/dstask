@@ -211,13 +211,15 @@ this command.
 Show a breakdown of projects with progress information
 `
 
-	case CMD_PRINT_BASH_COMPLETION, CMD_PRINT_ZSH_COMPLETION:
-		helpStr = `Usage: dstask [bash|zsh]-completion
+	case CMD_PRINT_BASH_COMPLETION, CMD_PRINT_ZSH_COMPLETION, CMD_PRINT_FISH_COMPLETION:
+		helpStr = `Usage: dstask [bash|zsh|fish]-completion
 
 Print a shell completion script to stdout. The script can be sourced from
-a user's .bashrc or .zshrc like so:
+a user's .bashrc, .zshrc, or fish.config like so:
 
     source <(dstask bash-completion)
+    source <(dstask zsh-completion)
+    dtask fish-completion | source
 `
 	default:
 		helpStr = `Usage: dstask [id...] <cmd> [task summary/filter]
@@ -263,6 +265,7 @@ show-resolved     : Show resolved tasks
 show-templates    : Show task templates
 show-unorganised  : Show untagged tasks with no projects (global context)
 bash-completion   : Print bash completion script to stdout
+fish-completion   : Print fish completion script to stdout
 zsh-completion    : Print zsh completion script to stdout
 help              : Get help on any command or show this message
 version           : Show dstask version information

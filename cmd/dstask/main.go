@@ -170,6 +170,9 @@ func main() {
 
 	case dstask.CMD_PRINT_ZSH_COMPLETION:
 		fmt.Printf(completions.Zsh)
+
+	case dstask.CMD_PRINT_FISH_COMPLETION:
+		fmt.Printf(completions.Fish)
 	default:
 		panic("this should never happen?")
 	}
