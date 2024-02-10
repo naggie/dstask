@@ -2,8 +2,9 @@ package dstask
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
+
+	"github.com/mattn/go-runewidth"
 )
 
 type Table struct {
@@ -41,10 +42,11 @@ func NewTable(w int, header ...string) *Table {
 func FixStr(text string, width int) string {
 	// remove after newline
 	text = strings.Split(text, "\n")[0]
-	if len(text) <= width {
-		return fmt.Sprintf("%-"+strconv.Itoa(width)+"v", text)
+	length := width - runewidth.StringWidth(text)
+	if length >= 0 {
+		return fmt.Sprintf("%s", text) + strings.Repeat(" ", length)
 	}
-	return text[:width]
+	return runewidth.Truncate(text, width, " ")
 }
 
 func (t *Table) AddRow(row []string, style RowStyle) {
