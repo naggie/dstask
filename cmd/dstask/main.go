@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/naggie/dstask"
@@ -174,6 +175,11 @@ func main() {
 	case dstask.CMD_PRINT_FISH_COMPLETION:
 		fmt.Printf(completions.Fish)
 	default:
-		panic("this should never happen?")
+		cmd := exec.Command("dstask-"+query.Cmd, os.Args[2:]...)
+		cmd.Stdout = os.Stdout
+		err := cmd.Run()
+		if err != nil {
+			panic(err)
+		}
 	}
 }
