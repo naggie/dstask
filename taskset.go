@@ -4,7 +4,6 @@ package dstask
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -69,7 +68,7 @@ func LoadTaskSet(repoPath, idsFilePath string, includeResolved bool) (*TaskSet, 
 
 	for _, status := range statuses {
 		dir := filepath.Join(repoPath, status)
-		files, err := ioutil.ReadDir(dir)
+		files, err := os.ReadDir(dir)
 		if err != nil {
 			if os.IsNotExist(err) {
 				// Continuing here is necessary, because we do not guarantee
@@ -79,6 +78,10 @@ func LoadTaskSet(repoPath, idsFilePath string, includeResolved bool) (*TaskSet, 
 			return nil, err
 		}
 		for _, finfo := range files {
+			// Discard hidden files like .gitkeep
+			if strings.HasPrefix(finfo.Name(), ".") {
+				continue
+			}
 			path := filepath.Join(dir, finfo.Name())
 			t, err := unmarshalTask(path, finfo, ids, status)
 			if err != nil {
