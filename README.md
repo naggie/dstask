@@ -33,7 +33,7 @@ Features:
 
  * Powerful context system (automatically applies filter/tags to queries and new tasks)
  * **Git powered sync**/undo/resolve ([passwordstore.org](https://www.passwordstore.org/) style) which means no need to set up a sync server, and syncing between devices is easy!
- * Task listing won't break with long task text ([unlike taskwarrior, currently](https://github.com/GothenburgBitFactory/taskwarrior/issues/2023))
+ * Task listing won't break with long task text
  * `note` command -- edit a **full markdown note** for each task. **Checklists are useful here.**
  * `open` command -- **open URLs found in specified task** (including notes) in the browser
  * zsh/bash completion (including tags and projects in current context) for speed
