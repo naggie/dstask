@@ -7,6 +7,7 @@ require (
 	github.com/gofrs/uuid v3.3.0+incompatible
 	github.com/google/go-cmp v0.5.2 // indirect
 	github.com/mattn/go-isatty v0.0.12
+	github.com/mattn/go-runewidth v0.0.15
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/shurcooL/githubv4 v0.0.0-20200928013246-d292edc3691b
 	github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a // indirect
