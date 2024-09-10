@@ -102,7 +102,7 @@ func (t Task) Equals(t2 Task) bool {
 
 // Unmarshal a Task from disk. We explicitly pass status, because the caller
 // already knows the status, and can override the status declared in yaml.
-func unmarshalTask(path string, finfo os.FileInfo, ids IdsMap, status string) (Task, error) {
+func unmarshalTask(path string, finfo os.DirEntry, ids IdsMap, status string) (Task, error) {
 	if len(finfo.Name()) != TASK_FILENAME_LEN {
 		return Task{}, fmt.Errorf("filename does not encode UUID %s (wrong length)", finfo.Name())
 	}
