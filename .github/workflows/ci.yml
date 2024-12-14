@@ -21,7 +21,7 @@ jobs:
       run: make lint
 
     - name: Run golangci-lint
-      uses: golangci/golangci-lint-action@490e2450418f2d55f0e912d548cbae3b1fbc8e83
+      uses: golangci/golangci-lint-action
       with:
         version: 'latest'
 
