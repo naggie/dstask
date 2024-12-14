@@ -35,7 +35,6 @@ func (ts *TaskSet) DisplayByNext(ctx Query, truncate bool) error {
 		// search outside current filter in taskset
 		for _, t := range ts.AllTasks() {
 			if t.Priority == PRIORITY_CRITICAL && !StrSliceContains(HIDDEN_STATUSES, t.Status) {
-				t.Display()
 				totalCritical++
 			}
 		}
