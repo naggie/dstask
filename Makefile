@@ -16,8 +16,9 @@ install:
 test:
 	go test -v ./...
 	./integrationtest.sh | cat  # cat -- no tty, no confirmations
+
 lint:
-	"qa/lint.sh"
+	golangci-lint run
 
 update_deps:
 	go get
