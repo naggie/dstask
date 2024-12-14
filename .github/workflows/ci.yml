@@ -20,6 +20,11 @@ jobs:
     - name: Run lint
       run: make lint
 
+    - name: Run golangci-lint
+      uses: golangci/golangci-lint-action@490e2450418f2d55f0e912d548cbae3b1fbc8e83
+      with:
+        version: 'latest'
+
   test:
     runs-on: ubuntu-latest
 
