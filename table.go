@@ -44,7 +44,7 @@ func FixStr(text string, width int) string {
 	text = strings.Split(text, "\n")[0]
 	length := width - runewidth.StringWidth(text)
 	if length >= 0 {
-		return fmt.Sprintf("%s", text) + strings.Repeat(" ", length)
+		return text + strings.Repeat(" ", length)
 	}
 	return runewidth.Truncate(text, width, " ")
 }

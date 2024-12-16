@@ -166,13 +166,13 @@ func main() {
 		completions.Completions(conf, os.Args, ctx)
 
 	case dstask.CMD_PRINT_BASH_COMPLETION:
-		fmt.Printf(completions.Bash)
+		fmt.Print(completions.Bash)
 
 	case dstask.CMD_PRINT_ZSH_COMPLETION:
-		fmt.Printf(completions.Zsh)
+		fmt.Print(completions.Zsh)
 
 	case dstask.CMD_PRINT_FISH_COMPLETION:
-		fmt.Printf(completions.Fish)
+		fmt.Print(completions.Fish)
 	default:
 		panic("this should never happen?")
 	}

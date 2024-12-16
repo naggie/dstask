@@ -1,7 +1,6 @@
 package dstask
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -47,7 +46,7 @@ func TestMakeTempFilename(t *testing.T) {
 
 		assert.Equal(t, tc.expected, tf)
 
-		f, err := ioutil.TempFile("", tf)
+		f, err := os.CreateTemp("", tf)
 		assert.Nil(t, err)
 		assert.Nil(t, f.Close())
 		assert.Nil(t, os.Remove(f.Name()))
