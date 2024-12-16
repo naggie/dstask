@@ -8,20 +8,17 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
-        fetch-depth: 50
+        fetch-depth: 0
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
-        go-version: 'stable'
-
-    - name: Run lint
-      run: make lint
+        go-version-file: go.mod
 
     - name: Run golangci-lint
-      uses: golangci/golangci-lint-action
+      uses: golangci/golangci-lint-action@v6
       with:
         version: 'latest'
 
@@ -30,14 +27,23 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 50
 
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: 'stable'
+         go-version-file: go.mod
+
+
+    - name: Go mod vendor
+      run: go mod vendor
+
+    - name: Configure Git User
+      run: |
+        git config --global user.name "GitHub Actions Bot"
+        git config --global user.email "actions@github.com"
 
     - name: Run tests
       run: |

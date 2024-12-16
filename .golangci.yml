@@ -1,5 +1,6 @@
 output:
-  format: line-number
+  formats:
+    - format: line-number
 
 linters:
   enable:
@@ -24,3 +25,6 @@ linters:
 
 run:
   timeout: 2m
+
+issues:
+  new-from-rev: "490e245"
