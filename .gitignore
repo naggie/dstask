@@ -10,3 +10,5 @@ dist
 
 # Vendor directory
 vendor
+# Added by goreleaser init:
+dist/

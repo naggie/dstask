@@ -1,0 +1,64 @@
+# This is an example .goreleaser.yml file with some sensible defaults.
+# Make sure to check the documentation at https://goreleaser.com
+
+# The lines below are called `modelines`. See `:help modeline`
+# Feel free to remove those if you don't want/need to use them.
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+
+version: 2
+
+before:
+  hooks:
+    # You may remove this if you don't use go modules.
+    - go mod tidy
+    # you may remove this if you don't need go generate
+    - go generate ./...
+    # you may remove this if you don't need go generate
+    - go mod vendor
+
+builds:
+  - id: dstask
+    binary: dstask
+    main: cmd/dstask/main.go
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - s -w
+      - X \"github.com/naggie/dstask.GIT_COMMIT={{.Commit}}\"
+      - X \"github.com/naggie/dstask.VERSION={{.Version}}\"
+      - X \"github.com/naggie/dstask.BUILD_DATE={{.Date}}\"
+    targets:
+      - linux_arm_v5
+      - linux_amd64
+      - darwin_arm64
+      - darwin_amd64
+
+  - id: dstask-import
+    binary: dstask-import
+    main: cmd/dstask-import/main.go
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - s -w
+      - X \"github.com/naggie/dstask.GIT_COMMIT={{.Commit}}\"
+      - X \"github.com/naggie/dstask.VERSION={{.Version}}\"
+      - X \"github.com/naggie/dstask.BUILD_DATE={{.Date}}\"
+    targets:
+      - linux_arm_v5
+      - linux_amd64
+      - darwin_arm64
+      - darwin_amd64
+
+archives:
+  - formats: [binary]
+
+checksum:
+  name_template: checksums.sha256
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
