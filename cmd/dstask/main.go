@@ -10,12 +10,36 @@ import (
 )
 
 func main() {
-	// special case: allow users to run the help command without requiring
-	// initialisation. Other commands are handled in the below switch statement
-	// after initialisation.
-	if len(os.Args) > 1 && os.Args[1] == dstask.CMD_HELP {
+	query := dstask.ParseQuery(os.Args[1:]...)
+
+  // It will remain true if we handle a command that doesn't require
+  // initialisation
+  noInitCommand := true
+
+  // Handle commands that don't require initialisation
+	switch query.Cmd {
+	case dstask.CMD_HELP:
 		dstask.CommandHelp(os.Args)
+
+	case dstask.CMD_VERSION:
+		dstask.CommandVersion()
+
+	case dstask.CMD_PRINT_BASH_COMPLETION:
+		fmt.Print(completions.Bash)
+
+	case dstask.CMD_PRINT_ZSH_COMPLETION:
+		fmt.Print(completions.Zsh)
+
+	case dstask.CMD_PRINT_FISH_COMPLETION:
+		fmt.Print(completions.Fish)
+
+  default:
+    noInitCommand = false
 	}
+
+  if noInitCommand {
+    return
+  }
 
 	conf := dstask.NewConfig()
 	dstask.EnsureRepoExists(conf.Repo)
@@ -23,7 +47,6 @@ func main() {
 	// Load state for getting and setting ctx
 	state := dstask.LoadState(conf.StateFile)
 	ctx := state.Context
-	query := dstask.ParseQuery(os.Args[1:]...)
 
 	// Check if we have a context override.
 	if conf.CtxFromEnvVar != "" {
@@ -159,20 +182,9 @@ func main() {
 			dstask.ExitFail(err.Error())
 		}
 
-	case dstask.CMD_VERSION:
-		dstask.CommandVersion()
-
 	case dstask.CMD_COMPLETIONS:
 		completions.Completions(conf, os.Args, ctx)
 
-	case dstask.CMD_PRINT_BASH_COMPLETION:
-		fmt.Print(completions.Bash)
-
-	case dstask.CMD_PRINT_ZSH_COMPLETION:
-		fmt.Print(completions.Zsh)
-
-	case dstask.CMD_PRINT_FISH_COMPLETION:
-		fmt.Print(completions.Fish)
 	default:
 		panic("this should never happen?")
 	}
