@@ -36,7 +36,6 @@ git -C $DSTASK_GIT_REPO config user.email "you@example.com"
 git -C $DSTASK_GIT_REPO config user.name "Test user"
 git -C $UPSTREAM_BARE_REPO init --bare
 
-
 # general task state management and commands
 ./dstask help
 ./dstask add test task +foo project:bar
@@ -97,7 +96,7 @@ unset DSTASK_FAKE_PTY
 ./dstask show-templates +uniqueTag
 
 # test import
-./dstask import-tw < etc/taskwarrior-export.json
+./dstask import-tw <etc/taskwarrior-export.json
 ./dstask next
 
 # test git command pass through
@@ -105,8 +104,7 @@ unset DSTASK_FAKE_PTY
 
 # set the bare repository as upstream origin to test sync against, and then push to it
 git -C $DSTASK_GIT_REPO remote add origin $UPSTREAM_BARE_REPO
-git -C $DSTASK_GIT_REPO push origin master
-git -C $DSTASK_GIT_REPO branch --set-upstream-to=origin/master master
+git -C $DSTASK_GIT_REPO push -u origin master:master
 ./dstask sync
 
 # cause independent changes (could be from separate downstream repositories,
