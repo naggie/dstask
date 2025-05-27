@@ -2,7 +2,6 @@ package dstask
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -24,7 +23,7 @@ func MustRunGitCmd(repoPath string, args ...string) {
 
 // MustGitCommit is like GitCommit, except if any error is
 // encountered, the program exits.
-func MustGitCommit(repoPath, format string, a ...interface{}) {
+func MustGitCommit(repoPath, format string, a ...any) {
 	msg := fmt.Sprintf(format, a...)
 
 	fmt.Printf("\n%s\n", msg)
@@ -38,11 +37,11 @@ func MustGitCommit(repoPath, format string, a ...interface{}) {
 }
 
 // GitCommit stages changes in the dstask repository and commits them.
-func GitCommit(repoPath, format string, a ...interface{}) error {
+func GitCommit(repoPath, format string, a ...any) error {
 	msg := fmt.Sprintf(format, a...)
 
 	// needed before add cmd, see diff-index command
-	bins, err := ioutil.ReadDir(path.Join(repoPath, ".git/objects"))
+	bins, err := os.ReadDir(path.Join(repoPath, ".git/objects"))
 	if err != nil {
 		return fmt.Errorf("failed to run git commit: %s", err)
 	}

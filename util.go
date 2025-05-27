@@ -3,10 +3,10 @@ package dstask
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"runtime"
+	"slices"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -16,12 +16,12 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func ExitFail(format string, a ...interface{}) {
+func ExitFail(format string, a ...any) {
 	fmt.Fprintf(os.Stderr, "\033[31m"+format+"\033[0m\n", a...)
 	os.Exit(1)
 }
 
-func ConfirmOrAbort(format string, a ...interface{}) {
+func ConfirmOrAbort(format string, a ...any) {
 	fmt.Fprintf(os.Stderr, format+" [y/n] ", a...)
 
 	reader := bufio.NewReader(os.Stdin)
@@ -132,7 +132,7 @@ func MustEditBytes(data []byte, tmpFilename string) []byte {
 	if editor == "" {
 		editor = "vim"
 	}
-	tmpfile, err := ioutil.TempFile("", tmpFilename)
+	tmpfile, err := os.CreateTemp("", tmpFilename)
 	if err != nil {
 		ExitFail("Could not create temporary file to edit")
 	}
@@ -150,8 +150,7 @@ func MustEditBytes(data []byte, tmpFilename string) []byte {
 		ExitFail("Failed to run $EDITOR")
 	}
 
-	data, err = ioutil.ReadFile(tmpfile.Name())
-
+	data, err = os.ReadFile(tmpfile.Name())
 	if err != nil {
 		ExitFail("Could not read back temporary edited file")
 	}
@@ -160,35 +159,17 @@ func MustEditBytes(data []byte, tmpFilename string) []byte {
 }
 
 func StrSliceContains(haystack []string, needle string) bool {
-	for _, item := range haystack {
-		if item == needle {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(haystack, needle)
 }
 
 // generics pls...
 func IntSliceContains(haystack []int, needle int) bool {
-	for _, item := range haystack {
-		if item == needle {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(haystack, needle)
 }
 
 func StrSliceContainsAll(subset, superset []string) bool {
 	for _, have := range subset {
-		foundInSuperset := false
-		for _, want := range superset {
-			if have == want {
-				foundInSuperset = true
-				break
-			}
-		}
+		foundInSuperset := slices.Contains(superset, have)
 		if !foundInSuperset {
 			return false
 		}

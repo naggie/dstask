@@ -5,9 +5,9 @@ package dstask
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"reflect"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -118,7 +118,7 @@ func unmarshalTask(path string, finfo os.DirEntry, ids IdsMap, status string) (T
 		ID:     ids[uuid],
 	}
 
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return Task{}, fmt.Errorf("failed to read %s", finfo.Name())
 	}
@@ -246,7 +246,7 @@ func (t *Task) Modify(query Query) {
 	for i, tag := range t.Tags {
 		if StrSliceContains(query.AntiTags, tag) {
 			// delete item
-			t.Tags = append(t.Tags[:i], t.Tags[i+1:]...)
+			t.Tags = slices.Delete(t.Tags, i, i+1)
 		}
 	}
 
@@ -279,7 +279,6 @@ func (t *Task) SaveToDisk(repoPath string) {
 		if err := os.Remove(filepath); err != nil {
 			ExitFail("Could not remove task %s: %v", filepath, err)
 		}
-
 	} else {
 		// Task is not deleted, and will be written to disk to a directory
 		// that indicates its current status. We make a shallow copy first,
@@ -293,7 +292,7 @@ func (t *Task) SaveToDisk(repoPath string) {
 			ExitFail("Failed to marshal task %s", t)
 		}
 
-		err = ioutil.WriteFile(filepath, d, 0600)
+		err = os.WriteFile(filepath, d, 0600)
 		if err != nil {
 			ExitFail("Failed to write task %s", t)
 		}

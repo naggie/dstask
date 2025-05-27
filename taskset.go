@@ -41,7 +41,6 @@ type Project struct {
 
 // LoadTaskSet constructs a TaskSet from a repo path..
 func LoadTaskSet(repoPath, idsFilePath string, includeResolved bool) (*TaskSet, error) {
-
 	// Initialise an empty TaskSet
 	var ts TaskSet
 	ts.tasksByUUID = make(map[string]*Task)
@@ -216,21 +215,21 @@ func (ts *TaskSet) UpdateTask(task Task) error {
 	}
 
 	if ts.tasksByUUID[task.UUID] == nil {
-		return fmt.Errorf("Could not find given task to update by UUID")
+		return fmt.Errorf("could not find given task to update by UUID")
 	}
 
 	if !IsValidPriority(task.Priority) {
-		return fmt.Errorf("Invalid priority specified")
+		return fmt.Errorf("invalid priority specified")
 	}
 
 	old := ts.tasksByUUID[task.UUID]
 
 	if old.Status != task.Status && !IsValidStateTransition(old.Status, task.Status) {
-		return fmt.Errorf("Invalid state transition: %s -> %s", old.Status, task.Status)
+		return fmt.Errorf("invalid state transition: %s -> %s", old.Status, task.Status)
 	}
 
 	if old.Status != task.Status && task.Status == STATUS_RESOLVED && strings.Contains(task.Notes, "- [ ] ") {
-		return fmt.Errorf("Refusing to resolve task with incomplete tasklist")
+		return fmt.Errorf("refusing to resolve task with incomplete tasklist")
 	}
 
 	if task.Status == STATUS_RESOLVED {

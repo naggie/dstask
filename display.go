@@ -79,11 +79,7 @@ func (ts *TaskSet) renderTable(truncate bool) error {
 	} else {
 		w, h := MustGetTermSize()
 
-		maxTasks := h - TERMINAL_HEIGHT_MARGIN // leave room for context message, header and prompt
-
-		if maxTasks < MIN_TASKS_SHOWN {
-			maxTasks = MIN_TASKS_SHOWN
-		}
+		maxTasks := max(h-TERMINAL_HEIGHT_MARGIN, MIN_TASKS_SHOWN)
 
 		if truncate && maxTasks < len(tasks) {
 			tasks = tasks[:maxTasks]
@@ -277,7 +273,6 @@ func (ts TaskSet) renderProjectsTable() {
 
 	for _, project := range projects {
 		if project.TasksResolved < project.Tasks {
-
 			table.AddRow(
 				[]string{
 					project.Name,
