@@ -12,11 +12,11 @@ import (
 func main() {
 	query := dstask.ParseQuery(os.Args[1:]...)
 
-  // It will remain true if we handle a command that doesn't require
-  // initialisation
-  noInitCommand := true
+	// It will remain true if we handle a command that doesn't require
+	// initialisation
+	noInitCommand := true
 
-  // Handle commands that don't require initialisation
+	// Handle commands that don't require initialisation
 	switch query.Cmd {
 	case dstask.CMD_HELP:
 		dstask.CommandHelp(os.Args)
@@ -33,13 +33,13 @@ func main() {
 	case dstask.CMD_PRINT_FISH_COMPLETION:
 		fmt.Print(completions.Fish)
 
-  default:
-    noInitCommand = false
+	default:
+		noInitCommand = false
 	}
 
-  if noInitCommand {
-    return
-  }
+	if noInitCommand {
+		return
+	}
 
 	conf := dstask.NewConfig()
 	dstask.EnsureRepoExists(conf.Repo)
