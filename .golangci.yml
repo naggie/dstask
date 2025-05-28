@@ -9,9 +9,14 @@ output:
 
 linters:
   default: all
+  settings:
+    testpackage:
+      # Regexp pattern to skip files.
+      # Default: "(export|internal)_test\\.go"
+      skip-regexp: (export|internal)_test\.go
 
 run:
   timeout: 2m
 
 issues:
-  new-from-rev: "490e245"
+  fix: true
