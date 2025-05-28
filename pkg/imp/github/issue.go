@@ -3,9 +3,9 @@ package github
 import (
 	"bytes"
 	"crypto/md5"
-	"fmt"
 	"hash"
 	"io"
+	"strconv"
 	"time"
 
 	"github.com/gofrs/uuid"
@@ -13,9 +13,8 @@ import (
 )
 
 // IssueData is a compact way to represent an issue
-// so that templates can be expanded simply (without nested properties)
+// so that templates can be expanded simply (without nested properties).
 type IssueData struct {
-
 	// internal properties
 	uuidHash hash.Hash     // to generate UUID's
 	buf      *bytes.Buffer // to expand templates into
@@ -49,7 +48,7 @@ func NewIssueData() *IssueData {
 	}
 }
 
-// Init sets all properties to match the given repo owner, name and Github data
+// Init sets all properties to match the given repo owner, name and Github data.
 func (id *IssueData) Init(repoOwner, repoName string, i Issue) {
 	id.RepoOwner = repoOwner
 	id.RepoName = repoName
@@ -71,14 +70,13 @@ func (id *IssueData) Init(repoOwner, repoName string, i Issue) {
 	_, _ = io.WriteString(id.uuidHash, "\x00")
 	_, _ = io.WriteString(id.uuidHash, repoName)
 	_, _ = io.WriteString(id.uuidHash, "\x00")
-	_, _ = io.WriteString(id.uuidHash, fmt.Sprintf("%d", i.Number))
+	_, _ = io.WriteString(id.uuidHash, strconv.Itoa(i.Number))
 	id.uuidHash.Sum(id.uuid[:0])
 	id.UUID = id.uuid.String()
 }
 
-// ToTask generates a Task based on the issue data
+// ToTask generates a Task based on the issue data.
 func (id *IssueData) ToTask(templates Templates) (dstask.Task, error) {
-
 	task := dstask.Task{
 		UUID:    id.UUID,
 		Status:  dstask.STATUS_PENDING,
@@ -94,6 +92,7 @@ func (id *IssueData) ToTask(templates Templates) (dstask.Task, error) {
 	if err != nil {
 		return task, err
 	}
+
 	task.Summary = id.buf.String()
 	id.buf.Reset()
 
@@ -101,6 +100,7 @@ func (id *IssueData) ToTask(templates Templates) (dstask.Task, error) {
 	if err != nil {
 		return task, err
 	}
+
 	task.Project = id.buf.String()
 	id.buf.Reset()
 
@@ -108,6 +108,7 @@ func (id *IssueData) ToTask(templates Templates) (dstask.Task, error) {
 	if err != nil {
 		return task, err
 	}
+
 	task.Priority = id.buf.String()
 	id.buf.Reset()
 
@@ -115,6 +116,7 @@ func (id *IssueData) ToTask(templates Templates) (dstask.Task, error) {
 	if err != nil {
 		return task, err
 	}
+
 	task.Notes = id.buf.String()
 	id.buf.Reset()
 
@@ -123,10 +125,13 @@ func (id *IssueData) ToTask(templates Templates) (dstask.Task, error) {
 		if err != nil {
 			return task, err
 		}
+
 		if id.buf.String() != "" {
 			task.Tags = append(task.Tags, id.buf.String())
 		}
+
 		id.buf.Reset()
 	}
+
 	return task, nil
 }

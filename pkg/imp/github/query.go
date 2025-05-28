@@ -25,7 +25,7 @@ type IssueConnection struct {
 	PageInfo PageInfo    `graphql:"pageInfo"`
 }
 
-// PageInfo helps with the paging large query responses
+// PageInfo helps with the paging large query responses.
 type PageInfo struct {
 	EndCursor   githubv4.String
 	HasNextPage bool

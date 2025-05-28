@@ -48,6 +48,7 @@ func Do(conf dstask.Config) error {
 
 	ts.SavePendingChanges()
 	dstask.MustGitCommit(conf.Repo, "Import from taskwarrior")
+
 	return nil
 }
 
@@ -122,9 +123,9 @@ func (t *TwTask) ConvertAnnotations() string {
 	return strings.Join(comments, "\n")
 }
 
-// convert a tw status into a dstask status
+// convert a tw status into a dstask status.
 func (t *TwTask) ConvertStatus() string {
-	if !t.Start.Time.IsZero() {
+	if !t.Start.IsZero() {
 		return dstask.STATUS_ACTIVE
 	}
 
@@ -137,7 +138,7 @@ func (t *TwTask) ConvertStatus() string {
 		return dstask.STATUS_PENDING
 	case "recurring":
 		// TODO -- implement reccurence
-		//return dstask.STATUS_RECURRING
+		// return dstask.STATUS_RECURRING
 		return dstask.STATUS_RESOLVED
 	default:
 		return t.Status
@@ -149,5 +150,6 @@ func (t *TwTask) GetResolvedTime() time.Time {
 	if t.Status == "completed" {
 		return t.Modified.Time
 	}
+
 	return time.Time{}
 }

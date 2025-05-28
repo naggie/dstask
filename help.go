@@ -7,6 +7,7 @@ import (
 
 func Help(cmd string) {
 	var helpStr string
+
 	showKey := false
 
 	switch cmd {
@@ -275,6 +276,7 @@ Colour Key:
 
 		showKey = true
 	}
+
 	fmt.Fprint(os.Stderr, helpStr)
 
 	if showKey {

@@ -25,7 +25,7 @@ type SubTask struct {
 // to which it belongs.
 type Task struct {
 	// not stored in file -- rather filename and directory
-	UUID   string `json:"uuid" yaml:"-"` // TODO: use actual uuid.UUID type here
+	UUID   string `json:"uuid"   yaml:"-"` // TODO: use actual uuid.UUID type here
 	Status string `json:"status" yaml:",omitempty"`
 	// is new or has changed. Need to write to disk.
 	WritePending bool `json:"-" yaml:"-"`
@@ -62,41 +62,52 @@ type Task struct {
 }
 
 // Equals returns whether t2 equals task.
-// for equality, we only consider "core properties", we ignore WritePending, ID, Deleted and filtered
+// for equality, we only consider "core properties", we ignore WritePending, ID, Deleted and filtered.
 func (t Task) Equals(t2 Task) bool {
 	if t2.UUID != t.UUID {
 		return false
 	}
+
 	if t2.Status != t.Status {
 		return false
 	}
+
 	if t2.Summary != t.Summary {
 		return false
 	}
+
 	if t2.Notes != t.Notes {
 		return false
 	}
+
 	if !reflect.DeepEqual(t.Tags, t2.Tags) {
 		return false
 	}
+
 	if t2.Project != t.Project {
 		return false
 	}
+
 	if t2.Priority != t.Priority {
 		return false
 	}
+
 	if t2.DelegatedTo != t.DelegatedTo {
 		return false
 	}
+
 	if !reflect.DeepEqual(t.Subtasks, t2.Subtasks) {
 		return false
 	}
+
 	if !reflect.DeepEqual(t.Dependencies, t2.Dependencies) {
 		return false
 	}
+
 	if !t2.Created.Equal(t.Created) || !t2.Resolved.Equal(t.Resolved) || !t2.Due.Equal(t.Due) {
 		return false
 	}
+
 	return true
 }
 
@@ -122,12 +133,14 @@ func unmarshalTask(path string, finfo os.DirEntry, ids IdsMap, status string) (T
 	if err != nil {
 		return Task{}, fmt.Errorf("failed to read %s", finfo.Name())
 	}
+
 	err = yaml.Unmarshal(data, &t)
 	if err != nil {
 		return Task{}, fmt.Errorf("failed to unmarshal %s", finfo.Name())
 	}
 
 	t.Status = status
+
 	return t, nil
 }
 
@@ -135,6 +148,7 @@ func (t Task) String() string {
 	if t.ID > 0 {
 		return fmt.Sprintf("%v: %s", t.ID, t.Summary)
 	}
+
 	return t.Summary
 }
 
@@ -224,7 +238,7 @@ func (t *Task) Validate() error {
 	return nil
 }
 
-// provides Summary + Last note if available
+// provides Summary + Last note if available.
 func (t *Task) LongSummary() string {
 	notes := strings.TrimSpace(t.Notes)
 	noteLines := strings.Split(notes, "\n")
@@ -233,6 +247,7 @@ func (t *Task) LongSummary() string {
 	if len(lastNote) > 0 {
 		return t.Summary + " " + NOTE_MODE_KEYWORD + " " + lastNote
 	}
+
 	return t.Summary
 }
 
@@ -265,6 +280,7 @@ func (t *Task) Modify(query Query) {
 	if t.Notes != "" {
 		t.Notes += "\n"
 	}
+
 	t.Notes += query.Note
 }
 
@@ -286,6 +302,7 @@ func (t *Task) SaveToDisk(repoPath string) {
 		// to disk, with the Status field omitted. This avoids redundant data.
 		taskCp := *t
 		taskCp.Status = ""
+
 		d, err := yaml.Marshal(&taskCp)
 		if err != nil {
 			// TODO present error to user, specific error message is important

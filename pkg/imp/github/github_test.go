@@ -8,7 +8,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// NOTE: not sure yet what is the best way to put newlines in actual task yaml files
+// NOTE: not sure yet what is the best way to put newlines in actual task yaml files.
 const tpl1 = `summary: "GH/{{.RepoOwner}}/{{.RepoName}}/{{.Number}}: {{.Title}}"
 tags: ["{{.Milestone}}", "extraTag"]
 project: "some-project"
@@ -23,6 +23,7 @@ func TestToTask(t *testing.T) {
 		issue   Issue
 		expTask dstask.Task
 	}
+
 	cases := []testCase{
 		{
 			tpl:   tpl1,
@@ -93,19 +94,20 @@ func TestToTask(t *testing.T) {
 	issueData := NewIssueData()
 
 	for _, c := range cases {
-
 		var tplTask dstask.Task
+
 		err := yaml.Unmarshal([]byte(c.tpl), &tplTask)
 		if err != nil {
 			t.Fatalf("Failed to unmarshal template: %s", err.Error())
 		}
 
 		issueData.Init(c.owner, c.repo, c.issue)
+
 		templates := ParseTemplates(tplTask)
+
 		task, _ := issueData.ToTask(templates)
 		if !task.Equals(c.expTask) {
 			t.Errorf("ToTask() mismatch.\nwant:\n%#v\ngot:\n%#v\n", c.expTask, task)
 		}
-
 	}
 }

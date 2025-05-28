@@ -26,7 +26,7 @@ type Query struct {
 	Note string
 }
 
-// reconstruct args string
+// reconstruct args string.
 func (query Query) String() string {
 	var args []string
 
@@ -37,6 +37,7 @@ func (query Query) String() string {
 	for _, tag := range query.Tags {
 		args = append(args, "+"+tag)
 	}
+
 	for _, tag := range query.AntiTags {
 		args = append(args, "-"+tag)
 	}
@@ -69,13 +70,14 @@ func (query Query) PrintContextDescription() {
 	if os.Getenv("DSTASK_CONTEXT") != "" {
 		envVarNotification = " (set by DSTASK_CONTEXT)"
 	}
+
 	if query.String() != "" {
 		fmt.Printf("\033[33mActive context%s: %s\033[0m\n", envVarNotification, query)
 	}
 }
 
 // HasOperators returns true if the query has positive or negative projects/tags,
-// priorities, template
+// priorities, template.
 func (query Query) HasOperators() bool {
 	return (len(query.Tags) > 0 ||
 		len(query.AntiTags) > 0 ||
@@ -88,16 +90,27 @@ func (query Query) HasOperators() bool {
 // ParseQuery parses the raw command line typed by the user.
 func ParseQuery(args ...string) Query {
 	var cmd string
+
 	var ids []int
+
 	var tags []string
+
 	var antiTags []string
+
 	var project string
+
 	var antiProjects []string
+
 	var priority string
+
 	var template int
+
 	var words []string
+
 	var notesModeActivated bool
+
 	var notes []string
+
 	var ignoreContext bool
 
 	// something other than an ID has been parsed -- accept no more IDs
@@ -109,16 +122,19 @@ func ParseQuery(args ...string) Query {
 		if notesModeActivated {
 			// no more parsing syntax
 			notes = append(notes, item)
+
 			continue
 		}
 
 		if cmd == "" && StrSliceContains(ALL_CMDS, lcItem) {
 			cmd = lcItem
+
 			continue
 		}
 
 		if s, err := strconv.ParseInt(item, 10, 64); !IDsExhausted && err == nil {
 			ids = append(ids, int(s))
+
 			continue
 		}
 

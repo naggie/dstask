@@ -20,7 +20,6 @@ type Config struct {
 
 // NewConfig generates a new Config struct from the environment.
 func NewConfig() Config {
-
 	var conf Config
 
 	conf.CtxFromEnvVar = getEnv("DSTASK_CONTEXT", "")
@@ -36,5 +35,6 @@ func getEnv(key string, _default string) string {
 	if val := os.Getenv(key); val != "" {
 		return val
 	}
+
 	return _default
 }

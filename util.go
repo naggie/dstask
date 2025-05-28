@@ -34,6 +34,7 @@ func ConfirmOrAbort(format string, a ...any) {
 	if input == "y\n" {
 		return
 	}
+
 	ExitFail("Aborted.")
 }
 
@@ -49,6 +50,7 @@ func MustGetUUID4String() string {
 
 func IsValidUUID4String(str string) bool {
 	_, err := uuid.FromString(str)
+
 	return err == nil
 }
 
@@ -80,6 +82,7 @@ func RunCmd(name string, args ...string) error {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
 	return cmd.Run()
 }
 
@@ -88,8 +91,8 @@ func RunCmd(name string, args ...string) error {
 func MakeTempFilename(id int, summary, ext string) string {
 	truncated := make([]rune, utf8.RuneCountInString(summary))
 	i := 0
-	for _, r := range summary {
 
+	for _, r := range summary {
 		// If our utf8 grapheme cannot be encoded in a single byte, skip.
 		if utf8.RuneLen(r) != 1 {
 			continue // 👋
@@ -114,11 +117,14 @@ func MakeTempFilename(id int, summary, ext string) string {
 		}
 
 		truncated[i] = r
+
 		if i > 20 {
 			break
 		}
+
 		i++
 	}
+
 	truncated = truncated[:i]
 
 	loweredWithID := strings.ToLower(fmt.Sprintf("%v-%s", id, string(truncated)))
@@ -132,10 +138,12 @@ func MustEditBytes(data []byte, tmpFilename string) []byte {
 	if editor == "" {
 		editor = "vim"
 	}
+
 	tmpfile, err := os.CreateTemp("", tmpFilename)
 	if err != nil {
 		ExitFail("Could not create temporary file to edit")
 	}
+
 	defer os.Remove(tmpfile.Name())
 
 	_, err = tmpfile.Write(data)
@@ -174,6 +182,7 @@ func StrSliceContainsAll(subset, superset []string) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -209,14 +218,17 @@ func MustOpenBrowser(url string) {
 func DeduplicateStrings(s []string) []string {
 	seen := make(map[string]struct{}, len(s))
 	j := 0
+
 	for _, v := range s {
 		if _, ok := seen[v]; ok {
 			continue
 		}
+
 		seen[v] = struct{}{}
 		s[j] = v
 		j++
 	}
+
 	return s[:j]
 }
 
@@ -235,6 +247,7 @@ func MustGetTermSize() (int, int) {
 
 func StdoutIsTTY() bool {
 	isTTY := isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd())
+
 	return isTTY || FAKE_PTY
 }
 
@@ -242,5 +255,6 @@ func WriteStdout(data []byte) error {
 	if _, err := os.Stdout.Write(data); err != nil {
 		return err
 	}
+
 	return nil
 }

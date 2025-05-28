@@ -40,6 +40,7 @@ func LoadState(stateFilePath string) State {
 
 	state := State{}
 	mustReadGob(stateFilePath, &state)
+
 	return state
 }
 
@@ -54,6 +55,7 @@ func (state *State) SetContext(context Query) error {
 	}
 
 	state.Context = context
+
 	return nil
 }
 
@@ -103,5 +105,6 @@ func LoadIds(idsFilePath string) IdsMap {
 
 	ids := make(IdsMap, 1000)
 	mustReadGob(idsFilePath, &ids)
+
 	return ids
 }

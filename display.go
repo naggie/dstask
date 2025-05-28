@@ -17,13 +17,17 @@ import (
 func (ts *TaskSet) DisplayByNext(ctx Query, truncate bool) error {
 	ts.SortByCreated(Ascending)  // older tasks first (from top) like a FIFO queue
 	ts.SortByPriority(Ascending) // high priority tasks first, of course
+
 	if StdoutIsTTY() {
 		ctx.PrintContextDescription()
+
 		err := ts.renderTable(truncate)
 		if err != nil {
 			return err
 		}
+
 		var critical int
+
 		var totalCritical int
 
 		for _, t := range ts.Tasks() {
@@ -46,6 +50,7 @@ func (ts *TaskSet) DisplayByNext(ctx Query, truncate bool) error {
 				totalCritical-critical,
 			)
 		}
+
 		return nil
 	}
 	// stdout is not a tty
@@ -54,17 +59,21 @@ func (ts *TaskSet) DisplayByNext(ctx Query, truncate bool) error {
 
 func (ts *TaskSet) renderJSON() error {
 	unfilteredTasks := ts.Tasks()
+
 	data, err := json.MarshalIndent(unfilteredTasks, "", "  ")
 	if err != nil {
 		return err
 	}
+
 	_, err = io.Copy(os.Stdout, bytes.NewBuffer(data))
+
 	return err
 }
 
 func (ts *TaskSet) renderTable(truncate bool) error {
 	tasks := ts.Tasks()
 	total := len(tasks)
+
 	if ts.NumTotal() == 0 {
 		fmt.Println("No tasks found. Run `dstask help` for instructions.")
 	} else if len(tasks) == 0 {
@@ -72,9 +81,11 @@ func (ts *TaskSet) renderTable(truncate bool) error {
 	} else if len(tasks) == 1 {
 		task := tasks[0]
 		task.Display()
+
 		if task.Notes != "" {
 			fmt.Printf("\nNotes on task %d:\n\033[38;5;245m%s\033[0m\n\n", task.ID, task.Notes)
 		}
+
 		return nil
 	} else {
 		w, h := MustGetTermSize()
@@ -119,6 +130,7 @@ func (ts *TaskSet) renderTable(truncate bool) error {
 			fmt.Printf("\n%v tasks.\n", total)
 		}
 	}
+
 	return nil
 }
 
@@ -139,12 +151,15 @@ func (task *Task) Display() {
 	table.AddRow([]string{"Tags", strings.Join(task.Tags, ", ")}, RowStyle{})
 	table.AddRow([]string{"UUID", task.UUID}, RowStyle{})
 	table.AddRow([]string{"Created", task.Created.String()}, RowStyle{})
+
 	if !task.Resolved.IsZero() {
 		table.AddRow([]string{"Resolved", task.Resolved.String()}, RowStyle{})
 	}
+
 	if !task.Due.IsZero() {
 		table.AddRow([]string{"Due", task.Due.String()}, RowStyle{})
 	}
+
 	table.Render()
 }
 
@@ -172,7 +187,7 @@ func (t *Task) Style() RowStyle {
 	return style
 }
 
-// TODO combine with previous with interface, plus computed Project status
+// TODO combine with previous with interface, plus computed Project status.
 func (p *Project) Style() RowStyle {
 	style := RowStyle{}
 
@@ -195,7 +210,9 @@ func (ts TaskSet) DisplayByWeek() {
 
 	if isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd()) {
 		w, _ := MustGetTermSize()
+
 		var table *Table
+
 		var lastWeek int
 
 		tasks := ts.Tasks()
@@ -210,6 +227,7 @@ func (ts TaskSet) DisplayByWeek() {
 				}
 				// insert gap
 				fmt.Printf("\n\n> Week %d, starting %s\n\n", week, t.Resolved.Format("Mon 2 Jan 2006"))
+
 				table = NewTable(
 					w,
 					"Resolved",
@@ -237,6 +255,7 @@ func (ts TaskSet) DisplayByWeek() {
 		if table != nil {
 			table.Render()
 		}
+
 		fmt.Printf("%v tasks.\n", len(tasks))
 	} else {
 		// print json
@@ -247,8 +266,10 @@ func (ts TaskSet) DisplayByWeek() {
 func (ts TaskSet) DisplayProjects() error {
 	if StdoutIsTTY() {
 		ts.renderProjectsTable()
+
 		return nil
 	}
+
 	return ts.renderProjectsJSON()
 }
 
@@ -257,7 +278,9 @@ func (ts TaskSet) renderProjectsJSON() error {
 	if err != nil {
 		return err
 	}
+
 	_, err = io.Copy(os.Stdout, bytes.NewBuffer(data))
+
 	return err
 }
 
