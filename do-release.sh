@@ -54,10 +54,10 @@ mv dstask-import dist/dstask-import-darwin-arm64
 # https://github.com/cli/cli/releases/download/v2.15.0/gh_2.15.0_linux_amd64.deb
 # do: gh auth login
 gh release create \
-    --title $VERSION \
+    --title "$VERSION" \
     --notes-file $RELEASE_FILE \
     --draft \
-    $VERSION \
+    "$VERSION" \
     dist/dstask-linux-arm5#"dstask linux-arm5" \
     dist/dstask-linux-amd64#"dstask linux-amd64" \
     dist/dstask-darwin-amd64#"dstask darwin-amd64" \
@@ -65,4 +65,4 @@ gh release create \
     dist/dstask-import-linux-arm5#"dstask-import linux-arm5" \
     dist/dstask-import-linux-amd64#"dstask-import linux-amd64" \
     dist/dstask-import-darwin-amd64#"dstask-import darwin-amd64" \
-    dist/dstask-import-darwin-arm64#"dstask-import darwin-arm64" \
+    dist/dstask-import-darwin-arm64#"dstask-import darwin-arm64"
