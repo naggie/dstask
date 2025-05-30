@@ -61,7 +61,6 @@ func (state *State) SetContext(context Query) error {
 
 func mustWriteGob(filePath string, object interface{}) {
 	file, err := os.Create(filePath)
-
 	if err != nil {
 		ExitFail("Failed to open %s for writing: ", filePath)
 	}
@@ -69,8 +68,8 @@ func mustWriteGob(filePath string, object interface{}) {
 	defer file.Close()
 
 	encoder := gob.NewEncoder(file)
-	err = encoder.Encode(object)
 
+	err = encoder.Encode(object)
 	if err != nil {
 		ExitFail("Failed to encode state gob: %s, %s", filePath, err)
 	}
@@ -78,7 +77,6 @@ func mustWriteGob(filePath string, object interface{}) {
 
 func mustReadGob(filePath string, object interface{}) {
 	file, err := os.Open(filePath)
-
 	if err != nil {
 		ExitFail("Failed to open %s for reading: ", filePath)
 	}
@@ -86,8 +84,8 @@ func mustReadGob(filePath string, object interface{}) {
 	defer file.Close()
 
 	decoder := gob.NewDecoder(file)
-	err = decoder.Decode(object)
 
+	err = decoder.Decode(object)
 	if err != nil {
 		ExitFail("Failed to parse state gob: %s, %s", filePath, err)
 	}
