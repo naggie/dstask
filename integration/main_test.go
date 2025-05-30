@@ -116,7 +116,9 @@ func makeDstaskRepo(t *testing.T) (string, func()) {
 	}
 
 	cleanup := func() {
-		os.RemoveAll(dir)
+		if err := os.RemoveAll(dir); err != nil {
+			log.Printf("failed to remove temporary directory %s: %v", dir, err)
+		}
 	}
 
 	return dir, cleanup

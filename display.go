@@ -259,7 +259,9 @@ func (ts TaskSet) DisplayByWeek() {
 		fmt.Printf("%v tasks.\n", len(tasks))
 	} else {
 		// print json
-		ts.renderJSON()
+		if err := ts.renderJSON(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		}
 	}
 }
 
