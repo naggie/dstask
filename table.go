@@ -83,21 +83,21 @@ func (t *Table) Render() {
 
 	for SumInts(widths...) > widthBudget {
 		// find max col width index
-		var max, maxi int
+		var maxWidth, maxWidthIndex int
 
 		for i, w := range widths {
-			if w > max {
-				max = w
-				maxi = i
+			if w > maxWidth {
+				maxWidth = w
+				maxWidthIndex = i
 			}
 		}
 
 		// decrement, if 0 abort
-		if widths[maxi] == 0 {
+		if widths[maxWidthIndex] == 0 {
 			break
 		}
 
-		widths[maxi] = widths[maxi] - 1
+		widths[maxWidthIndex] = widths[maxWidthIndex] - 1
 	}
 
 	rows := append([][]string{t.Header}, t.Rows...)
