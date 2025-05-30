@@ -28,7 +28,10 @@ type IdsMap map[string]int
 
 // Save serialises State to disk as gob binary data.
 func (state State) Save(stateFilePath string) {
-	os.MkdirAll(filepath.Dir(stateFilePath), os.ModePerm)
+	if err := os.MkdirAll(filepath.Dir(stateFilePath), os.ModePerm); err != nil {
+		ExitFail("Failed to create directories for %s: %s", stateFilePath, err)
+	}
+
 	mustWriteGob(stateFilePath, &state)
 }
 
@@ -92,7 +95,10 @@ func mustReadGob(filePath string, object interface{}) {
 }
 
 func (ids *IdsMap) Save(idsFilePath string) {
-	os.MkdirAll(filepath.Dir(idsFilePath), os.ModePerm)
+	if err := os.MkdirAll(filepath.Dir(idsFilePath), os.ModePerm); err != nil {
+		ExitFail("Failed to create directories for %s: %s", idsFilePath, err)
+	}
+
 	mustWriteGob(idsFilePath, &ids)
 }
 
