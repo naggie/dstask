@@ -2,7 +2,6 @@ package imp
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/naggie/dstask"
@@ -24,7 +23,7 @@ func ProcessTask(repo string, task dstask.Task) error {
 		// TODO differentiate between "does not exist" and "file exist but got an error while loading"
 		// for now, we assume errors mean "do not exist"
 
-		data, err := ioutil.ReadFile(filepath)
+		data, err := os.ReadFile(filepath)
 		if err != nil {
 			continue
 		}
