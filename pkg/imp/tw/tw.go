@@ -23,13 +23,12 @@ func Do(conf dstask.Config) error {
 	var twtasks []TwTask
 	// from stdin
 	err = json.NewDecoder(os.Stdin).Decode(&twtasks)
-
 	if err != nil {
 		return errors.New("failed to decode JSON from stdin")
 	}
 
 	for _, twTask := range twtasks {
-		ts.LoadTask(dstask.Task{
+		_, err := ts.LoadTask(dstask.Task{
 			UUID:         twTask.UUID,
 			Status:       twTask.ConvertStatus(),
 			WritePending: true,
@@ -44,6 +43,9 @@ func Do(conf dstask.Config) error {
 			Resolved:     twTask.GetResolvedTime(),
 			Due:          twTask.Due.Time,
 		})
+		if err != nil {
+			return err
+		}
 	}
 
 	ts.SavePendingChanges()
