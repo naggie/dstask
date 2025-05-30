@@ -95,7 +95,11 @@ func LoadTaskSet(repoPath, idsFilePath string, includeResolved bool) (*TaskSet, 
 				continue
 			}
 
-			ts.LoadTask(t)
+			if _, err := ts.LoadTask(t); err != nil {
+				log.Printf("error loading task: %v\n", err)
+
+				continue
+			}
 		}
 	}
 
