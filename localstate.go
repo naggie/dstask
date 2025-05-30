@@ -62,13 +62,17 @@ func (state *State) SetContext(context Query) error {
 	return nil
 }
 
-func mustWriteGob(filePath string, object interface{}) {
+func mustWriteGob(filePath string, object any) {
 	file, err := os.Create(filePath)
 	if err != nil {
 		ExitFail("Failed to open %s for writing: ", filePath)
 	}
 
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			ExitFail("Failed to close file: %v", err)
+		}
+	}()
 
 	encoder := gob.NewEncoder(file)
 
@@ -78,13 +82,17 @@ func mustWriteGob(filePath string, object interface{}) {
 	}
 }
 
-func mustReadGob(filePath string, object interface{}) {
+func mustReadGob(filePath string, object any) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		ExitFail("Failed to open %s for reading: ", filePath)
 	}
 
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			ExitFail("Failed to close file: %v", err)
+		}
+	}()
 
 	decoder := gob.NewDecoder(file)
 
