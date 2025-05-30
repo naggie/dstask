@@ -144,13 +144,19 @@ func MustEditBytes(data []byte, tmpFilename string) []byte {
 		ExitFail("Could not create temporary file to edit")
 	}
 
-	defer os.Remove(tmpfile.Name())
+	defer func() {
+		if err := os.Remove(tmpfile.Name()); err != nil {
+			fmt.Fprintf(os.Stderr, "Warning: failed to remove temporary file: %v\n", err)
+		}
+	}()
 
 	_, err = tmpfile.Write(data)
-	tmpfile.Close()
-
 	if err != nil {
 		ExitFail("Could not write to temporary file to edit")
+	}
+
+	if err := tmpfile.Close(); err != nil {
+		ExitFail("Could not close temporary file to edit")
 	}
 
 	err = RunCmd(editor, tmpfile.Name())
