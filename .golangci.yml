@@ -8,15 +8,6 @@ output:
       colors: true
 
 linters:
-  default: all
-  disable:
-    - varnamelen
-    # Avoid change test.go file package name
-    - testpackage
-    # Avoid throw error on comments like TODO
-    - godox
-    # Avoid check importing accepted package
-    - depguard
   settings:
     testpackage:
       # Regexp pattern to skip files.
