@@ -147,7 +147,6 @@ func CommandEdit(conf Config, ctx, query Query) error {
 	for _, id := range query.IDs {
 		task := ts.MustGetByID(id)
 		data, err := yaml.Marshal(&task)
-
 		if err != nil {
 			// TODO present error to user, specific error message is important
 			return fmt.Errorf("failed to marshal task %s", task)
@@ -270,7 +269,9 @@ func CommandNext(conf Config, ctx, query Query) error {
 	}
 
 	ts.Filter(query)
-	ts.DisplayByNext(ctx, true)
+	if err := ts.DisplayByNext(ctx, true); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -403,7 +404,9 @@ func CommandShowActive(conf Config, ctx, query Query) error {
 	query = query.Merge(ctx)
 	ts.Filter(query)
 	ts.FilterByStatus(STATUS_ACTIVE)
-	ts.DisplayByNext(ctx, true)
+	if err := ts.DisplayByNext(ctx, true); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -420,7 +423,9 @@ func CommandShowProjects(conf Config, ctx, query Query) error {
 		return err
 	}
 
-	ts.DisplayProjects()
+	if err := ts.DisplayProjects(); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -434,7 +439,9 @@ func CommandShowOpen(conf Config, ctx, query Query) error {
 
 	query = query.Merge(ctx)
 	ts.Filter(query)
-	ts.DisplayByNext(ctx, false)
+	if err := ts.DisplayByNext(ctx, true); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -449,7 +456,9 @@ func CommandShowPaused(conf Config, ctx, query Query) error {
 	query = query.Merge(ctx)
 	ts.Filter(query)
 	ts.FilterByStatus(STATUS_PAUSED)
-	ts.DisplayByNext(ctx, true)
+	if err := ts.DisplayByNext(ctx, true); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -474,7 +483,6 @@ func CommandShowResolved(conf Config, ctx, query Query) error {
 // CommandShowTags prints a list of all tags associated with non-resolved tasks.
 func CommandShowTags(conf Config, ctx, query Query) error {
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
-
 	if err != nil {
 		return err
 	}
@@ -492,7 +500,6 @@ func CommandShowTags(conf Config, ctx, query Query) error {
 // CommandShowTemplates show a list of task templates.
 func CommandShowTemplates(conf Config, ctx, query Query) error {
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
-
 	if err != nil {
 		return err
 	}
@@ -502,7 +509,9 @@ func CommandShowTemplates(conf Config, ctx, query Query) error {
 
 	query = query.Merge(ctx)
 	ts.Filter(query)
-	ts.DisplayByNext(ctx, false)
+	if err := ts.DisplayByNext(ctx, true); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -520,7 +529,9 @@ func CommandShowUnorganised(conf Config, ctx, query Query) error {
 	}
 
 	ts.FilterOrganised()
-	ts.DisplayByNext(ctx, true)
+	if err := ts.DisplayByNext(ctx, true); err != nil {
+		return err
+	}
 
 	return nil
 }
