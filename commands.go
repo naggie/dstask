@@ -21,8 +21,10 @@ func CommandAdd(conf Config, ctx, query Query) error {
 	if err != nil {
 		return err
 	}
+
 	if query.Template > 0 {
 		var taskSummary string
+
 		tt := ts.MustGetByID(query.Template)
 		query = query.Merge(ctx)
 
@@ -49,6 +51,7 @@ func CommandAdd(conf Config, ctx, query Query) error {
 		task = ts.MustLoadTask(task)
 		ts.SavePendingChanges()
 		MustGitCommit(conf.Repo, "Added %s", task)
+
 		if tt.Status != STATUS_TEMPLATE {
 			// Insert Text Statement to inform user of real Templates
 			fmt.Print("\nYou've copied an open task!\nTo learn more about creating templates enter 'dstask help template'\n\n")
@@ -69,6 +72,7 @@ func CommandAdd(conf Config, ctx, query Query) error {
 		ts.SavePendingChanges()
 		MustGitCommit(conf.Repo, "Added %s", task)
 	}
+
 	return nil
 }
 
@@ -87,6 +91,7 @@ func CommandContext(conf Config, state State, ctx, query Query) error {
 	}
 
 	state.Save(conf.StateFile)
+
 	return nil
 }
 
@@ -111,9 +116,11 @@ func CommandDone(conf Config, ctx, query Query) error {
 		task := ts.MustGetByID(id)
 		task.Status = STATUS_RESOLVED
 		task.Resolved = time.Now()
+
 		if query.Text != "" {
 			task.Notes += "\n" + query.Text
 		}
+
 		ts.MustUpdateTask(task)
 		ts.SavePendingChanges()
 		MustGitCommit(conf.Repo, "Resolved %s", task)
@@ -147,6 +154,7 @@ func CommandEdit(conf Config, ctx, query Query) error {
 
 		for {
 			edited := MustEditBytes(data, MakeTempFilename(task.ID, task.Summary, "yml"))
+
 			err = yaml.Unmarshal(edited, &task)
 			if err == nil {
 				break
@@ -161,6 +169,7 @@ func CommandEdit(conf Config, ctx, query Query) error {
 		ts.SavePendingChanges()
 		MustGitCommit(conf.Repo, "Edited %s", task)
 	}
+
 	return nil
 }
 
@@ -204,7 +213,7 @@ func CommandLog(conf Config, ctx, query Query) error {
 }
 
 // CommandModify applies a change to tasks specified by ID, or all tasks in
-// current context
+// current context.
 func CommandModify(conf Config, ctx, query Query) error {
 	if !query.HasOperators() {
 		return errors.New("no operations specified")
@@ -258,8 +267,11 @@ func CommandNext(conf Config, ctx, query Query) error {
 		// apply context
 		query = query.Merge(ctx)
 	}
+
 	ts.Filter(query)
-	ts.DisplayByNext(ctx, true)
+	if err := ts.DisplayByNext(ctx, true); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -292,6 +304,7 @@ func CommandNote(conf Config, ctx, query Query) error {
 					task.Notes += "\n" + query.Text
 				}
 			}
+
 			ts.MustUpdateTask(task)
 			ts.SavePendingChanges()
 			MustGitCommit(conf.Repo, "Edit note %s", task)
@@ -302,6 +315,7 @@ func CommandNote(conf Config, ctx, query Query) error {
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -323,9 +337,11 @@ func CommandOpen(conf Config, ctx, query Query) error {
 	for _, id := range query.IDs {
 		task := ts.MustGetByID(id)
 		urls := xurls.Relaxed().FindAllString(task.Summary+" "+task.Notes, -1)
+
 		if len(urls) == 0 {
 			return fmt.Errorf("no URLs found in task %v", task.ID)
 		}
+
 		for _, url := range urls {
 			MustOpenBrowser(url)
 		}
@@ -374,6 +390,7 @@ func CommandRemove(conf Config, ctx, query Query) error {
 			MustGitCommit(conf.Repo, "Removed: %s", task)
 		}
 	}
+
 	return nil
 }
 
@@ -387,13 +404,15 @@ func CommandShowActive(conf Config, ctx, query Query) error {
 	query = query.Merge(ctx)
 	ts.Filter(query)
 	ts.FilterByStatus(STATUS_ACTIVE)
-	ts.DisplayByNext(ctx, true)
+	if err := ts.DisplayByNext(ctx, true); err != nil {
+		return err
+	}
 
 	return nil
 }
 
 // CommandShowProjects prints a list of projects associated with all tasks.
-// Ignores context/query for valid output
+// Ignores context/query for valid output.
 func CommandShowProjects(conf Config, ctx, query Query) error {
 	if len(query.IDs) > 0 || query.HasOperators() {
 		return errors.New("query/context not supported for show-projects")
@@ -403,11 +422,15 @@ func CommandShowProjects(conf Config, ctx, query Query) error {
 	if err != nil {
 		return err
 	}
-	ts.DisplayProjects()
+
+	if err := ts.DisplayProjects(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
-// CommandShowOpen prints a list of open tasks without truncation
+// CommandShowOpen prints a list of open tasks without truncation.
 func CommandShowOpen(conf Config, ctx, query Query) error {
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
@@ -416,7 +439,9 @@ func CommandShowOpen(conf Config, ctx, query Query) error {
 
 	query = query.Merge(ctx)
 	ts.Filter(query)
-	ts.DisplayByNext(ctx, false)
+	if err := ts.DisplayByNext(ctx, true); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -431,7 +456,9 @@ func CommandShowPaused(conf Config, ctx, query Query) error {
 	query = query.Merge(ctx)
 	ts.Filter(query)
 	ts.FilterByStatus(STATUS_PAUSED)
-	ts.DisplayByNext(ctx, true)
+	if err := ts.DisplayByNext(ctx, true); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -444,6 +471,7 @@ func CommandShowResolved(conf Config, ctx, query Query) error {
 	}
 
 	query = query.Merge(ctx)
+
 	ts.UnHide()
 	ts.Filter(query)
 	ts.FilterByStatus(STATUS_RESOLVED)
@@ -455,7 +483,6 @@ func CommandShowResolved(conf Config, ctx, query Query) error {
 // CommandShowTags prints a list of all tags associated with non-resolved tasks.
 func CommandShowTags(conf Config, ctx, query Query) error {
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
-
 	if err != nil {
 		return err
 	}
@@ -466,27 +493,31 @@ func CommandShowTags(conf Config, ctx, query Query) error {
 	for tag := range ts.GetTags() {
 		fmt.Println(tag)
 	}
+
 	return nil
 }
 
 // CommandShowTemplates show a list of task templates.
 func CommandShowTemplates(conf Config, ctx, query Query) error {
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
-
 	if err != nil {
 		return err
 	}
 
 	ts.UnHide()
 	ts.FilterByStatus(STATUS_TEMPLATE)
+
 	query = query.Merge(ctx)
 	ts.Filter(query)
-	ts.DisplayByNext(ctx, false)
+	if err := ts.DisplayByNext(ctx, true); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 // CommandShowUnorganised prints a list of tasks without tags or projects.
-// no context / query valid
+// no context / query valid.
 func CommandShowUnorganised(conf Config, ctx, query Query) error {
 	if len(query.IDs) > 0 || query.HasOperators() {
 		return errors.New("query/context not used for show-unorganised")
@@ -498,7 +529,10 @@ func CommandShowUnorganised(conf Config, ctx, query Query) error {
 	}
 
 	ts.FilterOrganised()
-	ts.DisplayByNext(ctx, true)
+	if err := ts.DisplayByNext(ctx, true); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -519,9 +553,11 @@ func CommandStart(conf Config, ctx, query Query) error {
 		for _, id := range query.IDs {
 			task := ts.MustGetByID(id)
 			task.Status = STATUS_ACTIVE
+
 			if query.Text != "" {
 				task.Notes += "\n" + query.Text
 			}
+
 			ts.MustUpdateTask(task)
 
 			ts.SavePendingChanges()
@@ -549,8 +585,8 @@ func CommandStart(conf Config, ctx, query Query) error {
 	} else {
 		return errors.New("nothing to do -- specify an ID or describe a task")
 	}
-	return nil
 
+	return nil
 }
 
 // CommandStop marks a task as stopped.
@@ -571,13 +607,16 @@ func CommandStop(conf Config, ctx, query Query) error {
 	for _, id := range query.IDs {
 		task := ts.MustGetByID(id)
 		task.Status = STATUS_PAUSED
+
 		if query.Text != "" {
 			task.Notes += "\n" + query.Text
 		}
+
 		ts.MustUpdateTask(task)
 		ts.SavePendingChanges()
 		MustGitCommit(conf.Repo, "Stopped %s", task)
 	}
+
 	return nil
 }
 
@@ -585,6 +624,7 @@ func CommandStop(conf Config, ctx, query Query) error {
 func CommandSync(repoPath string) error {
 	// TODO(dontlaugh) return error
 	Sync(repoPath)
+
 	return nil
 }
 
@@ -619,18 +659,20 @@ func CommandTemplate(conf Config, ctx, query Query) error {
 		ts.SavePendingChanges()
 		MustGitCommit(conf.Repo, "Created Template %s", task)
 	}
-	return nil
 
+	return nil
 }
 
 // CommandUndo performs undo with git revert.
 func CommandUndo(conf Config, args []string, ctx, query Query) error {
 	var err error
+
 	n := 1
 	if len(args) == 3 {
 		n, err = strconv.Atoi(args[2])
 		if err != nil {
 			Help(CMD_UNDO)
+
 			return err
 		}
 	}

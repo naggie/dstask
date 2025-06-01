@@ -22,7 +22,7 @@ type RowStyle struct {
 	Bg int
 }
 
-// header may  havetruncated words
+// header may  havetruncated words.
 func NewTable(w int, header ...string) *Table {
 	if w > TABLE_MAX_WIDTH {
 		w = TABLE_MAX_WIDTH
@@ -43,9 +43,11 @@ func FixStr(text string, width int) string {
 	// remove after newline
 	text = strings.Split(text, "\n")[0]
 	length := width - runewidth.StringWidth(text)
+
 	if length >= 0 {
 		return text + strings.Repeat(" ", length)
 	}
+
 	return runewidth.Truncate(text, width, " ")
 }
 
@@ -74,27 +76,28 @@ func (t *Table) Render() {
 	}
 
 	// initialise with original size and reduce interatively
-	widths := originalWidths[:]
+	widths := originalWidths
 
 	// account for gaps of 2 chrs
 	widthBudget := t.Width - TABLE_COL_GAP*(len(t.Header)-1)
 
 	for SumInts(widths...) > widthBudget {
 		// find max col width index
-		var max, maxi int
+		var maxWidth, maxWidthIndex int
 
 		for i, w := range widths {
-			if w > max {
-				max = w
-				maxi = i
+			if w > maxWidth {
+				maxWidth = w
+				maxWidthIndex = i
 			}
 		}
 
 		// decrement, if 0 abort
-		if widths[maxi] == 0 {
+		if widths[maxWidthIndex] == 0 {
 			break
 		}
-		widths[maxi] = widths[maxi] - 1
+
+		widths[maxWidthIndex] = widths[maxWidthIndex] - 1
 	}
 
 	rows := append([][]string{t.Header}, t.Rows...)
@@ -122,7 +125,7 @@ func (t *Table) Render() {
 			}
 		}
 
-		cells := row[:]
+		cells := row
 		for i, w := range widths {
 			trimmed := FixStr(cells[i], w)
 

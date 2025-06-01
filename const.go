@@ -9,9 +9,9 @@ func init() {
 }
 
 var (
-	// for CI testing
+	// for CI testing.
 	FAKE_PTY = false
-	// populated by linker flags, see do-release.sh
+	// populated by linker flags, see do-release.sh.
 	GIT_COMMIT = "Unknown"
 	VERSION    = "Unknown"
 	BUILD_DATE = "Unknown"
@@ -75,10 +75,10 @@ const (
 	MAX_TASKS_OPEN    = 10000
 	TASK_FILENAME_LEN = 40
 
-	// if the terminal is too short, show this many tasks anyway
+	// if the terminal is too short, show this many tasks anyway.
 	MIN_TASKS_SHOWN = 8
 
-	// reserve this many lines for status messages/prompt
+	// reserve this many lines for status messages/prompt.
 	TERMINAL_HEIGHT_MARGIN = 9
 
 	IGNORE_CONTEXT_KEYWORD = "--"
@@ -102,7 +102,7 @@ const (
 	FG_NOTE              = 240
 )
 
-// for import (etc) it's necessary to have full context
+// for import (etc) it's necessary to have full context.
 var ALL_STATUSES = []string{
 	STATUS_ACTIVE,
 	STATUS_PENDING,
@@ -115,14 +115,14 @@ var ALL_STATUSES = []string{
 }
 
 // statuses which are hidden by default (direct addressing or show- commands
-// needed to see them)
+// needed to see them).
 var HIDDEN_STATUSES = []string{
 	STATUS_RECURRING,
 	STATUS_RESOLVED,
 	STATUS_TEMPLATE,
 }
 
-// incomplete until all statuses are implemented
+// incomplete until all statuses are implemented.
 var VALID_STATUS_TRANSITIONS = [][]string{
 	{STATUS_PENDING, STATUS_ACTIVE},
 	{STATUS_ACTIVE, STATUS_PAUSED},
@@ -133,7 +133,7 @@ var VALID_STATUS_TRANSITIONS = [][]string{
 	{STATUS_PENDING, STATUS_TEMPLATE},
 }
 
-// for most operations, it's not necessary or desirable to load the expensive resolved tasks
+// for most operations, it's not necessary or desirable to load the expensive resolved tasks.
 var NON_RESOLVED_STATUSES = []string{
 	STATUS_ACTIVE,
 	STATUS_PENDING,

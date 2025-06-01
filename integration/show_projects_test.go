@@ -26,7 +26,7 @@ func TestShowProjects(t *testing.T) {
 
 	projects := unmarshalProjectArray(t, output)
 	assert.Equal(t, 0, projects[0].TasksResolved, "no tasks resolved")
-	assert.Equal(t, projects[0].Tasks, 3, "three tasks created")
+	assert.Equal(t, 3, projects[0].Tasks, "three tasks created")
 
 	output, exiterr, success = program("2", "done")
 	assertProgramResult(t, output, exiterr, success)

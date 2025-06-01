@@ -26,7 +26,7 @@ func TestNextSearchWord(t *testing.T) {
 	var tasks []dstask.Task
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Len(t, tasks, 0, "no tasks should be returned for a missing search term")
+	assert.Empty(t, tasks, "no tasks should be returned for a missing search term")
 
 	// search the summary of task two
 	output, exiterr, success = program("two")
@@ -44,7 +44,6 @@ func TestNextSearchWord(t *testing.T) {
 }
 
 func TestNextSearchCaseInsensitive(t *testing.T) {
-
 	repo, cleanup := makeDstaskRepo(t)
 	defer cleanup()
 
@@ -71,5 +70,4 @@ func TestNextSearchCaseInsensitive(t *testing.T) {
 
 	tasks = unmarshalTaskArray(t, output)
 	assert.Len(t, tasks, 1, `string "ALPHA" should find notes field containing "alpha"`)
-
 }

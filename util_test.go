@@ -13,6 +13,7 @@ func TestMakeTempFilename(t *testing.T) {
 		summary  string
 		expected string
 	}
+
 	var testCases = []testCase{
 		{
 			1,
@@ -46,15 +47,14 @@ func TestMakeTempFilename(t *testing.T) {
 
 		assert.Equal(t, tc.expected, tf)
 
-		f, err := os.CreateTemp("", tf)
-		assert.Nil(t, err)
-		assert.Nil(t, f.Close())
-		assert.Nil(t, os.Remove(f.Name()))
+		f, err := os.CreateTemp(t.TempDir(), tf)
+		assert.NoError(t, err)
+		assert.NoError(t, f.Close())
+		assert.NoError(t, os.Remove(f.Name()))
 	}
 }
 
 func TestStrSliceContainsAll(t *testing.T) {
-
 	type testCase struct {
 		subset   []string
 		superset []string
@@ -112,5 +112,4 @@ func TestStrSliceContainsAll(t *testing.T) {
 	for _, tc := range testCases {
 		assert.Equal(t, tc.expected, StrSliceContainsAll(tc.subset, tc.superset))
 	}
-
 }

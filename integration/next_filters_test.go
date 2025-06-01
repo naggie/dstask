@@ -57,7 +57,7 @@ func TestNextMultipleTagFilter(t *testing.T) {
 
 	tasks := unmarshalTaskArray(t, output)
 	assert.Equal(t, "one-beta", tasks[0].Summary)
-	assert.Equal(t, 1, len(tasks))
+	assert.Len(t, tasks, 1)
 }
 
 func TestNextProjectFilter(t *testing.T) {

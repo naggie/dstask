@@ -74,7 +74,7 @@ func TestSettingTagAndProjectContext(t *testing.T) {
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, 0, len(tasks), "no tasks within context project:beta +one")
+	assert.Empty(t, tasks, "no tasks within context project:beta +one")
 }
 
 func TestContextFromEnvVar(t *testing.T) {
@@ -94,6 +94,7 @@ func TestContextFromEnvVar(t *testing.T) {
 
 	// override context with an env var
 	unsetEnv := setEnv("DSTASK_CONTEXT", "+one +alpha")
+
 	t.Logf("DSTASK_CONTEXT=%s", os.Getenv("DSTASK_CONTEXT"))
 
 	output, exiterr, success = program("next")

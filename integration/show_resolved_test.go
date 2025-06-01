@@ -50,6 +50,6 @@ func TestShowResolved(t *testing.T) {
 	assert.Equal(t, "one", tasks[0].Summary, "one should be resolved")
 
 	var zeroValue time.Time
-	assert.True(t, tasks[0].Resolved.After(zeroValue), "resolved time should not be 0 value for time.Time")
 
+	assert.True(t, tasks[0].Resolved.After(zeroValue), "resolved time should not be 0 value for time.Time")
 }

@@ -3,10 +3,10 @@ package dstask
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"runtime"
+	"slices"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -16,12 +16,12 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func ExitFail(format string, a ...interface{}) {
+func ExitFail(format string, a ...any) {
 	fmt.Fprintf(os.Stderr, "\033[31m"+format+"\033[0m\n", a...)
 	os.Exit(1)
 }
 
-func ConfirmOrAbort(format string, a ...interface{}) {
+func ConfirmOrAbort(format string, a ...any) {
 	fmt.Fprintf(os.Stderr, format+" [y/n] ", a...)
 
 	reader := bufio.NewReader(os.Stdin)
@@ -34,6 +34,7 @@ func ConfirmOrAbort(format string, a ...interface{}) {
 	if input == "y\n" {
 		return
 	}
+
 	ExitFail("Aborted.")
 }
 
@@ -49,6 +50,7 @@ func MustGetUUID4String() string {
 
 func IsValidUUID4String(str string) bool {
 	_, err := uuid.FromString(str)
+
 	return err == nil
 }
 
@@ -80,6 +82,7 @@ func RunCmd(name string, args ...string) error {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
 	return cmd.Run()
 }
 
@@ -88,8 +91,8 @@ func RunCmd(name string, args ...string) error {
 func MakeTempFilename(id int, summary, ext string) string {
 	truncated := make([]rune, utf8.RuneCountInString(summary))
 	i := 0
-	for _, r := range summary {
 
+	for _, r := range summary {
 		// If our utf8 grapheme cannot be encoded in a single byte, skip.
 		if utf8.RuneLen(r) != 1 {
 			continue // 👋
@@ -114,11 +117,14 @@ func MakeTempFilename(id int, summary, ext string) string {
 		}
 
 		truncated[i] = r
+
 		if i > 20 {
 			break
 		}
+
 		i++
 	}
+
 	truncated = truncated[:i]
 
 	loweredWithID := strings.ToLower(fmt.Sprintf("%v-%s", id, string(truncated)))
@@ -132,17 +138,25 @@ func MustEditBytes(data []byte, tmpFilename string) []byte {
 	if editor == "" {
 		editor = "vim"
 	}
-	tmpfile, err := ioutil.TempFile("", tmpFilename)
+
+	tmpfile, err := os.CreateTemp("", tmpFilename)
 	if err != nil {
 		ExitFail("Could not create temporary file to edit")
 	}
-	defer os.Remove(tmpfile.Name())
+
+	defer func() {
+		if err := os.Remove(tmpfile.Name()); err != nil {
+			fmt.Fprintf(os.Stderr, "Warning: failed to remove temporary file: %v\n", err)
+		}
+	}()
 
 	_, err = tmpfile.Write(data)
-	tmpfile.Close()
-
 	if err != nil {
 		ExitFail("Could not write to temporary file to edit")
+	}
+
+	if err := tmpfile.Close(); err != nil {
+		ExitFail("Could not close temporary file to edit")
 	}
 
 	err = RunCmd(editor, tmpfile.Name())
@@ -150,8 +164,7 @@ func MustEditBytes(data []byte, tmpFilename string) []byte {
 		ExitFail("Failed to run $EDITOR")
 	}
 
-	data, err = ioutil.ReadFile(tmpfile.Name())
-
+	data, err = os.ReadFile(tmpfile.Name())
 	if err != nil {
 		ExitFail("Could not read back temporary edited file")
 	}
@@ -160,39 +173,22 @@ func MustEditBytes(data []byte, tmpFilename string) []byte {
 }
 
 func StrSliceContains(haystack []string, needle string) bool {
-	for _, item := range haystack {
-		if item == needle {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(haystack, needle)
 }
 
 // generics pls...
 func IntSliceContains(haystack []int, needle int) bool {
-	for _, item := range haystack {
-		if item == needle {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(haystack, needle)
 }
 
 func StrSliceContainsAll(subset, superset []string) bool {
 	for _, have := range subset {
-		foundInSuperset := false
-		for _, want := range superset {
-			if have == want {
-				foundInSuperset = true
-				break
-			}
-		}
+		foundInSuperset := slices.Contains(superset, have)
 		if !foundInSuperset {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -228,14 +224,17 @@ func MustOpenBrowser(url string) {
 func DeduplicateStrings(s []string) []string {
 	seen := make(map[string]struct{}, len(s))
 	j := 0
+
 	for _, v := range s {
 		if _, ok := seen[v]; ok {
 			continue
 		}
+
 		seen[v] = struct{}{}
 		s[j] = v
 		j++
 	}
+
 	return s[:j]
 }
 
@@ -254,6 +253,7 @@ func MustGetTermSize() (int, int) {
 
 func StdoutIsTTY() bool {
 	isTTY := isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd())
+
 	return isTTY || FAKE_PTY
 }
 
@@ -261,5 +261,6 @@ func WriteStdout(data []byte) error {
 	if _, err := os.Stdout.Write(data); err != nil {
 		return err
 	}
+
 	return nil
 }

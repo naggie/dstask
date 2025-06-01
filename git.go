@@ -2,7 +2,6 @@ package dstask
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -11,6 +10,7 @@ import (
 // RunGitCmd shells out to git in the context of the dstask repo.
 func RunGitCmd(repoPath string, args ...string) error {
 	args = append([]string{"-C", repoPath}, args...)
+
 	return RunCmd("git", args...)
 }
 
@@ -24,7 +24,7 @@ func MustRunGitCmd(repoPath string, args ...string) {
 
 // MustGitCommit is like GitCommit, except if any error is
 // encountered, the program exits.
-func MustGitCommit(repoPath, format string, a ...interface{}) {
+func MustGitCommit(repoPath, format string, a ...any) {
 	msg := fmt.Sprintf(format, a...)
 
 	fmt.Printf("\n%s\n", msg)
@@ -38,14 +38,15 @@ func MustGitCommit(repoPath, format string, a ...interface{}) {
 }
 
 // GitCommit stages changes in the dstask repository and commits them.
-func GitCommit(repoPath, format string, a ...interface{}) error {
+func GitCommit(repoPath, format string, a ...any) error {
 	msg := fmt.Sprintf(format, a...)
 
 	// needed before add cmd, see diff-index command
-	bins, err := ioutil.ReadDir(path.Join(repoPath, ".git/objects"))
+	bins, err := os.ReadDir(path.Join(repoPath, ".git/objects"))
 	if err != nil {
-		return fmt.Errorf("failed to run git commit: %s", err)
+		return fmt.Errorf("failed to run git commit: %w", err)
 	}
+
 	brandNew := len(bins) <= 2
 
 	// git add all changed/created files
@@ -53,19 +54,21 @@ func GitCommit(repoPath, format string, a ...interface{}) error {
 	// added/modified/deleted files -- only if slow.
 	// tell git to stage (all) changes
 	if err = RunGitCmd(repoPath, "add", "."); err != nil {
-		return fmt.Errorf("failed to add changes to repo: %s", err)
+		return fmt.Errorf("failed to add changes to repo: %w", err)
 	}
 
 	// check for changes -- returns exit status 1 on change. Make sure git repo
 	// has commits first, to avoid missing HEAD error.
 	if !brandNew && RunGitCmd(repoPath, "diff-index", "--quiet", "HEAD", "--") == nil {
 		fmt.Println("No changes detected")
+
 		return nil
 	}
 
 	if err = RunGitCmd(repoPath, "commit", "--no-gpg-sign", "-m", msg); err != nil {
-		return fmt.Errorf("failed to commit changes: %s", err)
+		return fmt.Errorf("failed to commit changes: %w", err)
 	}
+
 	return nil
 }
 
@@ -101,6 +104,7 @@ func EnsureRepoExists(repoPath string) {
 		if err != nil {
 			ExitFail("Failed to create directory in git repository")
 		}
+
 		MustRunGitCmd(repoPath, "init")
 		fmt.Println("\nAdd a remote repository with:\n\n\tdstask git remote add origin <repo>")
 		fmt.Println() // must be a separate call else compiler complains of redundant \n

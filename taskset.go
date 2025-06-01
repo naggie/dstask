@@ -3,6 +3,7 @@ package dstask
 // main task data structures
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -41,7 +42,6 @@ type Project struct {
 
 // LoadTaskSet constructs a TaskSet from a repo path..
 func LoadTaskSet(repoPath, idsFilePath string, includeResolved bool) (*TaskSet, error) {
-
 	// Initialise an empty TaskSet
 	var ts TaskSet
 	ts.tasksByUUID = make(map[string]*Task)
@@ -68,6 +68,7 @@ func LoadTaskSet(repoPath, idsFilePath string, includeResolved bool) (*TaskSet, 
 
 	for _, status := range statuses {
 		dir := filepath.Join(repoPath, status)
+
 		files, err := os.ReadDir(dir)
 		if err != nil {
 			if os.IsNotExist(err) {
@@ -75,20 +76,30 @@ func LoadTaskSet(repoPath, idsFilePath string, includeResolved bool) (*TaskSet, 
 				// that all status directories exist on program startup.
 				continue
 			}
+
 			return nil, err
 		}
+
 		for _, finfo := range files {
 			// Discard hidden files like .gitkeep
 			if strings.HasPrefix(finfo.Name(), ".") {
 				continue
 			}
+
 			path := filepath.Join(dir, finfo.Name())
+
 			t, err := unmarshalTask(path, finfo, ids, status)
 			if err != nil {
 				log.Printf("error loading task: %v\n", err)
+
 				continue
 			}
-			ts.LoadTask(t)
+
+			if _, err := ts.LoadTask(t); err != nil {
+				log.Printf("error loading task: %v\n", err)
+
+				continue
+			}
 		}
 	}
 
@@ -150,6 +161,7 @@ func (ts *TaskSet) MustLoadTask(task Task) Task {
 	if err != nil {
 		ExitFail("%s, task %s", err, task.UUID)
 	}
+
 	return newTask
 }
 
@@ -182,6 +194,7 @@ func (ts *TaskSet) LoadTask(task Task) (Task, error) {
 		for id := 1; id <= MAX_TASKS_OPEN; id++ {
 			if ts.tasksByID[id] == nil {
 				task.ID = id
+
 				break
 			}
 		}
@@ -212,25 +225,25 @@ func (ts *TaskSet) UpdateTask(task Task) error {
 	task.Normalise()
 
 	if err := task.Validate(); err != nil {
-		return fmt.Errorf("%s, task %s", err, task.UUID)
+		return fmt.Errorf("%w, task %s", err, task.UUID)
 	}
 
 	if ts.tasksByUUID[task.UUID] == nil {
-		return fmt.Errorf("Could not find given task to update by UUID")
+		return errors.New("could not find given task to update by UUID")
 	}
 
 	if !IsValidPriority(task.Priority) {
-		return fmt.Errorf("Invalid priority specified")
+		return errors.New("invalid priority specified")
 	}
 
 	old := ts.tasksByUUID[task.UUID]
 
 	if old.Status != task.Status && !IsValidStateTransition(old.Status, task.Status) {
-		return fmt.Errorf("Invalid state transition: %s -> %s", old.Status, task.Status)
+		return fmt.Errorf("invalid state transition: %s -> %s", old.Status, task.Status)
 	}
 
 	if old.Status != task.Status && task.Status == STATUS_RESOLVED && strings.Contains(task.Notes, "- [ ] ") {
-		return fmt.Errorf("Refusing to resolve task with incomplete tasklist")
+		return errors.New("refusing to resolve task with incomplete tasklist")
 	}
 
 	if task.Status == STATUS_RESOLVED {
@@ -244,6 +257,7 @@ func (ts *TaskSet) UpdateTask(task Task) error {
 	task.WritePending = true
 	// existing pointer must point to address of new task copied
 	*ts.tasksByUUID[task.UUID] = task
+
 	return nil
 }
 
@@ -276,6 +290,7 @@ func (ts *TaskSet) MustGetByID(id int) Task {
 	if err != nil {
 		ExitFail(err.Error())
 	}
+
 	return task
 }
 
@@ -294,6 +309,7 @@ func (ts *TaskSet) Tasks() []Task {
 			tasks = append(tasks, *task)
 		}
 	}
+
 	return tasks
 }
 
@@ -302,6 +318,7 @@ func (ts *TaskSet) AllTasks() []Task {
 	for _, task := range ts.tasks {
 		tasks = append(tasks, *task)
 	}
+
 	return tasks
 }
 

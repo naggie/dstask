@@ -45,5 +45,4 @@ func TestShowOpen(t *testing.T) {
 
 	tasks = unmarshalTaskArray(t, output)
 	assert.Equal(t, 0, len(tasks), "no tasks open in this context")
-
 }

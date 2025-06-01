@@ -9,7 +9,6 @@ import (
 )
 
 func TestParseQuery(t *testing.T) {
-
 	type testCase struct {
 		input    []string
 		expected Query
@@ -160,7 +159,6 @@ func TestParseQuery(t *testing.T) {
 	} // end test cases
 
 	for i, tc := range tests {
-
 		description := strings.Join(tc.input, " ")
 
 		t.Run(fmt.Sprintf("test %v: %s", i, description), func(t *testing.T) {
@@ -168,7 +166,6 @@ func TestParseQuery(t *testing.T) {
 
 			actual := ParseQuery(tc.input...)
 			assert.Equal(t, tc.expected, actual)
-
 		})
 	}
 }

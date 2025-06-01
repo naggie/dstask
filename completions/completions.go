@@ -17,7 +17,9 @@ func Completions(conf dstask.Config, args []string, ctx dstask.Query) {
 	// integration. Note there are various idiosyncrasies with bash
 	// involving arg separation.
 	var completions []string
+
 	var originalArgs []string
+
 	var prefix string
 
 	// drop dstask _completions dstask to allow parsing what is on actual
@@ -74,8 +76,8 @@ func Completions(conf dstask.Config, args []string, ctx dstask.Query) {
 		ts, err := dstask.LoadTaskSet(conf.Repo, conf.IDsFile, false)
 		if err != nil {
 			log.Printf("completions error: %v\n", err)
-			return
 
+			return
 		}
 		// limit completions to available context, but not if the user is
 		// trying to change context, context ignore is on, or modify

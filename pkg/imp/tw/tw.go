@@ -23,13 +23,12 @@ func Do(conf dstask.Config) error {
 	var twtasks []TwTask
 	// from stdin
 	err = json.NewDecoder(os.Stdin).Decode(&twtasks)
-
 	if err != nil {
 		return errors.New("failed to decode JSON from stdin")
 	}
 
 	for _, twTask := range twtasks {
-		ts.LoadTask(dstask.Task{
+		_, err := ts.LoadTask(dstask.Task{
 			UUID:         twTask.UUID,
 			Status:       twTask.ConvertStatus(),
 			WritePending: true,
@@ -44,10 +43,14 @@ func Do(conf dstask.Config) error {
 			Resolved:     twTask.GetResolvedTime(),
 			Due:          twTask.Due.Time,
 		})
+		if err != nil {
+			return err
+		}
 	}
 
 	ts.SavePendingChanges()
 	dstask.MustGitCommit(conf.Repo, "Import from taskwarrior")
+
 	return nil
 }
 
@@ -122,9 +125,9 @@ func (t *TwTask) ConvertAnnotations() string {
 	return strings.Join(comments, "\n")
 }
 
-// convert a tw status into a dstask status
+// convert a tw status into a dstask status.
 func (t *TwTask) ConvertStatus() string {
-	if !t.Start.Time.IsZero() {
+	if !t.Start.IsZero() {
 		return dstask.STATUS_ACTIVE
 	}
 
@@ -137,7 +140,7 @@ func (t *TwTask) ConvertStatus() string {
 		return dstask.STATUS_PENDING
 	case "recurring":
 		// TODO -- implement reccurence
-		//return dstask.STATUS_RECURRING
+		// return dstask.STATUS_RECURRING
 		return dstask.STATUS_RESOLVED
 	default:
 		return t.Status
@@ -149,5 +152,6 @@ func (t *TwTask) GetResolvedTime() time.Time {
 	if t.Status == "completed" {
 		return t.Modified.Time
 	}
+
 	return time.Time{}
 }

@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/BurntSushi/toml"
 	"github.com/naggie/dstask"
@@ -27,7 +27,7 @@ type Github struct {
 func Load(configFile, repo string) (Config, error) {
 	var config Config
 
-	contents, err := ioutil.ReadFile(configFile)
+	contents, err := os.ReadFile(configFile)
 	if err != nil {
 		return config, fmt.Errorf("couldn't read config file %q: %s", configFile, err.Error())
 	}

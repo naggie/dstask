@@ -15,7 +15,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// Do runs the Github import if the user requested it
+// Do runs the Github import if the user requested it.
 func Do(dstaskRepo string, cfg config.Config) error {
 	if len(cfg.Github) == 0 {
 		return nil
@@ -24,24 +24,29 @@ func Do(dstaskRepo string, cfg config.Config) error {
 	for i, cfgGithub := range cfg.Github {
 		if cfgGithub.Token == "" {
 			logrus.Infof("GitHub config section %d (%v): skipping because no token configured", i, cfgGithub.Repos)
+
 			continue
 		}
+
 		logrus.Infof("GitHub config section %d (%v): processing", i, cfgGithub.Repos)
 
 		gh, err := NewClient(cfgGithub)
 		if err != nil {
 			return err
 		}
+
 		err = gh.Run(dstaskRepo)
 		if err != nil {
 			return err
 		}
 	}
+
 	dstask.MustGitCommit(dstaskRepo, "GitHub import")
+
 	return nil
 }
 
-// Github is a client to process multiple repos with a given template
+// Github is a client to process multiple repos with a given template.
 type Github struct {
 	client *githubv4.Client
 	cfg    config.Github
@@ -50,9 +55,8 @@ type Github struct {
 	templates Templates
 }
 
-// NewClient creates a new Github client
+// NewClient creates a new Github client.
 func NewClient(cfg config.Github) (*Github, error) {
-
 	httpClient := oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: cfg.Token},
 	))
@@ -62,16 +66,18 @@ func NewClient(cfg config.Github) (*Github, error) {
 		cfg:       cfg,
 		templates: ParseTemplates(cfg.TemplateTask),
 	}
+
 	return &g, nil
 }
 
-// Run processes the issues from all requested repositories
+// Run processes the issues from all requested repositories.
 func (gh *Github) Run(dstaskRepo string) error {
 	for _, r := range gh.cfg.Repos {
 		iter, err := NewRepoIter(gh.cfg, r, gh.templates, gh.client)
 		if err != nil {
 			return err
 		}
+
 		logrus.Infof("GitHub starting iteration for %s", r)
 
 		for {
@@ -79,6 +85,7 @@ func (gh *Github) Run(dstaskRepo string) error {
 			if err != nil {
 				return err
 			}
+
 			if len(tasks) == 0 {
 				break
 			}
@@ -90,8 +97,8 @@ func (gh *Github) Run(dstaskRepo string) error {
 				}
 			}
 		}
-
 	}
+
 	return nil
 }
 
@@ -118,7 +125,7 @@ func ParseTemplates(task dstask.Task) Templates {
 	return t
 }
 
-// RepoIter iterates all the desired issues from a given repo
+// RepoIter iterates all the desired issues from a given repo.
 type RepoIter struct {
 	client *githubv4.Client
 	cfg    config.Github
@@ -150,30 +157,35 @@ func NewRepoIter(cfg config.Github, repo string, templates Templates, client *gi
 
 	if cfg.Milestone != "" {
 		// we first must figure out the id of the milestone
-
 		var mq MilestoneQuery
+
 		variables := map[string]interface{}{
 			"owner": githubv4.String(ri.repoOwner),
 			"name":  githubv4.String(ri.repoName),
 			"query": githubv4.String(cfg.Milestone),
 		}
+
 		err := client.Query(context.Background(), &mq, variables)
 		if err != nil {
 			return nil, fmt.Errorf("could execute lookup query for milestone %q: %s", cfg.Milestone, err.Error())
 		}
+
 		if len(mq.Repository.Milestones.Edges) != 1 {
 			return nil, fmt.Errorf("could not look up milestone %q: got %d results", cfg.Milestone, len(mq.Repository.Milestones.Edges))
 		}
+
 		ri.milestone = mq.Repository.Milestones.Edges[0].Node.Number
 	}
+
 	return &ri, nil
 }
 
-// Next returns the next batch of tasks, if there are any
+// Next returns the next batch of tasks, if there are any.
 func (ri *RepoIter) Next() ([]dstask.Task, error) {
 	if ri.done {
 		return nil, nil
 	}
+
 	var tasks []dstask.Task
 
 	states := []githubv4.IssueState{githubv4.IssueStateOpen}
@@ -181,17 +193,20 @@ func (ri *RepoIter) Next() ([]dstask.Task, error) {
 	if ri.cfg.GetClosed {
 		states = append(states, githubv4.IssueStateClosed)
 	}
+
 	filterBy := githubv4.IssueFilters{States: &states}
 
 	if ri.cfg.Assignee != "" {
 		f := githubv4.String(ri.cfg.Assignee)
 		filterBy.Assignee = &f
 	}
+
 	if len(ri.cfg.Labels) != 0 {
 		var labels []githubv4.String
 		for _, label := range ri.cfg.Labels {
 			labels = append(labels, githubv4.String(label))
 		}
+
 		filterBy.Labels = &labels
 	}
 
@@ -213,6 +228,7 @@ func (ri *RepoIter) Next() ([]dstask.Task, error) {
 	}
 
 	var err error
+
 	var issues IssueConnection
 
 	if ri.cfg.Milestone == "" {
@@ -221,24 +237,27 @@ func (ri *RepoIter) Next() ([]dstask.Task, error) {
 		issues = q.Repository.IssueConnection
 	} else {
 		var q QueryWithMilestone
+
 		variables["milestone"] = githubv4.Int(ri.milestone)
 		err = ri.client.Query(context.Background(), &q, variables)
 		issues = q.Repository.Milestone.IssueConnection
 	}
+
 	if err != nil {
 		return tasks, err
 	}
 
 	if len(issues.Edges) == 0 {
 		ri.done = true
+
 		return tasks, nil
 	}
 
 	issueData := NewIssueData()
 
 	for _, edge := range issues.Edges {
-
 		issueData.Init(ri.repoOwner, ri.repoName, edge.Node)
+
 		task, err := issueData.ToTask(ri.templates)
 		if err != nil {
 			return tasks, err

@@ -1,30 +1,21 @@
+version: "2"
+
 output:
   formats:
-    - format: line-number
+    text:
+      print-linter-name: true
+      print-issued-lines: true
+      colors: true
 
 linters:
-  enable:
-    - goimports
-    - golint
-    - gofmt
-    - misspell
-    - deadcode
-    - errcheck
-    - gosimple
-    - govet
-    - ineffassign
-    - staticcheck
-    - structcheck
-    - typecheck
-    - unused
-    - varcheck
-    - gochecknoinits
-    - unconvert
-    - unparam
-    - exportloopref
+  settings:
+    testpackage:
+      # Regexp pattern to skip files.
+      # Default: "(export|internal)_test\\.go"
+      skip-regexp: (export|internal)_test\.go
 
 run:
   timeout: 2m
 
 issues:
-  new-from-rev: "490e245"
+  fix: true

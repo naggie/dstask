@@ -16,6 +16,7 @@ func getEnv(key string, _default string) string {
 	if val := os.Getenv(key); val != "" {
 		return val
 	}
+
 	return _default
 }
 
@@ -32,6 +33,7 @@ func main() {
 		usage()
 		os.Exit(2)
 	}
+
 	switch os.Args[1] {
 	case "--help", "help":
 		usage()

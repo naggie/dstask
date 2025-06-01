@@ -34,6 +34,5 @@ func TestShowActive(t *testing.T) {
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks = unmarshalTaskArray(t, output)
-	assert.Equal(t, 0, len(tasks), "no tasks should be active")
-
+	assert.Empty(t, tasks, "no tasks should be active")
 }

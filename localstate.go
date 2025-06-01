@@ -28,7 +28,10 @@ type IdsMap map[string]int
 
 // Save serialises State to disk as gob binary data.
 func (state State) Save(stateFilePath string) {
-	os.MkdirAll(filepath.Dir(stateFilePath), os.ModePerm)
+	if err := os.MkdirAll(filepath.Dir(stateFilePath), os.ModePerm); err != nil {
+		ExitFail("Failed to create directories for %s: %s", stateFilePath, err)
+	}
+
 	mustWriteGob(stateFilePath, &state)
 }
 
@@ -40,6 +43,7 @@ func LoadState(stateFilePath string) State {
 
 	state := State{}
 	mustReadGob(stateFilePath, &state)
+
 	return state
 }
 
@@ -54,45 +58,55 @@ func (state *State) SetContext(context Query) error {
 	}
 
 	state.Context = context
+
 	return nil
 }
 
-func mustWriteGob(filePath string, object interface{}) {
+func mustWriteGob(filePath string, object any) {
 	file, err := os.Create(filePath)
-
 	if err != nil {
 		ExitFail("Failed to open %s for writing: ", filePath)
 	}
 
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			ExitFail("Failed to close file: %v", err)
+		}
+	}()
 
 	encoder := gob.NewEncoder(file)
-	err = encoder.Encode(object)
 
+	err = encoder.Encode(object)
 	if err != nil {
 		ExitFail("Failed to encode state gob: %s, %s", filePath, err)
 	}
 }
 
-func mustReadGob(filePath string, object interface{}) {
+func mustReadGob(filePath string, object any) {
 	file, err := os.Open(filePath)
-
 	if err != nil {
 		ExitFail("Failed to open %s for reading: ", filePath)
 	}
 
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			ExitFail("Failed to close file: %v", err)
+		}
+	}()
 
 	decoder := gob.NewDecoder(file)
-	err = decoder.Decode(object)
 
+	err = decoder.Decode(object)
 	if err != nil {
 		ExitFail("Failed to parse state gob: %s, %s", filePath, err)
 	}
 }
 
 func (ids *IdsMap) Save(idsFilePath string) {
-	os.MkdirAll(filepath.Dir(idsFilePath), os.ModePerm)
+	if err := os.MkdirAll(filepath.Dir(idsFilePath), os.ModePerm); err != nil {
+		ExitFail("Failed to create directories for %s: %s", idsFilePath, err)
+	}
+
 	mustWriteGob(idsFilePath, &ids)
 }
 
@@ -103,5 +117,6 @@ func LoadIds(idsFilePath string) IdsMap {
 
 	ids := make(IdsMap, 1000)
 	mustReadGob(idsFilePath, &ids)
+
 	return ids
 }
