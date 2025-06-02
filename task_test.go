@@ -13,7 +13,7 @@ func TestModifyChangesProperties(t *testing.T) {
 		expected Task
 	}
 
-	var testCases = []testCase{
+	testCases := []testCase{
 		{ // Add a note
 			Task{},
 			Query{

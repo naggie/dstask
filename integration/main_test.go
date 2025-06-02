@@ -124,7 +124,12 @@ func makeDstaskRepo(t *testing.T) (string, func()) {
 	return dir, cleanup
 }
 
-func assertProgramResult(t *testing.T, output []byte, exiterr *exec.ExitError, successExpected bool) {
+func assertProgramResult(
+	t *testing.T,
+	output []byte,
+	exiterr *exec.ExitError,
+	successExpected bool,
+) {
 	t.Helper()
 
 	if exiterr != nil || !successExpected {

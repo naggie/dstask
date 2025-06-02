@@ -54,7 +54,9 @@ func CommandAdd(conf Config, ctx, query Query) error {
 
 		if tt.Status != STATUS_TEMPLATE {
 			// Insert Text Statement to inform user of real Templates
-			fmt.Print("\nYou've copied an open task!\nTo learn more about creating templates enter 'dstask help template'\n\n")
+			fmt.Print(
+				"\nYou've copied an open task!\nTo learn more about creating templates enter 'dstask help template'\n\n",
+			)
 		}
 	} else if query.Text != "" {
 		ctx.PrintContextDescription()
@@ -228,7 +230,10 @@ func CommandModify(conf Config, ctx, query Query) error {
 		ts.Filter(ctx)
 
 		if StdoutIsTTY() {
-			ConfirmOrAbort("no IDs specified. Apply to all %d tasks in current ctx?", len(ts.Tasks()))
+			ConfirmOrAbort(
+				"no IDs specified. Apply to all %d tasks in current ctx?",
+				len(ts.Tasks()),
+			)
 		}
 
 		for _, task := range ts.Tasks() {
@@ -296,7 +301,12 @@ func CommandNote(conf Config, ctx, query Query) error {
 		// If stdout is a TTY, we may open the editor
 		if StdoutIsTTY() {
 			if query.Text == "" {
-				task.Notes = string(MustEditBytes([]byte(task.Notes), MakeTempFilename(task.ID, task.Summary, "md")))
+				task.Notes = string(
+					MustEditBytes(
+						[]byte(task.Notes),
+						MakeTempFilename(task.ID, task.Summary, "md"),
+					),
+				)
 			} else {
 				if task.Notes == "" {
 					task.Notes = query.Text
@@ -371,7 +381,10 @@ func CommandRemove(conf Config, ctx, query Query) error {
 	}
 
 	if StdoutIsTTY() {
-		ConfirmOrAbort("\nThe above %d task(s) will be deleted without checking subtasks. Continue?", len(query.IDs))
+		ConfirmOrAbort(
+			"\nThe above %d task(s) will be deleted without checking subtasks. Continue?",
+			len(query.IDs),
+		)
 	}
 
 	for _, id := range query.IDs {

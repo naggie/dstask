@@ -48,7 +48,8 @@ func ProcessTask(repo string, task dstask.Task) error {
 			task.Notes = localTask.Notes
 		}
 
-		if task.Status == "pending" && (localTask.Status == "active" || localTask.Status == "paused") {
+		if task.Status == "pending" &&
+			(localTask.Status == "active" || localTask.Status == "paused") {
 			task.Status = localTask.Status
 		}
 	}

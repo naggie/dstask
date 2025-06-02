@@ -23,7 +23,11 @@ func Do(dstaskRepo string, cfg config.Config) error {
 
 	for i, cfgGithub := range cfg.Github {
 		if cfgGithub.Token == "" {
-			logrus.Infof("GitHub config section %d (%v): skipping because no token configured", i, cfgGithub.Repos)
+			logrus.Infof(
+				"GitHub config section %d (%v): skipping because no token configured",
+				i,
+				cfgGithub.Repos,
+			)
 
 			continue
 		}
@@ -141,7 +145,12 @@ type RepoIter struct {
 	cursor *githubv4.String
 }
 
-func NewRepoIter(cfg config.Github, repo string, templates Templates, client *githubv4.Client) (*RepoIter, error) {
+func NewRepoIter(
+	cfg config.Github,
+	repo string,
+	templates Templates,
+	client *githubv4.Client,
+) (*RepoIter, error) {
 	repoSplit := strings.Split(repo, "/")
 	if len(repoSplit) != 2 || repoSplit[0] == "" || repoSplit[1] == "" {
 		return nil, fmt.Errorf("invalid repo %q", repo)
@@ -167,11 +176,19 @@ func NewRepoIter(cfg config.Github, repo string, templates Templates, client *gi
 
 		err := client.Query(context.Background(), &mq, variables)
 		if err != nil {
-			return nil, fmt.Errorf("could execute lookup query for milestone %q: %s", cfg.Milestone, err.Error())
+			return nil, fmt.Errorf(
+				"could execute lookup query for milestone %q: %s",
+				cfg.Milestone,
+				err.Error(),
+			)
 		}
 
 		if len(mq.Repository.Milestones.Edges) != 1 {
-			return nil, fmt.Errorf("could not look up milestone %q: got %d results", cfg.Milestone, len(mq.Repository.Milestones.Edges))
+			return nil, fmt.Errorf(
+				"could not look up milestone %q: got %d results",
+				cfg.Milestone,
+				len(mq.Repository.Milestones.Edges),
+			)
 		}
 
 		ri.milestone = mq.Repository.Milestones.Edges[0].Node.Number

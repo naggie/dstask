@@ -14,7 +14,7 @@ func TestParseQuery(t *testing.T) {
 		expected Query
 	}
 
-	var tests = []testCase{
+	tests := []testCase{
 		{
 			[]string{"add", "have", "an", "adventure"},
 			Query{

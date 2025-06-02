@@ -44,7 +44,12 @@ func TestNextByIDIndexOutsideContext(t *testing.T) {
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks := unmarshalTaskArray(t, output)
-	assert.Equal(t, "two", tasks[0].Summary, "find task 2 by ID (context ignored with ID based addressing)")
+	assert.Equal(
+		t,
+		"two",
+		tasks[0].Summary,
+		"find task 2 by ID (context ignored with ID based addressing)",
+	)
 
 	output, exiterr, success = program("next")
 	assertProgramResult(t, output, exiterr, success)
