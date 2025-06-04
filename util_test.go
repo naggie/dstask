@@ -14,7 +14,7 @@ func TestMakeTempFilename(t *testing.T) {
 		expected string
 	}
 
-	var testCases = []testCase{
+	testCases := []testCase{
 		{
 			1,
 			`& &`,
@@ -61,7 +61,7 @@ func TestStrSliceContainsAll(t *testing.T) {
 		expected bool
 	}
 
-	var testCases = []testCase{
+	testCases := []testCase{
 		{
 			[]string{},
 			[]string{},

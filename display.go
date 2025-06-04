@@ -226,7 +226,11 @@ func (ts TaskSet) DisplayByWeek() {
 					table.Render()
 				}
 				// insert gap
-				fmt.Printf("\n\n> Week %d, starting %s\n\n", week, t.Resolved.Format("Mon 2 Jan 2006"))
+				fmt.Printf(
+					"\n\n> Week %d, starting %s\n\n",
+					week,
+					t.Resolved.Format("Mon 2 Jan 2006"),
+				)
 
 				table = NewTable(
 					w,

@@ -121,7 +121,8 @@ func Completions(conf dstask.Config, args []string, ctx dstask.Query) {
 	}
 
 	for _, completion := range completions {
-		if strings.HasPrefix(completion, prefix) && !dstask.StrSliceContains(originalArgs, completion) {
+		if strings.HasPrefix(completion, prefix) &&
+			!dstask.StrSliceContains(originalArgs, completion) {
 			fmt.Println(completion)
 		}
 	}

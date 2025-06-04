@@ -126,10 +126,16 @@ func (ts *TaskSet) SortByCreated(dir SortByDirection) {
 	switch dir {
 	case Ascending:
 		// Oldest first
-		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.Before(ts.tasks[j].Created) })
+		sort.SliceStable(
+			ts.tasks,
+			func(i, j int) bool { return ts.tasks[i].Created.Before(ts.tasks[j].Created) },
+		)
 	case Descending:
 		// Newest first
-		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Created.After(ts.tasks[j].Created) })
+		sort.SliceStable(
+			ts.tasks,
+			func(i, j int) bool { return ts.tasks[i].Created.After(ts.tasks[j].Created) },
+		)
 	}
 }
 
@@ -137,10 +143,16 @@ func (ts *TaskSet) SortByPriority(dir SortByDirection) {
 	switch dir {
 	case Ascending:
 		// P1 first
-		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority < ts.tasks[j].Priority })
+		sort.SliceStable(
+			ts.tasks,
+			func(i, j int) bool { return ts.tasks[i].Priority < ts.tasks[j].Priority },
+		)
 	case Descending:
 		// P1 last
-		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Priority > ts.tasks[j].Priority })
+		sort.SliceStable(
+			ts.tasks,
+			func(i, j int) bool { return ts.tasks[i].Priority > ts.tasks[j].Priority },
+		)
 	}
 }
 
@@ -148,10 +160,16 @@ func (ts *TaskSet) SortByResolved(dir SortByDirection) {
 	switch dir {
 	case Ascending:
 		// Oldest resolved first
-		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Resolved.Before(ts.tasks[j].Resolved) })
+		sort.SliceStable(
+			ts.tasks,
+			func(i, j int) bool { return ts.tasks[i].Resolved.Before(ts.tasks[j].Resolved) },
+		)
 	case Descending:
 		// Newest resolved first
-		sort.SliceStable(ts.tasks, func(i, j int) bool { return ts.tasks[i].Resolved.After(ts.tasks[j].Resolved) })
+		sort.SliceStable(
+			ts.tasks,
+			func(i, j int) bool { return ts.tasks[i].Resolved.After(ts.tasks[j].Resolved) },
+		)
 	}
 }
 
@@ -242,7 +260,8 @@ func (ts *TaskSet) UpdateTask(task Task) error {
 		return fmt.Errorf("invalid state transition: %s -> %s", old.Status, task.Status)
 	}
 
-	if old.Status != task.Status && task.Status == STATUS_RESOLVED && strings.Contains(task.Notes, "- [ ] ") {
+	if old.Status != task.Status && task.Status == STATUS_RESOLVED &&
+		strings.Contains(task.Notes, "- [ ] ") {
 		return errors.New("refusing to resolve task with incomplete tasklist")
 	}
 

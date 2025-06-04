@@ -24,8 +24,14 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "usage: dstask-import github|tw|--help|help")
 	fmt.Fprintln(os.Stderr, "")
 	fmt.Fprintln(os.Stderr, "       dstask-import help or --help       # this menu")
-	fmt.Fprintln(os.Stderr, "       dstask-import github               # import from GitHub as specified in configuration")
-	fmt.Fprintln(os.Stderr, "       cat export.json | dstask-import tw # import from a taskwarrior json dump which can be obtained with the taskwarrior command 'task export'")
+	fmt.Fprintln(
+		os.Stderr,
+		"       dstask-import github               # import from GitHub as specified in configuration",
+	)
+	fmt.Fprintln(
+		os.Stderr,
+		"       cat export.json | dstask-import tw # import from a taskwarrior json dump which can be obtained with the taskwarrior command 'task export'",
+	)
 }
 
 func main() {

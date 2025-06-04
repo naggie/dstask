@@ -78,7 +78,7 @@ func MustGetRepoPath(repoPath, directory, file string) string {
 	dir := path.Join(repoPath, directory)
 
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		err = os.Mkdir(dir, 0700)
+		err = os.Mkdir(dir, 0o700)
 		if err != nil {
 			ExitFail("Failed to create directory in git repository")
 		}
@@ -100,7 +100,7 @@ func EnsureRepoExists(repoPath string) {
 			ConfirmOrAbort("Could not find dstask repository at %s -- create?", repoPath)
 		}
 
-		err = os.Mkdir(repoPath, 0700)
+		err = os.Mkdir(repoPath, 0o700)
 		if err != nil {
 			ExitFail("Failed to create directory in git repository")
 		}

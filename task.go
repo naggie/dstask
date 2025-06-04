@@ -28,7 +28,7 @@ type Task struct {
 	UUID   string `json:"uuid"   yaml:"-"` // TODO: use actual uuid.UUID type here
 	Status string `json:"status" yaml:",omitempty"`
 	// is new or has changed. Need to write to disk.
-	WritePending bool `json:"-" yaml:"-"`
+	WritePending bool `json:"-"      yaml:"-"`
 
 	// ephemeral, used to address tasks quickly. Non-resolved only. Populated
 	// from IDCache or on-the-fly.
@@ -182,7 +182,8 @@ func (t *Task) MatchesFilter(query Query) bool {
 		return false
 	}
 
-	if query.Text != "" && !strings.Contains(strings.ToLower(t.Summary+t.Notes), strings.ToLower(query.Text)) {
+	if query.Text != "" &&
+		!strings.Contains(strings.ToLower(t.Summary+t.Notes), strings.ToLower(query.Text)) {
 		return false
 	}
 
@@ -309,7 +310,7 @@ func (t *Task) SaveToDisk(repoPath string) {
 			ExitFail("Failed to marshal task %s", t)
 		}
 
-		err = os.WriteFile(filepath, d, 0600)
+		err = os.WriteFile(filepath, d, 0o600)
 		if err != nil {
 			ExitFail("Failed to write task %s", t)
 		}

@@ -14,6 +14,14 @@ linters:
       # Default: "(export|internal)_test\\.go"
       skip-regexp: (export|internal)_test\.go
 
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+    - golines
+
 run:
   timeout: 2m
 
