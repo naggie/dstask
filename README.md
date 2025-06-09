@@ -20,7 +20,6 @@
 <br>
 <br>
 
-
 Dstask is a personal task tracker designed to help you focus. It is similar to
 [Taskwarrior](https://taskwarrior.org/) but uses git to synchronise instead of
 a special protocol.
@@ -31,26 +30,26 @@ Features:
     <img src="https://repology.org/badge/vertical-allrepos/dstask.svg" alt="Packaging status" align="right">
 </a>
 
- * Powerful context system (automatically applies filter/tags to queries and new tasks)
- * **Git powered sync**/undo/resolve ([passwordstore.org](https://www.passwordstore.org/) style) which means no need to set up a sync server, and syncing between devices is easy!
- * Task listing won't break with long task text
- * `note` command -- edit a **full markdown note** for each task. **Checklists are useful here.**
- * `open` command -- **open URLs found in specified task** (including notes) in the browser
- * zsh/bash completion (including tags and projects in current context) for speed
- * A single statically-linked binary
- * [import tool](doc/dstask-import.md) which can import GitHub issues or taskwarrior tasks.
+- Powerful context system (automatically applies filter/tags to queries and new tasks)
+- **Git powered sync**/undo/resolve ([passwordstore.org](https://www.passwordstore.org/) style) which means no need to set up a sync server, and syncing between devices is easy!
+- Task listing won't break with long task text
+- `note` command -- edit a **full markdown note** for each task. **Checklists are useful here.**
+- `open` command -- **open URLs found in specified task** (including notes) in the browser
+- zsh/bash completion (including tags and projects in current context) for speed
+- A single statically-linked binary
+- [import tool](doc/dstask-import.md) which can import GitHub issues or taskwarrior tasks.
 
 Non-features:
 
- * Collaboration. This is a personal task tracker. Use another system for
-   projects that involve multiple people. Note that it can still be beneficial
-   to use dstask to track what you are working on in the context of a
-   multi-person project tracked elsewhere.
+- Collaboration. This is a personal task tracker. Use another system for
+  projects that involve multiple people. Note that it can still be beneficial
+  to use dstask to track what you are working on in the context of a
+  multi-person project tracked elsewhere.
 
 Requirements:
 
-* Git
-* A 256-color capable terminal
+- Git
+- A 256-color capable terminal
 
 # Screenshots
 
@@ -94,7 +93,6 @@ Requirements:
     </tbody>
 </table>
 
-
 # Installation
 
 1. Copy the executable (from the [releases page][releases]) to somewhere in your path, named `dstask` and mark it executable. `/usr/local/bin/` is suggested.
@@ -102,12 +100,12 @@ Requirements:
 1. Set up an alias in your `.bashrc`: `alias task=dstask` or `alias t=dstask` to make task management slightly faster.
 1. Create or clone a ~/.dstask git repository for the data, if you haven't already: `mkdir ~/.dstask && git -C ~/.dstask init`.
 
-
 There are also unofficial packages for:
-* [Nix](https://nixos.org/nixos/packages.html?attr=dstask&channel=nixpkgs-unstable&query=dstask)
-* [Arch (AUR)](https://aur.archlinux.org/packages/dstask/)
-* [FreeBSD](https://www.freshports.org/deskutils/dstask/)
-* [Homebrew](https://formulae.brew.sh/formula/dstask)
+
+- [Nix](https://nixos.org/nixos/packages.html?attr=dstask&channel=nixpkgs-unstable&query=dstask)
+- [Arch (AUR)](https://aur.archlinux.org/packages/dstask/)
+- [FreeBSD](https://www.freshports.org/deskutils/dstask/)
+- [Homebrew](https://formulae.brew.sh/formula/dstask)
 
 # Moving from Taskwarrior
 
@@ -170,21 +168,19 @@ version           : Show dstask version information
 
 # Syntax
 
-
 ## Priority
 
-| Symbol | Name      | Note                                                                 |
-|--------|-----------|----------------------------------------------------------------------|
-| `P0`   | Critical  | Must be resolved immediately. May appear in all contexts in future.  |
-| `P1`   | High      |                                                                      |
-| `P2`   | Normal    | Default priority                                                     |
-| `P3`   | Low       | Shown at bottom and faded.                                           |
-
+| Symbol | Name     | Note                                                                |
+| ------ | -------- | ------------------------------------------------------------------- |
+| `P0`   | Critical | Must be resolved immediately. May appear in all contexts in future. |
+| `P1`   | High     | Need to be resolved in near future, display in highlighted          |
+| `P2`   | Normal   | Default priority                                                    |
+| `P3`   | Low      | Shown at bottom and faded.                                          |
 
 ## Operators
 
 | Symbol      | Syntax               | Description                                          | Example                                       |
-|-------------|----------------------|------------------------------------------------------|-----------------------------------------------|
+| ----------- | -------------------- | ---------------------------------------------------- | --------------------------------------------- |
 | `+`         | `+<tag>`             | Include tag. Filter/context, or when adding task.    | `dstask add fix server +work`                 |
 | `-`         | `-<tag>`             | Exclude tag. Filter/context only.                    | `dstask next -feature`                        |
 | `--`        | `--`                 | Ignore context. When listing or adding tasks.        | `dstask --`, `task add -- +home do guttering` |
@@ -193,11 +189,10 @@ version           : Show dstask version information
 | `-project:` | `-project:<project>` | Exclude project, filter/context only.                | `dstask next -project:dstask -work`           |
 | `template:` | `template:<id>`      | Base new task on a template.                         | `dstask add template:24`                      |
 
-
 ## State
 
 | State    | Description                                   |
-|----------| ----------------------------------------------|
+| -------- | --------------------------------------------- |
 | Pending  | Tasks that have never been started            |
 | Active   | Tasks that have been started                  |
 | Paused   | Tasks that have been started but then stopped |
@@ -237,15 +232,15 @@ See [etc/PERFORMANCE.md](etc/PERFORMANCE.md)
 
 # General tips
 
-* Overwhelmed by tasks? Try focussing by prioritising (set priorities) or narrowing the context. The `show-tags` and `show-projects` commands are useful for creating a context.
-* Use dstask to track things you might forget, rather than everything. SNR is important. Don't track tasks for the sake of it, and don't track _ideas_. Track ideas separately.
-* Spend regular time reviewing tasks. You'll probably find some you've already resolved, and many you've forgotten. The `show-unorganised` command is good for this.
-* Try to work through tasks from the top of the list. Dstask sorts by priority then creation date -- the most important tasks are at the top.
-* Use `start`/`stop` to mark what you're genuinely working on right now; it makes resuming work faster. Paused tasks will be slightly highlighted, so you won't lose track of them. `show-paused` helps if they start to pile up.
-* Keep a [github-style check list](https://help.github.com/en/articles/about-task-lists) in the markdown note of complex or procedural tasks
-* Failing to get started working? Start with the smallest task
-* Record only required tasks. Track ideas separately, else your task list will grow unboundedly! I keep an `ideas.md` for various projects for this reason.
-* set `DSTASK_CONTEXT` in a `.envrc` per-project repository. With direnv, this allows you to automatically switch context
+- Overwhelmed by tasks? Try focussing by prioritising (set priorities) or narrowing the context. The `show-tags` and `show-projects` commands are useful for creating a context.
+- Use dstask to track things you might forget, rather than everything. SNR is important. Don't track tasks for the sake of it, and don't track _ideas_. Track ideas separately.
+- Spend regular time reviewing tasks. You'll probably find some you've already resolved, and many you've forgotten. The `show-unorganised` command is good for this.
+- Try to work through tasks from the top of the list. Dstask sorts by priority then creation date -- the most important tasks are at the top.
+- Use `start`/`stop` to mark what you're genuinely working on right now; it makes resuming work faster. Paused tasks will be slightly highlighted, so you won't lose track of them. `show-paused` helps if they start to pile up.
+- Keep a [github-style check list](https://help.github.com/en/articles/about-task-lists) in the markdown note of complex or procedural tasks
+- Failing to get started working? Start with the smallest task
+- Record only required tasks. Track ideas separately, else your task list will grow unboundedly! I keep an `ideas.md` for various projects for this reason.
+- set `DSTASK_CONTEXT` in a `.envrc` per-project repository. With direnv, this allows you to automatically switch context
 
 # Database
 
@@ -258,13 +253,12 @@ environment variable `DSTASK_GIT_REPO`.
 
 Alternatives listed must be capable of running in the terminal.
 
-* [TaskLite](https://github.com/ad-si/TaskLite) -- The CLI task manager for power users, written in Haskell
-* [Taskwarrior](https://taskwarrior.org/) -- the closest analogue
-* [Taskbook](https://github.com/klaussinani/taskbook) -- board metaphor, note support
-* [todo.txt-cli](https://github.com/todotxt/todo.txt-cli)
-* [etm](https://github.com/dagraham/etm-dgraham) -- event and task manager
-* [t](https://github.com/sjl/t) -- a minimal todo list with an amusing philosophy
-
+- [TaskLite](https://github.com/ad-si/TaskLite) -- The CLI task manager for power users, written in Haskell
+- [Taskwarrior](https://taskwarrior.org/) -- the closest analogue
+- [Taskbook](https://github.com/klaussinani/taskbook) -- board metaphor, note support
+- [todo.txt-cli](https://github.com/todotxt/todo.txt-cli)
+- [etm](https://github.com/dagraham/etm-dgraham) -- event and task manager
+- [t](https://github.com/sjl/t) -- a minimal todo list with an amusing philosophy
 
 # FAQ
 
@@ -295,12 +289,11 @@ You can also specify multiple task numbers at one time, as with any other comman
 
 Not as part of dstask itself. However, dstask can be used as a library -- @botto
 has started developing a web GUI, specifically to allow task management on-the-go
-via a smartphone: https://github.com/botto/dstask-gui . It's in early stages but
+via a smartphone: <https://github.com/botto/dstask-gui> . It's in early stages but
 is meaningful as having no smartphone-based control is a blocker for a lot of people.
 
 > Has dstask been featured in a magazine?
 
-Yes! <https://www.linux-magazine.com/Issues/2021/246/dstask>  :-)
-
+Yes! <https://www.linux-magazine.com/Issues/2021/246/dstask> :-)
 
 [releases]: https://github.com/naggie/dstask/releases
