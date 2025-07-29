@@ -101,6 +101,7 @@ func (ts *TaskSet) renderTable(truncate bool) error {
 			"ID",
 			"Priority",
 			"Tags",
+			"Due",
 			"Project",
 			"Summary",
 		)
@@ -115,6 +116,7 @@ func (ts *TaskSet) renderTable(truncate bool) error {
 					fmt.Sprintf("%-2d", t.ID),
 					t.Priority,
 					strings.Join(t.Tags, " "),
+					t.ParseDueDateToStr(),
 					t.Project,
 					t.LongSummary(),
 				},
@@ -237,6 +239,7 @@ func (ts TaskSet) DisplayByWeek() {
 					"Resolved",
 					"Priority",
 					"Tags",
+					"Due",
 					"Project",
 					"Summary",
 				)
@@ -247,6 +250,7 @@ func (ts TaskSet) DisplayByWeek() {
 					t.Resolved.Format("Mon 2"),
 					t.Priority,
 					strings.Join(t.Tags, " "),
+					t.ParseDueDateToStr(),
 					t.Project,
 					t.LongSummary(),
 				},

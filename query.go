@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // when referring to tasks by ID, NON_RESOLVED_STATUSES must be loaded exclusively --
@@ -18,6 +19,8 @@ type Query struct {
 	AntiTags      []string
 	Project       string
 	AntiProjects  []string
+	Due           time.Time
+	DateFilter    string
 	Priority      string
 	Template      int
 	Text          string
@@ -50,6 +53,15 @@ func (query Query) String() string {
 		args = append(args, "-project:"+project)
 	}
 
+	if !query.Due.IsZero() {
+		dueArg := "due"
+		if query.DateFilter != "" {
+			dueArg += "." + query.DateFilter
+		}
+		dueArg += ":" + query.Due.Format("2006-01-02")
+		args = append(args, dueArg)
+	}
+
 	if query.Priority != "" {
 		args = append(args, query.Priority)
 	}
@@ -77,12 +89,14 @@ func (query Query) PrintContextDescription() {
 }
 
 // HasOperators returns true if the query has positive or negative projects/tags,
-// priorities, template.
+// dueDate, priorities or template.
 func (query Query) HasOperators() bool {
 	return (len(query.Tags) > 0 ||
 		len(query.AntiTags) > 0 ||
 		query.Project != "" ||
 		len(query.AntiProjects) > 0 ||
+		query.Due != time.Time{} ||
+		query.DateFilter != "" ||
 		query.Priority != "" ||
 		query.Template > 0)
 }
@@ -101,6 +115,10 @@ func ParseQuery(args ...string) Query {
 
 	var antiProjects []string
 
+	var dueDate time.Time
+
+	var dateFilterType string
+
 	var priority string
 
 	var template int
@@ -115,6 +133,8 @@ func ParseQuery(args ...string) Query {
 
 	// something other than an ID has been parsed -- accept no more IDs
 	var IDsExhausted bool
+
+	var dueDateSet bool
 
 	for _, item := range args {
 		lcItem := strings.ToLower(item)
@@ -150,6 +170,12 @@ func ParseQuery(args ...string) Query {
 			project = lcItem[9:]
 		} else if strings.HasPrefix(lcItem, "-project:") {
 			antiProjects = append(antiProjects, lcItem[9:])
+		} else if strings.HasPrefix(lcItem, "due.") || strings.HasPrefix(lcItem, "due:") {
+			if dueDateSet {
+				ExitFail("Query should only have one due date")
+			}
+			dateFilterType, dueDate = ParseDueDateArg(lcItem)
+			dueDateSet = true
 		} else if strings.HasPrefix(lcItem, "template:") {
 			if s, err := strconv.ParseInt(lcItem[9:], 10, 64); err == nil {
 				template = int(s)
@@ -174,6 +200,8 @@ func ParseQuery(args ...string) Query {
 		AntiTags:      antiTags,
 		Project:       project,
 		AntiProjects:  antiProjects,
+		DateFilter:    dateFilterType,
+		Due:           dueDate,
 		Priority:      priority,
 		Template:      template,
 		Text:          strings.Join(words, " "),
@@ -204,6 +232,15 @@ func (query *Query) Merge(q2 Query) Query {
 			ExitFail("Could not apply q2, project conflict")
 		} else {
 			q.Project = q2.Project
+		}
+	}
+
+	if !q2.Due.IsZero() {
+		if !q.Due.IsZero() && q.Due != q2.Due {
+			ExitFail("Could not apply q2, date filter conflict")
+		} else {
+			q.Due = q2.Due
+			q.DateFilter = q2.DateFilter
 		}
 	}
 

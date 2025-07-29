@@ -178,6 +178,24 @@ func (t *Task) MatchesFilter(query Query) bool {
 		return false
 	}
 
+	if !query.Due.IsZero() {
+		if t.Due.IsZero() {
+			return false
+		}
+		if query.DateFilter == "after" && t.Due.Before(query.Due) {
+			return false
+		}
+		if query.DateFilter == "before" && t.Due.After(query.Due) {
+			return false
+		}
+		if (query.DateFilter == "on" || query.DateFilter == "in") && !t.Due.Equal(query.Due) {
+			return false
+		}
+		if query.DateFilter == "" && !t.Due.Equal(query.Due) {
+			return false
+		}
+	}
+
 	if query.Priority != "" && t.Priority != query.Priority {
 		return false
 	}
@@ -278,6 +296,10 @@ func (t *Task) Modify(query Query) {
 		t.Priority = query.Priority
 	}
 
+	if !query.Due.IsZero() {
+		t.Due = query.Due
+	}
+
 	if t.Notes != "" {
 		t.Notes += "\n"
 	}
@@ -330,5 +352,38 @@ func (t *Task) SaveToDisk(repoPath string) {
 				ExitFail("Could not remove task %s: %v", filepath, err)
 			}
 		}
+	}
+}
+
+func (t *Task) ParseDueDateToStr() string {
+	due := t.Due
+	now := time.Now()
+	if due.IsZero() {
+		return ""
+	}
+	if due.YearDay() == now.YearDay() && t.Due.Year() == now.Year() {
+		return "today"
+	}
+	if due.YearDay() == now.AddDate(0, 0, 1).YearDay() && t.Due.Year() == now.AddDate(0, 0, 1).Year() {
+		return "tomorrow"
+	}
+	if due.YearDay() == now.AddDate(0, 0, -1).YearDay() && t.Due.Year() == now.AddDate(0, 0, -1).Year() {
+		return "yesterday"
+	}
+	return formatDueDate(due)
+}
+
+func formatDueDate(due time.Time) string {
+	now := time.Now()
+	year, _, _ := now.Date()
+	dueYear, _, _ := due.Date()
+
+	switch {
+	case dueYear == year && due.YearDay() > now.YearDay() && due.YearDay() < now.YearDay() + 7:
+		return due.Format("Mon _2")
+	case dueYear == year:
+		return due.Format("_2 Jan")
+	default:
+		return due.Format("_2 Jan 2006")
 	}
 }

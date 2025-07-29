@@ -16,6 +16,9 @@ func CommandAdd(conf Config, ctx, query Query) error {
 	if query.Text == "" && query.Template == 0 {
 		return errors.New("Task description or template required")
 	}
+	if query.DateFilter != "" && query.DateFilter != "in" && query.DateFilter != "on" {
+		return errors.New("Cannot use date filter with add command")
+	}
 
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
@@ -42,10 +45,11 @@ func CommandAdd(conf Config, ctx, query Query) error {
 			Tags:         tt.Tags,
 			Project:      tt.Project,
 			Priority:     tt.Priority,
+			Due:          tt.Due,
 			Notes:        tt.Notes,
 		}
 
-		// Modify the task with any tags/projects/antiProjects/priorities in query
+		// Modify the task with any tags/projects/antiProjects/priorities/dueDates in query
 		task.Modify(query)
 
 		task = ts.MustLoadTask(task)
@@ -68,6 +72,7 @@ func CommandAdd(conf Config, ctx, query Query) error {
 			Tags:         query.Tags,
 			Project:      query.Project,
 			Priority:     query.Priority,
+			Due:          query.Due,
 			Notes:        query.Note,
 		}
 		task = ts.MustLoadTask(task)
@@ -205,6 +210,7 @@ func CommandLog(conf Config, ctx, query Query) error {
 		Tags:         query.Tags,
 		Project:      query.Project,
 		Priority:     query.Priority,
+		Due:          query.Due,
 		Resolved:     time.Now(),
 	}
 	task = ts.MustLoadTask(task)
@@ -667,6 +673,7 @@ func CommandTemplate(conf Config, ctx, query Query) error {
 			Project:      query.Project,
 			Priority:     query.Priority,
 			Notes:        query.Note,
+			Due:          query.Due,
 		}
 		task = ts.MustLoadTask(task)
 		ts.SavePendingChanges()

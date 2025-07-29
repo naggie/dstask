@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"slices"
 	"strings"
+	"time"
 	"unicode"
 	"unicode/utf8"
 
@@ -65,6 +66,35 @@ func IsValidPriority(priority string) bool {
 
 func IsValidStatus(status string) bool {
 	return StrSliceContains(ALL_STATUSES, status)
+}
+
+func ParseDueDateArg(dueStr string) (dateFilter string, dueDate time.Time) {
+	parts := strings.SplitN(dueStr, ":", 2)
+	if len(parts) != 2 {
+		ExitFail("Invalid due query format: " + dueStr + "\n" +
+			"Expected format: due:YYYY-MM-DD, due:MM-DD, due:DD, due:next-monday, due:today, etc.")
+	}
+	if parts[1] == "overdue" {
+		dateFilter = "before"
+		dueDate = startOfDay(time.Now())
+		return dateFilter, dueDate
+	}
+	tagParts := strings.SplitN(parts[0], ".", 2)
+	if len(tagParts) == 2 {
+		dateFilter = tagParts[1]
+
+		dateFilters := map[string]struct{}{"after": {}, "before": {}, "on": {}, "in": {}}
+		_, ok := dateFilters[dateFilter]
+		if !ok && dateFilter != "" {
+			ExitFail("Invalid date filter format: " + dateFilter + "\n" +
+				"Valid filters are: after, before, on, in")
+		}
+
+	} else {
+		dateFilter = ""
+	}
+	dueDate = ParseStrToDate(parts[1])
+	return dateFilter, dueDate
 }
 
 func SumInts(vals ...int) int {
