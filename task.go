@@ -379,7 +379,7 @@ func formatDueDate(due time.Time) string {
 	dueYear, _, _ := due.Date()
 
 	switch {
-	case dueYear == year && due.YearDay() > now.YearDay() && due.YearDay() < now.YearDay() + 7:
+	case due.After(now) && due.Sub(startOfDay(now)) < 7*24*time.Hour:
 		return due.Format("Mon _2")
 	case dueYear == year:
 		return due.Format("_2 Jan")

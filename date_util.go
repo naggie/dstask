@@ -35,8 +35,14 @@ func weekDayStrToTime(dateStr string, selector string) (due time.Time) {
 		return time.Time{}
 	}
 	daysDifference := int(targetWeekday) - int(nowWeekday)
-	if daysDifference <= 0 || selector == "next" {
+
+	if selector == "next" {
 		return startOfDay(time.Now().AddDate(0, 0, daysDifference+7))
+	}
+	if selector == "this" || selector == "" {
+		if daysDifference < 0 {
+			return startOfDay(time.Now().AddDate(0, 0, daysDifference+7))
+		}
 	}
 	return startOfDay(time.Now().AddDate(0, 0, daysDifference))
 }

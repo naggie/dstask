@@ -28,7 +28,7 @@ func getRelativeDate(days int) time.Time {
 func getNextWeekday(weekday time.Weekday) time.Time {
 	now := time.Now()
 	daysUntil := int(weekday - now.Weekday())
-	if daysUntil <= 0 {
+	if daysUntil < 0 {
 		daysUntil += 7
 	}
 	nextWeekday := now.AddDate(0, 0, daysUntil)
