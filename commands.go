@@ -14,10 +14,10 @@ import (
 // CommandAdd adds a new task to the task database.
 func CommandAdd(conf Config, ctx, query Query) error {
 	if query.Text == "" && query.Template == 0 {
-		return errors.New("Task description or template required")
+		return errors.New("task description or template required")
 	}
 	if query.DateFilter != "" && query.DateFilter != "in" && query.DateFilter != "on" {
-		return errors.New("Cannot use date filter with add command")
+		return errors.New("cannot use date filter with add command")
 	}
 
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
@@ -193,7 +193,7 @@ func CommandHelp(args []string) {
 // they're already completed.
 func CommandLog(conf Config, ctx, query Query) error {
 	if query.Text == "" {
-		return errors.New("Task description required")
+		return errors.New("task description required")
 	}
 
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
