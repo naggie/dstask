@@ -179,15 +179,18 @@ version           : Show dstask version information
 
 ## Operators
 
-| Symbol      | Syntax               | Description                                          | Example                                       |
-| ----------- | -------------------- | ---------------------------------------------------- | --------------------------------------------- |
-| `+`         | `+<tag>`             | Include tag. Filter/context, or when adding task.    | `dstask add fix server +work`                 |
-| `-`         | `-<tag>`             | Exclude tag. Filter/context only.                    | `dstask next -feature`                        |
-| `--`        | `--`                 | Ignore context. When listing or adding tasks.        | `dstask --`, `task add -- +home do guttering` |
-| `/`         | `/`                  | When adding a task, everything after will be a note. | `dstask add check out ipfs / https://ipfs.io` |
-| `project:`  | `project:<project>`  | Set project. Filter/context, or when adding task.    | `dstask context project:dstask`               |
-| `-project:` | `-project:<project>` | Exclude project, filter/context only.                | `dstask next -project:dstask -work`           |
-| `template:` | `template:<id>`      | Base new task on a template.                         | `dstask add template:24`                      |
+| Symbol          | Syntax                   | Description                                                      | Example                                       |
+| --------------- | ------------------------ | ---------------------------------------------------------------- | --------------------------------------------- |
+| `+`             | `+<tag>`                 | Include tag. Filter/context, or when adding task.                | `dstask add fix server +work`                 |
+| `-`             | `-<tag>`                 | Exclude tag. Filter/context only.                                | `dstask next -feature`                        |
+| `--`            | `--`                     | Ignore context. When listing or adding tasks.                    | `dstask --`, `task add -- +home do guttering` |
+| `/`             | `/`                      | When adding a task, everything after will be a note.             | `dstask add check out ipfs / https://ipfs.io` |
+| `project:`      | `project:<project>`      | Set project. Filter/context, or when adding task.                | `dstask context project:dstask`               |
+| `-project:`     | `-project:<project>`     | Exclude project, filter/context only.                            | `dstask next -project:dstask -work`           |
+| `template:`     | `template:<id>`          | Base new task on a template.                                     | `dstask add template:24`                      |
+| `due:`          | `due:<date>`             | Set or filter by due date.                                       | `dstask add task due:friday`                  |
+| `due.[filter]`  | `due.[filter]:<date>`    | Filter tasks based on due date filter (before, after, in/on).    | `dstask next due.before:tomorrow`             |
+
 
 ## State
 
@@ -197,6 +200,39 @@ version           : Show dstask version information
 | Active   | Tasks that have been started                  |
 | Paused   | Tasks that have been started but then stopped |
 | Resolved | Tasks that have been done/close/completed     |
+
+## Due Dates
+
+Due dates can be specified when adding tasks or filtering existing tasks.
+
+### Date Formats
+
+| Format          | Description                                           | Examples                                                    |
+| --------------- | ----------------------------------------------------- | ----------------------------------------------------------- |
+| Relative dates  | `yesterday`, `today`, `tomorrow`                      | `due:tomorrow`                                              |
+| Weekdays        | Full names or 3-letter abbreviations                  | `due:monday`, `due:wed`, `due:this-fri`, `due:next-tuesday` |
+| Full dates      | YYYY-MM-DD format                                     | `due:2024-12-25`                                            |
+| Month-day       | MM-DD format (sets current year automatically)        | `due:12-25`                                                 |
+| Day of month    | DD format (sets current month and year automatically) | `due:15`                                                    |
+
+### Adding Tasks with Due Dates
+
+```bash
+dstask add task with due date due:next-monday
+dstask add finish report due:friday
+dstask add pay bills due:15  # 15th of current month
+dstask add halloween party due:2025-10-31
+```
+
+### Filtering Tasks by Due Date
+
+```bash
+dstask next due.before:friday        # Tasks due before Friday
+dstask next due.after:tomorrow       # Tasks due after tomorrow  
+dstask next due.on:tue               # Tasks due on Tuesday
+dstask next due:overdue              # Overdue tasks
+dstask next due.before:2025-12-31    # Tasks due before end of year
+```
 
 # Contexts
 
