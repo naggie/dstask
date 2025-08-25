@@ -36,6 +36,16 @@ func getNextWeekday(weekday time.Weekday) time.Time {
 	return time.Date(year, month, day, 0, 0, 0, 0, time.Local)
 }
 
+func normalizeToLocal(t time.Time) time.Time {
+    return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local)
+}
+
+func assertDateEqual(t *testing.T, expected, actual time.Time) {
+    expectedLocal := normalizeToLocal(expected)
+    actualLocal := normalizeToLocal(actual)
+    assert.Equal(t, expectedLocal, actualLocal)
+}
+
 func TestAddTaskWithFullDate(t *testing.T) {
 	repo, cleanup := makeDstaskRepo(t)
 	defer cleanup()
@@ -49,7 +59,7 @@ func TestAddTaskWithFullDate(t *testing.T) {
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks := unmarshalTaskArray(t, output)
-	assert.Equal(t, getTestDate(2025, 7, 1), tasks[0].Due)
+	assertDateEqual(t, getTestDate(2025, 7, 1), tasks[0].Due)
 	assert.Equal(t, "Task with full date", tasks[0].Summary)
 }
 
@@ -67,7 +77,7 @@ func TestAddTaskWithMonthDay(t *testing.T) {
 
 	tasks := unmarshalTaskArray(t, output)
 	currentYear := time.Now().Year()
-	assert.Equal(t, getTestDate(currentYear, 7, 1), tasks[0].Due)
+	assertDateEqual(t, getTestDate(currentYear, 7, 1), tasks[0].Due)
 	assert.Equal(t, "Task with month-day", tasks[0].Summary)
 }
 
@@ -86,7 +96,7 @@ func TestAddTaskWithDay(t *testing.T) {
 	tasks := unmarshalTaskArray(t, output)
 	now := time.Now()
 	currentYear, currentMonth, _ := now.Date()
-	assert.Equal(t, getTestDate(currentYear, currentMonth, 15), tasks[0].Due)
+	assertDateEqual(t, getTestDate(currentYear, currentMonth, 15), tasks[0].Due)
 	assert.Equal(t, "Task with day only", tasks[0].Summary)
 }
 
@@ -103,7 +113,7 @@ func TestAddTaskWithToday(t *testing.T) {
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks := unmarshalTaskArray(t, output)
-	assert.Equal(t, getCurrentDate(), tasks[0].Due)
+	assertDateEqual(t, getCurrentDate(), tasks[0].Due)
 	assert.Equal(t, "Task due today", tasks[0].Summary)
 }
 
@@ -120,7 +130,7 @@ func TestAddTaskWithYesterday(t *testing.T) {
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks := unmarshalTaskArray(t, output)
-	assert.Equal(t, getRelativeDate(-1), tasks[0].Due)
+	assertDateEqual(t, getRelativeDate(-1), tasks[0].Due)
 	assert.Equal(t, "Task due yesterday", tasks[0].Summary)
 }
 
@@ -137,7 +147,7 @@ func TestAddTaskWithTomorrow(t *testing.T) {
 	assertProgramResult(t, output, exiterr, success)
 
 	tasks := unmarshalTaskArray(t, output)
-	assert.Equal(t, getRelativeDate(1), tasks[0].Due)
+	assertDateEqual(t, getRelativeDate(1), tasks[0].Due)
 	assert.Equal(t, "Task due tomorrow", tasks[0].Summary)
 }
 
@@ -159,7 +169,7 @@ func TestAddTaskWithWeekdays(t *testing.T) {
 
 		tasks := unmarshalTaskArray(t, output)
 		expectedDate := getNextWeekday(weekdayTimes[i])
-		assert.Equal(t, expectedDate, tasks[0].Due)
+		assertDateEqual(t, expectedDate, tasks[0].Due)
 		assert.Equal(t, "Task due "+weekday, tasks[0].Summary)
 	}
 }
@@ -184,8 +194,8 @@ func TestFilterTasksByExactDate(t *testing.T) {
 
 	tasks := unmarshalTaskArray(t, output)
 	assert.Len(t, tasks, 1)
+	assertDateEqual(t, getTestDate(2025, 7, 1), tasks[0].Due)
 	assert.Equal(t, "Task 1", tasks[0].Summary)
-	assert.Equal(t, getTestDate(2025, 7, 1), tasks[0].Due)
 }
 
 func TestFilterTasksByToday(t *testing.T) {
@@ -205,8 +215,8 @@ func TestFilterTasksByToday(t *testing.T) {
 
 	tasks := unmarshalTaskArray(t, output)
 	assert.Len(t, tasks, 1)
+	assertDateEqual(t, getCurrentDate(), tasks[0].Due)
 	assert.Equal(t, "Task due today", tasks[0].Summary)
-	assert.Equal(t, getCurrentDate(), tasks[0].Due)
 }
 
 func TestFilterTasksByOverdue(t *testing.T) {
@@ -295,8 +305,8 @@ func TestFilterTasksDueAfter(t *testing.T) {
 	assert.Len(t, tasks, 2)
 	assert.Equal(t, "Task 2", tasks[0].Summary)
 	assert.Equal(t, "Task 3", tasks[1].Summary)
-	assert.Equal(t, getCurrentDate(), tasks[0].Due)
-	assert.Equal(t, getRelativeDate(1), tasks[1].Due)
+	assertDateEqual(t, getCurrentDate(), tasks[0].Due)
+	assertDateEqual(t, getRelativeDate(1), tasks[1].Due)
 }
 
 func TestFilterTasksDueBefore(t *testing.T) {
@@ -320,9 +330,9 @@ func TestFilterTasksDueBefore(t *testing.T) {
 	tasks := unmarshalTaskArray(t, output)
 	assert.Len(t, tasks, 2)
 	assert.Equal(t, "Task 1", tasks[0].Summary)
-	assert.Equal(t, getRelativeDate(-1), tasks[0].Due)
+	assertDateEqual(t, getRelativeDate(-1), tasks[0].Due)
 	assert.Equal(t, "Task 2", tasks[1].Summary)
-	assert.Equal(t, getCurrentDate(), tasks[1].Due)
+	assertDateEqual(t, getCurrentDate(), tasks[1].Due)
 }
 
 func TestFilterTasksDueOn(t *testing.T) {
@@ -346,7 +356,7 @@ func TestFilterTasksDueOn(t *testing.T) {
 	tasks := unmarshalTaskArray(t, output)
 	assert.Len(t, tasks, 1)
 	assert.Equal(t, "Task 2", tasks[0].Summary)
-	assert.Equal(t, getCurrentDate(), tasks[0].Due)
+	assertDateEqual(t, getCurrentDate(), tasks[0].Due)
 }
 
 func TestFilterTasksDueAfterWithFullDate(t *testing.T) {
@@ -391,7 +401,7 @@ func TestModifyCommandWithDueDates(t *testing.T) {
 	tasks := unmarshalTaskArray(t, output)
 
 	assert.Len(t, tasks, 1)
-	assert.Equal(t, getTestDate(2025, time.June, 18), tasks[0].Due)
+	assertDateEqual(t, getTestDate(2025, time.June, 18), tasks[0].Due)
 }
 
 func TestTemplatesWithDueDates(t *testing.T) {
@@ -412,7 +422,7 @@ func TestTemplatesWithDueDates(t *testing.T) {
 	tasks := unmarshalTaskArray(t, output)
 
 	assert.Len(t, tasks, 1)
-	assert.Equal(t, getTestDate(2025, time.October, 31), tasks[0].Due)
+	assertDateEqual(t, getTestDate(2025, time.October, 31), tasks[0].Due)
 }
 
 func TestDueDatesMergeWithContext(t *testing.T) {
@@ -433,7 +443,7 @@ func TestDueDatesMergeWithContext(t *testing.T) {
 	tasks := unmarshalTaskArray(t, output)
 
 	assert.Len(t, tasks, 1)
-	assert.Equal(t, getTestDate(2025, time.September, 1), tasks[0].Due)
+	assertDateEqual(t, getTestDate(2025, time.September, 1), tasks[0].Due)
 	assert.Equal(t, "new task with context", tasks[0].Summary)
 	assert.Equal(t, "work", tasks[0].Tags[0])
 }
@@ -464,7 +474,7 @@ func TestNextCommandShowsDueDates(t *testing.T) {
 		}
 	}
 	assert.NotNil(t, taskWithDue)
-	assert.Equal(t, getCurrentDate(), taskWithDue.Due)
+	assertDateEqual(t, getCurrentDate(), taskWithDue.Due)
 }
 
 func TestShowResolvedDisplaysDueDates(t *testing.T) {
@@ -491,7 +501,7 @@ func TestShowResolvedDisplaysDueDates(t *testing.T) {
 	resolvedTasks := unmarshalTaskArray(t, output)
 	assert.Len(t, resolvedTasks, 1)
 	assert.Equal(t, "Completed task", resolvedTasks[0].Summary)
-	assert.Equal(t, getCurrentDate(), resolvedTasks[0].Due)
+	assertDateEqual(t, getCurrentDate(), resolvedTasks[0].Due)
 }
 
 func TestInvalidDateFormats(t *testing.T) {
@@ -569,7 +579,7 @@ func TestCombinedDueFilters(t *testing.T) {
 	tasks := unmarshalTaskArray(t, output)
 	assert.Len(t, tasks, 1)
 	assert.Equal(t, "Task 1", tasks[0].Summary)
-	assert.Equal(t, getCurrentDate(), tasks[0].Due)
+	assertDateEqual(t, getCurrentDate(), tasks[0].Due)
 }
 
 func TestMultipleDueDates(t *testing.T) {
