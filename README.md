@@ -95,10 +95,21 @@ Requirements:
 
 # Installation
 
-1. Copy the executable (from the [releases page][releases]) to somewhere in your path, named `dstask` and mark it executable. `/usr/local/bin/` is suggested.
+1. Copy the executable (from the [releases page][releases]) to somewhere in your PATH.
+   - Linux/macOS: name it `dstask` and mark it executable (e.g. `/usr/local/bin/`).
+   - Windows: use `dstask.exe` and place it in a directory on `PATH` (e.g. `%USERPROFILE%\bin`).
 1. Enable bash completions by copying `source <(dstask bash-completion)` into your `.bashrc`. There's also a `zsh-completion` subcommand.
 1. Set up an alias in your `.bashrc`: `alias task=dstask` or `alias t=dstask` to make task management slightly faster.
-1. Create or clone a ~/.dstask git repository for the data, if you haven't already: `mkdir ~/.dstask && git -C ~/.dstask init`.
+1. Create or clone a `~/.dstask` git repository for the data, if you haven't already:
+   - Linux/macOS: `mkdir ~/.dstask && git -C ~/.dstask init`
+   - Windows: `mkdir %USERPROFILE%\.dstask` then `git -C %USERPROFILE%\.dstask init`
+
+## Windows notes
+
+- Default data location: `%USERPROFILE%\\.dstask` (can be overridden via `DSTASK_GIT_REPO`).
+- On first run, dstask may prompt to create the repository if it doesn't exist; answer `y`/`yes` to proceed.
+- Terminal: use Windows Terminal or PowerShell with a 256-color capable profile for best results.
+- Shell completions: generation commands exist, but integrating them into PowerShell requires manual setup.
 
 There are also unofficial packages for:
 
@@ -282,8 +293,12 @@ See [etc/PERFORMANCE.md](etc/PERFORMANCE.md)
 
 See [etc/DATABASE_FORMAT.md](etc/DATABASE_FORMAT.md)
 
-The default database location is `~/.dstask/`, but can be configured by the
-environment variable `DSTASK_GIT_REPO`.
+The default database location is:
+
+- Linux/macOS: `~/.dstask/`
+- Windows: `%USERPROFILE%\\.dstask`
+
+It can be configured by the environment variable `DSTASK_GIT_REPO`.
 
 # Alternatives
 

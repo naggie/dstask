@@ -14,7 +14,6 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/mattn/go-isatty"
-	"golang.org/x/sys/unix"
 )
 
 func ExitFail(format string, a ...any) {
@@ -32,7 +31,9 @@ func ConfirmOrAbort(format string, a ...any) {
 		panic(err)
 	}
 
-	if input == "y\n" {
+    // Normalisiere Eingabe: entferne CR/LF/Whitespace und vergleiche in Kleinschreibung
+    normalized := strings.ToLower(strings.TrimSpace(input))
+    if normalized == "y" || normalized == "yes" {
 		return
 	}
 
@@ -268,18 +269,7 @@ func DeduplicateStrings(s []string) []string {
 	return s[:j]
 }
 
-func MustGetTermSize() (int, int) {
-	if FAKE_PTY {
-		return 80, 24
-	}
-
-	ws, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
-	if err != nil {
-		ExitFail("Not a TTY")
-	}
-
-	return int(ws.Col), int(ws.Row)
-}
+// MustGetTermSize is implemented per-OS in util_unix.go and util_windows.go
 
 func StdoutIsTTY() bool {
 	isTTY := isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd())
