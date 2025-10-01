@@ -23,10 +23,10 @@ func NewConfig() Config {
 	var conf Config
 
 	conf.CtxFromEnvVar = getEnv("DSTASK_CONTEXT", "")
-	// Bestimme Home-Verzeichnis plattformunabhängig
+	// Determine home directory in a platform-independent way
 	home, err := os.UserHomeDir()
 	if err != nil {
-		// Fallback: benutze $HOME falls vorhanden
+		// Fallback: use $HOME if present
 		home = os.Getenv("HOME")
 	}
 	defaultRepo := filepath.Join(home, ".dstask")

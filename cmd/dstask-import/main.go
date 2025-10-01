@@ -50,7 +50,7 @@ func main() {
 			dstask.ExitFail(err.Error())
 		}
 	case "github":
-		// Plattformsichere Standardpfade bestimmen
+		// Determine platform-safe default paths
 		home, err := os.UserHomeDir()
 		if err != nil {
 			home = os.Getenv("HOME")

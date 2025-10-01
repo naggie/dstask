@@ -31,7 +31,7 @@ func ConfirmOrAbort(format string, a ...any) {
 		panic(err)
 	}
 
-    // Normalisiere Eingabe: entferne CR/LF/Whitespace und vergleiche in Kleinschreibung
+	// Normalize input: remove CR/LF/whitespace and compare in lowercase
     normalized := strings.ToLower(strings.TrimSpace(input))
     if normalized == "y" || normalized == "yes" {
 		return
