@@ -35,7 +35,7 @@ Features:
 - Task listing won't break with long task text
 - `note` command -- edit a **full markdown note** for each task. **Checklists are useful here.**
 - `open` command -- **open URLs found in specified task** (including notes) in the browser
-- zsh/bash completion (including tags and projects in current context) for speed
+- zsh/bash completion (including tags and projects in current context) for speed; PowerShell completion on Windows
 - A single statically-linked binary
 - [import tool](doc/dstask-import.md) which can import GitHub issues or taskwarrior tasks.
 
@@ -98,7 +98,10 @@ Requirements:
 1. Copy the executable (from the [releases page][releases]) to somewhere in your PATH.
    - Linux/macOS: name it `dstask` and mark it executable (e.g. `/usr/local/bin/`).
    - Windows: use `dstask.exe` and place it in a directory on `PATH` (e.g. `%USERPROFILE%\bin`).
-1. Enable bash completions by copying `source <(dstask bash-completion)` into your `.bashrc`. There's also a `zsh-completion` subcommand.
+1. Enable shell completions:
+   - Bash: add `source <(dstask bash-completion)` to your `.bashrc`.
+   - Zsh: add `dstask zsh-completion > /usr/local/share/zsh/site-functions/_dstask` or source `completions/zsh.sh` in your `~/.zshrc`.
+   - PowerShell (Windows): see section "PowerShell completion" below.
 1. Set up an alias in your `.bashrc`: `alias task=dstask` or `alias t=dstask` to make task management slightly faster.
 1. Create or clone a `~/.dstask` git repository for the data, if you haven't already:
    - Linux/macOS: `mkdir ~/.dstask && git -C ~/.dstask init`
@@ -109,7 +112,36 @@ Requirements:
 - Default data location: `%USERPROFILE%\\.dstask` (can be overridden via `DSTASK_GIT_REPO`).
 - On first run, dstask may prompt to create the repository if it doesn't exist; answer `y`/`yes` to proceed.
 - Terminal: use Windows Terminal or PowerShell with a 256-color capable profile for best results.
-- Shell completions: generation commands exist, but integrating them into PowerShell requires manual setup.
+- Shell completions: PowerShell completion is supported; see next section.
+
+### PowerShell completion
+
+To enable PowerShell tab completion for `dstask` on Windows, use the embedded script in `completions/powershell.ps1`.
+
+One-off for the current session:
+
+```powershell
+. ./completions/powershell.ps1
+```
+
+Enable permanently by dot-sourcing from your PowerShell profile:
+
+```powershell
+# Create a profile if it doesn't exist
+if (!(Test-Path -LiteralPath $PROFILE)) { New-Item -ItemType File -Path $PROFILE -Force | Out-Null }
+
+# Open your profile for editing
+notepad $PROFILE
+
+# Add the following line (adjust path if needed):
+. "$PSScriptRoot/completions/powershell.ps1"
+```
+
+Alternatively, hardcode the absolute path to the repository if `PSScriptRoot` is not suitable for your setup, e.g.:
+
+```powershell
+. "C:\\Users\\<you>\\source\\repos\\dstask-win-port\\completions\\powershell.ps1"
+```
 
 There are also unofficial packages for:
 
