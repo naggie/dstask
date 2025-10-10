@@ -172,7 +172,7 @@ func (t *Task) Style() RowStyle {
 	if t.Status == STATUS_ACTIVE {
 		style.Fg = FG_ACTIVE
 		style.Bg = BG_ACTIVE
-	} else if !t.Due.IsZero() && t.Due.Before(now) {
+	} else if !t.Due.IsZero() && t.Due.Before(now) && t.Status!=STATUS_RESOLVED {
 		style.Fg = FG_PRIORITY_HIGH
 	} else if t.Priority == PRIORITY_CRITICAL {
 		style.Fg = FG_PRIORITY_CRITICAL
