@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/naggie/dstask"
@@ -10,7 +11,22 @@ import (
 )
 
 func main() {
-	query := dstask.ParseQuery(os.Args[1:]...)
+	args := os.Args[1:]
+
+	binaryName := filepath.Base(os.Args[0])
+	switch binaryName {
+	case "p0":
+		args = append([]string{"add", "P0"}, args...)
+	case "p1":
+		args = append([]string{"add", "P1"}, args...)
+	case "p2":
+		args = append([]string{"add", "P2"}, args...)
+	case "p3":
+		args = append([]string{"add", "P3"}, args...)
+	case "ds":
+	}
+
+	query := dstask.ParseQuery(args...)
 
 	// It will remain true if we handle a command that doesn't require
 	// initialisation
@@ -47,6 +63,8 @@ func main() {
 	// Load state for getting and setting ctx
 	state := dstask.LoadState(conf.StateFile)
 	ctx := state.Context
+
+	dstask.SelfHeal(conf)
 
 	// Check if we have a context override.
 	if conf.CtxFromEnvVar != "" {
