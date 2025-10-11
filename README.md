@@ -107,6 +107,30 @@ There are also unofficial packages for:
 - [FreeBSD](https://www.freshports.org/deskutils/dstask/)
 - [Homebrew](https://formulae.brew.sh/formula/dstask)
 
+# Priority Shortcuts
+
+Dstask provides quick priority shortcuts via symlinks, automatically created in `~/.local/bin/`:
+
+```bash
+p0 critical bug in production    # Creates P0 (critical) priority task
+p1 high priority feature         # Creates P1 (high) priority task
+p2 normal task                   # Creates P2 (normal) priority task
+p3 low priority nice-to-have     # Creates P3 (low) priority task
+ds next                          # General dstask shortcut
+```
+
+The shortcuts are automatically created and maintained on first use. If your `~/.local/bin` isn't in your PATH, add it:
+
+```bash
+# Bash/Zsh
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+
+# Fish
+fish_add_path ~/.local/bin
+```
+
+Completions work the same as `dstask` for all shortcuts.
+
 # Moving from Taskwarrior
 
 We have a [migration guide](doc/taskwarrior-migration.md) to make the transition from taskwarrior to dstask a simple process.
@@ -137,7 +161,7 @@ any words after.
 Available commands:
 
 next              : Show most important tasks (priority, creation date -- truncated and default)
-add               : Add a task
+add               : Add a task (shortcut: p0, p1, p2, p3 for priorities)
 template          : Add a task template
 log               : Log a task (already resolved)
 start             : Change task status to active

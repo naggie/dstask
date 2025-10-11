@@ -21,5 +21,10 @@ _dstask() {
 
 complete -F _dstask dstask
 complete -F _dstask task
+complete -F _dstask p0
+complete -F _dstask p1
+complete -F _dstask p2
+complete -F _dstask p3
+complete -F _dstask ds
 #complete -F _dstask n
 #complete -F _dstask t
