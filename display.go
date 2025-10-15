@@ -168,21 +168,32 @@ func (task *Task) Display() {
 func (t *Task) Style() RowStyle {
 	now := time.Now()
 	style := RowStyle{}
+	active := t.Status==STATUS_ACTIVE
+	paused := t.Status==STATUS_PAUSED
+	resolved := t.Status==STATUS_RESOLVED
 
-	if t.Status == STATUS_ACTIVE {
-		style.Fg = FG_ACTIVE
-		style.Bg = BG_ACTIVE
-	} else if !t.Due.IsZero() && t.Due.Before(now) && t.Status!=STATUS_RESOLVED {
-		style.Fg = FG_PRIORITY_HIGH
-	} else if t.Priority == PRIORITY_CRITICAL {
-		style.Fg = FG_PRIORITY_CRITICAL
-	} else if t.Priority == PRIORITY_HIGH {
-		style.Fg = FG_PRIORITY_HIGH
-	} else if t.Priority == PRIORITY_LOW {
-		style.Fg = FG_PRIORITY_LOW
+	getFg := func(normalColor, activeColor int) int {
+		if active {
+			return activeColor
+		}
+		return normalColor
 	}
 
-	if t.Status == STATUS_PAUSED {
+	if !t.Due.IsZero() && t.Due.Before(now) && !resolved {
+		style.Fg = getFg(FG_PRIORITY_HIGH, FG_ACTIVE_PRIORITY_HIGH)
+	} else if t.Priority == PRIORITY_CRITICAL {
+		style.Fg = getFg(FG_PRIORITY_CRITICAL,FG_ACTIVE_PRIORITY_CRITICAL)
+	} else if t.Priority == PRIORITY_HIGH {
+		style.Fg = getFg(FG_PRIORITY_HIGH, FG_ACTIVE_PRIORITY_HIGH)
+	} else if t.Priority == PRIORITY_LOW {
+		style.Fg = getFg(FG_PRIORITY_LOW, FG_ACTIVE_PRIORITY_LOW)
+	} else {
+		style.Fg = getFg(FG_DEFAULT, FG_ACTIVE)
+	}
+
+	if active {
+		style.Bg = BG_ACTIVE
+	} else if paused {
 		style.Bg = BG_PAUSED
 	}
 
