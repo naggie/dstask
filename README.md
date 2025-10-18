@@ -24,6 +24,16 @@ Dstask is a personal task tracker designed to help you focus. It is similar to
 [Taskwarrior](https://taskwarrior.org/) but uses git to synchronise instead of
 a special protocol.
 
+
+
+
+https://github.com/user-attachments/assets/589d06fd-7486-46e4-b838-ce85af12f0fc
+
+[Video courtesy of xGoivo -- thanks!](https://www.reddit.com/r/taskwarrior/comments/1o7itzg/what_do_you_guys_think_about_this_taskwarrior/)
+
+
+
+
 Features:
 
 <a href="https://repology.org/project/dstask/versions">
