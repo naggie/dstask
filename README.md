@@ -121,10 +121,6 @@ There are also unofficial packages for:
 
 We have a [migration guide](doc/taskwarrior-migration.md) to make the transition from taskwarrior to dstask a simple process.
 
-# Future of dstask
-
-See [etc/FUTURE.md](etc/FUTURE.md)
-
 # Usage
 
 ```
