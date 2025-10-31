@@ -458,7 +458,7 @@ func CommandShowOpen(conf Config, ctx, query Query) error {
 
 	query = query.Merge(ctx)
 	ts.Filter(query)
-	if err := ts.DisplayByNext(ctx, true); err != nil {
+	if err := ts.DisplayByNext(ctx, false); err != nil {
 		return err
 	}
 
