@@ -164,10 +164,10 @@ func MakeTempFilename(id int, summary, ext string) string {
 }
 
 func MustEditBytes(data []byte, tmpFilename string) []byte {
-	editor := os.Getenv("EDITOR")
+	editor := strings.Fields(os.Getenv("EDITOR"))
 
-	if editor == "" {
-		editor = "vim"
+	if len(editor) == 0 {
+		editor = []string{"vim"}
 	}
 
 	tmpfile, err := os.CreateTemp("", tmpFilename)
@@ -190,7 +190,7 @@ func MustEditBytes(data []byte, tmpFilename string) []byte {
 		ExitFail("Could not close temporary file to edit")
 	}
 
-	err = RunCmd(editor, tmpfile.Name())
+	err = RunCmd(editor[0], append(editor[1:], tmpfile.Name())...)
 	if err != nil {
 		ExitFail("Failed to run $EDITOR")
 	}
