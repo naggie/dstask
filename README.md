@@ -109,7 +109,7 @@ Requirements:
 
 ## Windows notes
 
-- Default data location: `%USERPROFILE%\\.dstask` (can be overridden via `DSTASK_GIT_REPO`).
+- Default data location: `%USERPROFILE%\.dstask` (can be overridden via `DSTASK_GIT_REPO`).
 - On first run, dstask may prompt to create the repository if it doesn't exist; answer `y`/`yes` to proceed.
 - Terminal: use Windows Terminal or PowerShell with a 256-color capable profile for best results.
 - Shell completions: PowerShell completion is supported; see next section.
