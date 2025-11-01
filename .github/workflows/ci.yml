@@ -48,3 +48,37 @@ jobs:
         run: |
           go test -v -mod=vendor ./...
           ./integrationtest.sh
+
+  windows-test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Go mod vendor
+        shell: pwsh
+        run: go mod vendor
+
+      - name: Configure Git User
+        shell: pwsh
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+      - name: Run Go tests
+        shell: pwsh
+        run: go test -v -mod=vendor ./...
+
+      - name: Build Windows binaries
+        shell: pwsh
+        run: |
+          go build -mod=vendor -o dstask.exe ./cmd/dstask
+          go build -mod=vendor -o dstask-import.exe ./cmd/dstask-import

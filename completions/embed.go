@@ -17,3 +17,8 @@ var Bash string
 //
 //go:embed completions.fish
 var Fish string
+
+// PowerShell completion script
+//
+//go:embed powershell.ps1
+var PowerShell string
