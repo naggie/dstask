@@ -2,7 +2,7 @@ package dstask
 
 import (
 	"os"
-	"path"
+	"path/filepath"
 )
 
 // Config models the dstask application's required configuration. All paths
@@ -23,9 +23,16 @@ func NewConfig() Config {
 	var conf Config
 
 	conf.CtxFromEnvVar = getEnv("DSTASK_CONTEXT", "")
-	conf.Repo = getEnv("DSTASK_GIT_REPO", os.ExpandEnv("$HOME/.dstask"))
-	conf.StateFile = path.Join(conf.Repo, ".git", "dstask", "state.bin")
-	conf.IDsFile = path.Join(conf.Repo, ".git", "dstask", "ids.bin")
+	// Determine home directory in a platform-independent way
+	home, err := os.UserHomeDir()
+	if err != nil {
+		// Fallback: use $HOME if present
+		home = os.Getenv("HOME")
+	}
+	defaultRepo := filepath.Join(home, ".dstask")
+	conf.Repo = getEnv("DSTASK_GIT_REPO", defaultRepo)
+	conf.StateFile = filepath.Join(conf.Repo, ".git", "dstask", "state.bin")
+	conf.IDsFile = filepath.Join(conf.Repo, ".git", "dstask", "ids.bin")
 
 	return conf
 }

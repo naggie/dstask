@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"runtime"
 	"testing"
 
 	"github.com/naggie/dstask"
@@ -13,13 +14,15 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	if err := compile(); err != nil {
+	binary := binaryPath()
+
+	if err := compile(binary); err != nil {
 		log.Fatalf("compile error: %v", err)
 	}
 
 	cleanup := func() {
-		if err := os.Remove("dstask"); err != nil {
-			log.Panic("could not remove integration test binary")
+		if err := os.Remove(binary); err != nil {
+			log.Panicf("could not remove integration test binary %s", binary)
 		}
 	}
 
@@ -29,12 +32,20 @@ func TestMain(m *testing.M) {
 	os.Exit(exitCode)
 }
 
-func compile() error {
+func compile(outputPath string) error {
 	// We expect to execute in the ./integration directory, and we will output
 	// our test binary there.
-	cmd := exec.Command("go", "build", "-mod=vendor", "-o", "./dstask", "../cmd/dstask/main.go")
+	cmd := exec.Command("go", "build", "-mod=vendor", "-o", outputPath, "../cmd/dstask/main.go")
 
 	return cmd.Run()
+}
+
+func binaryPath() string {
+	if runtime.GOOS == "windows" {
+		return "./dstask.exe"
+	}
+
+	return "./dstask"
 }
 
 // Create a callable closure that will run our test binary against a
@@ -42,7 +53,7 @@ func compile() error {
 // passed to the test subprocess.
 func testCmd(repoPath string) func(args ...string) ([]byte, *exec.ExitError, bool) {
 	return func(args ...string) ([]byte, *exec.ExitError, bool) {
-		cmd := exec.Command("./dstask", args...)
+		cmd := exec.Command(binaryPath(), args...)
 		env := os.Environ()
 		cmd.Env = append(env, "DSTASK_GIT_REPO="+repoPath)
 		output, err := cmd.Output()
@@ -77,7 +88,11 @@ func setEnv(key, value string) func() {
 func logFailure(t *testing.T, output []byte, exiterr *exec.ExitError) {
 	t.Helper()
 	t.Logf("stdout: %s", string(output))
-	t.Logf("stderr: %v", string(exiterr.Stderr))
+	if exiterr != nil {
+		t.Logf("stderr: %s", string(exiterr.Stderr))
+	} else {
+		t.Log("stderr: <nil>")
+	}
 }
 
 func unmarshalTaskArray(t *testing.T, data []byte) []dstask.Task {
@@ -134,6 +149,9 @@ func assertProgramResult(
 
 	if exiterr != nil || !successExpected {
 		logFailure(t, output, exiterr)
-		t.Fatalf("%v", exiterr)
+		if exiterr != nil {
+			t.Fatalf("%v", exiterr)
+		}
+		t.Fatalf("command exited unsuccessfully")
 	}
 }

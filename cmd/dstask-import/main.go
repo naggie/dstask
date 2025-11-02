@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/naggie/dstask"
 	"github.com/naggie/dstask/pkg/imp/config"
@@ -49,8 +50,13 @@ func main() {
 			dstask.ExitFail(err.Error())
 		}
 	case "github":
-		repo := getEnv("DSTASK_GIT_REPO", os.ExpandEnv("$HOME/.dstask"))
-		configFile := os.ExpandEnv("$HOME/.dstask-import.toml")
+		// Determine platform-safe default paths
+		home, err := os.UserHomeDir()
+		if err != nil {
+			home = os.Getenv("HOME")
+		}
+		repo := getEnv("DSTASK_GIT_REPO", filepath.Join(home, ".dstask"))
+		configFile := filepath.Join(home, ".dstask-import.toml")
 
 		cfg, err := config.Load(configFile, repo)
 		if err != nil {
