@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+# TODO -- replace with go-releaser
+
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <tag>"
     echo "Release version required as argument"
