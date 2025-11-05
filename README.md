@@ -338,6 +338,38 @@ The default database location is:
 
 It can be configured by the environment variable `DSTASK_GIT_REPO`.
 
+# Integration of fuzzy finders
+
+Instead of passing task IDs to commands, a fuzzy finder like [*fzf*](https://github.com/junegunn/fzf) can be used to
+search tasks by their summary instead. This is not part of dstask itself, but can be achieved by defining a shell
+wrapper like this in your `.bashrc` or `.zshrc`:
+
+```bash
+function dstask () {
+    local has_double_dash subcommand
+
+    if (( $# == 1 || $# == 2 )); then
+        has_double_dash="$( [[ "$1" == "--" || "$2" == "--" ]] && echo "1" || echo "0" )"
+        subcommand="$( [[ "$1" == "--" ]] && echo "$2" || echo "$1" )"
+        if (( $# == 1 )) || (( has_double_dash )) && \
+            [[ "${subcommand}" =~ ^(done|edit|note|open|remove|start|stop)$ ]]
+        then
+            command dstask show-open $( (( has_double_dash )) && echo "--" ) \
+                | jq -r '.[] | [.id, .summary] | @tsv' \
+                | fzf --delimiter='\t' --nth=2 --accept-nth=1 --preview='DSTASK_FAKE_PTY=1 dstask {1} --' \
+                | xargs -n1 dstask "${subcommand}"
+            return
+        fi
+    fi
+
+    command dstask "$@"
+}
+```
+
+The wrapper function checks if dstask was called with a subcommand missing the task ID, and if so uses the `show-open`
+command to get a list of tasks to choose from. `--` can be used to ignore the current context for the fuzzy search. All
+other commands are passed directly to dstask.
+
 # Alternatives
 
 Alternatives listed must be capable of running in the terminal.
