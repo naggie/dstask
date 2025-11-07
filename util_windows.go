@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/mattn/go-isatty"
+	"golang.org/x/sys/windows"
 )
 
 func MustGetTermSize() (int, int) {
@@ -13,12 +14,17 @@ func MustGetTermSize() (int, int) {
 		return 80, 24
 	}
 
-	// Fallback: if not a TTY, fail as vorher
-	if !(isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd())) {
+	fd := os.Stdout.Fd()
+
+	// Fallback: if not a TTY, fail as before
+	if !(isatty.IsTerminal(fd) || isatty.IsCygwinTerminal(fd)) {
 		ExitFail("Not a TTY")
 	}
+	
+	var info windows.ConsoleScreenBufferInfo
+	if err := windows.GetConsoleScreenBufferInfo(windows.Handle(fd), &info); err != nil {
+		return 80, 24
+	}
 
-	// On Windows, golang.org/x/sys/unix is unavailable; use conservative default
-	// Many Windows terminals handle wrapping; we pick a reasonable width
-	return 80, 24
+	return int(info.Window.Right - info.Window.Left + 1), int(info.Window.Bottom - info.Window.Top + 1)
 }
