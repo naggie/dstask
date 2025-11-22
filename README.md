@@ -351,7 +351,7 @@ function dstask () {
     if (( $# == 1 || $# == 2 )); then
         has_double_dash="$( [[ "$1" == "--" || "$2" == "--" ]] && echo "1" || echo "0" )"
         subcommand="$( [[ "$1" == "--" ]] && echo "$2" || echo "$1" )"
-        if (( $# == 1 )) || (( has_double_dash )) && \
+        if (( $# == 1 || has_double_dash )) && \
             [[ "${subcommand}" =~ ^(done|edit|note|open|remove|start|stop)$ ]]
         then
             command dstask show-open $( (( has_double_dash )) && echo "--" ) \
@@ -369,6 +369,9 @@ function dstask () {
 The wrapper function checks if dstask was called with a subcommand missing the task ID, and if so uses the `show-open`
 command to get a list of tasks to choose from. `--` can be used to ignore the current context for the fuzzy search. All
 other commands are passed directly to dstask.
+
+A more advanced version, which adds additional support for the dstask `modify` command by inserting the selected task ID
+directly into the shell prompt, can be found in [etc/fzf_integration.zsh](etc/fzf_integration.zsh) (zsh only).
 
 # Alternatives
 
