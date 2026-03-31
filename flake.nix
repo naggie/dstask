@@ -13,10 +13,6 @@
   outputs = { self, nixpkgs, flake-utils, ... }:
     let
       version = "1.0.1";
-
-      lastModifiedDate = builtins.substring 0 4 self.lastModifiedDate
-        + "-" + builtins.substring 4 2 self.lastModifiedDate
-        + "-" + builtins.substring 6 2 self.lastModifiedDate;
     in
     flake-utils.lib.eachDefaultSystem (system:
       let
@@ -39,7 +35,6 @@
             "-s" "-w"
             "-X github.com/naggie/dstask.GIT_COMMIT=${self.shortRev or "dirty"}"
             "-X github.com/naggie/dstask.VERSION=${version}"
-            "-X github.com/naggie/dstask.BUILD_DATE=${lastModifiedDate}"
           ];
 
           meta = with pkgs.lib; {
