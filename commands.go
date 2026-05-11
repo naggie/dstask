@@ -702,10 +702,8 @@ func CommandUndo(conf Config, args []string, ctx, query Query) error {
 
 // CommandVersion prints version information for the dstask binary.
 func CommandVersion() {
-	fmt.Printf(
-		"Version: %s\nGit commit: %s\nBuild date: %s\n",
-		VERSION,
-		GIT_COMMIT,
-		BUILD_DATE,
-	)
+	fmt.Printf("Version: %s\nGit commit: %s\n", VERSION, GIT_COMMIT)
+	if BUILD_DATE != "Unknown" {
+		fmt.Printf("Build date: %s\n", BUILD_DATE)
+	}
 }

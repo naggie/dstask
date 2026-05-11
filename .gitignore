@@ -10,5 +10,8 @@ dist
 
 # Vendor directory
 vendor
+
+# Nix build output
+result
 # Added by goreleaser init:
 dist/

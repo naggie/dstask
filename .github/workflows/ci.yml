@@ -46,6 +46,22 @@ jobs:
           go test -v ./...
           ./integrationtest.sh
 
+  nix-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+
+      - name: Build
+        run: nix build
+
+      - name: Flake check
+        run: nix flake check
+
   windows-test:
     runs-on: windows-latest
 

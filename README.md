@@ -154,6 +154,27 @@ Alternatively, hardcode the absolute path to the repository if `PSScriptRoot` is
 . "C:\\Users\\<you>\\source\\repos\\dstask-win-port\\completions\\powershell.ps1"
 ```
 
+## Nix Flake
+
+Run directly without installing:
+
+```sh
+nix run github:naggie/dstask -- version
+```
+
+Install into your profile:
+
+```sh
+nix profile install github:naggie/dstask
+```
+
+Dev shell (Go + golangci-lint):
+
+```sh
+nix develop        # with flakes
+nix-shell          # legacy, uses flake-compat shim
+```
+
 There are also unofficial packages for:
 
 - [Nix](https://nixos.org/nixos/packages.html?attr=dstask&channel=nixpkgs-unstable&query=dstask)
