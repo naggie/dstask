@@ -113,7 +113,7 @@ Requirements:
    - Bash: add `source <(dstask bash-completion)` to your `.bashrc`.
    - Zsh: add `dstask zsh-completion > /usr/local/share/zsh/site-functions/_dstask` or source `completions/zsh.sh` in your `~/.zshrc`.
    - Nushell: run `dstask nushell-completion | save -f ~/.config/nushell/completions/dstask.nu` then add `source ~/.config/nushell/completions/dstask.nu` to your `config.nu`.
-   - Fish: add `dstask fish-completion | source` to your `~/.config/fish/config.fish`
+   - Fish: Save the output of `dstask fish-completion` to  `${FISH_CFG}/completions/dstask.fish` Note: Usually this will be at `~/.config/fish/`
    - PowerShell (Windows): see section "PowerShell completion" below.
 1. Set up an alias in your `.bashrc`: `alias task=dstask` or `alias t=dstask` to make task management slightly faster.
 1. Create or clone a `~/.dstask` git repository for the data, if you haven't already:
