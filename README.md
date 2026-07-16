@@ -46,6 +46,7 @@ Features:
 - `note` command -- edit a **full markdown note** for each task. **Checklists are useful here.**
 - `open` command -- **open URLs found in specified task** (including notes) in the browser
 - zsh/bash completion (including tags and projects in current context) for speed; PowerShell completion on Windows
+- nushell/fish completion
 - A single statically-linked binary
 - [import tool](doc/dstask-import.md) which can import GitHub issues or taskwarrior tasks.
 
@@ -112,6 +113,7 @@ Requirements:
    - Bash: add `source <(dstask bash-completion)` to your `.bashrc`.
    - Zsh: add `dstask zsh-completion > /usr/local/share/zsh/site-functions/_dstask` or source `completions/zsh.sh` in your `~/.zshrc`.
    - Nushell: run `dstask nushell-completion | save -f ~/.config/nushell/completions/dstask.nu` then add `source ~/.config/nushell/completions/dstask.nu` to your `config.nu`.
+   - Fish: run `dstask fish-completion > $__fish_config_dir/completions/dstask.fish`.
    - PowerShell (Windows): see section "PowerShell completion" below.
 1. Set up an alias in your `.bashrc`: `alias task=dstask` or `alias t=dstask` to make task management slightly faster.
 1. Create or clone a `~/.dstask` git repository for the data, if you haven't already:
