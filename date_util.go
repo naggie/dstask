@@ -9,6 +9,36 @@ func startOfDay(t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local)
 }
 
+// parseDuePeriod maps due:this-week, due:next-week, due:this-month and
+// due:next-month to an inclusive date range. Weeks run from Monday to Sunday.
+func parseDuePeriod(dueStr string, now time.Time) (start, end time.Time, ok bool) {
+	period, found := strings.CutPrefix(dueStr, "due:")
+	if !found {
+		return start, end, false
+	}
+
+	today := startOfDay(now)
+	year, month, _ := today.Date()
+	sinceMonday := (int(today.Weekday()) + 6) % 7
+
+	switch period {
+	case "this-week":
+		start = today.AddDate(0, 0, -sinceMonday)
+		return start, start.AddDate(0, 0, 6), true
+	case "next-week":
+		start = today.AddDate(0, 0, 7-sinceMonday)
+		return start, start.AddDate(0, 0, 6), true
+	case "this-month":
+		return time.Date(year, month, 1, 0, 0, 0, 0, time.Local),
+			time.Date(year, month+1, 0, 0, 0, 0, 0, time.Local), true
+	case "next-month":
+		return time.Date(year, month+1, 1, 0, 0, 0, 0, time.Local),
+			time.Date(year, month+2, 0, 0, 0, 0, 0, time.Local), true
+	}
+
+	return start, end, false
+}
+
 func weekDayStrToTime(dateStr string, selector string) (due time.Time) {
 	weekdays := map[string]time.Weekday{
 		"sun":       time.Sunday,

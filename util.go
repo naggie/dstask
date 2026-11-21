@@ -75,6 +75,17 @@ func ParseDueDateArg(dueStr string) (dateFilter string, dueDate time.Time) {
 		ExitFail("Invalid due query format: " + dueStr + "\n" +
 			"Expected format: due:YYYY-MM-DD, due:MM-DD, due:DD, due:next-monday, due:today, etc.")
 	}
+	if parts[1] == "none" || parts[1] == "any" {
+		if parts[0] != "due" {
+			ExitFail("Invalid due query format: " + dueStr + "\n" +
+				"Use due:none or due:any without a date filter")
+		}
+		return parts[1], time.Time{}
+	}
+	if _, _, ok := parseDuePeriod("due:"+parts[1], time.Now()); ok {
+		ExitFail("Invalid due query format: " + dueStr + "\n" +
+			"Use due:" + parts[1] + " without a date filter")
+	}
 	if parts[1] == "overdue" {
 		dateFilter = "before"
 		dueDate = startOfDay(time.Now())

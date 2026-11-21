@@ -159,13 +159,13 @@ func (t *Task) MatchesFilter(query Query) bool {
 	}
 
 	for _, tag := range query.Tags {
-		if !StrSliceContains(t.Tags, tag) {
+		if !matchesTag(t.Tags, tag) {
 			return false
 		}
 	}
 
 	for _, tag := range query.AntiTags {
-		if StrSliceContains(t.Tags, tag) {
+		if matchesTag(t.Tags, tag) {
 			return false
 		}
 	}
@@ -178,14 +178,26 @@ func (t *Task) MatchesFilter(query Query) bool {
 		return false
 	}
 
+	if query.DateFilter == "none" && !t.Due.IsZero() {
+		return false
+	}
+
+	if query.DateFilter == "any" && t.Due.IsZero() {
+		return false
+	}
+
 	if !query.Due.IsZero() {
 		if t.Due.IsZero() {
+			return false
+		}
+		// before and the end of a range are inclusive for the whole day
+		if !query.DueEnd.IsZero() && !t.Due.Before(query.DueEnd.AddDate(0, 0, 1)) {
 			return false
 		}
 		if query.DateFilter == "after" && t.Due.Before(query.Due) {
 			return false
 		}
-		if query.DateFilter == "before" && t.Due.After(query.Due) {
+		if query.DateFilter == "before" && !t.Due.Before(query.Due.AddDate(0, 0, 1)) {
 			return false
 		}
 		if (query.DateFilter == "on" || query.DateFilter == "in") && !t.Due.Equal(query.Due) {
@@ -206,6 +218,23 @@ func (t *Task) MatchesFilter(query Query) bool {
 	}
 
 	return true
+}
+
+// matchesTag reports whether tags contain tag. A tag ending in * matches
+// every tag with that prefix, e.g. team:* matches team:a and team:b.
+func matchesTag(tags []string, tag string) bool {
+	if isWildcardTag(tag) {
+		prefix := strings.TrimSuffix(tag, "*")
+		for _, t := range tags {
+			if strings.HasPrefix(t, prefix) {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	return StrSliceContains(tags, tag)
 }
 
 // Normalise mutates and sorts some of a task object's fields into a consistent
@@ -272,7 +301,8 @@ func (t *Task) LongSummary() string {
 
 func (t *Task) Modify(query Query) {
 	for _, tag := range query.Tags {
-		if !StrSliceContains(t.Tags, tag) {
+		// wildcard tags (e.g. from the context) are filters, not tags
+		if !isWildcardTag(tag) && !StrSliceContains(t.Tags, tag) {
 			t.Tags = append(t.Tags, tag)
 		}
 	}
@@ -298,6 +328,10 @@ func (t *Task) Modify(query Query) {
 
 	if !query.Due.IsZero() {
 		t.Due = query.Due
+	}
+
+	if query.DateFilter == "none" {
+		t.Due = time.Time{}
 	}
 
 	if t.Notes != "" {
