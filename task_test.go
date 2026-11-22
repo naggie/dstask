@@ -154,3 +154,23 @@ func TestModifyDueNoneAndWildcardTags(t *testing.T) {
 	assert.True(t, task.Due.IsZero())
 	assert.Equal(t, []string{"a", "b"}, task.Tags)
 }
+
+func TestMatchesFilterPriorities(t *testing.T) {
+	tests := []struct {
+		priority string
+		query    Query
+		expected bool
+	}{
+		{"P1", Query{}, true},
+		{"P1", Query{Priority: "P1"}, true},
+		{"P2", Query{Priority: "P1"}, false},
+		{"P0", ParseQuery("P0", "P1"), true},
+		{"P1", ParseQuery("P0", "P1"), true},
+		{"P2", ParseQuery("P0", "P1"), false},
+	}
+
+	for i, tc := range tests {
+		task := Task{Priority: tc.priority}
+		assert.Equal(t, tc.expected, task.MatchesFilter(tc.query), "test %d", i)
+	}
+}

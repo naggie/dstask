@@ -24,6 +24,7 @@ type Query struct {
 	DateFilter    string    // "", after, before, on, in -- or none/any (Due is zero then)
 	DueEnd        time.Time // inclusive upper bound of a range, DateFilter is "after" then
 	Priority      string
+	Priorities    []string // all if more than one is given (any matches), else nil
 	Template      int
 	Text          string
 	IgnoreContext bool
@@ -70,9 +71,7 @@ func (query Query) String() string {
 		args = append(args, "due:"+query.DateFilter)
 	}
 
-	if query.Priority != "" {
-		args = append(args, query.Priority)
-	}
+	args = append(args, query.priorities()...)
 
 	if query.Template > 0 {
 		args = append(args, fmt.Sprintf("template:%v", query.Template))
@@ -130,6 +129,8 @@ func ParseQuery(args ...string) Query {
 	var dateFilterType string
 
 	var priority string
+
+	var priorities []string
 
 	var template int
 
@@ -211,13 +212,22 @@ func ParseQuery(args ...string) Query {
 			tags = append(tags, lcItem[1:])
 		} else if len(item) > 1 && lcItem[0:1] == "-" {
 			antiTags = append(antiTags, lcItem[1:])
-		} else if priority == "" && IsValidPriority(item) {
-			priority = item
+		} else if IsValidPriority(item) {
+			if priority == "" {
+				priority = item
+			}
+			if !StrSliceContains(priorities, item) {
+				priorities = append(priorities, item)
+			}
 		} else {
 			words = append(words, item)
 		}
 
 		IDsExhausted = true
+	}
+
+	if len(priorities) < 2 {
+		priorities = nil
 	}
 
 	return Query{
@@ -231,6 +241,7 @@ func ParseQuery(args ...string) Query {
 		Due:           dueDate,
 		DueEnd:        dueEnd,
 		Priority:      priority,
+		Priorities:    priorities,
 		Template:      template,
 		Text:          strings.Join(words, " "),
 		Note:          strings.Join(notes, " "),
@@ -289,11 +300,14 @@ func (query *Query) Merge(q2 Query) Query {
 		}
 	}
 
-	if q2.Priority != "" {
-		if q.Priority != "" {
+	if q2Priorities := q2.priorities(); len(q2Priorities) > 0 {
+		switch {
+		case q.Priority == "":
+			q.Priority, q.Priorities = q2.Priority, q2.Priorities
+		case len(q2Priorities) > 1 && isSubset(q.priorities(), q2Priorities):
+			// the query narrows down the priorities of the context
+		default:
 			ExitFail("Could not apply q2, priority conflict")
-		} else {
-			q.Priority = q2.Priority
 		}
 	}
 
@@ -362,4 +376,46 @@ func sameDateFilter(a, b string) bool {
 	}
 
 	return normalize(a) == normalize(b)
+}
+
+// priorities returns all priorities of the query, a task matches any of them.
+func (query Query) priorities() []string {
+	if len(query.Priorities) > 0 {
+		return query.Priorities
+	}
+
+	if query.Priority != "" {
+		return []string{query.Priority}
+	}
+
+	return nil
+}
+
+// withoutPriorityFilter drops several priorities (e.g. P0 P1 from the context)
+// after merging the context when creating a task. They are a filter only. A
+// single priority is kept and set on the task.
+func withoutPriorityFilter(q Query) Query {
+	if len(q.Priorities) > 1 {
+		q.Priority, q.Priorities = "", nil
+	}
+
+	return q
+}
+
+func errMultiplePriorities(cmd string) error {
+	return fmt.Errorf(
+		"cannot use more than one priority with %s command, quote text like \"level P1\"",
+		cmd,
+	)
+}
+
+// isSubset reports whether every item of a is in b.
+func isSubset(a, b []string) bool {
+	for _, item := range a {
+		if !StrSliceContains(b, item) {
+			return false
+		}
+	}
+
+	return true
 }

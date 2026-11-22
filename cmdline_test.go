@@ -107,8 +107,8 @@ func TestParseQuery(t *testing.T) {
 				Note:          "",
 			},
 		},
-		// first priority should have precedence, subsequent priorities should
-		// just be part of the description
+		// several priorities are a filter (any of them), the first one is kept
+		// in Priority. Commands that set a priority reject them.
 		// see https://github.com/naggie/dstask/issues/120 for context
 		{
 			[]string{"add", "P1", "P2", "P3"},
@@ -120,13 +120,14 @@ func TestParseQuery(t *testing.T) {
 				Project:       "",
 				AntiProjects:  nil,
 				Priority:      PRIORITY_HIGH,
+				Priorities:    []string{PRIORITY_HIGH, PRIORITY_NORMAL, PRIORITY_LOW},
 				Template:      0,
-				Text:          "P2 P3",
+				Text:          "",
 				IgnoreContext: false,
 				Note:          "",
 			},
 		},
-		// same for projects, for consistency
+		// the first project has precedence, a second one is part of the description
 		{
 			[]string{"add", "project:foo", "project:bar"},
 			Query{
@@ -221,6 +222,8 @@ func TestQueryStringRoundtrip(t *testing.T) {
 		{"due.after:2025-07-01", "due.before:2025-07-31"},
 		{"due.before:2025-07-31"},
 		{"+team:*", "-*"},
+		{"P0", "P1"},
+		{"P3", "P1", "+work"},
 	}
 
 	for _, args := range tests {
@@ -268,4 +271,49 @@ func TestWithoutDueFilter(t *testing.T) {
 
 	ctx = ParseQuery("+work", "due.after:2025-07-01")
 	assert.Equal(t, ctx, withoutDueFilter(ctx))
+}
+
+func TestParseQueryPriorities(t *testing.T) {
+	query := ParseQuery("next", "P1", "foo", "P0")
+	assert.Equal(t, "P1", query.Priority)
+	assert.Equal(t, []string{"P1", "P0"}, query.Priorities)
+	assert.Equal(t, "foo", query.Text)
+
+	// a repeated priority is the same as a single one
+	assert.Equal(t, ParseQuery("P1"), ParseQuery("P1", "P1"))
+	assert.Nil(t, ParseQuery("P1", "P1").Priorities)
+
+	assert.Equal(t, ParseQuery("P1", "P0", "P1"), ParseQuery("P1", "P0"))
+}
+
+func TestMergePriority(t *testing.T) {
+	tests := []struct {
+		query    []string
+		ctx      []string
+		expected []string
+	}{
+		{[]string{}, []string{"P1"}, []string{"P1"}},
+		{[]string{"P1"}, []string{}, []string{"P1"}},
+		{[]string{}, []string{"P0", "P1"}, []string{"P0", "P1"}},
+		{[]string{"P0", "P1"}, []string{}, []string{"P0", "P1"}},
+		{[]string{"P1"}, []string{"P0", "P1"}, []string{"P1"}},
+		{[]string{"P1", "P0"}, []string{"P0", "P1"}, []string{"P1", "P0"}},
+		{[]string{"P0", "P1"}, []string{"P0", "P1", "P2"}, []string{"P0", "P1"}},
+	}
+
+	for _, tc := range tests {
+		query := ParseQuery(tc.query...)
+		assert.Equal(t, ParseQuery(tc.expected...), query.Merge(ParseQuery(tc.ctx...)), tc)
+	}
+
+	// a context stored by an older version has no Priorities
+	query := ParseQuery()
+	assert.Equal(t, ParseQuery("P2"), query.Merge(Query{Priority: "P2"}))
+}
+
+func TestWithoutPriorityFilter(t *testing.T) {
+	assert.Equal(t, ParseQuery("+work"), withoutPriorityFilter(ParseQuery("+work", "P0", "P1")))
+
+	ctx := ParseQuery("+work", "P1")
+	assert.Equal(t, ctx, withoutPriorityFilter(ctx))
 }

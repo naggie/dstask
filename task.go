@@ -208,7 +208,8 @@ func (t *Task) MatchesFilter(query Query) bool {
 		}
 	}
 
-	if query.Priority != "" && t.Priority != query.Priority {
+	if priorities := query.priorities(); len(priorities) > 0 &&
+		!StrSliceContains(priorities, t.Priority) {
 		return false
 	}
 

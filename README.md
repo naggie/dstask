@@ -228,6 +228,14 @@ version             : Show dstask version information
 | `P2`   | Normal   | Default priority                                                    |
 | `P3`   | Low      | Shown at bottom and faded.                                          |
 
+Several priorities in a filter or context match tasks with any of them, e.g.
+`dstask next P0 P1`. In a context `P0 P1`, `dstask next P1` narrows the filter
+down to `P1`. The priorities of such a context are not set on new tasks, so
+`dstask add foo` creates a P2 task that is not shown in the context.
+`dstask add foo P1` sets P1, a priority outside of the context is a conflict.
+Commands that set a priority (add, log, template, start, modify) accept only
+one.
+
 ## Operators
 
 | Symbol          | Syntax                   | Description                                                      | Example                                       |
