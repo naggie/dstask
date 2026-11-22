@@ -47,6 +47,10 @@ git -C $UPSTREAM_BARE_REPO init --bare
 ./dstask +foo
 ./dstask -foo
 ./dstask -project:foo
+./dstask '+fo*' '-ba*'
+./dstask due:none
+./dstask due.after:yesterday due.before:tomorrow
+./dstask due:this-week
 ./dstask 2 done
 ./dstask undo
 ./dstask log something

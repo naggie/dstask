@@ -15,11 +15,20 @@ func Help(cmd string) {
 		helpStr = `Usage: dstask next [filter] [--]
 Usage: dstask [filter] [--]
 Example: dstask +work +bug --
+Example: dstask next P0 P1
 
 Display list of non-resolved tasks in the current context, most recent last,
 optional filter. It is the default command, so "next" is unnecessary.
 
 Bypass the current context with --.
+
+Filters: +tag -tag (a trailing * matches a prefix: '+team:*', '-name:*'; '+*' any
+tag, '-*' no tag), project:x -project:x, P0..P3 (several: any of them, e.g.
+P0 P1), text, and due dates:
+  due:<date> due.before:<date> due.after:<date> due.on:<date>
+  due.after:<date> due.before:<date>  (range, both inclusive)
+  due:overdue (includes today), due:none, due:any
+  due:this-week due:next-week (Monday to Sunday), due:this-month due:next-month
 
 Colour key:
 `
@@ -146,6 +155,11 @@ To reset to no context, run: dstask context none
 
 Context can also be set with the environment variable DSTASK_CONTEXT. If set, 
 this context string will override the context stored on disk.
+
+Relative dates like due:this-week are resolved when the context is set, use
+DSTASK_CONTEXT for a context that moves with the current date. Filters
+without a single value (several priorities like P0 P1, date ranges, due:none,
+due:any, wildcard tags) are not set on new tasks.
 `
 	case CMD_MODIFY:
 		helpStr = `Usage: dstask <id...> modify <filter>
@@ -156,7 +170,8 @@ Modify the attributes of the given tasks, specified by ID. If no ID is given,
 the operation will be performed to all tasks in the current context subject to
 confirmation.
 
-Modifiable attributes: tags, project and priority.
+Modifiable attributes: tags, project, priority and due date. Use due:none to
+remove the due date.
 `
 	case CMD_EDIT:
 		helpStr = `Usage: dstask <id...> edit

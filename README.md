@@ -228,12 +228,21 @@ version             : Show dstask version information
 | `P2`   | Normal   | Default priority                                                    |
 | `P3`   | Low      | Shown at bottom and faded.                                          |
 
+Several priorities in a filter or context match tasks with any of them, e.g.
+`dstask next P0 P1`. In a context `P0 P1`, `dstask next P1` narrows the filter
+down to `P1`. The priorities of such a context are not set on new tasks, so
+`dstask add foo` creates a P2 task that is not shown in the context.
+`dstask add foo P1` sets P1, a priority outside of the context is a conflict.
+Commands that set a priority (add, log, template, start, modify) accept only
+one.
+
 ## Operators
 
 | Symbol          | Syntax                   | Description                                                      | Example                                       |
 | --------------- | ------------------------ | ---------------------------------------------------------------- | --------------------------------------------- |
 | `+`             | `+<tag>`                 | Include tag. Filter/context, or when adding task.                | `dstask add fix server +work`                 |
 | `-`             | `-<tag>`                 | Exclude tag. Filter/context only.                                | `dstask next -feature`                        |
+| `+...*`/`-...*` | `+<prefix>*`             | Include/exclude tags by prefix. Filter/context only.             | `dstask next '+team:*' '-name:*'`             |
 | `--`            | `--`                     | Ignore context. When listing or adding tasks.                    | `dstask --`, `task add -- +home do guttering` |
 | `/`             | `/`                      | When adding a task, everything after will be a note.             | `dstask add check out ipfs / https://ipfs.io` |
 | `project:`      | `project:<project>`      | Set project. Filter/context, or when adding task.                | `dstask context project:dstask`               |
@@ -241,6 +250,7 @@ version             : Show dstask version information
 | `template:`     | `template:<id>`          | Base new task on a template.                                     | `dstask add template:24`                      |
 | `due:`          | `due:<date>`             | Set or filter by due date.                                       | `dstask add task due:friday`                  |
 | `due.[filter]`  | `due.[filter]:<date>`    | Filter tasks based on due date filter (before, after, in/on).    | `dstask next due.before:tomorrow`             |
+| `due:none`      | `due:none`, `due:any`    | Filter tasks without/with due date. `due:none` also clears it.   | `dstask next due:none`                        |
 
 
 ## State
@@ -283,6 +293,35 @@ dstask next due.after:tomorrow       # Tasks due after tomorrow
 dstask next due.on:tue               # Tasks due on Tuesday
 dstask next due:overdue              # Overdue tasks
 dstask next due.before:2025-12-31    # Tasks due before end of year
+dstask next due.before:today         # Tasks due until today (including overdue)
+dstask next due.after:2025-11-01 due.before:2025-11-30  # Tasks due in a date range
+dstask next due:this-week            # Tasks due this week (Monday to Sunday)
+dstask next due:next-month           # also: due:next-week, due:this-month
+dstask next due:none                 # Tasks without due date
+dstask next due:any                  # Tasks with a due date
+dstask 12 modify due:none            # Remove due date
+```
+
+`before` and `after` are inclusive, i.e. `due.before:friday` includes tasks due
+on Friday. `due:overdue` is the same as `due.before:today` and so includes tasks
+due today. One `due.after` and one `due.before` filter can be combined to a range.
+
+Relative dates in a context (e.g. `dstask context due:this-week`) are resolved
+when the context is set. Use `DSTASK_CONTEXT` for a context that moves along
+with the current date. A date range in the context is not set as due date on
+new tasks.
+
+### Filtering Tasks by Tag Prefix
+
+A tag ending in `*` matches all tags with that prefix. This is useful for
+`key:value` style tags. Wildcard tags can be used as filter and in contexts,
+but are not added to tasks. Quote them so that the shell does not expand them.
+A tag ending in `*` is always treated as a prefix.
+
+```bash
+dstask next '+team:*'                # Tasks with any team:... tag
+dstask next '-blockedby:*'           # Tasks without blockedby:... tag
+dstask next '-*'                     # Tasks without any tag
 ```
 
 # Contexts

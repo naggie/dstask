@@ -5,6 +5,7 @@ package dstask
 import (
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -20,8 +21,10 @@ type Query struct {
 	Project       string
 	AntiProjects  []string
 	Due           time.Time
-	DateFilter    string
+	DateFilter    string    // "", after, before, on, in -- or none/any (Due is zero then)
+	DueEnd        time.Time // inclusive upper bound of a range, DateFilter is "after" then
 	Priority      string
+	Priorities    []string // all if more than one is given (any matches), else nil
 	Template      int
 	Text          string
 	IgnoreContext bool
@@ -60,11 +63,15 @@ func (query Query) String() string {
 		}
 		dueArg += ":" + query.Due.Format("2006-01-02")
 		args = append(args, dueArg)
+
+		if !query.DueEnd.IsZero() {
+			args = append(args, "due.before:"+query.DueEnd.Format("2006-01-02"))
+		}
+	} else if query.DateFilter != "" {
+		args = append(args, "due:"+query.DateFilter)
 	}
 
-	if query.Priority != "" {
-		args = append(args, query.Priority)
-	}
+	args = append(args, query.priorities()...)
 
 	if query.Template > 0 {
 		args = append(args, fmt.Sprintf("template:%v", query.Template))
@@ -117,9 +124,13 @@ func ParseQuery(args ...string) Query {
 
 	var dueDate time.Time
 
+	var dueEnd time.Time
+
 	var dateFilterType string
 
 	var priority string
+
+	var priorities []string
 
 	var template int
 
@@ -171,11 +182,28 @@ func ParseQuery(args ...string) Query {
 		} else if strings.HasPrefix(lcItem, "-project:") {
 			antiProjects = append(antiProjects, lcItem[9:])
 		} else if strings.HasPrefix(lcItem, "due.") || strings.HasPrefix(lcItem, "due:") {
-			if dueDateSet {
-				ExitFail("Query should only have one due date")
+			if start, end, ok := parseDuePeriod(lcItem, time.Now()); ok {
+				if dueDateSet {
+					ExitFail("Query should only have one due date")
+				}
+				dateFilterType, dueDate, dueEnd = "after", start, end
+				dueDateSet = true
+			} else {
+				filter, date := ParseDueDateArg(lcItem)
+				start, end, isRange := dueRange(dateFilterType, dueDate, filter, date)
+
+				switch {
+				case !dueDateSet:
+					dateFilterType, dueDate = filter, date
+					dueDateSet = true
+				case isRange && dueEnd.IsZero() && !end.Before(start):
+					dateFilterType, dueDate, dueEnd = "after", start, end
+				case isRange && dueEnd.IsZero():
+					ExitFail("due.after must not be later than due.before")
+				default:
+					ExitFail("Query should only have one due date or due range")
+				}
 			}
-			dateFilterType, dueDate = ParseDueDateArg(lcItem)
-			dueDateSet = true
 		} else if strings.HasPrefix(lcItem, "template:") {
 			if s, err := strconv.ParseInt(lcItem[9:], 10, 64); err == nil {
 				template = int(s)
@@ -184,13 +212,22 @@ func ParseQuery(args ...string) Query {
 			tags = append(tags, lcItem[1:])
 		} else if len(item) > 1 && lcItem[0:1] == "-" {
 			antiTags = append(antiTags, lcItem[1:])
-		} else if priority == "" && IsValidPriority(item) {
-			priority = item
+		} else if IsValidPriority(item) {
+			if priority == "" {
+				priority = item
+			}
+			if !StrSliceContains(priorities, item) {
+				priorities = append(priorities, item)
+			}
 		} else {
 			words = append(words, item)
 		}
 
 		IDsExhausted = true
+	}
+
+	if len(priorities) < 2 {
+		priorities = nil
 	}
 
 	return Query{
@@ -202,7 +239,9 @@ func ParseQuery(args ...string) Query {
 		AntiProjects:  antiProjects,
 		DateFilter:    dateFilterType,
 		Due:           dueDate,
+		DueEnd:        dueEnd,
 		Priority:      priority,
+		Priorities:    priorities,
 		Template:      template,
 		Text:          strings.Join(words, " "),
 		Note:          strings.Join(notes, " "),
@@ -241,22 +280,142 @@ func (query *Query) Merge(q2 Query) Query {
 		}
 	}
 
-	if !q2.Due.IsZero() {
-		if !q.Due.IsZero() && q.Due != q2.Due {
+	if !q2.Due.IsZero() || q2.DateFilter != "" {
+		start, end, isRange := dueRange(q.DateFilter, q.Due, q2.DateFilter, q2.Due)
+		isRange = isRange && q.DueEnd.IsZero() && q2.DueEnd.IsZero() && !end.Before(start)
+
+		switch {
+		case q.Due.IsZero() && q.DateFilter == "":
+			q.Due, q.DueEnd, q.DateFilter = q2.Due, q2.DueEnd, q2.DateFilter
+		case q.DateFilter == "any" && !q2.Due.IsZero():
+			// a due date (filter) is more specific than due:any
+			q.Due, q.DueEnd, q.DateFilter = q2.Due, q2.DueEnd, q2.DateFilter
+		case q2.DateFilter == "any" && !q.Due.IsZero():
+			// a due date (filter) is more specific than due:any
+		case isRange:
+			q.Due, q.DueEnd, q.DateFilter = start, end, "after"
+		case q.Due != q2.Due || q.DueEnd != q2.DueEnd ||
+			!sameDateFilter(q.DateFilter, q2.DateFilter):
 			ExitFail("Could not apply q2, date filter conflict")
-		} else {
-			q.Due = q2.Due
-			q.DateFilter = q2.DateFilter
 		}
 	}
 
-	if q2.Priority != "" {
-		if q.Priority != "" {
+	if q2Priorities := q2.priorities(); len(q2Priorities) > 0 {
+		switch {
+		case q.Priority == "":
+			q.Priority, q.Priorities = q2.Priority, q2.Priorities
+		case len(q2Priorities) > 1 && isSubset(q.priorities(), q2Priorities):
+			// the query narrows down the priorities of the context
+		default:
 			ExitFail("Could not apply q2, priority conflict")
-		} else {
-			q.Priority = q2.Priority
 		}
 	}
 
 	return q
+}
+
+// HasWildcardTags returns true if the query contains a tag filter like +team:*
+// Such tags are filters only and cannot be added to or removed from tasks.
+func (query Query) HasWildcardTags() bool {
+	return slices.ContainsFunc(query.Tags, isWildcardTag) ||
+		slices.ContainsFunc(query.AntiTags, isWildcardTag)
+}
+
+func isWildcardTag(tag string) bool {
+	return strings.HasSuffix(tag, "*")
+}
+
+// withoutWildcardTags drops wildcard tags (e.g. from the context) when
+// creating a task.
+func withoutWildcardTags(tags []string) []string {
+	var result []string
+
+	for _, tag := range tags {
+		if !isWildcardTag(tag) {
+			result = append(result, tag)
+		}
+	}
+
+	return result
+}
+
+// dueRange combines a due.after and a due.before filter (in any order) to an
+// inclusive range.
+func dueRange(
+	filterA string, dateA time.Time, filterB string, dateB time.Time,
+) (start, end time.Time, ok bool) {
+	switch {
+	case filterA == "after" && filterB == "before":
+		return dateA, dateB, true
+	case filterA == "before" && filterB == "after":
+		return dateB, dateA, true
+	}
+
+	return start, end, false
+}
+
+// withoutDueFilter drops a due date range (e.g. due:this-week), due:none and
+// due:any from the context when creating a task. These are filters only and
+// have no single due date.
+func withoutDueFilter(ctx Query) Query {
+	if !ctx.DueEnd.IsZero() || ctx.DateFilter == "none" || ctx.DateFilter == "any" {
+		ctx.Due, ctx.DueEnd, ctx.DateFilter = time.Time{}, time.Time{}, ""
+	}
+
+	return ctx
+}
+
+// sameDateFilter treats due:X, due.on:X and due.in:X as the same filter.
+func sameDateFilter(a, b string) bool {
+	normalize := func(filter string) string {
+		if filter == "on" || filter == "in" {
+			return ""
+		}
+
+		return filter
+	}
+
+	return normalize(a) == normalize(b)
+}
+
+// priorities returns all priorities of the query, a task matches any of them.
+func (query Query) priorities() []string {
+	if len(query.Priorities) > 0 {
+		return query.Priorities
+	}
+
+	if query.Priority != "" {
+		return []string{query.Priority}
+	}
+
+	return nil
+}
+
+// withoutPriorityFilter drops several priorities (e.g. P0 P1 from the context)
+// after merging the context when creating a task. They are a filter only. A
+// single priority is kept and set on the task.
+func withoutPriorityFilter(q Query) Query {
+	if len(q.Priorities) > 1 {
+		q.Priority, q.Priorities = "", nil
+	}
+
+	return q
+}
+
+func errMultiplePriorities(cmd string) error {
+	return fmt.Errorf(
+		"cannot use more than one priority with %s command, quote text like \"level P1\"",
+		cmd,
+	)
+}
+
+// isSubset reports whether every item of a is in b.
+func isSubset(a, b []string) bool {
+	for _, item := range a {
+		if !StrSliceContains(b, item) {
+			return false
+		}
+	}
+
+	return true
 }

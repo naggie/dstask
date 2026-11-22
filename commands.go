@@ -19,6 +19,12 @@ func CommandAdd(conf Config, ctx, query Query) error {
 	if query.DateFilter != "" && query.DateFilter != "in" && query.DateFilter != "on" {
 		return errors.New("cannot use date filter with add command")
 	}
+	if query.HasWildcardTags() {
+		return errors.New("cannot use wildcard tags with add command")
+	}
+	if len(query.Priorities) > 1 {
+		return errMultiplePriorities("add")
+	}
 
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
@@ -29,7 +35,7 @@ func CommandAdd(conf Config, ctx, query Query) error {
 		var taskSummary string
 
 		tt := ts.MustGetByID(query.Template)
-		query = query.Merge(ctx)
+		query = withoutPriorityFilter(query.Merge(withoutDueFilter(ctx)))
 
 		if query.Text != "" {
 			taskSummary = query.Text
@@ -64,12 +70,12 @@ func CommandAdd(conf Config, ctx, query Query) error {
 		}
 	} else if query.Text != "" {
 		ctx.PrintContextDescription()
-		query = query.Merge(ctx)
+		query = withoutPriorityFilter(query.Merge(withoutDueFilter(ctx)))
 		task := Task{
 			WritePending: true,
 			Status:       STATUS_PENDING,
 			Summary:      query.Text,
-			Tags:         query.Tags,
+			Tags:         withoutWildcardTags(query.Tags),
 			Project:      query.Project,
 			Priority:     query.Priority,
 			Due:          query.Due,
@@ -196,18 +202,28 @@ func CommandLog(conf Config, ctx, query Query) error {
 		return errors.New("task description required")
 	}
 
+	if query.HasWildcardTags() {
+		return errors.New("cannot use wildcard tags with log command")
+	}
+	if len(query.Priorities) > 1 {
+		return errMultiplePriorities("log")
+	}
+	if !query.DueEnd.IsZero() {
+		return errors.New("cannot use due date range with log command")
+	}
+
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
 		return err
 	}
 
 	ctx.PrintContextDescription()
-	query = query.Merge(ctx)
+	query = withoutPriorityFilter(query.Merge(withoutDueFilter(ctx)))
 	task := Task{
 		WritePending: true,
 		Status:       STATUS_RESOLVED,
 		Summary:      query.Text,
-		Tags:         query.Tags,
+		Tags:         withoutWildcardTags(query.Tags),
 		Project:      query.Project,
 		Priority:     query.Priority,
 		Due:          query.Due,
@@ -225,6 +241,17 @@ func CommandLog(conf Config, ctx, query Query) error {
 func CommandModify(conf Config, ctx, query Query) error {
 	if !query.HasOperators() {
 		return errors.New("no operations specified")
+	}
+
+	if query.HasWildcardTags() {
+		return errors.New("cannot use wildcard tags with modify command")
+	}
+	if len(query.Priorities) > 1 {
+		return errMultiplePriorities("modify")
+	}
+
+	if !query.DueEnd.IsZero() || query.DateFilter == "any" {
+		return errors.New("modify needs a single due date (or due:none to remove it)")
 	}
 
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
@@ -564,6 +591,12 @@ func CommandStart(conf Config, ctx, query Query) error {
 	if query.Template > 0 {
 		return errors.New("templates not yet supported for start command")
 	}
+	if query.HasWildcardTags() {
+		return errors.New("cannot use wildcard tags with start command")
+	}
+	if len(query.Priorities) > 1 {
+		return errMultiplePriorities("start")
+	}
 
 	if len(query.IDs) > 0 {
 		// start given tasks by IDs
@@ -586,12 +619,12 @@ func CommandStart(conf Config, ctx, query Query) error {
 		}
 	} else if query.Text != "" {
 		// create a new task that is already active (started)
-		query = query.Merge(ctx)
+		query = withoutPriorityFilter(query.Merge(withoutDueFilter(ctx)))
 		task := Task{
 			WritePending: true,
 			Status:       STATUS_ACTIVE,
 			Summary:      query.Text,
-			Tags:         query.Tags,
+			Tags:         withoutWildcardTags(query.Tags),
 			Project:      query.Project,
 			Priority:     query.Priority,
 			Notes:        query.Note,
@@ -647,6 +680,16 @@ func CommandSync(repoPath string) error {
 
 // CommandTemplate creates a new task template.
 func CommandTemplate(conf Config, ctx, query Query) error {
+	if query.HasWildcardTags() {
+		return errors.New("cannot use wildcard tags with template command")
+	}
+	if len(query.Priorities) > 1 {
+		return errMultiplePriorities("template")
+	}
+	if !query.DueEnd.IsZero() {
+		return errors.New("cannot use due date range with template command")
+	}
+
 	ts, err := LoadTaskSet(conf.Repo, conf.IDsFile, false)
 	if err != nil {
 		return err
@@ -662,12 +705,12 @@ func CommandTemplate(conf Config, ctx, query Query) error {
 			MustGitCommit(conf.Repo, "Changed %s to Template", task)
 		}
 	} else if query.Text != "" {
-		query = query.Merge(ctx)
+		query = withoutPriorityFilter(query.Merge(withoutDueFilter(ctx)))
 		task := Task{
 			WritePending: true,
 			Status:       STATUS_TEMPLATE,
 			Summary:      query.Text,
-			Tags:         query.Tags,
+			Tags:         withoutWildcardTags(query.Tags),
 			Project:      query.Project,
 			Priority:     query.Priority,
 			Notes:        query.Note,
